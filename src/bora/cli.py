@@ -1,9 +1,12 @@
 import argparse, json
+import numpy as np
+import tifffile
 from pathlib import Path
 from .backends import make_backend
 from .geojson import write_geojson
 from .io import read_image, read_mask, write_ome_mask
 from .refine import RefineConfig, refine_labels
+from .streaming import refine_streaming, write_geojson_streaming
 
 
 def parser():
@@ -18,15 +21,27 @@ def parser():
     p.add_argument("--tile-size", type=int, default=2048); p.add_argument("--tile-overlap", type=int, default=256)
     p.add_argument("--min-area", type=int, default=32); p.add_argument("--smooth-radius", type=int, default=2)
     p.add_argument("--geojson-simplify", type=float, default=0)
+    p.add_argument("--stream", action=argparse.BooleanOptionalAction, default=None,
+                   help="stream blocks (automatic above 100 million pixels)")
+    p.add_argument("--block-size", type=int, default=1024)
     return root
 
 
 def main(argv=None):
     a = parser().parse_args(argv)
-    image, labels = read_image(a.image), read_mask(a.mask)
     cfg = RefineConfig(a.core_erosion, a.outer_dilation, a.tile_size, a.tile_overlap, a.min_area, a.smooth_radius)
-    refined, report = refine_labels(image, labels, make_backend(a.backend, a.checkpoint, a.device, a.repo_dir), cfg)
-    write_ome_mask(a.output, refined); write_geojson(a.geojson, refined, a.geojson_simplify, a.min_area)
+    backend = make_backend(a.backend, a.checkpoint, a.device, a.repo_dir)
+    with tifffile.TiffFile(a.mask) as tif:
+        shape = tif.series[0].shape
+    stream = a.stream if a.stream is not None else int(np.prod(shape[-2:])) > 100_000_000
+    if stream:
+        report = refine_streaming(a.image, a.mask, a.output, backend, cfg, a.block_size)
+        report["geojson_feature_count"] = write_geojson_streaming(
+            a.geojson, a.output, max(2048,a.block_size), a.geojson_simplify, a.min_area)
+    else:
+        image, labels = read_image(a.image), read_mask(a.mask)
+        refined, report = refine_labels(image, labels, backend, cfg)
+        write_ome_mask(a.output, refined); write_geojson(a.geojson, refined, a.geojson_simplify, a.min_area)
     report.update({"image":a.image,"mask":a.mask,"output":a.output,"geojson":a.geojson,"backend":a.backend})
     report_path = Path(a.report) if a.report else Path(a.output).with_suffix(".report.json")
     report_path.write_text(json.dumps(report, indent=2)); print(json.dumps(report, indent=2))

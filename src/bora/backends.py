@@ -21,13 +21,26 @@ def rgb_float(image):
 @dataclass
 class WatershedBackend:
     compactness: float = 0.001
+    max_side: int = 256
     def predict(self, image, core, outer, box):
-        elevation = filters.sobel(rgb_float(image).mean(-1))
+        gray = rgb_float(image).mean(-1)
+        original_shape = core.shape
+        original_outer = outer
+        scale = min(1.0, self.max_side / max(original_shape))
+        if scale < 1:
+            shape = tuple(max(1, round(v*scale)) for v in original_shape)
+            gray = transform.resize(gray, shape, preserve_range=True, anti_aliasing=True)
+            core = transform.resize(core, shape, order=0, preserve_range=True).astype(bool)
+            outer = transform.resize(outer, shape, order=0, preserve_range=True).astype(bool)
+        elevation = filters.sobel(gray)
         markers = np.zeros(core.shape, np.int8)
         markers[~outer], markers[core] = 1, 2
         pred = segmentation.watershed(elevation, markers, compactness=self.compactness) == 2
         confidence = 1 - elevation / max(float(elevation.max(initial=0)), 1e-6)
-        return pred & outer, confidence.astype(np.float32)
+        if pred.shape != original_shape:
+            pred = transform.resize(pred, original_shape, order=0, preserve_range=True).astype(bool)
+            confidence = transform.resize(confidence, original_shape, order=1, preserve_range=True)
+        return pred & original_outer, confidence.astype(np.float32)
 
 
 class MedSAMBackend:

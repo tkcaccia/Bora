@@ -42,9 +42,9 @@ def refine_labels(image, labels, backend, config=RefineConfig()):
         if int(coarse.sum()) < config.min_area:
             output[coarse], score[coarse] = lid, 2
             continue
-        core = morphology.binary_erosion(coarse, morphology.disk(config.core_erosion)) if config.core_erosion else coarse.copy()
+        core = (ndi.distance_transform_edt(coarse) > config.core_erosion) if config.core_erosion else coarse.copy()
         if not core.any(): core = coarse.copy()
-        outer = morphology.binary_dilation(coarse, morphology.disk(config.outer_dilation)) if config.outer_dilation else coarse.copy()
+        outer = (ndi.distance_transform_edt(~coarse) <= config.outer_dilation) if config.outer_dilation else coarse.copy()
         x0, y0, x1, y1 = bbox(outer)
         for ty in starts(y0, y1, config.tile_size, config.tile_overlap):
             for tx in starts(x0, x1, config.tile_size, config.tile_overlap):

@@ -22,3 +22,7 @@ __pycache__/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Large local data and generated results
+inputs/
+outputs/

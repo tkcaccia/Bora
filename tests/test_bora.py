@@ -4,6 +4,7 @@ from bora.backends import WatershedBackend
 from bora.geojson import labels_to_geojson
 from bora.io import label_dtype, read_image, read_mask, write_ome_mask
 from bora.refine import RefineConfig, refine_labels
+from bora.streaming import refine_streaming, write_geojson_streaming
 
 
 def synthetic():
@@ -29,3 +30,11 @@ def test_ome_roundtrip(tmp_path):
     tifffile.imwrite(ip, image, ome=True, metadata={"axes":"YXS"}); tifffile.imwrite(mp, mask)
     assert read_image(ip).shape == image.shape and np.array_equal(read_mask(mp), mask)
     write_ome_mask(op, mask); assert np.array_equal(read_mask(op), mask)
+
+
+def test_streaming_roundtrip(tmp_path):
+    image, mask = synthetic(); ip=tmp_path/"i.tif"; mp=tmp_path/"m.tif"; op=tmp_path/"o.tif"; gp=tmp_path/"o.geojson"
+    tifffile.imwrite(ip,image,tile=(32,32),compression="deflate"); tifffile.imwrite(mp,mask)
+    report=refine_streaming(ip,mp,op,WatershedBackend(),RefineConfig(4,6,64,8,10,1),64)
+    assert report["blocks"] == 6 and read_mask(op).shape == mask.shape
+    assert write_geojson_streaming(gp,op,64,.5,10) > 0
