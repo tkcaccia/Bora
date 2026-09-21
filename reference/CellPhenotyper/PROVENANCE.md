@@ -18,6 +18,11 @@ snapshot `uni2_resolution_comparison_20260909/project`, where the boundary
 competition identifies itself as schema
 `cellphenotyper.annealed_wand_boundary.v2`.
 
+`bin/mask_to_geojson.py` was refreshed from the `main` branch of
+`tkcaccia/CellPhenotyper` on 2026-09-21. Its Git blob SHA is
+`fd2dd40b227b85e542bf3da1d602a7eac5123990`; the production package contains
+an unchanged copy at `src/bora/cellphenotyper_mask_to_geojson.py`.
+
 ## License status
 
 At the referenced commit, the CellPhenotyper repository does not contain a

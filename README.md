@@ -12,9 +12,14 @@ boundary band. MedSAM can be appended as an optional box-prompted stage.
 Overlaps are resolved by confidence.
 
 The design is adapted from the `medsam-refine` step in
-[`tkcaccia/CellPhenotyper`](https://github.com/tkcaccia/CellPhenotyper). That
-The exact annealed-wand v2 and GeoJSON source snapshots are retained under
-`reference/CellPhenotyper/`, with provenance documented alongside them.
+[`tkcaccia/CellPhenotyper`](https://github.com/tkcaccia/CellPhenotyper). The
+exact annealed-wand v2 and post-refinement GeoJSON source snapshots are
+retained under `reference/CellPhenotyper/`, with provenance documented
+alongside them. Bora executes the copied converter after pyramid creation with
+CellPhenotyper's defaults: automatic <=2048-pixel pyramid level, dissolve by
+label, minimum area 500, three 10-pixel smoothing passes, 6-pixel simplify,
+hole removal, and topology preservation. All settings are exposed as
+`--geojson-*` options.
 
 ## Install and run
 

@@ -7,6 +7,7 @@ from bora.refine import RefineConfig, refine_labels
 from bora.streaming import refine_streaming, write_geojson_streaming
 from bora.annealed_wand import annealed_wand_boundary_competition
 from bora.wand import run_annealed_wand
+from bora.cellphenotyper import mask_to_geojson
 
 
 def synthetic():
@@ -65,3 +66,15 @@ def test_cellphenotyper_wand_wrapper_preserves_full_resolution_footprint():
     assert np.array_equal(result > 0, labels > 0)
     assert metadata["working_downsample"] == 4
     assert metadata["maximum_boundary_displacement_px"] == 19
+
+
+def test_cellphenotyper_geojson_converter(tmp_path):
+    _, mask = synthetic()
+    mp, gp = tmp_path / "mask.tif", tmp_path / "mask.geojson"
+    tifffile.imwrite(mp, mask)
+    count = mask_to_geojson(
+        mp, gp, max_page_side=2048, min_area=10, smooth_buffer=0,
+        smooth_passes=1, simplify=0, fill_holes=False)
+    geo = __import__("json").loads(gp.read_text())
+    assert count == 2
+    assert {feature["properties"]["value"] for feature in geo["features"]} == {1, 70000}

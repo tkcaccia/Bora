@@ -3,12 +3,12 @@ import numpy as np
 import tifffile
 from pathlib import Path
 from .backends import make_backend
-from .geojson import write_geojson
 from .io import read_image, read_mask, write_ome_mask
 from .refine import RefineConfig, refine_labels
-from .streaming import refine_streaming, write_geojson_streaming
+from .streaming import refine_streaming
 from .pyramid import pyramidize_mask
 from .wand import run_annealed_wand
+from .cellphenotyper import mask_to_geojson
 
 
 def parser():
@@ -22,7 +22,18 @@ def parser():
     p.add_argument("--core-erosion", type=int, default=16); p.add_argument("--outer-dilation", type=int, default=24)
     p.add_argument("--tile-size", type=int, default=2048); p.add_argument("--tile-overlap", type=int, default=256)
     p.add_argument("--min-area", type=int, default=32); p.add_argument("--smooth-radius", type=int, default=2)
-    p.add_argument("--geojson-simplify", type=float, default=0)
+    p.add_argument("--geojson-page", type=int, default=-1)
+    p.add_argument("--geojson-max-page-side", type=int, default=2048)
+    p.add_argument("--geojson-min-area", type=float, default=500)
+    p.add_argument("--geojson-smooth-buffer", type=float, default=10.0)
+    p.add_argument("--geojson-smooth-passes", type=int, default=3)
+    p.add_argument("--geojson-simplify", type=float, default=6.0)
+    p.add_argument("--geojson-group-prefix", default="group_")
+    p.add_argument("--geojson-polygon-backend",
+                   choices=("auto","opencv","skimage","rasterio"), default="auto")
+    p.add_argument("--geojson-dissolve-by-value", action=argparse.BooleanOptionalAction, default=True)
+    p.add_argument("--geojson-fill-holes", action=argparse.BooleanOptionalAction, default=True)
+    p.add_argument("--geojson-preserve-topology", action=argparse.BooleanOptionalAction, default=True)
     p.add_argument("--stream", action=argparse.BooleanOptionalAction, default=None,
                    help="stream blocks (automatic above 100 million pixels)")
     p.add_argument("--block-size", type=int, default=1024)
@@ -63,8 +74,6 @@ def main(argv=None):
     if stream:
         report = refine_streaming(a.image, a.mask, a.output, backends, cfg, a.block_size,
                                   wand, a.wand_downsample)
-        report["geojson_feature_count"] = write_geojson_streaming(
-            a.geojson, a.output, max(2048,a.block_size), a.geojson_simplify, a.min_area)
     else:
         image, labels = read_image(a.image), read_mask(a.mask)
         if wand:
@@ -80,14 +89,24 @@ def main(argv=None):
             stage_reports.append(stage_report)
         report = {"stages":stage_reports}
         report["annealed_wand"] = wand_report
-        write_ome_mask(a.output, refined); write_geojson(a.geojson, refined, a.geojson_simplify, a.min_area)
+        write_ome_mask(a.output, refined)
     if a.pyramid:
         pyramidize_mask(a.output, a.pyramid_compression, a.pyramid_workers)
+    report["geojson_feature_count"] = mask_to_geojson(
+        a.output, a.geojson, page=a.geojson_page,
+        max_page_side=a.geojson_max_page_side, min_area=a.geojson_min_area,
+        smooth_buffer=a.geojson_smooth_buffer, smooth_passes=a.geojson_smooth_passes,
+        simplify=a.geojson_simplify, group_prefix=a.geojson_group_prefix,
+        dissolve_by_value=a.geojson_dissolve_by_value,
+        fill_holes=a.geojson_fill_holes,
+        preserve_topology=a.geojson_preserve_topology,
+        polygon_backend=a.geojson_polygon_backend)
     report["pyramidal"] = bool(a.pyramid)
     report["watershed_resolution"] = a.watershed_resolution
     report["refinement_chain"] = ((["annealed_wand"] if wand else []) +
                                   [type(item).__name__ for item in backends])
     report["wand_downsample"] = a.wand_downsample if wand else None
+    report["geojson_converter"] = "CellPhenotyper/bin/mask_to_geojson.py@fd2dd40"
     report.update({"image":a.image,"mask":a.mask,"output":a.output,"geojson":a.geojson,"backend":a.backend})
     report_path = Path(a.report) if a.report else Path(a.output).with_suffix(".report.json")
     report_path.write_text(json.dumps(report, indent=2)); print(json.dumps(report, indent=2))
