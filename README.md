@@ -23,6 +23,11 @@ bora refine tissue.ome.tif coarse-mask.tif \
 pytest
 ```
 
+Pyramidal, tiled OME-TIFF output is enabled by default. Pyramid construction
+uses lossless `SIMPLE` downsampling for categorical labels and requires
+`bioformats2raw` and `raw2ometiff` on `PATH`. Use `--no-pyramid` only when a
+flat intermediate TIFF is explicitly required.
+
 For MedSAM, install `.[medsam]`, provide the official repository if necessary,
 and run with `--backend medsam --checkpoint /path/medsam_vit_b.pth`.
 

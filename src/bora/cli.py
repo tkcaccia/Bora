@@ -7,6 +7,7 @@ from .geojson import write_geojson
 from .io import read_image, read_mask, write_ome_mask
 from .refine import RefineConfig, refine_labels
 from .streaming import refine_streaming, write_geojson_streaming
+from .pyramid import pyramidize_mask
 
 
 def parser():
@@ -24,6 +25,9 @@ def parser():
     p.add_argument("--stream", action=argparse.BooleanOptionalAction, default=None,
                    help="stream blocks (automatic above 100 million pixels)")
     p.add_argument("--block-size", type=int, default=1024)
+    p.add_argument("--pyramid", action=argparse.BooleanOptionalAction, default=True)
+    p.add_argument("--pyramid-compression", choices=("LZW","UNCOMPRESSED"), default="LZW")
+    p.add_argument("--pyramid-workers", type=int, default=8)
     return root
 
 
@@ -42,6 +46,9 @@ def main(argv=None):
         image, labels = read_image(a.image), read_mask(a.mask)
         refined, report = refine_labels(image, labels, backend, cfg)
         write_ome_mask(a.output, refined); write_geojson(a.geojson, refined, a.geojson_simplify, a.min_area)
+    if a.pyramid:
+        pyramidize_mask(a.output, a.pyramid_compression, a.pyramid_workers)
+    report["pyramidal"] = bool(a.pyramid)
     report.update({"image":a.image,"mask":a.mask,"output":a.output,"geojson":a.geojson,"backend":a.backend})
     report_path = Path(a.report) if a.report else Path(a.output).with_suffix(".report.json")
     report_path.write_text(json.dumps(report, indent=2)); print(json.dumps(report, indent=2))
