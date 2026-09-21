@@ -5,6 +5,8 @@ from bora.geojson import labels_to_geojson
 from bora.io import label_dtype, read_image, read_mask, write_ome_mask
 from bora.refine import RefineConfig, refine_labels
 from bora.streaming import refine_streaming, write_geojson_streaming
+from bora.annealed_wand import annealed_wand_boundary_competition
+from bora.wand import run_annealed_wand
 
 
 def synthetic():
@@ -38,3 +40,28 @@ def test_streaming_roundtrip(tmp_path):
     report=refine_streaming(ip,mp,op,WatershedBackend(),RefineConfig(4,6,64,8,10,1),64)
     assert report["blocks"] == 6 and read_mask(op).shape == mask.shape
     assert write_geojson_streaming(gp,op,64,.5,10) > 0
+
+
+def test_annealed_wand_preserves_footprint_and_energy():
+    image, _ = synthetic()
+    labels = np.zeros(image.shape[:2], np.uint16)
+    labels[24:104,20:80] = 1
+    labels[24:104,80:140] = 2
+    result, metadata = annealed_wand_boundary_competition(
+        image, labels, labels > 0, boundary_radius=4, iterations=3)
+    assert np.array_equal(result > 0, labels > 0)
+    assert metadata["accepted_nonincreasing_energy"]
+    assert metadata["schema_version"] == "cellphenotyper.annealed_wand_boundary.v2"
+
+
+def test_cellphenotyper_wand_wrapper_preserves_full_resolution_footprint():
+    image, _ = synthetic()
+    labels = np.zeros(image.shape[:2], np.uint16)
+    labels[24:104, 20:80] = 1
+    labels[24:104, 80:140] = 2
+    result, metadata = run_annealed_wand(
+        image, labels, downsample=4, boundary_radius=16, iterations=2)
+    assert result.shape == labels.shape
+    assert np.array_equal(result > 0, labels > 0)
+    assert metadata["working_downsample"] == 4
+    assert metadata["maximum_boundary_displacement_px"] == 19

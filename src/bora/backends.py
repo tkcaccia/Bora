@@ -21,12 +21,12 @@ def rgb_float(image):
 @dataclass
 class WatershedBackend:
     compactness: float = 0.001
-    max_side: int = 256
+    max_side: int = 0
     def predict(self, image, core, outer, box):
         gray = rgb_float(image).mean(-1)
         original_shape = core.shape
         original_outer = outer
-        scale = min(1.0, self.max_side / max(original_shape))
+        scale = min(1.0, self.max_side / max(original_shape)) if self.max_side > 0 else 1.0
         if scale < 1:
             shape = tuple(max(1, round(v*scale)) for v in original_shape)
             gray = transform.resize(gray, shape, preserve_range=True, anti_aliasing=True)
@@ -75,9 +75,9 @@ class MedSAMBackend:
         return (score >= .5) & outer, score
 
 
-def make_backend(name, checkpoint=None, device="cuda", repo_dir=None):
+def make_backend(name, checkpoint=None, device="cuda", repo_dir=None, watershed_max_side=0):
     if name == "watershed":
-        return WatershedBackend()
+        return WatershedBackend(max_side=int(watershed_max_side))
     if name == "medsam":
         if not checkpoint:
             raise BackendError("--checkpoint is required for MedSAM")

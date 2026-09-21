@@ -8,6 +8,7 @@ from .io import read_image, read_mask, write_ome_mask
 from .refine import RefineConfig, refine_labels
 from .streaming import refine_streaming, write_geojson_streaming
 from .pyramid import pyramidize_mask
+from .wand import run_annealed_wand
 
 
 def parser():
@@ -28,27 +29,65 @@ def parser():
     p.add_argument("--pyramid", action=argparse.BooleanOptionalAction, default=True)
     p.add_argument("--pyramid-compression", choices=("LZW","UNCOMPRESSED"), default="LZW")
     p.add_argument("--pyramid-workers", type=int, default=8)
+    p.add_argument("--annealed-wand", action=argparse.BooleanOptionalAction, default=True)
+    p.add_argument("--wand-boundary-radius", type=int, default=64)
+    p.add_argument("--wand-downsample", type=int, default=4)
+    p.add_argument("--wand-iterations", type=int, default=16)
+    p.add_argument("--wand-initial-temperature", type=float, default=2.0)
+    p.add_argument("--wand-final-temperature", type=float, default=0.05)
+    p.add_argument("--wand-data-weight", type=float, default=1.0)
+    p.add_argument("--wand-smoothness-weight", type=float, default=0.3)
+    p.add_argument("--wand-edge-beta", type=float, default=0.7)
+    p.add_argument("--wand-connectivity", type=int, choices=(4,8), default=8)
+    p.add_argument("--watershed-resolution", choices=("native","accelerated"), default="native")
+    p.add_argument("--watershed-max-side", type=int, default=256,
+                   help="analysis size used only in accelerated watershed mode")
     return root
 
 
 def main(argv=None):
     a = parser().parse_args(argv)
     cfg = RefineConfig(a.core_erosion, a.outer_dilation, a.tile_size, a.tile_overlap, a.min_area, a.smooth_radius)
-    backend = make_backend(a.backend, a.checkpoint, a.device, a.repo_dir)
+    watershed_max_side = 0 if a.watershed_resolution == "native" else a.watershed_max_side
+    watershed = make_backend("watershed", watershed_max_side=watershed_max_side)
+    selected = make_backend(a.backend, a.checkpoint, a.device, a.repo_dir, watershed_max_side)
+    backends = [watershed] if a.backend == "watershed" else [watershed, selected]
+    wand = ({"boundary_radius":a.wand_boundary_radius,"iterations":a.wand_iterations,
+             "initial_temperature":a.wand_initial_temperature,"final_temperature":a.wand_final_temperature,
+             "data_weight":a.wand_data_weight,"smoothness_weight":a.wand_smoothness_weight,
+             "edge_beta":a.wand_edge_beta,"connectivity":a.wand_connectivity}
+            if a.annealed_wand else None)
     with tifffile.TiffFile(a.mask) as tif:
         shape = tif.series[0].shape
     stream = a.stream if a.stream is not None else int(np.prod(shape[-2:])) > 100_000_000
     if stream:
-        report = refine_streaming(a.image, a.mask, a.output, backend, cfg, a.block_size)
+        report = refine_streaming(a.image, a.mask, a.output, backends, cfg, a.block_size,
+                                  wand, a.wand_downsample)
         report["geojson_feature_count"] = write_geojson_streaming(
             a.geojson, a.output, max(2048,a.block_size), a.geojson_simplify, a.min_area)
     else:
         image, labels = read_image(a.image), read_mask(a.mask)
-        refined, report = refine_labels(image, labels, backend, cfg)
+        if wand:
+            labels, wand_report = run_annealed_wand(
+                image, labels, labels > 0, downsample=a.wand_downsample, **wand)
+        else:
+            wand_report = {"enabled":False,"applied":False,"changed_pixels":0}
+        refined = labels
+        stage_reports = []
+        for stage_backend in backends:
+            refined, stage_report = refine_labels(image, refined, stage_backend, cfg)
+            stage_report["backend"] = type(stage_backend).__name__
+            stage_reports.append(stage_report)
+        report = {"stages":stage_reports}
+        report["annealed_wand"] = wand_report
         write_ome_mask(a.output, refined); write_geojson(a.geojson, refined, a.geojson_simplify, a.min_area)
     if a.pyramid:
         pyramidize_mask(a.output, a.pyramid_compression, a.pyramid_workers)
     report["pyramidal"] = bool(a.pyramid)
+    report["watershed_resolution"] = a.watershed_resolution
+    report["refinement_chain"] = ((["annealed_wand"] if wand else []) +
+                                  [type(item).__name__ for item in backends])
+    report["wand_downsample"] = a.wand_downsample if wand else None
     report.update({"image":a.image,"mask":a.mask,"output":a.output,"geojson":a.geojson,"backend":a.backend})
     report_path = Path(a.report) if a.report else Path(a.output).with_suffix(".report.json")
     report_path.write_text(json.dumps(report, indent=2)); print(json.dumps(report, indent=2))

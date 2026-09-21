@@ -26,3 +26,4 @@ Thumbs.db
 # Large local data and generated results
 inputs/
 outputs/
+tmp/

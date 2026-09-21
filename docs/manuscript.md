@@ -14,14 +14,14 @@
 - Bora converts coarse, multi-label tissue masks into full-resolution pixel masks.
 - Refinement is confined to an editable boundary band while label cores are protected.
 - Overlapping border tiles enable processing independent of the number of input labels.
-- MedSAM and PathSegmentor backends are evaluated under one refinement protocol.
+- Annealed label competition and native-resolution watershed refine boundaries sequentially.
 - Raster OME-TIFF and vector GeoJSON outputs support interoperable downstream analysis.
 
 ## Abstract
 
-Tile-level classifiers are computationally attractive for gigapixel histopathology, but their block-like boundaries can distort morphometry, spatial relationships, and downstream region-based analysis. We present **Bora**, a boundary-constrained algorithm that converts a labelled tile-level mask into a full-resolution pixel-level tissue segmentation. Bora accepts a tissue image in OME-TIFF format and a spatially aligned TIFF label mask containing an arbitrary number of segment identifiers. For each non-background label, the method separates a protected interior from an editable border neighbourhood, detects candidate border regions using a [PRECISE NAME AND CITATION OF THE “WALD” METHOD], and refines only candidate border tiles with a promptable segmentation model. We investigate MedSAM and, where semantic text prompts are available, PathSegmentor as alternative refinement engines. Overlapping predictions are reconciled by confidence-aware label competition, followed by topology-conscious cleanup, preservation of protected cores, and exclusion of slide background. Outputs comprise a labelled refined OME-TIFF and a coordinate-matched GeoJSON representation.
+Tile-level classifiers are computationally attractive for gigapixel histopathology, but their block-like boundaries can distort morphometry, spatial relationships, and downstream region-based analysis. We present **Bora**, a boundary-constrained algorithm that converts a labelled tile-level mask into a full-resolution pixel-level tissue segmentation. Bora accepts a tissue image in pyramidal OME-TIFF format and a spatially aligned TIFF label mask containing an arbitrary number of segment identifiers. Its refinement chain first applies deterministic annealed-wand competition: a bounded multiclass Potts model operating only near interfaces between foreground labels. It then applies marker-controlled watershed on the native-resolution image gradient while preserving eroded label cores. MedSAM can provide a subsequent box-prompted refinement stage; PathSegmentor is reserved for experiments with an explicit label-to-text mapping. Overlapping predictions are reconciled by confidence, followed by topology-conscious cleanup and restoration of protected cores. Outputs comprise a tiled, losslessly compressed pyramidal OME-TIFF label map and a coordinate-matched GeoJSON representation.
 
-We will evaluate Bora on [NUMBER] slides from [COHORTS, ORGANS, STAINS AND INSTITUTIONS], using pixel-level expert annotations created under [ANNOTATION PROTOCOL]. Primary endpoints are boundary intersection-over-union and normalized surface Dice; secondary endpoints include Dice similarity coefficient, 95th-percentile Hausdorff distance, label retention, topology errors, runtime, and peak memory. Comparisons will include the unrefined tile mask, morphology-only refinement, [WALD]-only refinement, direct MedSAM/PathSegmentor inference, and ablations of core protection, overlap fusion, and border-band width. **No performance results are reported in this draft because the benchmark has not yet been run.** The study is designed to test whether boundary-local foundation-model inference improves contour fidelity without changing confident label interiors and whether this strategy scales to whole-slide images with many tissue classes.
+We will evaluate Bora on [NUMBER] slides from [COHORTS, ORGANS, STAINS AND INSTITUTIONS], using pixel-level expert annotations created under [ANNOTATION PROTOCOL]. Primary endpoints are boundary intersection-over-union and normalized surface Dice; secondary endpoints include Dice similarity coefficient, 95th-percentile Hausdorff distance, label retention, topology errors, runtime, and peak memory. Comparisons will include the unrefined tile mask, annealed-wand competition alone, native watershed alone, their sequential combination, and the combination followed by MedSAM or PathSegmentor. **No performance results are reported in this draft because the benchmark has not yet been run.**
 
 **Keywords:** computational pathology; semantic segmentation; boundary refinement; whole-slide imaging; MedSAM; PathSegmentor; OME-TIFF; GeoJSON
 
@@ -37,7 +37,7 @@ The intended contributions are:
 
 1. a scalable coarse-to-fine formulation that limits foundation-model inference to label boundaries;
 2. a protected-core and constrained-fusion mechanism designed to preserve semantic identity across an arbitrary number of input labels;
-3. interchangeable MedSAM and PathSegmentor refinement backends, with an explicit non-neural [WALD] boundary proposal stage; and
+3. a reproducible sequence of annealed-wand multiclass competition, native-resolution watershed, and optional promptable-model refinement; and
 4. an evaluation protocol emphasizing boundary fidelity, failure safety, computational cost, and whole-slide interoperability.
 
 ## 2. Materials and methods
@@ -62,12 +62,12 @@ Let the image domain be \(\Omega\), the input labels be \(L_0:\Omega\rightarrow\
 
 1. identify connected components and spatial extents of \(L_0=k\);
 2. build a protected core \(C_k\) and outer envelope \(E_k\);
-3. apply the [WALD] method to identify boundary pixels or high-priority boundary arcs \(W_k\);
-4. schedule overlapping image tiles intersecting the editable region \(B_k\);
-5. generate model prompts from the coarse label and candidate boundary geometry;
-6. infer a probability or score map with MedSAM or PathSegmentor;
+3. run annealed-wand competition along interfaces between foreground labels;
+4. apply marker-controlled watershed to the native-resolution image gradient;
+5. schedule overlapping image tiles intersecting the editable region \(B_k\);
+6. optionally infer a probability map with MedSAM or PathSegmentor;
 7. fuse overlapping and competing label predictions; and
-8. apply constrained cleanup, polygonization, and provenance recording.
+8. apply constrained cleanup, pyramid construction, polygonization, and provenance recording.
 
 Only \(B=\bigcup_k B_k\) is editable. Outside \(B\), \(L^*=L_0\); within protected cores, \(L^*(x)=k\) for \(x\in C_k\). These invariants should be enforced in code and tested automatically.
 
@@ -84,17 +84,27 @@ where \(Q_k\) is an optional trusted seed region, \(r_c\) is the core erosion ra
 
 For very large masks, distance transforms and morphology may be computed at a controlled downsampling factor before conservative upsampling. Full-resolution morphology is used for final constraint enforcement. White-background exclusion is estimated by [METHOD AND THRESHOLD], but never overrides protected cores or trusted seeds.
 
-### 2.5 [WALD] boundary proposal
+### 2.5 Annealed-wand boundary competition
 
-**This subsection cannot be finalized from the current CellPhenotyper source because no function, class, or documented parameter named “Wald” was identified in its MedSAM border-refinement scripts.** Before submission, replace this note with the exact algorithm name, source code location, mathematical definition, parameters, and primary citation. If “wald” was intended to mean *watershed*, rename it consistently and specify the gradient image, markers, connectivity, compactness, merge rule, and how watershed ridges restrict \(B_k\). If it denotes a Wald statistical test or WaldBoost detector, specify the null hypothesis/features, stopping rule, significance or decision threshold, and multiple-testing control. Until disambiguated, Bora treats the module as a plug-in returning a binary candidate map \(W_k\); the effective editable region is
+The term *wand* denotes constrained, frontier-driven label growth rather than a Wald statistical test. Bora implements CellPhenotyper schema `cellphenotyper.annealed_wand_boundary.v2`. The default wrapper reproduces the CellPhenotyper working grid: BOX-filter the image by a factor of four, stride-subsample the labels and tissue support, scale the 64-pixel native boundary radius to the working grid, run competition, and project labels back by nearest-neighbour indexing while preserving the full-resolution foreground footprint. Let \(q_k(x)\) denote the mean-field probability of label \(k\) at pixel \(x\). Six appearance channels are constructed from robustly standardized CIE Lab and optical-density RGB features. A per-label prototype is the median feature vector of its non-editable interior. The data term is the mean squared distance to this prototype, clipped at 100. Pairwise Potts weights between four- or eight-connected neighbours are
 
 \[
-\tilde B_k = B_k\cap\operatorname{dilate}(W_k,r_w),
+w_{xy}=d_{xy}\exp[-\beta\lVert f(x)-f(y)\rVert_2^2/C],
 \]
 
-with fallback to \(B_k\) when no valid proposal is produced.
+where \(d_{xy}=1\) for axial neighbours and \(1/\sqrt{2}\) for diagonal neighbours, \(C\) is the feature-channel count, and \(\beta\) controls edge sensitivity. At temperature \(T\), local probabilities follow
 
-### 2.6 Border tiling and prompts
+\[
+q_k(x)\propto\exp\{- [\lambda_d D_k(x)+\lambda_s\sum_yw_{xy}(1-q_k(y))]/T\}.
+\]
+
+Temperature decreases geometrically from 2.0 to 0.05 over 16 iterations. A label may compete at a pixel only when it is the current label or occurs in its local connected frontier. Updates are limited to a dilated internal boundary band; protected pixels, background, and the foreground footprint are invariant. The lowest hard-energy state observed during cooling is retained, guaranteeing that the reported discrete energy does not exceed its initial value. CellPhenotyper uses a 64-pixel full-resolution boundary radius and four-fold working downsampling; Bora exposes both quantities and records changed pixels and energy diagnostics.
+
+### 2.6 Native-resolution watershed
+
+The annealed result is passed to marker-controlled watershed at native resolution. For each label, an eroded protected core provides foreground markers and the complement of its dilated outer envelope provides background markers. The elevation surface is the Sobel magnitude of mean normalized RGB intensity. Watershed is solved within each haloed WSI block with compactness 0.001; only the editable band between core and envelope may change. Outputs from competing labels and overlapping tiles are selected by confidence, while core pixels receive immutable priority. An explicitly labelled accelerated mode may downsample the watershed analysis grid and restore it by nearest-neighbour projection, but all principal experiments use the native-resolution mode.
+
+### 2.7 Border tiling and prompts
 
 For each label, connected border regions are covered by square tiles of [TILE SIZE] pixels with [OVERLAP] pixels of overlap. Tiles containing no editable pixels are skipped. Border-aware scheduling is deterministic, and tile coordinates are saved for reproducibility and restart. Padding uses [REFLECT/CONSTANT] mode and predictions are cropped back to the valid image extent.
 
@@ -102,7 +112,7 @@ For MedSAM, each coarse connected component inside a tile is converted to a boun
 
 For PathSegmentor, the text prompt is obtained from a required label-to-name mapping, e.g. label 3 to “tumour epithelium.” Synonyms and prompt templates are fixed before evaluation. Labels lacking a valid semantic name fall back to MedSAM or are left unchanged; they must not be silently assigned a generic prompt. PathSegmentor's 2026 publication and model version should be frozen by commit/checkpoint hash [6].
 
-### 2.7 Fusion and label preservation
+### 2.8 Fusion and label preservation
 
 Each backend prediction is masked by \(E_k\) and scored within \(\tilde B_k\). Overlapping tiles for one label are blended using [WEIGHTED WINDOW/MAX/MEAN] fusion. At pixels proposed by multiple labels, the winner is
 
@@ -112,32 +122,34 @@ L^*(x)=\arg\max_k\{p_k(x)+\lambda\,q_k(x)\},
 
 where \(p_k\) is model confidence and \(q_k\) is a coarse-prior term based on distance to \(S_k\). Ties are resolved deterministically by [RULE]. Protected-core assignments override model predictions. A final pass removes components below [AREA], fills holes below [AREA], smooths contours at radius [RADIUS], and retains only components connected to their input support or trusted seeds. Cleanup must not merge two identifiers. Every removed, added, and conflicted pixel count is written to a QC summary.
 
-### 2.8 Raster and vector output
+### 2.9 Raster and vector output
 
-The primary raster output is `[sample]_refined.ome.tif`, containing the level-0 integer label map and [PYRAMID POLICY]. It preserves physical pixel size, dimension order, and relevant source metadata while recording software version and command line. The companion GeoJSON contains one Feature or MultiPolygon per label-connected component with properties `label`, `class_name` (when supplied), `area_px`, `area_um2` (when calibrated), `source_image`, and `bora_version`. Polygon rings use a declared pixel-edge convention. Geometries are repaired only with documented operations; simplification tolerance defaults to zero for the benchmark. Rasterizing the GeoJSON must reproduce the mask within a prespecified tolerance of [TOLERANCE] pixels.
+The primary raster output is `[sample]_refined.ome.tif`, containing the level-0 integer label map and eight successively downsampled levels for the current whole-slide configuration. Bora writes tiled pyramidal OME-TIFF with lossless LZW compression and `SIMPLE` nearest-neighbour downsampling so categorical label IDs are not interpolated. The companion GeoJSON is generated before pyramid conversion from the authoritative level-0 raster. Each feature records `label`, CellPhenotyper-compatible `value` and `classification`, and `area_px`. Coordinates follow level-0 pixel edges. Large rasters are polygonized in bounded tiles with a one-pixel halo; geometries are clipped to non-overlapping tile interiors, repaired when invalid, and optionally simplified while preserving topology. The copied CellPhenotyper vectorizer remains the reference for future provenance-linked vector output. Rasterizing the GeoJSON must reproduce the mask within a prespecified tolerance of [TOLERANCE] pixels.
 
-### 2.9 Comparators and ablations
+### 2.10 Comparators and ablations
 
 The prespecified comparison is:
 
 - input tile mask (no refinement);
 - morphology-only cleanup;
-- [WALD]-only boundary adjustment;
+- annealed-wand competition alone;
+- native-resolution watershed alone;
+- annealed-wand followed by native-resolution watershed;
 - direct full-region MedSAM;
 - Bora–MedSAM;
 - direct PathSegmentor, where a valid class prompt exists;
 - Bora–PathSegmentor; and
 - [ADDITIONAL SPECIALIST BASELINE].
 
-Ablations remove protected-core enforcement, the [WALD] proposal, overlap, confidence-aware fusion, background exclusion, and topology cleanup. Border-band width and tile overlap are varied on the validation set. The same preprocessing, hardware, and reference annotations are used for all eligible methods.
+Ablations remove annealed competition, native watershed, protected-core enforcement, overlap, confidence-aware fusion, background exclusion, and topology cleanup. Further ablations vary annealing temperature, Potts smoothness, edge sensitivity, connectivity, boundary radius, watershed compactness, border-band width, and tile overlap. The same preprocessing, hardware, and reference annotations are used for all eligible methods.
 
-### 2.10 Endpoints and statistical analysis
+### 2.11 Endpoints and statistical analysis
 
 The two primary metrics are Boundary IoU at a physical tolerance of [D] µm [1] and normalized surface Dice at [D] µm. Secondary metrics are per-class Dice, Jaccard index, average symmetric surface distance, HD95, false-positive and false-negative boundary displacement, component count error, label disappearance rate, changed-core pixel count, raster–vector round-trip error, wall time, tiles processed, peak RAM, and peak accelerator memory. Metrics are computed per slide and per class; absent-class handling is specified before analysis.
 
 Primary comparisons use paired [WILCOXON/SIGN-FLIP/PERMUTATION] tests at slide level with effect sizes and 95% bootstrap confidence intervals clustered by patient. Multiplicity across two primary endpoints and [N] methods is controlled using [HOLM PROCEDURE]. Scanner, institution, stain, tissue class, baseline boundary quality, segment size, and label count define prespecified subgroup analyses. Report distributions and individual-slide points, not only means. A failure is any crash, empty output for a present label, core-invariant violation, invalid geometry, or runtime above [LIMIT]; failures remain in the intention-to-process analysis using the prespecified worst-score rule.
 
-### 2.11 Implementation and reproducibility
+### 2.12 Implementation and reproducibility
 
 Bora is implemented in [PYTHON VERSION] using [LIBRARIES AND VERSIONS]. Experiments will freeze the Bora commit, CellPhenotyper source commit, model checkpoint checksum, and container digest. Random seeds and deterministic settings are [DETAILS]. Hardware is [CPU, RAM, GPU]. Source code will be released at `https://github.com/tkcaccia/Bora` under [LICENSE], and an archival DOI will be created at [ZENODO DOI]. Data and annotations will be shared at [REPOSITORY] subject to [ACCESS CONDITIONS]. A synthetic, redistributable example should be included for continuous integration.
 
@@ -161,7 +173,7 @@ Bora is implemented in [PYTHON VERSION] using [LIBRARIES AND VERSIONS]. Experime
 
 ### 3.5 Ablation and computational performance
 
-**Placeholder.** Quantify the incremental value of [WALD] proposals, core protection, overlap, and each backend. Report end-to-end runtime, throughput, peak memory, processed-area fraction, and scaling with image area, boundary length, and label count.
+**Placeholder.** Quantify the incremental value of annealed-wand competition, native watershed, core protection, overlap, and each promptable backend. Report end-to-end runtime, throughput, peak memory, processed-area fraction, and scaling with image area, boundary length, and label count.
 
 ## 4. Discussion
 
@@ -171,7 +183,7 @@ The proposed evaluation emphasizes boundary metrics because region overlap is re
 
 MedSAM offers spatially prompted, medical-domain segmentation [4], whereas PathSegmentor introduces pathology-specific text prompting [6]. Their comparison tests whether explicit class semantics improve boundary selection when neighbouring tissues have similar morphology. Any PathSegmentor advantage must be interpreted with awareness of possible overlap between its training sources and evaluation datasets; public-dataset provenance and leakage checks are required. Results should also separate labels with natural semantic names from arbitrary clusters, for which text prompting is not well defined.
 
-Anticipated limitations include dependence on the upstream mask, imperfect calibration metadata, ambiguity at mixed or transitional tissue interfaces, model sensitivity to stain and scanner variation, and potential fragmentation during raster-to-vector conversion. Boundary-only refinement cannot recover a wholly missed region far outside the outer envelope. It may also preserve an incorrect interior by design. These are safety properties for refinement, but limitations for correction. The [WALD] module must be precisely specified before the method can be reproduced, and all radii should be evaluated in physical rather than purely pixel units.
+Anticipated limitations include dependence on the upstream mask, imperfect calibration metadata, ambiguity at mixed or transitional tissue interfaces, model sensitivity to stain and scanner variation, and potential fragmentation during tiled raster-to-vector conversion. Boundary-only refinement cannot recover a wholly missed region far outside the outer envelope and may preserve an incorrect interior by design. Annealed-wand competition changes label identity only where foreground labels already meet and therefore cannot recover missing foreground. Native watershed is sensitive to weak gradients and stain artefacts. All radii should be evaluated in physical rather than purely pixel units.
 
 If validated, Bora could provide a practical bridge between inexpensive tile classification and geometry-aware downstream analysis. Clinical or biological utility, however, requires a separate task-specific study; improved image metrics alone do not demonstrate diagnostic benefit.
 
@@ -215,7 +227,7 @@ Code is planned for release at <https://github.com/tkcaccia/Bora>. Before submis
 
 ## Proposed figures and tables
 
-1. **Figure 1:** Bora workflow: coarse labels → protected cores/[WALD] candidate borders → overlapping prompts → constrained fusion → OME-TIFF and GeoJSON.
+1. **Figure 1:** Bora workflow: coarse labels → annealed-wand competition → native watershed/protected cores → optional prompts → constrained fusion → pyramidal OME-TIFF and GeoJSON.
 2. **Figure 2:** Prespecified representative internal and external cases with image, coarse mask, reference, comparator outputs, and signed boundary-error maps.
 3. **Figure 3:** Paired primary endpoint distributions and per-class effects with patient-clustered confidence intervals.
 4. **Figure 4:** Accuracy–efficiency trade-off and scaling with boundary length and label count.
@@ -238,7 +250,7 @@ Code is planned for release at <https://github.com/tkcaccia/Bora>. Before submis
 
 ## Pre-submission completion checklist
 
-- Disambiguate and fully document the “WALD” method.
+- Freeze and archive the annealed-wand v2 and native-watershed implementation commit.
 - Freeze the research question, endpoints, tolerance distances, and statistical plan before testing.
 - Populate all bracketed fields; remove protocol language once results exist.
 - Add a complete dataset/provenance table and a leakage assessment.

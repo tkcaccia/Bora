@@ -19,7 +19,8 @@ def labels_to_geojson(labels, simplify=0.0, min_area=0.0):
                 if not poly.is_valid: poly = poly.buffer(0)
                 if simplify: poly = poly.simplify(simplify, preserve_topology=True)
                 if not poly.is_empty and poly.area >= min_area:
-                    features.append({"type":"Feature", "properties":{"label":lid,"area_px":area}, "geometry":mapping(poly)})
+                    features.append({"type":"Feature", "properties":{"label":lid,"value":lid,
+                        "classification":f"Cluster {lid}","area_px":area}, "geometry":mapping(poly)})
     return {"type":"FeatureCollection", "features":features}
 
 

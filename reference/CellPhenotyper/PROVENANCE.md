@@ -11,6 +11,12 @@ Included files:
 - `bin/medsam_border_refine.py`
 - `bin/refine_grown_tissue_medsam.py`
 - `bin/mask_to_geojson.py`
+- `bin/annealed_wand_boundary.py`
+
+The annealed-wand and updated GeoJSON files were copied from the later run
+snapshot `uni2_resolution_comparison_20260909/project`, where the boundary
+competition identifies itself as schema
+`cellphenotyper.annealed_wand_boundary.v2`.
 
 ## License status
 
