@@ -15,11 +15,31 @@ The design is adapted from the `medsam-refine` step in
 [`tkcaccia/CellPhenotyper`](https://github.com/tkcaccia/CellPhenotyper). The
 exact annealed-wand v2 and post-refinement GeoJSON source snapshots are
 retained under `reference/CellPhenotyper/`, with provenance documented
-alongside them. Bora executes the copied converter after pyramid creation with
-CellPhenotyper's defaults: automatic <=2048-pixel pyramid level, dissolve by
-label, minimum area 500, three 10-pixel smoothing passes, 6-pixel simplify,
-hole removal, and topology preservation. All settings are exposed as
-`--geojson-*` options.
+alongside them. CellPhenotyper's converter remains available with
+`--geojson-backend cellphenotyper`. The default `multicpu` backend uses four CPU workers,
+coverage-aware simplification (so shared label boundaries remain coincident),
+and one dissolved feature per label. The `accurate`, `balanced`, and `fast`
+profiles expose measured fidelity/complexity tradeoffs; `accurate` is the
+default and polygonizes native resolution in four memory-bounded strips.
+`balanced` retains native polygonization with stronger simplification, while
+`fast` uses pyramid level 3. CUDA is not required (and was unavailable on the
+validation host). All settings are exposed as `--geojson-*` options.
+
+### Validated GeoJSON profiles
+
+The profiles were measured by rasterizing the result back across all
+1,733,311,788 level-0 pixels of the supplied Bora mask. Each emits three
+top-level features—one per observed foreground label.
+
+| Profile | Pixel accuracy | Macro label IoU | Polygon parts | Size | Conversion |
+|---|---:|---:|---:|---:|---:|
+| accurate (default) | 99.909% | 0.9981 | 2,267 | 39.9 MB | 54.0 s |
+| balanced | 99.807% | 0.9960 | 2,267 | 17.8 MB | 49.0 s |
+| fast | 98.617%* | 0.9713* | 1,927 | 10.5 MB | 5.0 s |
+
+`*` The fast profile was evaluated at pyramid level 2; accurate and balanced
+were exhaustively evaluated at level 0. CUDA was unavailable on the validation
+host, so the implemented optimized backend is CPU-only.
 
 ## Install and run
 

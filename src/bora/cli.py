@@ -34,6 +34,9 @@ def parser():
     p.add_argument("--geojson-dissolve-by-value", action=argparse.BooleanOptionalAction, default=True)
     p.add_argument("--geojson-fill-holes", action=argparse.BooleanOptionalAction, default=True)
     p.add_argument("--geojson-preserve-topology", action=argparse.BooleanOptionalAction, default=True)
+    p.add_argument("--geojson-backend", choices=("multicpu","cellphenotyper"), default="multicpu")
+    p.add_argument("--geojson-profile", choices=("accurate","balanced","fast","custom"), default="accurate")
+    p.add_argument("--geojson-workers", type=int, default=4)
     p.add_argument("--stream", action=argparse.BooleanOptionalAction, default=None,
                    help="stream blocks (automatic above 100 million pixels)")
     p.add_argument("--block-size", type=int, default=1024)
@@ -92,21 +95,39 @@ def main(argv=None):
         write_ome_mask(a.output, refined)
     if a.pyramid:
         pyramidize_mask(a.output, a.pyramid_compression, a.pyramid_workers)
-    report["geojson_feature_count"] = mask_to_geojson(
-        a.output, a.geojson, page=a.geojson_page,
-        max_page_side=a.geojson_max_page_side, min_area=a.geojson_min_area,
-        smooth_buffer=a.geojson_smooth_buffer, smooth_passes=a.geojson_smooth_passes,
-        simplify=a.geojson_simplify, group_prefix=a.geojson_group_prefix,
-        dissolve_by_value=a.geojson_dissolve_by_value,
-        fill_holes=a.geojson_fill_holes,
-        preserve_topology=a.geojson_preserve_topology,
-        polygon_backend=a.geojson_polygon_backend)
+    if a.geojson_backend == "multicpu":
+        from .multicpu_geojson import convert
+        profiles = {
+            "accurate": {"page":0, "min_area":500.0, "simplify":2.0},
+            "balanced": {"page":0, "min_area":500.0, "simplify":4.0},
+            "fast": {"page":3, "min_area":10000.0, "simplify":16.0},
+            "custom": {"page":a.geojson_page, "min_area":a.geojson_min_area,
+                       "simplify":a.geojson_simplify},
+        }
+        settings = profiles[a.geojson_profile]
+        geojson_report = convert(
+            a.output, a.geojson, max_page_side=a.geojson_max_page_side,
+            workers=a.geojson_workers, group_prefix=a.geojson_group_prefix,
+            **settings)
+        report["geojson_feature_count"] = geojson_report["features"]
+        report["geojson_conversion"] = geojson_report
+    else:
+        report["geojson_feature_count"] = mask_to_geojson(
+            a.output, a.geojson, page=a.geojson_page,
+            max_page_side=a.geojson_max_page_side, min_area=a.geojson_min_area,
+            smooth_buffer=a.geojson_smooth_buffer, smooth_passes=a.geojson_smooth_passes,
+            simplify=a.geojson_simplify, group_prefix=a.geojson_group_prefix,
+            dissolve_by_value=a.geojson_dissolve_by_value,
+            fill_holes=a.geojson_fill_holes,
+            preserve_topology=a.geojson_preserve_topology,
+            polygon_backend=a.geojson_polygon_backend)
     report["pyramidal"] = bool(a.pyramid)
     report["watershed_resolution"] = a.watershed_resolution
     report["refinement_chain"] = ((["annealed_wand"] if wand else []) +
                                   [type(item).__name__ for item in backends])
     report["wand_downsample"] = a.wand_downsample if wand else None
-    report["geojson_converter"] = "CellPhenotyper/bin/mask_to_geojson.py@fd2dd40"
+    report["geojson_converter"] = a.geojson_backend
+    report["geojson_profile"] = a.geojson_profile
     report.update({"image":a.image,"mask":a.mask,"output":a.output,"geojson":a.geojson,"backend":a.backend})
     report_path = Path(a.report) if a.report else Path(a.output).with_suffix(".report.json")
     report_path.write_text(json.dumps(report, indent=2)); print(json.dumps(report, indent=2))

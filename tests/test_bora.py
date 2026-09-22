@@ -8,6 +8,7 @@ from bora.streaming import refine_streaming, write_geojson_streaming
 from bora.annealed_wand import annealed_wand_boundary_competition
 from bora.wand import run_annealed_wand
 from bora.cellphenotyper import mask_to_geojson
+from bora.multicpu_geojson import convert
 
 
 def synthetic():
@@ -77,4 +78,16 @@ def test_cellphenotyper_geojson_converter(tmp_path):
         smooth_passes=1, simplify=0, fill_holes=False)
     geo = __import__("json").loads(gp.read_text())
     assert count == 2
+    assert {feature["properties"]["value"] for feature in geo["features"]} == {1, 70000}
+
+
+def test_multicpu_geojson_converter(tmp_path):
+    _, mask = synthetic()
+    mp, gp = tmp_path / "mask.tif", tmp_path / "mask.geojson"
+    tifffile.imwrite(mp, mask)
+    report = convert(mp, gp, page=0, min_area=10, simplify=2, workers=2)
+    geo = __import__("json").loads(gp.read_text())
+    assert report["features"] == 2
+    assert report["workers_requested"] == 2
+    assert report["union_workers"] == 2
     assert {feature["properties"]["value"] for feature in geo["features"]} == {1, 70000}

@@ -1,0 +1,40 @@
+{
+  "mask": "outputs/bora_annealed_native_refined.ome.tif",
+  "shape_yx": [39886, 43458],
+  "level_0_pixels": 1733311788,
+  "cuda_available": false,
+  "backend": "multicpu",
+  "workers_requested": 4,
+  "profiles": {
+    "accurate": {
+      "page": 0, "min_area": 500, "simplify": 2,
+      "features": 3, "polygon_parts": 2267, "holes": 3165,
+      "vertices": 2029697, "bytes": 39952341,
+      "conversion_seconds": 54.0138, "peak_rss_kb": 4175428,
+      "evaluation_level": 0, "pixel_accuracy": 0.999090867022466,
+      "foreground_iou": 0.9998841911825689,
+      "macro_label_iou": 0.998078982474027,
+      "per_label_iou": {"1": 0.997804250328588, "2": 0.9989767954933021, "3": 0.9974559016001912}
+    },
+    "balanced": {
+      "page": 0, "min_area": 500, "simplify": 4,
+      "features": 3, "polygon_parts": 2267, "holes": 3165,
+      "vertices": 901588, "bytes": 17754144,
+      "conversion_seconds": 49.0185, "peak_rss_kb": 4197316,
+      "evaluation_level": 0, "pixel_accuracy": 0.9980745697053067,
+      "foreground_iou": 0.9998252901516809,
+      "macro_label_iou": 0.9960132183963978,
+      "per_label_iou": {"1": 0.9952143898817719, "2": 0.9982578852612702, "3": 0.9945673800461508}
+    },
+    "fast": {
+      "page": 3, "min_area": 10000, "simplify": 16,
+      "features": 3, "polygon_parts": 1927, "holes": 2552,
+      "vertices": 256035, "bytes": 10491478,
+      "conversion_seconds": 4.9507, "peak_rss_kb": 334416,
+      "evaluation_level": 2, "pixel_accuracy": 0.9861711352465596,
+      "foreground_iou": 0.9963895500019924,
+      "macro_label_iou": 0.9712900118247617,
+      "per_label_iou": {"1": 0.9686231435100272, "2": 0.9805595468772622, "3": 0.9646873450869954}
+    }
+  }
+}
