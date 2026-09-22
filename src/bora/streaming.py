@@ -22,7 +22,7 @@ def refine_streaming(image_path, mask_path, output_path, backends, config, block
     import pyvips
     if not isinstance(backends, (list, tuple)):
         backends = [backends]
-    source = tifffile.memmap(mask_path)
+    source = tifffile.memmap(mask_path, mode="r")
     if source.ndim != 2:
         raise ValueError(f"Streaming mask must be a flat 2-D TIFF; got {source.shape}")
     # Boundary-only access is sparse and non-monotonic because halo windows
