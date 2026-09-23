@@ -1,0 +1,27 @@
+diff --git a/modeling/vision/encoder/ops/src/cuda/ms_deform_attn_cuda.cu b/modeling/vision/encoder/ops/src/cuda/ms_deform_attn_cuda.cu
+index 0c465da..4f82c9a 100755
+--- a/modeling/vision/encoder/ops/src/cuda/ms_deform_attn_cuda.cu
++++ b/modeling/vision/encoder/ops/src/cuda/ms_deform_attn_cuda.cu
+@@ -69 +69 @@ at::Tensor ms_deform_attn_cuda_forward(
+-        AT_DISPATCH_FLOATING_TYPES(value.type(), "ms_deform_attn_forward_cuda", ([&] {
++        AT_DISPATCH_FLOATING_TYPES(value.scalar_type(), "ms_deform_attn_forward_cuda", ([&] {
+@@ -139 +139 @@ std::vector<at::Tensor> ms_deform_attn_cuda_backward(
+-        AT_DISPATCH_FLOATING_TYPES(value.type(), "ms_deform_attn_backward_cuda", ([&] {
++        AT_DISPATCH_FLOATING_TYPES(value.scalar_type(), "ms_deform_attn_backward_cuda", ([&] {
+diff --git a/utilities/distributed.py b/utilities/distributed.py
+index b002591..20fdb12 100755
+--- a/utilities/distributed.py
++++ b/utilities/distributed.py
+@@ -7 +7,4 @@
+-from mpi4py import MPI
++try:
++    from mpi4py import MPI
++except (ImportError, RuntimeError):
++    MPI = None
+@@ -11,2 +14,6 @@
+ def apply_distributed(opt):
++    if opt.get('world_size', 1) == 1:
++        return
++    if MPI is None:
++        raise RuntimeError('MPI is required only for multi-process PathSegmentor execution')
+     if opt['rank'] == 0:

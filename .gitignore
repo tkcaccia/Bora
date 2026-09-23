@@ -13,6 +13,7 @@ coverage/
 __pycache__/
 *.py[cod]
 .venv/
+.venv-pathsegmentor/
 .conda/
 .pytest_cache/
 *.egg-info/
@@ -27,3 +28,4 @@ Thumbs.db
 inputs/
 outputs/
 tmp/
+third_party/PathSegmentor/

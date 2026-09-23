@@ -17,8 +17,10 @@ def parser():
     p = sub.add_parser("refine", help="refine a coarse label mask")
     p.add_argument("image"); p.add_argument("mask")
     p.add_argument("--output", required=True); p.add_argument("--geojson", required=True); p.add_argument("--report")
-    p.add_argument("--backend", choices=("watershed","medsam","pathsegmentor"), default="watershed")
+    p.add_argument("--backend", choices=("watershed","medsam","pathsegmentor","pathsegmentator"), default="watershed")
     p.add_argument("--checkpoint"); p.add_argument("--repo-dir"); p.add_argument("--device", default="cuda")
+    p.add_argument("--label-map", help="JSON object mapping label IDs to PathSegmentor text prompts")
+    p.add_argument("--pathsegmentor-config", help="override the official inference YAML")
     p.add_argument("--core-erosion", type=int, default=16); p.add_argument("--outer-dilation", type=int, default=24)
     p.add_argument("--tile-size", type=int, default=2048); p.add_argument("--tile-overlap", type=int, default=256)
     p.add_argument("--min-area", type=int, default=32); p.add_argument("--smooth-radius", type=int, default=2)
@@ -34,7 +36,9 @@ def parser():
     p.add_argument("--geojson-dissolve-by-value", action=argparse.BooleanOptionalAction, default=True)
     p.add_argument("--geojson-fill-holes", action=argparse.BooleanOptionalAction, default=True)
     p.add_argument("--geojson-preserve-topology", action=argparse.BooleanOptionalAction, default=True)
-    p.add_argument("--geojson-backend", choices=("multicpu","cellphenotyper"), default="multicpu")
+    p.add_argument("--geojson-backend", choices=("multicpu","cuda","cellphenotyper"), default="multicpu")
+    p.add_argument("--geojson-cuda-device", type=int, default=0)
+    p.add_argument("--geojson-cuda-fallback", action=argparse.BooleanOptionalAction, default=True)
     p.add_argument("--geojson-profile", choices=("accurate","balanced","fast","custom"), default="accurate")
     p.add_argument("--geojson-workers", type=int, default=4)
     p.add_argument("--stream", action=argparse.BooleanOptionalAction, default=None,
@@ -64,7 +68,8 @@ def main(argv=None):
     cfg = RefineConfig(a.core_erosion, a.outer_dilation, a.tile_size, a.tile_overlap, a.min_area, a.smooth_radius)
     watershed_max_side = 0 if a.watershed_resolution == "native" else a.watershed_max_side
     watershed = make_backend("watershed", watershed_max_side=watershed_max_side)
-    selected = make_backend(a.backend, a.checkpoint, a.device, a.repo_dir, watershed_max_side)
+    selected = make_backend(a.backend, a.checkpoint, a.device, a.repo_dir, watershed_max_side,
+                            a.label_map, a.pathsegmentor_config)
     backends = [watershed] if a.backend == "watershed" else [watershed, selected]
     wand = ({"boundary_radius":a.wand_boundary_radius,"iterations":a.wand_iterations,
              "initial_temperature":a.wand_initial_temperature,"final_temperature":a.wand_final_temperature,
@@ -95,8 +100,11 @@ def main(argv=None):
         write_ome_mask(a.output, refined)
     if a.pyramid:
         pyramidize_mask(a.output, a.pyramid_compression, a.pyramid_workers)
-    if a.geojson_backend == "multicpu":
-        from .multicpu_geojson import convert
+    if a.geojson_backend in ("multicpu", "cuda"):
+        if a.geojson_backend == "cuda":
+            from .cuda_geojson import convert
+        else:
+            from .multicpu_geojson import convert
         profiles = {
             "accurate": {"page":0, "min_area":500.0, "simplify":2.0},
             "balanced": {"page":0, "min_area":500.0, "simplify":4.0},
@@ -105,10 +113,15 @@ def main(argv=None):
                        "simplify":a.geojson_simplify},
         }
         settings = profiles[a.geojson_profile]
-        geojson_report = convert(
-            a.output, a.geojson, max_page_side=a.geojson_max_page_side,
+        converter_options = dict(
+            mask_path=a.output, output_path=a.geojson,
+            max_page_side=a.geojson_max_page_side,
             workers=a.geojson_workers, group_prefix=a.geojson_group_prefix,
             **settings)
+        if a.geojson_backend == "cuda":
+            converter_options.update(device=a.geojson_cuda_device,
+                                     fallback=a.geojson_cuda_fallback)
+        geojson_report = convert(**converter_options)
         report["geojson_feature_count"] = geojson_report["features"]
         report["geojson_conversion"] = geojson_report
     else:

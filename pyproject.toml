@@ -12,6 +12,7 @@ dependencies = ["numpy>=1.24", "scipy>=1.10", "scikit-image>=0.21", "tifffile>=2
 
 [project.optional-dependencies]
 medsam = ["torch>=2.0", "segment-anything>=1.0"]
+cuda-geojson = ["cupy-cuda13x>=14.0"]
 test = ["pytest>=7.4"]
 wsi = ["pyvips>=2.2"]
 

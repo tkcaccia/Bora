@@ -1,6 +1,6 @@
 import numpy as np
 import tifffile
-from bora.backends import WatershedBackend
+from bora.backends import BackendError, PathSegmentorBackend, WatershedBackend, load_label_prompts
 from bora.geojson import labels_to_geojson
 from bora.io import label_dtype, read_image, read_mask, write_ome_mask
 from bora.refine import RefineConfig, refine_labels
@@ -9,6 +9,7 @@ from bora.annealed_wand import annealed_wand_boundary_competition
 from bora.wand import run_annealed_wand
 from bora.cellphenotyper import mask_to_geojson
 from bora.multicpu_geojson import convert
+from bora.cuda_geojson import CudaGeoJSONError
 
 
 def synthetic():
@@ -27,6 +28,39 @@ def test_refine_and_geojson():
     assert report["input_label_count"] == 2 and label_dtype(int(result.max())) == np.dtype("uint32")
     geo = labels_to_geojson(result, .5)
     assert {f["properties"]["label"] for f in geo["features"]} == {1,70000}
+
+
+def test_pathsegmentor_backend_uses_per_label_prompts_and_constraints():
+    image, mask = synthetic()
+    prompts_seen = []
+    def fake_inference(tile, prompt):
+        prompts_seen.append(prompt)
+        return np.ones(tile.shape[:2], np.float32) * 0.9
+    backend = PathSegmentorBackend(
+        label_map={"1": "tissue-level tumor in breast pathology",
+                   "70000": "tissue-level stroma in breast pathology"},
+        inference_fn=fake_inference)
+    result, report = refine_labels(image, mask, backend, RefineConfig(8, 12, 96, 16, 10, 0))
+    assert set(prompts_seen) == {
+        "tissue-level tumor in breast pathology",
+        "tissue-level stroma in breast pathology"}
+    assert set(np.unique(result)) == {0, 1, 70000}
+    assert report["processed_tiles"] > 0
+    for label in (1, 70000):
+        core = __import__("scipy").ndimage.distance_transform_edt(mask == label) > 8
+        assert np.all(result[core] == label)
+
+
+def test_pathsegmentor_label_map_validation(tmp_path):
+    path = tmp_path / "labels.json"
+    path.write_text('{"3": "nuclei-level lymphocyte in colon pathology"}')
+    assert load_label_prompts(path) == {3: "nuclei-level lymphocyte in colon pathology"}
+    try:
+        load_label_prompts({"0": "background"})
+    except BackendError:
+        pass
+    else:
+        raise AssertionError("label zero must be rejected")
 
 
 def test_ome_roundtrip(tmp_path):
@@ -90,4 +124,20 @@ def test_multicpu_geojson_converter(tmp_path):
     assert report["features"] == 2
     assert report["workers_requested"] == 2
     assert report["union_workers"] == 2
+    assert {feature["properties"]["value"] for feature in geo["features"]} == {1, 70000}
+
+
+def test_cuda_geojson_cpu_fallback(tmp_path, monkeypatch):
+    from bora import cuda_geojson
+    _, mask = synthetic()
+    mp, gp = tmp_path / "mask.tif", tmp_path / "mask.geojson"
+    tifffile.imwrite(mp, mask)
+    def unavailable(*args, **kwargs):
+        raise CudaGeoJSONError("test CUDA unavailable")
+    monkeypatch.setattr(cuda_geojson, "_cuda_preflight", unavailable)
+    report = cuda_geojson.convert(
+        mp, gp, page=0, min_area=10, simplify=2, workers=1, fallback=True)
+    geo = __import__("json").loads(gp.read_text())
+    assert report["accelerator"] == "cpu-fallback"
+    assert "test CUDA unavailable" in report["cuda_error"]
     assert {feature["properties"]["value"] for feature in geo["features"]} == {1, 70000}

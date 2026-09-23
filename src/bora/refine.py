@@ -39,6 +39,8 @@ def refine_labels(image, labels, backend, config=RefineConfig()):
     processed = 0
     for raw_id in ids:
         lid, coarse = int(raw_id), labels == raw_id
+        if hasattr(backend, "set_label"):
+            backend.set_label(lid)
         if int(coarse.sum()) < config.min_area:
             output[coarse], score[coarse] = lid, 2
             continue
