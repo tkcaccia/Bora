@@ -14,9 +14,9 @@ been made. Counts measured from the acquired files are in
 | PAIP 2019 | 50 annotated HCC training WSIs; separate whole-tumor and viable-tumor masks | Large-scale liver tumor boundaries | Pending provider-approved delivery |
 | GlaS | 165 colorectal images with gland instance masks | Supplementary gland-boundary assessment | Full pinned mirror |
 | CRAG | 213 colorectal images with gland instance annotations in the source release | Supplementary irregular gland structures | Canonical release pending; candidate mirror staged separately |
-| CAMELYON16 | 400 lymph-node WSIs; tumor contours and binary masks for annotated positive training slides | Optional WSI tumor-margin extension | Catalogued; not downloaded |
-| SICAPv2 | Prostate histology WSIs with global Gleason scores and patch-level grades | Optional grade-interface research after annotation review | Catalogued; not downloaded |
-| SegPath | Eight cell-type segmentation tasks with immunofluorescence-derived masks | Optional cell-scale extension | Catalogued; not downloaded |
+| CAMELYON16 | 400 lymph-node WSIs; tumor contours and binary masks for annotated positive training slides | Optional WSI tumor-margin extension | Three original positive training WSIs; see REQUESTED_DATASETS.md |
+| SICAPv2 | Prostate histology WSIs with global Gleason scores and patch-level grades | Optional grade-interface research after annotation review | Complete original publisher patch archive; raw JPEG mask encoding unresolved |
+| SegPath | Eight cell-type segmentation tasks with immunofluorescence-derived masks | Optional cell-scale extension | Bounded native subset of all eight targets; see REQUESTED_DATASETS.md |
 
 The primary question is refinement of existing tissue labels. Gland instance
 separation, cell-type delineation and coarse patch grading address different
@@ -140,11 +140,13 @@ the candidate mirror. Gland instance IDs do not encode tumor/stroma classes.
 and 130 test WSIs. Positive training slides have tumor contour XML and binary
 masks. The original challenge emphasizes metastasis detection; a segmentation
 boundary study would need its own specified sampling, handling of negatives
-and metrics. Full WSI downloads are intentionally not part of this acquisition.
+and metrics. Three complete positive training WSIs are now acquired as an explicit convenience subset;
+see [REQUESTED_DATASETS.md](REQUESTED_DATASETS.md).
 
 [SICAPv2, version 1](https://doi.org/10.17632/9xxm58dvs3.1) is described by its
 provider as WSI global Gleason scores plus patch-level grades and is CC BY 4.0.
-Audit its actual annotation granularity before calling it an expert
+The original publisher archive is now acquired. Its raw JPEG mask encoding
+and boundary fidelity remain unresolved. Audit its actual annotation granularity before calling it an expert
 pixel-boundary benchmark. Coarse grade labels cannot automatically serve as
 high-resolution boundary ground truth.
 
@@ -153,7 +155,8 @@ The [author's data site](https://dakomura.github.io/SegPath/) describes paired
 984×984 H&E images and binary masks derived using immunofluorescence. These
 are not interchangeable with manually drawn tissue-region boundaries. The
 data site states CC BY-NC-SA 4.0. Its size and different annotation mechanism
-make it an optional later extension.
+make it a supplementary task. A bounded native subset is now acquired for
+each of its eight targets; see [REQUESTED_DATASETS.md](REQUESTED_DATASETS.md).
 
 ## Information to retain for the manuscript
 

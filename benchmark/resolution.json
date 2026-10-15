@@ -104,6 +104,96 @@
       "scanner": null,
       "note": "Author-released 1024 x 1024 processed training patches. Exact resampling, original physical spacing, stain variant and annotator aggregation are undocumented in this subset. Attached paper Table A1 reports original CoCaHis as 40x; that cannot calibrate this derivative.",
       "annotation": "302 supplied binary image/mask pairs derived from CoCaHis. Original annotations concern metastatic colorectal cancer in liver; this release foreground mapping has not been independently reconciled. Treat as a staged exploratory subset."
+    },
+    "sicapv2": {
+      "mpp_um": null,
+      "status": "provider_magnification_only",
+      "source": "https://data.mendeley.com/datasets/9xxm58dvs3/1",
+      "equivalent_magnification": 10,
+      "scanner": null,
+      "note": "Original archive readme states distributed 512-pixel patches at 10x with 50% overlap. Source publication/secondary catalogs sometimes report 20x; pixel spacing is not embedded in JPEGs and remains unverified. Filename WSI coordinates must not be treated as patch-pixel coordinates without calibration.",
+      "annotation": "Original JPEG grayscale annotation masks and patient/grade tables supplied by provider. Conceptual codes are non-cancerous, Gleason 3/4/5, but decoded JPEG intensities are not categorical 0-3. Overlay disabled until encoding and boundary fidelity are reconciled; image-level grade is separate."
+    },
+    "camelyon16-subset": {
+      "mpp_um": null,
+      "status": "per_image_embedded_WSI_axis_spacing",
+      "source": "https://registry.opendata.aws/camelyon/",
+      "equivalent_magnification": null,
+      "scanner": "Philips (as reported by OpenSlide for these selected slides)",
+      "note": "X/Y spacing is read separately from each original WSI. Examples are native level-0 4096 x 4096 windows with recorded WSI coordinates, without resizing. Original slide and mask dimensions agree; original TIFFs and XML retained.",
+      "annotation": "Tumor code 2 is rasterized from expert tumor polygons. Code 1 is automatically detected normal tissue, not expert stroma. Code 0 is background/unassigned and ignored. Supplied XML exclusion holes are retained through the original masks."
+    },
+    "segpath-panck": {
+      "mpp_um": 0.220818,
+      "status": "original_publication_reported",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9982301/",
+      "equivalent_magnification": 40,
+      "scanner": "Hamamatsu NanoZoomer S60",
+      "note": "Original paper reports 40x at 0.220818 micrometres/pixel. Distributed patches are native 984 x 984 pixels after removal of 20-pixel borders from 1024px tiles; no acquisition resizing. PNGs retain original opaque RGBA channels.",
+      "annotation": "Separate binary epithelium target derived from aligned immunofluorescence and provider postprocessing; not independent manual tissue tracing. Source mask values 0/1 are preserved. Convenience subset only."
+    },
+    "segpath-asma": {
+      "mpp_um": 0.220818,
+      "status": "original_publication_reported",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9982301/",
+      "equivalent_magnification": 40,
+      "scanner": "Hamamatsu NanoZoomer S60",
+      "note": "Original paper reports 40x at 0.220818 micrometres/pixel. Distributed patches are native 984 x 984 pixels after removal of 20-pixel borders from 1024px tiles; no acquisition resizing. PNGs retain original opaque RGBA channels.",
+      "annotation": "Separate binary smooth muscle / myofibroblasts target derived from aligned immunofluorescence and provider postprocessing; not independent manual tissue tracing. Source mask values 0/1 are preserved. Convenience subset only."
+    },
+    "segpath-cd235a": {
+      "mpp_um": 0.220818,
+      "status": "original_publication_reported",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9982301/",
+      "equivalent_magnification": 40,
+      "scanner": "Hamamatsu NanoZoomer S60",
+      "note": "Original paper reports 40x at 0.220818 micrometres/pixel. Distributed patches are native 984 x 984 pixels after removal of 20-pixel borders from 1024px tiles; no acquisition resizing. PNGs retain original opaque RGBA channels.",
+      "annotation": "Separate binary red blood cells target derived from aligned immunofluorescence and provider postprocessing; not independent manual tissue tracing. Source mask values 0/1 are preserved. Convenience subset only."
+    },
+    "segpath-cd45rb": {
+      "mpp_um": 0.220818,
+      "status": "original_publication_reported",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9982301/",
+      "equivalent_magnification": 40,
+      "scanner": "Hamamatsu NanoZoomer S60",
+      "note": "Original paper reports 40x at 0.220818 micrometres/pixel. Distributed patches are native 984 x 984 pixels after removal of 20-pixel borders from 1024px tiles; no acquisition resizing. PNGs retain original opaque RGBA channels.",
+      "annotation": "Separate binary leukocytes target derived from aligned immunofluorescence and provider postprocessing; not independent manual tissue tracing. Source mask values 0/1 are preserved. Convenience subset only."
+    },
+    "segpath-cd3cd20": {
+      "mpp_um": 0.220818,
+      "status": "original_publication_reported",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9982301/",
+      "equivalent_magnification": 40,
+      "scanner": "Hamamatsu NanoZoomer S60",
+      "note": "Original paper reports 40x at 0.220818 micrometres/pixel. Distributed patches are native 984 x 984 pixels after removal of 20-pixel borders from 1024px tiles; no acquisition resizing. PNGs retain original opaque RGBA channels.",
+      "annotation": "Separate binary lymphocytes target derived from aligned immunofluorescence and provider postprocessing; not independent manual tissue tracing. Source mask values 0/1 are preserved. Convenience subset only."
+    },
+    "segpath-erg": {
+      "mpp_um": 0.220818,
+      "status": "original_publication_reported",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9982301/",
+      "equivalent_magnification": 40,
+      "scanner": "Hamamatsu NanoZoomer S60",
+      "note": "Original paper reports 40x at 0.220818 micrometres/pixel. Distributed patches are native 984 x 984 pixels after removal of 20-pixel borders from 1024px tiles; no acquisition resizing. PNGs retain original opaque RGBA channels.",
+      "annotation": "Separate binary endothelium target derived from aligned immunofluorescence and provider postprocessing; not independent manual tissue tracing. Source mask values 0/1 are preserved. Convenience subset only."
+    },
+    "segpath-mist1": {
+      "mpp_um": 0.220818,
+      "status": "original_publication_reported",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9982301/",
+      "equivalent_magnification": 40,
+      "scanner": "Hamamatsu NanoZoomer S60",
+      "note": "Original paper reports 40x at 0.220818 micrometres/pixel. Distributed patches are native 984 x 984 pixels after removal of 20-pixel borders from 1024px tiles; no acquisition resizing. PNGs retain original opaque RGBA channels.",
+      "annotation": "Separate binary plasma cells target derived from aligned immunofluorescence and provider postprocessing; not independent manual tissue tracing. Source mask values 0/1 are preserved. Convenience subset only."
+    },
+    "segpath-mnda": {
+      "mpp_um": 0.220818,
+      "status": "original_publication_reported",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9982301/",
+      "equivalent_magnification": 40,
+      "scanner": "Hamamatsu NanoZoomer S60",
+      "note": "Original paper reports 40x at 0.220818 micrometres/pixel. Distributed patches are native 984 x 984 pixels after removal of 20-pixel borders from 1024px tiles; no acquisition resizing. PNGs retain original opaque RGBA channels.",
+      "annotation": "Separate binary myeloid cells target derived from aligned immunofluorescence and provider postprocessing; not independent manual tissue tracing. Source mask values 0/1 are preserved. Convenience subset only."
     }
   }
 }

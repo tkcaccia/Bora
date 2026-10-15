@@ -91,5 +91,90 @@
     },
     "source": "https://huggingface.co/datasets/zhihuanglab/VISTA-PATH_data/tree/42d723a4d7dbd38bb605f2aaa8e32cb7353fe83e/CoCaHis",
     "note": "Original CoCaHis target is metastatic colon cancer in liver; exact VISTA foreground and annotator aggregation must be reconciled before evaluation."
+  },
+  "sicapv2": {
+    "conceptual_labels_from_readme": {
+      "0": "non-cancerous",
+      "1": "Gleason grade 3",
+      "2": "Gleason grade 4",
+      "3": "Gleason grade 5"
+    },
+    "mask_semantics": "Raw JPEG intensities cannot yet be mapped safely to the conceptual codes. Do not threshold or round into classes.",
+    "source": "https://data.mendeley.com/datasets/9xxm58dvs3/1"
+  },
+  "camelyon16-subset": {
+    "labels": {
+      "0": "background / unassigned",
+      "1": "automatically detected normal tissue (not expert stroma)",
+      "2": "expert-derived tumor region"
+    },
+    "ignore_labels": [
+      0
+    ],
+    "source": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/README.md"
+  },
+  "segpath-panck": {
+    "labels": {
+      "0": "outside epithelium target",
+      "1": "epithelium"
+    },
+    "source": "https://zenodo.org/records/7412731",
+    "note": "Binary target within its own staining cohort; do not merge targets into a multiclass mask across images."
+  },
+  "segpath-asma": {
+    "labels": {
+      "0": "outside smooth muscle / myofibroblasts target",
+      "1": "smooth muscle / myofibroblasts"
+    },
+    "source": "https://zenodo.org/records/7412732",
+    "note": "Binary target within its own staining cohort; do not merge targets into a multiclass mask across images."
+  },
+  "segpath-cd235a": {
+    "labels": {
+      "0": "outside red blood cells target",
+      "1": "red blood cells"
+    },
+    "source": "https://zenodo.org/records/7412580",
+    "note": "Binary target within its own staining cohort; do not merge targets into a multiclass mask across images."
+  },
+  "segpath-cd45rb": {
+    "labels": {
+      "0": "outside leukocytes target",
+      "1": "leukocytes"
+    },
+    "source": "https://zenodo.org/records/7412739",
+    "note": "Binary target within its own staining cohort; do not merge targets into a multiclass mask across images."
+  },
+  "segpath-cd3cd20": {
+    "labels": {
+      "0": "outside lymphocytes target",
+      "1": "lymphocytes"
+    },
+    "source": "https://zenodo.org/records/7412529",
+    "note": "Binary target within its own staining cohort; do not merge targets into a multiclass mask across images."
+  },
+  "segpath-erg": {
+    "labels": {
+      "0": "outside endothelium target",
+      "1": "endothelium"
+    },
+    "source": "https://zenodo.org/records/7412512",
+    "note": "Binary target within its own staining cohort; do not merge targets into a multiclass mask across images."
+  },
+  "segpath-mist1": {
+    "labels": {
+      "0": "outside plasma cells target",
+      "1": "plasma cells"
+    },
+    "source": "https://zenodo.org/records/7412500",
+    "note": "Binary target within its own staining cohort; do not merge targets into a multiclass mask across images."
+  },
+  "segpath-mnda": {
+    "labels": {
+      "0": "outside myeloid cells target",
+      "1": "myeloid cells"
+    },
+    "source": "https://zenodo.org/records/7412690",
+    "note": "Binary target within its own staining cohort; do not merge targets into a multiclass mask across images."
   }
 }

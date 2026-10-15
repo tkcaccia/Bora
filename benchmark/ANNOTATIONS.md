@@ -112,3 +112,13 @@ is not a stroma annotation. The CoCaHis VISTA subset has binary masks whose
 foreground meaning still needs reconciliation. None of these new releases has
 verified distributed-image micrometres/pixel; the catalog preserves reported
 magnifications and source-slide information without inventing calibration.
+
+## Current eight-dataset acquisition
+
+[REQUESTED_DATASETS.md](REQUESTED_DATASETS.md) records original SICAPv2 and
+bounded CAMELYON16/SegPath acquisitions. CAMELYON spacing is retained per axis
+from each WSI, including native level-0 crop coordinates. SegPath spacing is
+publication-reported at 0.220818 micrometres/pixel, with independent binary
+targets derived from immunofluorescence. SICAPv2 raw JPEG mask intensities are
+not interpreted as Gleason class IDs, and its overlay is disabled pending a
+verified decoding rule or lossless annotations.

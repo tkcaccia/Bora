@@ -192,5 +192,460 @@
         "sha256": "d717bbe8608ed3f7c5a0e306720943ef48a5e3ab71ee4454157767415f85b626"
       }
     ]
+  },
+  "sicapv2": {
+    "access": "https",
+    "canonical_source": "https://data.mendeley.com/datasets/9xxm58dvs3/1",
+    "doi": "10.17632/9xxm58dvs3.1",
+    "license": "CC BY 4.0",
+    "scope": "Complete original publisher archive; audit annotation granularity before treating it as a boundary benchmark.",
+    "files": [
+      {
+        "path": "SICAPv2.zip",
+        "url": "https://data.mendeley.com/public-files/datasets/9xxm58dvs3/files/993cc418-2575-47e7-bb4c-de5200665717/file_downloaded",
+        "size": 2174534398,
+        "sha256": "de0826cbf8f1cdf86ac46562a541288841824952bbc2b348a0bad576cbec29ae"
+      }
+    ]
+  },
+  "camelyon16-subset": {
+    "access": "https",
+    "canonical_source": "https://camelyon16.grand-challenge.org/Data/",
+    "data_source": "https://registry.opendata.aws/camelyon/",
+    "license": "CC0",
+    "scope": "Three complete positive training WSIs with original expert-derived tumor masks and XML. Convenience selection across filename ranges, excluding provider-listed non-exhaustively annotated slides; not the full 399-WSI release or a representative cohort.",
+    "selection": [
+      "tumor_058",
+      "tumor_091",
+      "tumor_107"
+    ],
+    "files": [
+      {
+        "path": "README.md",
+        "size": 3642,
+        "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/README.md",
+        "md5": "294379eb7070edaa110ad4b58f5ab242"
+      },
+      {
+        "path": "license.txt",
+        "size": 7260,
+        "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/license.txt",
+        "md5": "ea475f078dcd6ddba96e155a89bc33ee"
+      },
+      {
+        "path": "checksums.md5",
+        "size": 55360,
+        "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/checksums.md5"
+      },
+      {
+        "path": "images/tumor_058.tif",
+        "size": 1364483562,
+        "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/images/tumor_058.tif",
+        "md5": "811bcc2f8b4eee2a0e856ef582ff3762"
+      },
+      {
+        "path": "masks/tumor_058_mask.tif",
+        "size": 10998000,
+        "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/masks/tumor_058_mask.tif",
+        "md5": "93d761ae82ca2df328f81f4c19837a5c"
+      },
+      {
+        "path": "annotations/tumor_058.xml",
+        "size": 946287,
+        "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/annotations/tumor_058.xml",
+        "md5": "0f1d546e6f3d8bd9781439ae38087d0b"
+      },
+      {
+        "path": "images/tumor_091.tif",
+        "size": 546437217,
+        "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/images/tumor_091.tif",
+        "md5": "13d1499b683705112a18916189b522a2"
+      },
+      {
+        "path": "masks/tumor_091_mask.tif",
+        "size": 8357394,
+        "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/masks/tumor_091_mask.tif",
+        "md5": "1e41a2e7c9d5cc966d9100120574cc3a"
+      },
+      {
+        "path": "annotations/tumor_091.xml",
+        "size": 85520,
+        "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/annotations/tumor_091.xml",
+        "md5": "e3dba1c127ca99b242108ac87080ea81"
+      },
+      {
+        "path": "images/tumor_107.tif",
+        "size": 1132948542,
+        "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/images/tumor_107.tif",
+        "md5": "948e583f6531bb9dcff08d543f23c3b3"
+      },
+      {
+        "path": "masks/tumor_107_mask.tif",
+        "size": 21155936,
+        "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/masks/tumor_107_mask.tif",
+        "md5": "e4cf9a9a88922f6a0f5ad9ea51e89e8c"
+      },
+      {
+        "path": "annotations/tumor_107.xml",
+        "size": 29949,
+        "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/annotations/tumor_107.xml",
+        "md5": "f04cab862df5cec0d5fd3082a03f7072"
+      }
+    ],
+    "full_release_bytes": 762471984787,
+    "full_wsi_bytes": 752504810458,
+    "mask_semantics": "0 background/unassigned; 1 automatically detected normal tissue; 2 polygon-derived tumor. Do not call label 1 expert stroma."
+  },
+  "segpath": {
+    "access": "https",
+    "canonical_source": "https://dakomura.github.io/SegPath/",
+    "license": "CC BY-NC-SA 4.0",
+    "scope": "Complete original eight binary cell/tissue target releases; 305.5 GB compressed archives before extraction.",
+    "files": [
+      {
+        "path": "7412731/LICENSE",
+        "url": "https://zenodo.org/api/records/7412731/files/LICENSE/content",
+        "size": 314,
+        "md5": "704cb8559a5b5ac27cd19011dc39662f"
+      },
+      {
+        "path": "7412731/panCK_Epithelium.tar.gz",
+        "url": "https://zenodo.org/api/records/7412731/files/panCK_Epithelium.tar.gz/content",
+        "size": 50949978669,
+        "md5": "48fc1166a5750b290a545dac5cc38295"
+      },
+      {
+        "path": "7412731/panCK_fileinfo.csv",
+        "url": "https://zenodo.org/api/records/7412731/files/panCK_fileinfo.csv/content",
+        "size": 3803617,
+        "md5": "6fbc57adbf3144b6382d831d37a603a8"
+      },
+      {
+        "path": "7412732/LICENSE",
+        "url": "https://zenodo.org/api/records/7412732/files/LICENSE/content",
+        "size": 314,
+        "md5": "704cb8559a5b5ac27cd19011dc39662f"
+      },
+      {
+        "path": "7412732/aSMA_SmoothMuscle.tar.gz",
+        "url": "https://zenodo.org/api/records/7412732/files/aSMA_SmoothMuscle.tar.gz/content",
+        "size": 61090362315,
+        "md5": "ac4480796d04ab9eac8fb9cf2a1833d0"
+      },
+      {
+        "path": "7412732/aSMA_fileinfo.csv",
+        "url": "https://zenodo.org/api/records/7412732/files/aSMA_fileinfo.csv/content",
+        "size": 4536183,
+        "md5": "3bca3522bae3d18d602722da82c3bd2b"
+      },
+      {
+        "path": "7412580/CD235a_fileinfo.csv",
+        "url": "https://zenodo.org/api/records/7412580/files/CD235a_fileinfo.csv/content",
+        "size": 3147855,
+        "md5": "eb71479d8cb2f62c0f39966a739d9911"
+      },
+      {
+        "path": "7412580/LICENSE",
+        "url": "https://zenodo.org/api/records/7412580/files/LICENSE/content",
+        "size": 314,
+        "md5": "704cb8559a5b5ac27cd19011dc39662f"
+      },
+      {
+        "path": "7412580/CD235a_RBC.tar.gz",
+        "url": "https://zenodo.org/api/records/7412580/files/CD235a_RBC.tar.gz/content",
+        "size": 48562564543,
+        "md5": "4237f99d53b62d726f501a6e70b626cf"
+      },
+      {
+        "path": "7412739/CD45RB_Leukocyte.tar.gz",
+        "url": "https://zenodo.org/api/records/7412739/files/CD45RB_Leukocyte.tar.gz/content",
+        "size": 48038556007,
+        "md5": "a228f4312d81dc80c112f195b9ad4029"
+      },
+      {
+        "path": "7412739/LICENSE",
+        "url": "https://zenodo.org/api/records/7412739/files/LICENSE/content",
+        "size": 314,
+        "md5": "704cb8559a5b5ac27cd19011dc39662f"
+      },
+      {
+        "path": "7412739/CD45RB_fileinfo.csv",
+        "url": "https://zenodo.org/api/records/7412739/files/CD45RB_fileinfo.csv/content",
+        "size": 3609013,
+        "md5": "08b4196f1e41018968938d9e0e80c53b"
+      },
+      {
+        "path": "7412529/LICENSE",
+        "url": "https://zenodo.org/api/records/7412529/files/LICENSE/content",
+        "size": 314,
+        "md5": "704cb8559a5b5ac27cd19011dc39662f"
+      },
+      {
+        "path": "7412529/CD3CD20_Lymphocyte.tar.gz",
+        "url": "https://zenodo.org/api/records/7412529/files/CD3CD20_Lymphocyte.tar.gz/content",
+        "size": 23694062772,
+        "md5": "91dc9d637eb034535dc9bbae3739078d"
+      },
+      {
+        "path": "7412529/CD3CD20_fileinfo.csv",
+        "url": "https://zenodo.org/api/records/7412529/files/CD3CD20_fileinfo.csv/content",
+        "size": 1908817,
+        "md5": "68089ce00cfaff1284e5b2357b619191"
+      },
+      {
+        "path": "7412512/ERG_Endothelium.tar.gz",
+        "url": "https://zenodo.org/api/records/7412512/files/ERG_Endothelium.tar.gz/content",
+        "size": 20956731834,
+        "md5": "836d87856cacb857ac37d1fe1a76b509"
+      },
+      {
+        "path": "7412512/ERG_fileinfo.csv",
+        "url": "https://zenodo.org/api/records/7412512/files/ERG_fileinfo.csv/content",
+        "size": 1444499,
+        "md5": "8d6e0f4ec88f068553cb30d8f8f24840"
+      },
+      {
+        "path": "7412512/LICENSE",
+        "url": "https://zenodo.org/api/records/7412512/files/LICENSE/content",
+        "size": 314,
+        "md5": "704cb8559a5b5ac27cd19011dc39662f"
+      },
+      {
+        "path": "7412500/MIST1_PlasmaCell.tar.gz",
+        "url": "https://zenodo.org/api/records/7412500/files/MIST1_PlasmaCell.tar.gz/content",
+        "size": 24891504922,
+        "md5": "46b5aa5eb06d61fd8157e357cea58ba8"
+      },
+      {
+        "path": "7412500/MIST1_fileinfo.csv",
+        "url": "https://zenodo.org/api/records/7412500/files/MIST1_fileinfo.csv/content",
+        "size": 1899581,
+        "md5": "e783bff4dabff3aee1ddccae86d4c837"
+      },
+      {
+        "path": "7412500/LICENSE",
+        "url": "https://zenodo.org/api/records/7412500/files/LICENSE/content",
+        "size": 314,
+        "md5": "704cb8559a5b5ac27cd19011dc39662f"
+      },
+      {
+        "path": "7412690/LICENSE",
+        "url": "https://zenodo.org/api/records/7412690/files/LICENSE/content",
+        "size": 314,
+        "md5": "704cb8559a5b5ac27cd19011dc39662f"
+      },
+      {
+        "path": "7412690/MNDA_MyeloidCell.tar.gz",
+        "url": "https://zenodo.org/api/records/7412690/files/MNDA_MyeloidCell.tar.gz/content",
+        "size": 27341828567,
+        "md5": "49e9ffcf13d012a220cbe5c06ff24169"
+      },
+      {
+        "path": "7412690/MNDA_fileinfo.csv",
+        "url": "https://zenodo.org/api/records/7412690/files/MNDA_fileinfo.csv/content",
+        "size": 2001775,
+        "md5": "30bd7b0ee60c96b2628724cdcfb622bb"
+      }
+    ]
+  },
+  "segpath-subset": {
+    "access": "streaming-tar-subset",
+    "canonical_source": "https://dakomura.github.io/SegPath/",
+    "license": "CC BY-NC-SA 4.0",
+    "scope": "Three complete native H&E/mask pairs per target, selected in original TAR order from distinct source slide IDs. Convenience subset, not representative evaluation data. Prefix bytes retained; full archive MD5 cannot be verified from a partial download.",
+    "targets": [
+      {
+        "record": 7412731,
+        "class": "panCK_Epithelium",
+        "archive": {
+          "path": "7412731/panCK_Epithelium.tar.gz",
+          "url": "https://zenodo.org/api/records/7412731/files/panCK_Epithelium.tar.gz/content",
+          "size": 50949978669,
+          "md5": "48fc1166a5750b290a545dac5cc38295"
+        },
+        "sidecars": [
+          {
+            "path": "7412731/LICENSE",
+            "url": "https://zenodo.org/api/records/7412731/files/LICENSE/content",
+            "size": 314,
+            "md5": "704cb8559a5b5ac27cd19011dc39662f"
+          },
+          {
+            "path": "7412731/panCK_fileinfo.csv",
+            "url": "https://zenodo.org/api/records/7412731/files/panCK_fileinfo.csv/content",
+            "size": 3803617,
+            "md5": "6fbc57adbf3144b6382d831d37a603a8"
+          }
+        ]
+      },
+      {
+        "record": 7412732,
+        "class": "aSMA_SmoothMuscle",
+        "archive": {
+          "path": "7412732/aSMA_SmoothMuscle.tar.gz",
+          "url": "https://zenodo.org/api/records/7412732/files/aSMA_SmoothMuscle.tar.gz/content",
+          "size": 61090362315,
+          "md5": "ac4480796d04ab9eac8fb9cf2a1833d0"
+        },
+        "sidecars": [
+          {
+            "path": "7412732/LICENSE",
+            "url": "https://zenodo.org/api/records/7412732/files/LICENSE/content",
+            "size": 314,
+            "md5": "704cb8559a5b5ac27cd19011dc39662f"
+          },
+          {
+            "path": "7412732/aSMA_fileinfo.csv",
+            "url": "https://zenodo.org/api/records/7412732/files/aSMA_fileinfo.csv/content",
+            "size": 4536183,
+            "md5": "3bca3522bae3d18d602722da82c3bd2b"
+          }
+        ]
+      },
+      {
+        "record": 7412580,
+        "class": "CD235a_RBC",
+        "archive": {
+          "path": "7412580/CD235a_RBC.tar.gz",
+          "url": "https://zenodo.org/api/records/7412580/files/CD235a_RBC.tar.gz/content",
+          "size": 48562564543,
+          "md5": "4237f99d53b62d726f501a6e70b626cf"
+        },
+        "sidecars": [
+          {
+            "path": "7412580/CD235a_fileinfo.csv",
+            "url": "https://zenodo.org/api/records/7412580/files/CD235a_fileinfo.csv/content",
+            "size": 3147855,
+            "md5": "eb71479d8cb2f62c0f39966a739d9911"
+          },
+          {
+            "path": "7412580/LICENSE",
+            "url": "https://zenodo.org/api/records/7412580/files/LICENSE/content",
+            "size": 314,
+            "md5": "704cb8559a5b5ac27cd19011dc39662f"
+          }
+        ]
+      },
+      {
+        "record": 7412739,
+        "class": "CD45RB_Leukocyte",
+        "archive": {
+          "path": "7412739/CD45RB_Leukocyte.tar.gz",
+          "url": "https://zenodo.org/api/records/7412739/files/CD45RB_Leukocyte.tar.gz/content",
+          "size": 48038556007,
+          "md5": "a228f4312d81dc80c112f195b9ad4029"
+        },
+        "sidecars": [
+          {
+            "path": "7412739/LICENSE",
+            "url": "https://zenodo.org/api/records/7412739/files/LICENSE/content",
+            "size": 314,
+            "md5": "704cb8559a5b5ac27cd19011dc39662f"
+          },
+          {
+            "path": "7412739/CD45RB_fileinfo.csv",
+            "url": "https://zenodo.org/api/records/7412739/files/CD45RB_fileinfo.csv/content",
+            "size": 3609013,
+            "md5": "08b4196f1e41018968938d9e0e80c53b"
+          }
+        ]
+      },
+      {
+        "record": 7412529,
+        "class": "CD3CD20_Lymphocyte",
+        "archive": {
+          "path": "7412529/CD3CD20_Lymphocyte.tar.gz",
+          "url": "https://zenodo.org/api/records/7412529/files/CD3CD20_Lymphocyte.tar.gz/content",
+          "size": 23694062772,
+          "md5": "91dc9d637eb034535dc9bbae3739078d"
+        },
+        "sidecars": [
+          {
+            "path": "7412529/LICENSE",
+            "url": "https://zenodo.org/api/records/7412529/files/LICENSE/content",
+            "size": 314,
+            "md5": "704cb8559a5b5ac27cd19011dc39662f"
+          },
+          {
+            "path": "7412529/CD3CD20_fileinfo.csv",
+            "url": "https://zenodo.org/api/records/7412529/files/CD3CD20_fileinfo.csv/content",
+            "size": 1908817,
+            "md5": "68089ce00cfaff1284e5b2357b619191"
+          }
+        ]
+      },
+      {
+        "record": 7412512,
+        "class": "ERG_Endothelium",
+        "archive": {
+          "path": "7412512/ERG_Endothelium.tar.gz",
+          "url": "https://zenodo.org/api/records/7412512/files/ERG_Endothelium.tar.gz/content",
+          "size": 20956731834,
+          "md5": "836d87856cacb857ac37d1fe1a76b509"
+        },
+        "sidecars": [
+          {
+            "path": "7412512/ERG_fileinfo.csv",
+            "url": "https://zenodo.org/api/records/7412512/files/ERG_fileinfo.csv/content",
+            "size": 1444499,
+            "md5": "8d6e0f4ec88f068553cb30d8f8f24840"
+          },
+          {
+            "path": "7412512/LICENSE",
+            "url": "https://zenodo.org/api/records/7412512/files/LICENSE/content",
+            "size": 314,
+            "md5": "704cb8559a5b5ac27cd19011dc39662f"
+          }
+        ]
+      },
+      {
+        "record": 7412500,
+        "class": "MIST1_PlasmaCell",
+        "archive": {
+          "path": "7412500/MIST1_PlasmaCell.tar.gz",
+          "url": "https://zenodo.org/api/records/7412500/files/MIST1_PlasmaCell.tar.gz/content",
+          "size": 24891504922,
+          "md5": "46b5aa5eb06d61fd8157e357cea58ba8"
+        },
+        "sidecars": [
+          {
+            "path": "7412500/MIST1_fileinfo.csv",
+            "url": "https://zenodo.org/api/records/7412500/files/MIST1_fileinfo.csv/content",
+            "size": 1899581,
+            "md5": "e783bff4dabff3aee1ddccae86d4c837"
+          },
+          {
+            "path": "7412500/LICENSE",
+            "url": "https://zenodo.org/api/records/7412500/files/LICENSE/content",
+            "size": 314,
+            "md5": "704cb8559a5b5ac27cd19011dc39662f"
+          }
+        ]
+      },
+      {
+        "record": 7412690,
+        "class": "MNDA_MyeloidCell",
+        "archive": {
+          "path": "7412690/MNDA_MyeloidCell.tar.gz",
+          "url": "https://zenodo.org/api/records/7412690/files/MNDA_MyeloidCell.tar.gz/content",
+          "size": 27341828567,
+          "md5": "49e9ffcf13d012a220cbe5c06ff24169"
+        },
+        "sidecars": [
+          {
+            "path": "7412690/LICENSE",
+            "url": "https://zenodo.org/api/records/7412690/files/LICENSE/content",
+            "size": 314,
+            "md5": "704cb8559a5b5ac27cd19011dc39662f"
+          },
+          {
+            "path": "7412690/MNDA_fileinfo.csv",
+            "url": "https://zenodo.org/api/records/7412690/files/MNDA_fileinfo.csv/content",
+            "size": 2001775,
+            "md5": "30bd7b0ee60c96b2628724cdcfb622bb"
+          }
+        ]
+      }
+    ]
   }
 }

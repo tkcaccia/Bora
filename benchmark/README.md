@@ -4,6 +4,9 @@ This folder contains acquisition and inventory code, source locks, and dataset
 notes for a future Bora manuscript. **Bora is not run by any of these commands.**
 No benchmark scores, model predictions, or derived coarse labels are produced.
 
+The [eight-dataset status table](REQUESTED_DATASETS.md) records the current
+coverage, including original SICAPv2 and bounded CAMELYON16/SegPath subsets.
+
 Read [DATASETS.md](DATASETS.md) for annotation definitions, source citations,
 access conditions, overlap, and limitations. [ACQUISITION.md](ACQUISITION.md)
 records the initial acquisition on 15 October 2026.

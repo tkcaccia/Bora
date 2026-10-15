@@ -1,0 +1,1339 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-10-15T20:52:37.778750+00:00",
+  "data_host": "chiamaka",
+  "data_root": "/mnt/sata_ssd/Bora-benchmark",
+  "scope": "Continuation of the eight requested datasets; complete requested SICAPv2 Mendeley release 1 plus bounded CAMELYON16 and SegPath subsets",
+  "bora_executed": false,
+  "releases": {
+    "sicapv2": {
+      "acquisition": {
+        "observed_at": "2026-10-15T20:23:05.083793+00:00",
+        "dataset": "sicapv2",
+        "source": {
+          "access": "https",
+          "canonical_source": "https://data.mendeley.com/datasets/9xxm58dvs3/1",
+          "doi": "10.17632/9xxm58dvs3.1",
+          "license": "CC BY 4.0",
+          "scope": "Complete original publisher archive; audit annotation granularity before treating it as a boundary benchmark.",
+          "files": [
+            {
+              "path": "SICAPv2.zip",
+              "url": "https://data.mendeley.com/public-files/datasets/9xxm58dvs3/files/993cc418-2575-47e7-bb4c-de5200665717/file_downloaded",
+              "size": 2174534398,
+              "sha256": "de0826cbf8f1cdf86ac46562a541288841824952bbc2b348a0bad576cbec29ae"
+            }
+          ]
+        },
+        "files": [
+          {
+            "path": "/mnt/sata_ssd/Bora-benchmark/raw/sicapv2/SICAPv2.zip",
+            "size": 2174534398,
+            "sha256": "de0826cbf8f1cdf86ac46562a541288841824952bbc2b348a0bad576cbec29ae"
+          }
+        ],
+        "extracted": true
+      },
+      "prepared": {
+        "dataset": "sicapv2",
+        "inventories": {
+          "sicapv2": {
+            "pairs": 18783,
+            "sha256": "e97f539a7438bee43881c4f7e3d27b368eb5c5a62a2c467e7a0a6d26e81976e9",
+            "splits": {
+              "train": 9959,
+              "outside_released_classification_partition": 6702,
+              "test": 2122
+            }
+          }
+        },
+        "patients": 95,
+        "source_slide_table_rows": 155,
+        "image_slides": 155,
+        "patient_overlap_primary_train_test": [],
+        "use_status": "Complete original archive; keep out of primary boundary evaluation until lossless grade encoding is reconciled",
+        "source_mask_format": "JPEG grayscale; decoded intensities are not the documented conceptual 0-3 labels",
+        "bora_executed": false
+      }
+    },
+    "camelyon16-subset": {
+      "acquisition": {
+        "observed_at": "2026-10-15T20:27:34.227238+00:00",
+        "dataset": "camelyon16-subset",
+        "source": {
+          "access": "https",
+          "canonical_source": "https://camelyon16.grand-challenge.org/Data/",
+          "data_source": "https://registry.opendata.aws/camelyon/",
+          "license": "CC0",
+          "scope": "Three complete positive training WSIs with original expert-derived tumor masks and XML. Convenience selection across filename ranges, excluding provider-listed non-exhaustively annotated slides; not the full 399-WSI release or a representative cohort.",
+          "selection": [
+            "tumor_058",
+            "tumor_091",
+            "tumor_107"
+          ],
+          "files": [
+            {
+              "path": "README.md",
+              "size": 3642,
+              "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/README.md",
+              "md5": "294379eb7070edaa110ad4b58f5ab242"
+            },
+            {
+              "path": "license.txt",
+              "size": 7260,
+              "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/license.txt",
+              "md5": "ea475f078dcd6ddba96e155a89bc33ee"
+            },
+            {
+              "path": "checksums.md5",
+              "size": 55360,
+              "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/checksums.md5"
+            },
+            {
+              "path": "images/tumor_058.tif",
+              "size": 1364483562,
+              "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/images/tumor_058.tif",
+              "md5": "811bcc2f8b4eee2a0e856ef582ff3762"
+            },
+            {
+              "path": "masks/tumor_058_mask.tif",
+              "size": 10998000,
+              "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/masks/tumor_058_mask.tif",
+              "md5": "93d761ae82ca2df328f81f4c19837a5c"
+            },
+            {
+              "path": "annotations/tumor_058.xml",
+              "size": 946287,
+              "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/annotations/tumor_058.xml",
+              "md5": "0f1d546e6f3d8bd9781439ae38087d0b"
+            },
+            {
+              "path": "images/tumor_091.tif",
+              "size": 546437217,
+              "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/images/tumor_091.tif",
+              "md5": "13d1499b683705112a18916189b522a2"
+            },
+            {
+              "path": "masks/tumor_091_mask.tif",
+              "size": 8357394,
+              "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/masks/tumor_091_mask.tif",
+              "md5": "1e41a2e7c9d5cc966d9100120574cc3a"
+            },
+            {
+              "path": "annotations/tumor_091.xml",
+              "size": 85520,
+              "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/annotations/tumor_091.xml",
+              "md5": "e3dba1c127ca99b242108ac87080ea81"
+            },
+            {
+              "path": "images/tumor_107.tif",
+              "size": 1132948542,
+              "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/images/tumor_107.tif",
+              "md5": "948e583f6531bb9dcff08d543f23c3b3"
+            },
+            {
+              "path": "masks/tumor_107_mask.tif",
+              "size": 21155936,
+              "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/masks/tumor_107_mask.tif",
+              "md5": "e4cf9a9a88922f6a0f5ad9ea51e89e8c"
+            },
+            {
+              "path": "annotations/tumor_107.xml",
+              "size": 29949,
+              "url": "https://camelyon-dataset.s3.us-west-2.amazonaws.com/CAMELYON16/annotations/tumor_107.xml",
+              "md5": "f04cab862df5cec0d5fd3082a03f7072"
+            }
+          ],
+          "full_release_bytes": 762471984787,
+          "full_wsi_bytes": 752504810458,
+          "mask_semantics": "0 background/unassigned; 1 automatically detected normal tissue; 2 polygon-derived tumor. Do not call label 1 expert stroma."
+        },
+        "files": [
+          {
+            "path": "/mnt/sata_ssd/Bora-benchmark/raw/camelyon16-subset/README.md",
+            "size": 3642,
+            "sha256": "5c217b1135810d0ca2275b372b5cf054c4a22d48741111c9908bb295248c56c1"
+          },
+          {
+            "path": "/mnt/sata_ssd/Bora-benchmark/raw/camelyon16-subset/license.txt",
+            "size": 7260,
+            "sha256": "d3f9346ae36af5c23f746e68e3a645bf00a41ab6f2d5570d4219eea9458d75e7"
+          },
+          {
+            "path": "/mnt/sata_ssd/Bora-benchmark/raw/camelyon16-subset/checksums.md5",
+            "size": 55360,
+            "sha256": "5e4a4efe198cd0427d32f000c7f556f52fbf7f8a422d5210a7c1e5a12ab4ce08"
+          },
+          {
+            "path": "/mnt/sata_ssd/Bora-benchmark/raw/camelyon16-subset/images/tumor_058.tif",
+            "size": 1364483562,
+            "sha256": "683d2de301d4c6c2cdb40690776b8b8b1b464a03aa1317c3b20afb3545a5941a"
+          },
+          {
+            "path": "/mnt/sata_ssd/Bora-benchmark/raw/camelyon16-subset/masks/tumor_058_mask.tif",
+            "size": 10998000,
+            "sha256": "34e3cacb6a850a50a40b1b446134b5726cfe6693e27834b1112614f9b6c33296"
+          },
+          {
+            "path": "/mnt/sata_ssd/Bora-benchmark/raw/camelyon16-subset/annotations/tumor_058.xml",
+            "size": 946287,
+            "sha256": "700f0b4e52d69de126f53b10a214ceca5ef219e038d424e9b74b1b8da07468d4"
+          },
+          {
+            "path": "/mnt/sata_ssd/Bora-benchmark/raw/camelyon16-subset/images/tumor_091.tif",
+            "size": 546437217,
+            "sha256": "29f5ca4caf206a2197a134fd61fd79032cf9f8364495aba5840a842a6967d4a4"
+          },
+          {
+            "path": "/mnt/sata_ssd/Bora-benchmark/raw/camelyon16-subset/masks/tumor_091_mask.tif",
+            "size": 8357394,
+            "sha256": "2c9a6f4b13f9a7551c8dcb3029144593ae2242bc2845cb6e10de0100fee84b54"
+          },
+          {
+            "path": "/mnt/sata_ssd/Bora-benchmark/raw/camelyon16-subset/annotations/tumor_091.xml",
+            "size": 85520,
+            "sha256": "0a5206bbee1044ad1149b729a1fd2372698ccb147a92e68f0ff16b13498396a0"
+          },
+          {
+            "path": "/mnt/sata_ssd/Bora-benchmark/raw/camelyon16-subset/images/tumor_107.tif",
+            "size": 1132948542,
+            "sha256": "8c7ce5c82689739b4782be455fba607b93aa4f1a47c8e21f454cb591d6755d49"
+          },
+          {
+            "path": "/mnt/sata_ssd/Bora-benchmark/raw/camelyon16-subset/masks/tumor_107_mask.tif",
+            "size": 21155936,
+            "sha256": "a5798d06bd0bee0b58887ec43333adade3e86c03fcc154bf432f944371cddf35"
+          },
+          {
+            "path": "/mnt/sata_ssd/Bora-benchmark/raw/camelyon16-subset/annotations/tumor_107.xml",
+            "size": 29949,
+            "sha256": "9e705d54b20f11ee435e4aef57bb72879cfa4cfa368c857568451a41853a3937"
+          }
+        ],
+        "extracted": false
+      },
+      "prepared": {
+        "dataset": "camelyon16-subset",
+        "inventories": {
+          "camelyon16-subset": {
+            "pairs": 3,
+            "sha256": "c16ea36e6cc78828181f183961f68d27a985ae0410c48d974a4c256e581ef603",
+            "splits": {
+              "train": 3
+            }
+          }
+        },
+        "complete_WSIs": 3,
+        "native_example_windows": 3,
+        "scope": "Three positive training WSIs; convenience windows are not prespecified evaluation sampling",
+        "use_status": "Tumor annotation is expert-derived; normal tissue class is automatically generated, not expert stroma",
+        "bora_executed": false
+      }
+    },
+    "segpath-subset": {
+      "acquisition": {
+        "source": {
+          "access": "streaming-tar-subset",
+          "canonical_source": "https://dakomura.github.io/SegPath/",
+          "license": "CC BY-NC-SA 4.0",
+          "scope": "Three complete native H&E/mask pairs per target, selected in original TAR order from distinct source slide IDs. Convenience subset, not representative evaluation data. Prefix bytes retained; full archive MD5 cannot be verified from a partial download.",
+          "targets": [
+            {
+              "record": 7412731,
+              "class": "panCK_Epithelium",
+              "archive": {
+                "path": "7412731/panCK_Epithelium.tar.gz",
+                "url": "https://zenodo.org/api/records/7412731/files/panCK_Epithelium.tar.gz/content",
+                "size": 50949978669,
+                "md5": "48fc1166a5750b290a545dac5cc38295"
+              },
+              "sidecars": [
+                {
+                  "path": "7412731/LICENSE",
+                  "url": "https://zenodo.org/api/records/7412731/files/LICENSE/content",
+                  "size": 314,
+                  "md5": "704cb8559a5b5ac27cd19011dc39662f"
+                },
+                {
+                  "path": "7412731/panCK_fileinfo.csv",
+                  "url": "https://zenodo.org/api/records/7412731/files/panCK_fileinfo.csv/content",
+                  "size": 3803617,
+                  "md5": "6fbc57adbf3144b6382d831d37a603a8"
+                }
+              ]
+            },
+            {
+              "record": 7412732,
+              "class": "aSMA_SmoothMuscle",
+              "archive": {
+                "path": "7412732/aSMA_SmoothMuscle.tar.gz",
+                "url": "https://zenodo.org/api/records/7412732/files/aSMA_SmoothMuscle.tar.gz/content",
+                "size": 61090362315,
+                "md5": "ac4480796d04ab9eac8fb9cf2a1833d0"
+              },
+              "sidecars": [
+                {
+                  "path": "7412732/LICENSE",
+                  "url": "https://zenodo.org/api/records/7412732/files/LICENSE/content",
+                  "size": 314,
+                  "md5": "704cb8559a5b5ac27cd19011dc39662f"
+                },
+                {
+                  "path": "7412732/aSMA_fileinfo.csv",
+                  "url": "https://zenodo.org/api/records/7412732/files/aSMA_fileinfo.csv/content",
+                  "size": 4536183,
+                  "md5": "3bca3522bae3d18d602722da82c3bd2b"
+                }
+              ]
+            },
+            {
+              "record": 7412580,
+              "class": "CD235a_RBC",
+              "archive": {
+                "path": "7412580/CD235a_RBC.tar.gz",
+                "url": "https://zenodo.org/api/records/7412580/files/CD235a_RBC.tar.gz/content",
+                "size": 48562564543,
+                "md5": "4237f99d53b62d726f501a6e70b626cf"
+              },
+              "sidecars": [
+                {
+                  "path": "7412580/CD235a_fileinfo.csv",
+                  "url": "https://zenodo.org/api/records/7412580/files/CD235a_fileinfo.csv/content",
+                  "size": 3147855,
+                  "md5": "eb71479d8cb2f62c0f39966a739d9911"
+                },
+                {
+                  "path": "7412580/LICENSE",
+                  "url": "https://zenodo.org/api/records/7412580/files/LICENSE/content",
+                  "size": 314,
+                  "md5": "704cb8559a5b5ac27cd19011dc39662f"
+                }
+              ]
+            },
+            {
+              "record": 7412739,
+              "class": "CD45RB_Leukocyte",
+              "archive": {
+                "path": "7412739/CD45RB_Leukocyte.tar.gz",
+                "url": "https://zenodo.org/api/records/7412739/files/CD45RB_Leukocyte.tar.gz/content",
+                "size": 48038556007,
+                "md5": "a228f4312d81dc80c112f195b9ad4029"
+              },
+              "sidecars": [
+                {
+                  "path": "7412739/LICENSE",
+                  "url": "https://zenodo.org/api/records/7412739/files/LICENSE/content",
+                  "size": 314,
+                  "md5": "704cb8559a5b5ac27cd19011dc39662f"
+                },
+                {
+                  "path": "7412739/CD45RB_fileinfo.csv",
+                  "url": "https://zenodo.org/api/records/7412739/files/CD45RB_fileinfo.csv/content",
+                  "size": 3609013,
+                  "md5": "08b4196f1e41018968938d9e0e80c53b"
+                }
+              ]
+            },
+            {
+              "record": 7412529,
+              "class": "CD3CD20_Lymphocyte",
+              "archive": {
+                "path": "7412529/CD3CD20_Lymphocyte.tar.gz",
+                "url": "https://zenodo.org/api/records/7412529/files/CD3CD20_Lymphocyte.tar.gz/content",
+                "size": 23694062772,
+                "md5": "91dc9d637eb034535dc9bbae3739078d"
+              },
+              "sidecars": [
+                {
+                  "path": "7412529/LICENSE",
+                  "url": "https://zenodo.org/api/records/7412529/files/LICENSE/content",
+                  "size": 314,
+                  "md5": "704cb8559a5b5ac27cd19011dc39662f"
+                },
+                {
+                  "path": "7412529/CD3CD20_fileinfo.csv",
+                  "url": "https://zenodo.org/api/records/7412529/files/CD3CD20_fileinfo.csv/content",
+                  "size": 1908817,
+                  "md5": "68089ce00cfaff1284e5b2357b619191"
+                }
+              ]
+            },
+            {
+              "record": 7412512,
+              "class": "ERG_Endothelium",
+              "archive": {
+                "path": "7412512/ERG_Endothelium.tar.gz",
+                "url": "https://zenodo.org/api/records/7412512/files/ERG_Endothelium.tar.gz/content",
+                "size": 20956731834,
+                "md5": "836d87856cacb857ac37d1fe1a76b509"
+              },
+              "sidecars": [
+                {
+                  "path": "7412512/ERG_fileinfo.csv",
+                  "url": "https://zenodo.org/api/records/7412512/files/ERG_fileinfo.csv/content",
+                  "size": 1444499,
+                  "md5": "8d6e0f4ec88f068553cb30d8f8f24840"
+                },
+                {
+                  "path": "7412512/LICENSE",
+                  "url": "https://zenodo.org/api/records/7412512/files/LICENSE/content",
+                  "size": 314,
+                  "md5": "704cb8559a5b5ac27cd19011dc39662f"
+                }
+              ]
+            },
+            {
+              "record": 7412500,
+              "class": "MIST1_PlasmaCell",
+              "archive": {
+                "path": "7412500/MIST1_PlasmaCell.tar.gz",
+                "url": "https://zenodo.org/api/records/7412500/files/MIST1_PlasmaCell.tar.gz/content",
+                "size": 24891504922,
+                "md5": "46b5aa5eb06d61fd8157e357cea58ba8"
+              },
+              "sidecars": [
+                {
+                  "path": "7412500/MIST1_fileinfo.csv",
+                  "url": "https://zenodo.org/api/records/7412500/files/MIST1_fileinfo.csv/content",
+                  "size": 1899581,
+                  "md5": "e783bff4dabff3aee1ddccae86d4c837"
+                },
+                {
+                  "path": "7412500/LICENSE",
+                  "url": "https://zenodo.org/api/records/7412500/files/LICENSE/content",
+                  "size": 314,
+                  "md5": "704cb8559a5b5ac27cd19011dc39662f"
+                }
+              ]
+            },
+            {
+              "record": 7412690,
+              "class": "MNDA_MyeloidCell",
+              "archive": {
+                "path": "7412690/MNDA_MyeloidCell.tar.gz",
+                "url": "https://zenodo.org/api/records/7412690/files/MNDA_MyeloidCell.tar.gz/content",
+                "size": 27341828567,
+                "md5": "49e9ffcf13d012a220cbe5c06ff24169"
+              },
+              "sidecars": [
+                {
+                  "path": "7412690/LICENSE",
+                  "url": "https://zenodo.org/api/records/7412690/files/LICENSE/content",
+                  "size": 314,
+                  "md5": "704cb8559a5b5ac27cd19011dc39662f"
+                },
+                {
+                  "path": "7412690/MNDA_fileinfo.csv",
+                  "url": "https://zenodo.org/api/records/7412690/files/MNDA_fileinfo.csv/content",
+                  "size": 2001775,
+                  "md5": "30bd7b0ee60c96b2628724cdcfb622bb"
+                }
+              ]
+            }
+          ]
+        },
+        "targets": [
+          {
+            "target": "panCK_Epithelium",
+            "source_record": 7412731,
+            "source_archive": {
+              "path": "7412731/panCK_Epithelium.tar.gz",
+              "url": "https://zenodo.org/api/records/7412731/files/panCK_Epithelium.tar.gz/content",
+              "size": 50949978669,
+              "md5": "48fc1166a5750b290a545dac5cc38295"
+            },
+            "full_archive_checksum_verified": false,
+            "prefix_bytes": 782673920,
+            "source_bytes_consumed": 782673920,
+            "prefix_sha256": "17a0aab31446ec52784a6baa94d7e3c9ddd2ffee738c0f2bdf65f6cae455a8e1",
+            "prefix_file": "raw/segpath-subset/panCK_Epithelium/source-prefix.tar.gz.part",
+            "response_etag": null,
+            "pairs": [
+              {
+                "id": "panCK_Epithelium_228_090112_082944",
+                "slide_id": "228",
+                "target": "panCK_Epithelium",
+                "positive_pixels": 884711,
+                "image": "raw/segpath-subset/panCK_Epithelium/pairs/panCK_Epithelium_228_090112_082944_HE.png",
+                "image_sha256": "c244c55e3809b675c9a9457293aca9b122adf2ac4b9974fa3ec0b5b92e895176",
+                "mask": "raw/segpath-subset/panCK_Epithelium/pairs/panCK_Epithelium_228_090112_082944_mask.png",
+                "mask_sha256": "9f1e29f42601db135e053363d8598d31705f5d58aecb6a7729a37876179aa4dc"
+              },
+              {
+                "id": "panCK_Epithelium_313_102400_036864",
+                "slide_id": "313",
+                "target": "panCK_Epithelium",
+                "positive_pixels": 387324,
+                "image": "raw/segpath-subset/panCK_Epithelium/pairs/panCK_Epithelium_313_102400_036864_HE.png",
+                "image_sha256": "18876dee89cb205818a5efb38b9484b0848712a7bee95dd78f119c617b0f17ce",
+                "mask": "raw/segpath-subset/panCK_Epithelium/pairs/panCK_Epithelium_313_102400_036864_mask.png",
+                "mask_sha256": "3bf697b03b8404f1fbfdaa6aa4047c30d9940258a86fc8d9ca3b6bb289cfab4c"
+              },
+              {
+                "id": "panCK_Epithelium_135_107520_011264",
+                "slide_id": "135",
+                "target": "panCK_Epithelium",
+                "positive_pixels": 466942,
+                "image": "raw/segpath-subset/panCK_Epithelium/pairs/panCK_Epithelium_135_107520_011264_HE.png",
+                "image_sha256": "ceebd7c3b7d43970ba9a284c25ea61c7e53a15b2ae6c462d8969364689b00981",
+                "mask": "raw/segpath-subset/panCK_Epithelium/pairs/panCK_Epithelium_135_107520_011264_mask.png",
+                "mask_sha256": "6fe8b6ca6f1e6caa7444f800f7c6e1694f1b274610170dfcea39e4af49f1cd3c"
+              }
+            ],
+            "selection": "First complete nonempty/nonfull pairs from distinct source slide IDs in TAR order",
+            "scope": "Convenience inspection subset; not a representative or independent test cohort",
+            "retained_compressed_byte_range": [
+              0,
+              782673919
+            ]
+          },
+          {
+            "target": "aSMA_SmoothMuscle",
+            "source_record": 7412732,
+            "source_archive": {
+              "path": "7412732/aSMA_SmoothMuscle.tar.gz",
+              "url": "https://zenodo.org/api/records/7412732/files/aSMA_SmoothMuscle.tar.gz/content",
+              "size": 61090362315,
+              "md5": "ac4480796d04ab9eac8fb9cf2a1833d0"
+            },
+            "full_archive_checksum_verified": false,
+            "prefix_bytes": 387932160,
+            "source_bytes_consumed": 387932160,
+            "prefix_sha256": "991bb68af2702c39ca2113378b9117323fee7c7b4fa3afae9927f198b21dbb83",
+            "prefix_file": "raw/segpath-subset/aSMA_SmoothMuscle/source-prefix.tar.gz.part",
+            "response_etag": null,
+            "pairs": [
+              {
+                "id": "aSMA_SmoothMuscle_205_120832_030720",
+                "slide_id": "205",
+                "target": "aSMA_SmoothMuscle",
+                "positive_pixels": 66899,
+                "image": "raw/segpath-subset/aSMA_SmoothMuscle/pairs/aSMA_SmoothMuscle_205_120832_030720_HE.png",
+                "image_sha256": "4b12c609e4e4ee182353259e33250d1d698686bf39360af4a7c14df2b19746dd",
+                "mask": "raw/segpath-subset/aSMA_SmoothMuscle/pairs/aSMA_SmoothMuscle_205_120832_030720_mask.png",
+                "mask_sha256": "4cf97a8de7b7cebce2c3cdc3922130d8ad6ca0d149d3d03e8748cca2876389fa"
+              },
+              {
+                "id": "aSMA_SmoothMuscle_260_115712_053248",
+                "slide_id": "260",
+                "target": "aSMA_SmoothMuscle",
+                "positive_pixels": 183500,
+                "image": "raw/segpath-subset/aSMA_SmoothMuscle/pairs/aSMA_SmoothMuscle_260_115712_053248_HE.png",
+                "image_sha256": "65458ae3b6b19873edef2eed627812e44b47a68cd1f34efdda15c7921b9d3ce1",
+                "mask": "raw/segpath-subset/aSMA_SmoothMuscle/pairs/aSMA_SmoothMuscle_260_115712_053248_mask.png",
+                "mask_sha256": "420be0e24c10b0bf9fe8f0445d6ca870f48ca339d98a59a057c4d5e2bead5db0"
+              },
+              {
+                "id": "aSMA_SmoothMuscle_082_057344_040960",
+                "slide_id": "082",
+                "target": "aSMA_SmoothMuscle",
+                "positive_pixels": 3741,
+                "image": "raw/segpath-subset/aSMA_SmoothMuscle/pairs/aSMA_SmoothMuscle_082_057344_040960_HE.png",
+                "image_sha256": "792c6eb6c549fbc2d87dcbbc3e0699089d5fdd0b83a3745738243175a40b1625",
+                "mask": "raw/segpath-subset/aSMA_SmoothMuscle/pairs/aSMA_SmoothMuscle_082_057344_040960_mask.png",
+                "mask_sha256": "8e0d8f4e51f26639ab3c238c9a22f9fc2b4460d98771e4536672721144e22981"
+              }
+            ],
+            "selection": "First complete nonempty/nonfull pairs from distinct source slide IDs in TAR order",
+            "scope": "Convenience inspection subset; not a representative or independent test cohort",
+            "retained_compressed_byte_range": [
+              0,
+              387932159
+            ]
+          },
+          {
+            "target": "CD235a_RBC",
+            "source_record": 7412580,
+            "source_archive": {
+              "path": "7412580/CD235a_RBC.tar.gz",
+              "url": "https://zenodo.org/api/records/7412580/files/CD235a_RBC.tar.gz/content",
+              "size": 48562564543,
+              "md5": "4237f99d53b62d726f501a6e70b626cf"
+            },
+            "full_archive_checksum_verified": false,
+            "prefix_bytes": 465305600,
+            "source_bytes_consumed": 465305600,
+            "prefix_sha256": "e8e9cd2e86879a8d817a6adabbffa7789b0955565bb62b246a572d0cbcfb1fef",
+            "prefix_file": "raw/segpath-subset/CD235a_RBC/source-prefix.tar.gz.part",
+            "response_etag": null,
+            "pairs": [
+              {
+                "id": "CD235a_RBC_172_086016_050176",
+                "slide_id": "172",
+                "target": "CD235a_RBC",
+                "positive_pixels": 17600,
+                "image": "raw/segpath-subset/CD235a_RBC/pairs/CD235a_RBC_172_086016_050176_HE.png",
+                "image_sha256": "de361da9709772da2de424404ee5d75693fd0be94b210b5098141f7e6f82ae26",
+                "mask": "raw/segpath-subset/CD235a_RBC/pairs/CD235a_RBC_172_086016_050176_mask.png",
+                "mask_sha256": "100bf9c9105cb0cff61a9600a183d5a6a88e46f03ddb78a3acb8f9a337f27fa6"
+              },
+              {
+                "id": "CD235a_RBC_385_115712_039936",
+                "slide_id": "385",
+                "target": "CD235a_RBC",
+                "positive_pixels": 318,
+                "image": "raw/segpath-subset/CD235a_RBC/pairs/CD235a_RBC_385_115712_039936_HE.png",
+                "image_sha256": "8dc6fbda41b6ac624741d39af52c55f0a972f44f9ac071da0b4947728d3d79f8",
+                "mask": "raw/segpath-subset/CD235a_RBC/pairs/CD235a_RBC_385_115712_039936_mask.png",
+                "mask_sha256": "e575080e01cd9cec7acb926d8bd528cd318f520ddade99643e9d3a38e71ab32c"
+              },
+              {
+                "id": "CD235a_RBC_114_128000_079872",
+                "slide_id": "114",
+                "target": "CD235a_RBC",
+                "positive_pixels": 17189,
+                "image": "raw/segpath-subset/CD235a_RBC/pairs/CD235a_RBC_114_128000_079872_HE.png",
+                "image_sha256": "623bcbdf50963851315ef5ee55ed9e21b2e2dd0201f294ab4535140cd3dce9e8",
+                "mask": "raw/segpath-subset/CD235a_RBC/pairs/CD235a_RBC_114_128000_079872_mask.png",
+                "mask_sha256": "322a5b053af1594c4d7253cdefe8c026761fd55d13be5dc77c50b1a3782e866d"
+              }
+            ],
+            "selection": "First complete nonempty/nonfull pairs from distinct source slide IDs in TAR order",
+            "scope": "Convenience inspection subset; not a representative or independent test cohort",
+            "retained_compressed_byte_range": [
+              0,
+              465305599
+            ]
+          },
+          {
+            "target": "CD45RB_Leukocyte",
+            "source_record": 7412739,
+            "source_archive": {
+              "path": "7412739/CD45RB_Leukocyte.tar.gz",
+              "url": "https://zenodo.org/api/records/7412739/files/CD45RB_Leukocyte.tar.gz/content",
+              "size": 48038556007,
+              "md5": "a228f4312d81dc80c112f195b9ad4029"
+            },
+            "full_archive_checksum_verified": false,
+            "prefix_bytes": 563415040,
+            "source_bytes_consumed": 563415040,
+            "prefix_sha256": "7123a01b0c3b32feea578a048e5b635faebbcadc18126ba1c955224ac8cd323d",
+            "prefix_file": "raw/segpath-subset/CD45RB_Leukocyte/source-prefix.tar.gz.part",
+            "response_etag": null,
+            "pairs": [
+              {
+                "id": "CD45RB_Leukocyte_135_073728_050176",
+                "slide_id": "135",
+                "target": "CD45RB_Leukocyte",
+                "positive_pixels": 3607,
+                "image": "raw/segpath-subset/CD45RB_Leukocyte/pairs/CD45RB_Leukocyte_135_073728_050176_HE.png",
+                "image_sha256": "b59048110ab151277d96eaf4f26b96c3a4d53b31aa933c7fd9d6e191309205eb",
+                "mask": "raw/segpath-subset/CD45RB_Leukocyte/pairs/CD45RB_Leukocyte_135_073728_050176_mask.png",
+                "mask_sha256": "aa3baa2788a673c9193a6535029a2f13b6f83a294a7186453dfcb012edd55c39"
+              },
+              {
+                "id": "CD45RB_Leukocyte_172_125952_010240",
+                "slide_id": "172",
+                "target": "CD45RB_Leukocyte",
+                "positive_pixels": 69835,
+                "image": "raw/segpath-subset/CD45RB_Leukocyte/pairs/CD45RB_Leukocyte_172_125952_010240_HE.png",
+                "image_sha256": "a7c16eaec6b4b8087acc15cc4cbc0a89d1372feb71735d0bd9cd8fd563600695",
+                "mask": "raw/segpath-subset/CD45RB_Leukocyte/pairs/CD45RB_Leukocyte_172_125952_010240_mask.png",
+                "mask_sha256": "d805a5230672397f85eed259f04e5a1f8d0d1b93ad06720a8fb724d5a78b5503"
+              },
+              {
+                "id": "CD45RB_Leukocyte_096_039936_061440",
+                "slide_id": "096",
+                "target": "CD45RB_Leukocyte",
+                "positive_pixels": 645,
+                "image": "raw/segpath-subset/CD45RB_Leukocyte/pairs/CD45RB_Leukocyte_096_039936_061440_HE.png",
+                "image_sha256": "538063b4aa0187423a47dc8d1774226e450e0a52dc53f2b202782962c82f732b",
+                "mask": "raw/segpath-subset/CD45RB_Leukocyte/pairs/CD45RB_Leukocyte_096_039936_061440_mask.png",
+                "mask_sha256": "017c449e946881c51b95902a704f2f7eca01f8939006fbe43242a2f07f6bdf32"
+              }
+            ],
+            "selection": "First complete nonempty/nonfull pairs from distinct source slide IDs in TAR order",
+            "scope": "Convenience inspection subset; not a representative or independent test cohort",
+            "retained_compressed_byte_range": [
+              0,
+              563415039
+            ]
+          },
+          {
+            "target": "CD3CD20_Lymphocyte",
+            "source_record": 7412529,
+            "source_archive": {
+              "path": "7412529/CD3CD20_Lymphocyte.tar.gz",
+              "url": "https://zenodo.org/api/records/7412529/files/CD3CD20_Lymphocyte.tar.gz/content",
+              "size": 23694062772,
+              "md5": "91dc9d637eb034535dc9bbae3739078d"
+            },
+            "full_archive_checksum_verified": false,
+            "prefix_bytes": 363581440,
+            "source_bytes_consumed": 363581440,
+            "prefix_sha256": "9a46c0cd80a3a782f9ec2b83dbc2de6dffd2707a5c64428fc4cba92d2b083716",
+            "prefix_file": "raw/segpath-subset/CD3CD20_Lymphocyte/source-prefix.tar.gz.part",
+            "response_etag": null,
+            "pairs": [
+              {
+                "id": "CD3CD20_Lymphocyte_217_055296_016384",
+                "slide_id": "217",
+                "target": "CD3CD20_Lymphocyte",
+                "positive_pixels": 3053,
+                "image": "raw/segpath-subset/CD3CD20_Lymphocyte/pairs/CD3CD20_Lymphocyte_217_055296_016384_HE.png",
+                "image_sha256": "365124752a2257e7c63b94cd3127fc00ea5b5e3b13f1f758e32a79bf0de41b5e",
+                "mask": "raw/segpath-subset/CD3CD20_Lymphocyte/pairs/CD3CD20_Lymphocyte_217_055296_016384_mask.png",
+                "mask_sha256": "a3c37579be9027e13ae668db58dad2d5f97040e987a61500e9574ba0c4ec56df"
+              },
+              {
+                "id": "CD3CD20_Lymphocyte_275_082944_078848",
+                "slide_id": "275",
+                "target": "CD3CD20_Lymphocyte",
+                "positive_pixels": 6022,
+                "image": "raw/segpath-subset/CD3CD20_Lymphocyte/pairs/CD3CD20_Lymphocyte_275_082944_078848_HE.png",
+                "image_sha256": "18967647a00fa869ba0221557830a7d6ffe79878c2084d5d07e5a74536f27c04",
+                "mask": "raw/segpath-subset/CD3CD20_Lymphocyte/pairs/CD3CD20_Lymphocyte_275_082944_078848_mask.png",
+                "mask_sha256": "242127364d9ebe14429d4f0dae14f1962565134306a93abd1caa133922ddcb2b"
+              },
+              {
+                "id": "CD3CD20_Lymphocyte_205_131072_066560",
+                "slide_id": "205",
+                "target": "CD3CD20_Lymphocyte",
+                "positive_pixels": 162419,
+                "image": "raw/segpath-subset/CD3CD20_Lymphocyte/pairs/CD3CD20_Lymphocyte_205_131072_066560_HE.png",
+                "image_sha256": "4ceeb3be41121fc203363015c55ebc60109aaf0f5be72d024ab8c43c827fd426",
+                "mask": "raw/segpath-subset/CD3CD20_Lymphocyte/pairs/CD3CD20_Lymphocyte_205_131072_066560_mask.png",
+                "mask_sha256": "8a186d10a8a024a231f2842d662c38ddda7d9e6471132427a7b6f2c6d9efad77"
+              }
+            ],
+            "selection": "First complete nonempty/nonfull pairs from distinct source slide IDs in TAR order",
+            "scope": "Convenience inspection subset; not a representative or independent test cohort",
+            "retained_compressed_byte_range": [
+              0,
+              363581439
+            ]
+          },
+          {
+            "target": "ERG_Endothelium",
+            "source_record": 7412512,
+            "source_archive": {
+              "path": "7412512/ERG_Endothelium.tar.gz",
+              "url": "https://zenodo.org/api/records/7412512/files/ERG_Endothelium.tar.gz/content",
+              "size": 20956731834,
+              "md5": "836d87856cacb857ac37d1fe1a76b509"
+            },
+            "full_archive_checksum_verified": false,
+            "prefix_bytes": 592445440,
+            "source_bytes_consumed": 592445440,
+            "prefix_sha256": "bb30e22cadd7db05b70c6907d98063d37c275d618e4c09583f54ffa38e84ea4c",
+            "prefix_file": "raw/segpath-subset/ERG_Endothelium/source-prefix.tar.gz.part",
+            "response_etag": null,
+            "pairs": [
+              {
+                "id": "ERG_Endothelium_257_183296_046080",
+                "slide_id": "257",
+                "target": "ERG_Endothelium",
+                "positive_pixels": 4500,
+                "image": "raw/segpath-subset/ERG_Endothelium/pairs/ERG_Endothelium_257_183296_046080_HE.png",
+                "image_sha256": "40f2694b20775365ad081db5404dca82dabffc8e12722a1a143a9d14027b6075",
+                "mask": "raw/segpath-subset/ERG_Endothelium/pairs/ERG_Endothelium_257_183296_046080_mask.png",
+                "mask_sha256": "02d3e231743163b4f86b0437a6a03489f1eca4aaef16e873abda56730af476c4"
+              },
+              {
+                "id": "ERG_Endothelium_063_132096_015360",
+                "slide_id": "063",
+                "target": "ERG_Endothelium",
+                "positive_pixels": 8467,
+                "image": "raw/segpath-subset/ERG_Endothelium/pairs/ERG_Endothelium_063_132096_015360_HE.png",
+                "image_sha256": "ba0a6b67f9d1d3b4622b1f0c18bef30fe495a571d5c2095e5db14540a6442d42",
+                "mask": "raw/segpath-subset/ERG_Endothelium/pairs/ERG_Endothelium_063_132096_015360_mask.png",
+                "mask_sha256": "12e2601d8fe2c5160b239eea98071ae379820eae16a088a0e256c7871288d9ed"
+              },
+              {
+                "id": "ERG_Endothelium_222_067584_061440",
+                "slide_id": "222",
+                "target": "ERG_Endothelium",
+                "positive_pixels": 376,
+                "image": "raw/segpath-subset/ERG_Endothelium/pairs/ERG_Endothelium_222_067584_061440_HE.png",
+                "image_sha256": "4ac4664a5f0bd07f8ffa764c2d33b2ad6b946f63ff7dba864c141b207aeb5bda",
+                "mask": "raw/segpath-subset/ERG_Endothelium/pairs/ERG_Endothelium_222_067584_061440_mask.png",
+                "mask_sha256": "74db43da03a105400199354078768ffbc5a67eec87a532f57a5f2787b3bd4c04"
+              }
+            ],
+            "selection": "First complete nonempty/nonfull pairs from distinct source slide IDs in TAR order",
+            "scope": "Convenience inspection subset; not a representative or independent test cohort",
+            "retained_compressed_byte_range": [
+              0,
+              592445439
+            ]
+          },
+          {
+            "target": "MIST1_PlasmaCell",
+            "source_record": 7412500,
+            "source_archive": {
+              "path": "7412500/MIST1_PlasmaCell.tar.gz",
+              "url": "https://zenodo.org/api/records/7412500/files/MIST1_PlasmaCell.tar.gz/content",
+              "size": 24891504922,
+              "md5": "46b5aa5eb06d61fd8157e357cea58ba8"
+            },
+            "full_archive_checksum_verified": false,
+            "prefix_bytes": 566978560,
+            "source_bytes_consumed": 566978560,
+            "prefix_sha256": "0cefe04614b39fe8a2679f5b0367a9e0b5981328735ce494dd0c5dd8212d08c3",
+            "prefix_file": "raw/segpath-subset/MIST1_PlasmaCell/source-prefix.tar.gz.part",
+            "response_etag": null,
+            "pairs": [
+              {
+                "id": "MIST1_PlasmaCell_268_045056_051200",
+                "slide_id": "268",
+                "target": "MIST1_PlasmaCell",
+                "positive_pixels": 358,
+                "image": "raw/segpath-subset/MIST1_PlasmaCell/pairs/MIST1_PlasmaCell_268_045056_051200_HE.png",
+                "image_sha256": "4b64ad6e506f4ab3362d7bf877b4794b404b20a30a091d7aaf00906b26ee4540",
+                "mask": "raw/segpath-subset/MIST1_PlasmaCell/pairs/MIST1_PlasmaCell_268_045056_051200_mask.png",
+                "mask_sha256": "ea6bfe358035999f3b0a9265607a5757d497b9a9a061f8e74a4a3e5ff6ecf93b"
+              },
+              {
+                "id": "MIST1_PlasmaCell_272_051200_030720",
+                "slide_id": "272",
+                "target": "MIST1_PlasmaCell",
+                "positive_pixels": 396,
+                "image": "raw/segpath-subset/MIST1_PlasmaCell/pairs/MIST1_PlasmaCell_272_051200_030720_HE.png",
+                "image_sha256": "579caebd5dfda60b37f764911c743f7b91a8616be17ab5dea1e828c52ea55aa2",
+                "mask": "raw/segpath-subset/MIST1_PlasmaCell/pairs/MIST1_PlasmaCell_272_051200_030720_mask.png",
+                "mask_sha256": "94c7fb517ea348fb0ff80b2a13585fc6177e73e7d0a7140fe3bfe3487363d34c"
+              },
+              {
+                "id": "MIST1_PlasmaCell_259_147456_040960",
+                "slide_id": "259",
+                "target": "MIST1_PlasmaCell",
+                "positive_pixels": 1404,
+                "image": "raw/segpath-subset/MIST1_PlasmaCell/pairs/MIST1_PlasmaCell_259_147456_040960_HE.png",
+                "image_sha256": "ea8981860aefb8920f9434e6a2b4c0b004d983e366c89d8b0ea1fad48ae7b4b3",
+                "mask": "raw/segpath-subset/MIST1_PlasmaCell/pairs/MIST1_PlasmaCell_259_147456_040960_mask.png",
+                "mask_sha256": "be141911fdde115602c3101c948dbf993854b9c46c459ea3703a7095b1ac3b39"
+              }
+            ],
+            "selection": "First complete nonempty/nonfull pairs from distinct source slide IDs in TAR order",
+            "scope": "Convenience inspection subset; not a representative or independent test cohort",
+            "retained_compressed_byte_range": [
+              0,
+              566978559
+            ]
+          },
+          {
+            "target": "MNDA_MyeloidCell",
+            "source_record": 7412690,
+            "source_archive": {
+              "path": "7412690/MNDA_MyeloidCell.tar.gz",
+              "url": "https://zenodo.org/api/records/7412690/files/MNDA_MyeloidCell.tar.gz/content",
+              "size": 27341828567,
+              "md5": "49e9ffcf13d012a220cbe5c06ff24169"
+            },
+            "full_archive_checksum_verified": false,
+            "prefix_bytes": 501432320,
+            "source_bytes_consumed": 501432320,
+            "prefix_sha256": "9c13070f09240fd00dd3cd5775d0b5d82647719aace6a5107e17a18cdba8b6e3",
+            "prefix_file": "raw/segpath-subset/MNDA_MyeloidCell/source-prefix.tar.gz.part",
+            "response_etag": null,
+            "pairs": [
+              {
+                "id": "MNDA_MyeloidCell_166_072704_039936",
+                "slide_id": "166",
+                "target": "MNDA_MyeloidCell",
+                "positive_pixels": 327,
+                "image": "raw/segpath-subset/MNDA_MyeloidCell/pairs/MNDA_MyeloidCell_166_072704_039936_HE.png",
+                "image_sha256": "390ae52be83542a0575e1a401c72fe3346a7b171b31b624b01a69f1ffb3b9dd4",
+                "mask": "raw/segpath-subset/MNDA_MyeloidCell/pairs/MNDA_MyeloidCell_166_072704_039936_mask.png",
+                "mask_sha256": "aefc5e7f3394bd58cbee5e07aa4f3b33047bed3b3a02e350286332c69b67a168"
+              },
+              {
+                "id": "MNDA_MyeloidCell_387_144384_048128",
+                "slide_id": "387",
+                "target": "MNDA_MyeloidCell",
+                "positive_pixels": 14246,
+                "image": "raw/segpath-subset/MNDA_MyeloidCell/pairs/MNDA_MyeloidCell_387_144384_048128_HE.png",
+                "image_sha256": "37e85f67fed250c4882389512e392465f81e2d93261a75cc5d900eb1f7a5b72e",
+                "mask": "raw/segpath-subset/MNDA_MyeloidCell/pairs/MNDA_MyeloidCell_387_144384_048128_mask.png",
+                "mask_sha256": "17e550340e996bf85cd9906b0ce4d2507e3a578119cf2b5a47e7c2047968c0e5"
+              },
+              {
+                "id": "MNDA_MyeloidCell_135_118784_049152",
+                "slide_id": "135",
+                "target": "MNDA_MyeloidCell",
+                "positive_pixels": 8464,
+                "image": "raw/segpath-subset/MNDA_MyeloidCell/pairs/MNDA_MyeloidCell_135_118784_049152_HE.png",
+                "image_sha256": "5a4f6349d8c04906963be00188e04ad3d642bf90bb060ae8e59dba7b5923b0c6",
+                "mask": "raw/segpath-subset/MNDA_MyeloidCell/pairs/MNDA_MyeloidCell_135_118784_049152_mask.png",
+                "mask_sha256": "eb97b7407d4473b2a7c7cceaebfc9ea8915b9158e71160a5781b9333a032324a"
+              }
+            ],
+            "selection": "First complete nonempty/nonfull pairs from distinct source slide IDs in TAR order",
+            "scope": "Convenience inspection subset; not a representative or independent test cohort",
+            "retained_compressed_byte_range": [
+              0,
+              501432319
+            ]
+          }
+        ],
+        "bora_executed": false
+      },
+      "prepared": {
+        "dataset": "segpath-subset",
+        "inventories": {
+          "segpath-asma": {
+            "pairs": 3,
+            "sha256": "c68c9a72738e49c7487ab4fecf497e336b46cd846dcea9108ab8ad041416e42f",
+            "splits": {
+              "train": 3
+            }
+          },
+          "segpath-cd235a": {
+            "pairs": 3,
+            "sha256": "a909765a338218a249c7e7933e62a045b60df06224f5c5c4d7907dfc2cc21474",
+            "splits": {
+              "train": 3
+            }
+          },
+          "segpath-cd3cd20": {
+            "pairs": 3,
+            "sha256": "d347326bda2954b104bdf817655d8adc31d0fe08359fb1bfb3e2719d228d9951",
+            "splits": {
+              "train": 3
+            }
+          },
+          "segpath-cd45rb": {
+            "pairs": 3,
+            "sha256": "06173b86a7e3132d20b5e5e7de61e8f5f00e2adbd5c73ba64647ed3be5126460",
+            "splits": {
+              "train": 3
+            }
+          },
+          "segpath-erg": {
+            "pairs": 3,
+            "sha256": "5ecd7f4885b1e7270a869b4a9f92f5cd47082a184e26a5851d5795fcb4a87788",
+            "splits": {
+              "val": 1,
+              "train": 2
+            }
+          },
+          "segpath-mist1": {
+            "pairs": 3,
+            "sha256": "c714d312bc434c3464622ec15dd2efc298ed3f1ec7ac68a6c694286ec4c5fec1",
+            "splits": {
+              "train": 3
+            }
+          },
+          "segpath-mnda": {
+            "pairs": 3,
+            "sha256": "28a75efa5c731bc7572c0334e974d61c6f406750f1d6806a289a01a649687a66",
+            "splits": {
+              "train": 3
+            }
+          },
+          "segpath-panck": {
+            "pairs": 3,
+            "sha256": "6f1589ca2297c7625d42dd871983047d3d0085e90ada5f15f28aac453671ad5d",
+            "splits": {
+              "train": 2,
+              "test": 1
+            }
+          }
+        },
+        "targets": 8,
+        "scope": "Three native pairs per target; not a representative benchmark cohort",
+        "full_archive_checksum_verified": false,
+        "original_CSV_cohorts": {
+          "panCK_Epithelium": {
+            "patches_listed_in_complete_CSV": 26509,
+            "released_partitions": {
+              "train": 21912,
+              "val": 2259,
+              "test": 2338
+            }
+          },
+          "aSMA_SmoothMuscle": {
+            "patches_listed_in_complete_CSV": 31178,
+            "released_partitions": {
+              "train": 25748,
+              "val": 2489,
+              "test": 2941
+            }
+          },
+          "CD235a_RBC": {
+            "patches_listed_in_complete_CSV": 25909,
+            "released_partitions": {
+              "train": 21595,
+              "val": 2224,
+              "test": 2090
+            }
+          },
+          "CD45RB_Leukocyte": {
+            "patches_listed_in_complete_CSV": 24805,
+            "released_partitions": {
+              "train": 20518,
+              "val": 1988,
+              "test": 2299
+            }
+          },
+          "CD3CD20_Lymphocyte": {
+            "patches_listed_in_complete_CSV": 12273,
+            "released_partitions": {
+              "train": 10453,
+              "val": 1082,
+              "test": 738
+            }
+          },
+          "ERG_Endothelium": {
+            "patches_listed_in_complete_CSV": 10647,
+            "released_partitions": {
+              "train": 9497,
+              "val": 613,
+              "test": 537
+            }
+          },
+          "MIST1_PlasmaCell": {
+            "patches_listed_in_complete_CSV": 13231,
+            "released_partitions": {
+              "train": 11320,
+              "val": 947,
+              "test": 964
+            }
+          },
+          "MNDA_MyeloidCell": {
+            "patches_listed_in_complete_CSV": 14135,
+            "released_partitions": {
+              "train": 12315,
+              "val": 894,
+              "test": 926
+            }
+          }
+        },
+        "bora_executed": false
+      }
+    }
+  },
+  "camelyon_complete_WSI_metadata": [
+    {
+      "slide": "tumor_058",
+      "image": "raw/camelyon16-subset/images/tumor_058.tif",
+      "mask": "raw/camelyon16-subset/masks/tumor_058_mask.tif",
+      "xml": "raw/camelyon16-subset/annotations/tumor_058.xml",
+      "image_sha256": "683d2de301d4c6c2cdb40690776b8b8b1b464a03aa1317c3b20afb3545a5941a",
+      "mask_sha256": "34e3cacb6a850a50a40b1b446134b5726cfe6693e27834b1112614f9b6c33296",
+      "xml_sha256": "700f0b4e52d69de126f53b10a214ceca5ef219e038d424e9b74b1b8da07468d4",
+      "width": 97792,
+      "height": 221184,
+      "mpp_x_um": 0.24309399999999998,
+      "mpp_y_um": 0.24309399999999998,
+      "image_levels": [
+        [
+          97792,
+          221184
+        ],
+        [
+          48896,
+          110592
+        ],
+        [
+          24448,
+          55296
+        ],
+        [
+          12224,
+          27648
+        ],
+        [
+          6112,
+          13824
+        ],
+        [
+          3056,
+          6912
+        ],
+        [
+          1528,
+          3456
+        ],
+        [
+          764,
+          1728
+        ],
+        [
+          382,
+          864
+        ],
+        [
+          191,
+          432
+        ]
+      ],
+      "mask_levels": [
+        [
+          97792,
+          221184
+        ],
+        [
+          48896,
+          110592
+        ],
+        [
+          24448,
+          55296
+        ],
+        [
+          12224,
+          27648
+        ],
+        [
+          6112,
+          13824
+        ],
+        [
+          3056,
+          6912
+        ],
+        [
+          1528,
+          3456
+        ],
+        [
+          764,
+          1728
+        ],
+        [
+          382,
+          864
+        ]
+      ],
+      "scanner_vendor": "philips",
+      "example_window": {
+        "crop_x": 48384,
+        "crop_y": 107075,
+        "crop_level": 0,
+        "crop_width": 4096,
+        "crop_height": 4096
+      }
+    },
+    {
+      "slide": "tumor_091",
+      "image": "raw/camelyon16-subset/images/tumor_091.tif",
+      "mask": "raw/camelyon16-subset/masks/tumor_091_mask.tif",
+      "xml": "raw/camelyon16-subset/annotations/tumor_091.xml",
+      "image_sha256": "29f5ca4caf206a2197a134fd61fd79032cf9f8364495aba5840a842a6967d4a4",
+      "mask_sha256": "2c9a6f4b13f9a7551c8dcb3029144593ae2242bc2845cb6e10de0100fee84b54",
+      "xml_sha256": "0a5206bbee1044ad1149b729a1fd2372698ccb147a92e68f0ff16b13498396a0",
+      "width": 61440,
+      "height": 53760,
+      "mpp_x_um": 0.226321,
+      "mpp_y_um": 0.22631600000000002,
+      "image_levels": [
+        [
+          61440,
+          53760
+        ],
+        [
+          30720,
+          26880
+        ],
+        [
+          15360,
+          13440
+        ],
+        [
+          7680,
+          6720
+        ],
+        [
+          3840,
+          3360
+        ],
+        [
+          1920,
+          1680
+        ],
+        [
+          960,
+          840
+        ],
+        [
+          480,
+          420
+        ]
+      ],
+      "mask_levels": [
+        [
+          61440,
+          53760
+        ],
+        [
+          30720,
+          26880
+        ],
+        [
+          15360,
+          13440
+        ],
+        [
+          7680,
+          6720
+        ],
+        [
+          3840,
+          3360
+        ],
+        [
+          1920,
+          1680
+        ],
+        [
+          960,
+          840
+        ],
+        [
+          480,
+          420
+        ]
+      ],
+      "scanner_vendor": "philips",
+      "example_window": {
+        "crop_x": 34436,
+        "crop_y": 34768,
+        "crop_level": 0,
+        "crop_width": 4096,
+        "crop_height": 4096
+      }
+    },
+    {
+      "slide": "tumor_107",
+      "image": "raw/camelyon16-subset/images/tumor_107.tif",
+      "mask": "raw/camelyon16-subset/masks/tumor_107_mask.tif",
+      "xml": "raw/camelyon16-subset/annotations/tumor_107.xml",
+      "image_sha256": "8c7ce5c82689739b4782be455fba607b93aa4f1a47c8e21f454cb591d6755d49",
+      "mask_sha256": "a5798d06bd0bee0b58887ec43333adade3e86c03fcc154bf432f944371cddf35",
+      "xml_sha256": "9e705d54b20f11ee435e4aef57bb72879cfa4cfa368c857568451a41853a3937",
+      "width": 98304,
+      "height": 82432,
+      "mpp_x_um": 0.226321,
+      "mpp_y_um": 0.22631600000000002,
+      "image_levels": [
+        [
+          98304,
+          82432
+        ],
+        [
+          49152,
+          41216
+        ],
+        [
+          24576,
+          20608
+        ],
+        [
+          12288,
+          10304
+        ],
+        [
+          6144,
+          5152
+        ],
+        [
+          3072,
+          2576
+        ],
+        [
+          1536,
+          1288
+        ],
+        [
+          768,
+          644
+        ],
+        [
+          384,
+          322
+        ]
+      ],
+      "mask_levels": [
+        [
+          98304,
+          82432
+        ],
+        [
+          49152,
+          41216
+        ],
+        [
+          24576,
+          20608
+        ],
+        [
+          12288,
+          10304
+        ],
+        [
+          6144,
+          5152
+        ],
+        [
+          3072,
+          2576
+        ],
+        [
+          1536,
+          1288
+        ],
+        [
+          768,
+          644
+        ],
+        [
+          384,
+          322
+        ]
+      ],
+      "scanner_vendor": "philips",
+      "example_window": {
+        "crop_x": 23734,
+        "crop_y": 59190,
+        "crop_level": 0,
+        "crop_width": 4096,
+        "crop_height": 4096
+      }
+    }
+  ],
+  "environment": {
+    "python": "3.10.12",
+    "libraries": {
+      "Pillow": "12.3.0",
+      "numpy": "2.2.6",
+      "pyarrow": "25.0.1",
+      "huggingface-hub": "2.2.0",
+      "openslide-python": "1.4.6",
+      "openslide-bin": "4.0.1.2",
+      "openpyxl": "3.1.5"
+    },
+    "free_bytes": 57534976000
+  },
+  "examples": {
+    "total_pairs": 54,
+    "new_pairs": 30,
+    "camelyon_native_crops": {
+      "count": 3,
+      "pixels": [
+        4096,
+        4096
+      ],
+      "pyramid_level": 0
+    },
+    "sicapv2_received_JPEG_pairs": 3,
+    "segpath_native_pairs": 24,
+    "segpath_targets": 8
+  },
+  "validation": {
+    "benchmark_tests_passed_local_and_remote": 14,
+    "viewer": "54 cases loaded in browser; native CAMELYON boundary and per-axis spacing, SegPath epithelium overlay and SICAP annotation status visually checked",
+    "accepted_pair_inventory_total": 24711,
+    "segpath_full_archive_checksum_verified": false,
+    "local_example_file_hashes_verified": 108,
+    "viewer_file_bytes": 4664035
+  },
+  "pending": {
+    "paip2019": "Provider-approved signed data-use agreement and delivery required",
+    "crag": "Canonical release and original provenance still pending; candidate stored separately",
+    "camelyon16_full_release": "Current original AWS release is 762471984787 bytes and does not fit the available SSD space; 3 positive training WSIs acquired",
+    "segpath_full_release": "305525589629 compressed archive bytes before extraction; convenience subset only",
+    "sicapv2_annotation": "Decoded JPEG masks are not categorical codes 0-3; semantic encoding and boundary fidelity unresolved; no mask transformation applied"
+  },
+  "notes": "No evaluation, patient resplitting, model prediction or coarse-label generation; CAMELYON examples are native source-mask windows, not complete copied slides"
+}

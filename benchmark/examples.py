@@ -55,7 +55,8 @@ def main(argv=None):
                       "raw_labels": row["raw_labels"], "label_mode": row["label_mode"],
                       "ignore_labels": row["ignore_labels"], "mpp_um": row["mpp_um"]}
             record.update(width=row["width"], height=row["height"])
-            record.update({key: row[key] for key in ("split", "group_level", "preprocessing") if key in row})
+            record.update({key: row[key] for key in ("split", "group_level", "preprocessing", "overlay_supported",
+                           "mpp_x_um", "mpp_y_um", "resolution_status", "crop_x", "crop_y", "crop_level") if key in row})
             if "grade" in row:
                 record["image_level_grade"] = row["grade"]
             if "source_status" in row:
@@ -78,6 +79,11 @@ def main(argv=None):
             records.append(record)
     if not records:
         raise ValueError("No validated dataset manifests found")
+    wsi_metadata = a.root / "metadata" / "camelyon16-subset-wsi.json"
+    if wsi_metadata.exists():
+        target = a.destination / "camelyon16-subset" / "whole-slide-information.json"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(wsi_metadata, target)
     (a.destination / "examples.json").write_text(json.dumps(records, indent=2) + "\n")
     text = ["# Dataset examples", "", "Original image bytes and paired raw masks, copied without resizing or running Bora.",
             "Mask grayscale values are class/instance IDs, not display intensities; consult the dataset report.",

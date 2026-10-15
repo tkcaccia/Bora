@@ -222,6 +222,8 @@ def main(argv=None):
     else:
         if source["access"] == "manual":
             raise ValueError(source["instructions"])
+        if source["access"] == "streaming-tar-subset":
+            raise ValueError("Use python -m benchmark.segpath_subset for the explicitly bounded native subset")
         required = sum(f.get("size", 0) for f in source["files"] if not (raw / f["path"]).exists())
         if args.workers > 1:
             required *= 2  # Chunks and assembled archive coexist.

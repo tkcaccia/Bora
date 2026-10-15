@@ -26,11 +26,17 @@ def write_once(path, data):
 def entry(image, mask, root, dataset, sample, group, split, mode, ignore, mpp):
     with Image.open(image) as im, Image.open(mask) as mk:
         rgb, labels = np.asarray(im), np.asarray(mk)
+        if rgb.ndim == 3 and rgb.shape[2] == 4:
+            if not np.all(rgb[:, :, 3] == 255):
+                raise ValueError(f"Source RGBA image has nonopaque pixels: {sample}")
+            rgb = rgb[:, :, :3]  # Check RGB geometry; retain the original opaque RGBA file bytes.
         if rgb.ndim != 3 or rgb.shape[2] != 3 or labels.ndim != 2 or rgb.shape[:2] != labels.shape:
             raise ValueError(f"Bad RGB/categorical mask geometry: {sample}")
         if rgb.dtype != np.uint8 or not (np.issubdtype(labels.dtype, np.integer) or labels.dtype == np.bool_):
             raise ValueError(f"Unsupported image or mask dtype: {sample}")
-        values = list(map(int, np.unique(labels)))
+        values = (np.flatnonzero(np.bincount(labels.reshape(-1))).tolist()
+                  if labels.dtype in (np.dtype("uint8"), np.dtype("bool"))
+                  else list(map(int, np.unique(labels))))
         if dataset == "bcss" and any(v < 0 or v > 21 for v in values):
             raise ValueError(f"Unexpected BCSS class: {sample}")
         if dataset == "tiger" and any(v < 0 or v > 7 for v in values):

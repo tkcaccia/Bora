@@ -163,8 +163,8 @@ providers' label ontologies or cohort sizes.
 | NuCLS | Breast nuclear classes | Optional cell-scale extension |
 | PanNuke | Nuclear instances and types across organs | Optional cell-scale extension; PathSeg's 85 hierarchical labels are not 85 original nuclear types |
 | RINGS | Prostate glands and cancer tissue | New complete original release acquired |
-| SegPath | Immunofluorescence-derived cell/tissue masks | Already recommended; large optional extension, not downloaded in this addition |
-| SICAPv2 | Prostate Gleason regions | Already recommended; prioritize an original licensed release with lossless annotations |
+| SegPath | Immunofluorescence-derived cell/tissue masks | Subsequent bounded native subsets; see REQUESTED_DATASETS.md |
+| SICAPv2 | Prostate Gleason regions | Original archive acquired subsequently; JPEG annotation encoding unresolved; see REQUESTED_DATASETS.md |
 | TNBC | Breast nuclei/cell types | Optional cell-scale extension |
 | WSSS4LUAD | Lung tumor/stroma/normal tissue | New mirror acquired; use 40 validated dense validation pairs only |
 | CPM17 | Nucleus segmentation | Paper's external set; optional cell-scale extension |
@@ -244,8 +244,10 @@ A byte-level audit found 1,842 unique new annotated RGBs and no identical RGB
 bytes crossing their released partitions. This does not establish patient or
 slide independence. RINGS contributes 1,500 of those RGBs with two annotation
 targets each; the staged CoCaHis subset contributes 302 and WSSS4LUAD contributes
-40. The complete acquired paired inventory now contains 4,401 distinct image
-paths and 5,901 annotation targets, including existing candidate data.
+40. At that acquisition snapshot the paired inventory contained 4,401 distinct
+image paths and 5,901 annotation targets, including existing candidate data.
+Subsequent SICAPv2 and CAMELYON16/SegPath acquisitions are recorded in
+[REQUESTED_DATASETS.md](REQUESTED_DATASETS.md).
 
 The source PDF is retained locally by the user and is not redistributed in Git.
 The original paper code's acquisition instructions were read as source
