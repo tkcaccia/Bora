@@ -7,6 +7,9 @@ No benchmark scores, model predictions, or derived coarse labels are produced.
 Read [DATASETS.md](DATASETS.md) for annotation definitions, source citations,
 access conditions, overlap, and limitations. [ACQUISITION.md](ACQUISITION.md)
 records the actual acquisition on 15 October 2026.
+Read [ANNOTATIONS.md](ANNOTATIONS.md) for microscopy sampling, tumor/stroma
+label maps and per-image annotation metadata. Source-qualified spacing is
+stored in [resolution.json](resolution.json).
 
 ## Storage
 
@@ -50,6 +53,7 @@ python -m benchmark.prepare bcss
 python -m benchmark.prepare tiger
 python -m benchmark.prepare glas
 python -m benchmark.examples --destination /mnt/sata_ssd/Bora-benchmark/examples --count 3
+python -m benchmark.describe --examples /mnt/sata_ssd/Bora-benchmark/examples
 python -m pytest -q benchmark/tests/test_acquisition.py
 ```
 
@@ -70,6 +74,9 @@ data root if necessary. Inventory commands verify every image/mask shape and
 record each input's SHA256. BCSS, TIGER and GlaS pair counts are checked against
 the pinned releases. Existing inventories with different content are rejected.
 No evaluation split is assigned by this acquisition workflow.
+The description command writes a resolution/annotation CSV for every acquired
+image and creates per-example metadata plus an interactive local mask viewer.
+It does not alter the original acquisition inventories or input image bytes.
 
 ## CRAG and PAIP access
 

@@ -44,7 +44,7 @@ No stain transformation, spatial resizing, coarse-label generation, model infere
 
 ## Reuse and local examples
 
-The `examples.py` script copies three original RGB images and their raw masks per available dataset. TIGER examples cover the BCSS-derived subset, TCGA small ROIs and non-TCGA ROIs. Example files are a convenience sample; they are not an evaluation cohort. Local copies are saved under `benchmark/examples/` and excluded from Git. `examples.json` retains their source IDs and hashes. PAIP examples remain unavailable.
+The `examples.py` script copies three original RGB images and their raw masks per available dataset. TIGER examples cover the BCSS-derived subset and non-TCGA tissue ROIs; each is at least 1000 pixels on both sides. A previously selected cell-scale crop was replaced together with its mask. Example files are a convenience sample; they are not an evaluation cohort. Local copies are saved under `benchmark/examples/` and excluded from Git. `examples.json` retains their source IDs and hashes. PAIP examples remain unavailable. Resolution evidence, annotation legends and the replacement sample identity are documented in [ANNOTATIONS.md](ANNOTATIONS.md).
 
 The isolated acquisition environment, inventories and logs are retained under the remote data root. An environment freeze is at `metadata/environment.txt`. Download chunks and the interrupted sequential TIGER partial are retained for recovery; these account for additional disk use. No cloud resource was provisioned and no scheduler job was submitted. At the completion audit the data root occupied approximately 21 GiB, including archives, extracted files, examples, environment and recovery chunks.
 

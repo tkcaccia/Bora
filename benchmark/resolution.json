@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "verified_on": "2026-10-15",
+  "unit": "micrometres per pixel",
+  "interpretation": "Sampling/pixel spacing of distributed images, distinct from optical resolution and display magnification. Dataset-level source claims; no independent scanner calibration.",
+  "datasets": {
+    "bcss": {
+      "mpp_um": 0.25,
+      "status": "mirror_reported",
+      "source": "https://huggingface.co/datasets/MedOtter/BCSS/tree/502d4a3fbc77dbaca6f4664c19e2379ff077d418",
+      "equivalent_magnification": 40,
+      "scanner": null,
+      "note": "Pinned mirror reports 0.25 micrometres/pixel and 40x equivalent; no per-file optical calibration verified. RGBs are already colour-normalized.",
+      "annotation": "Structured crowdsourced tissue-class annotations from BCSS; not Bora predictions."
+    },
+    "tiger": {
+      "mpp_um": 0.5,
+      "status": "provider_reported_approximate",
+      "source": "https://tiger.grand-challenge.org/Data/",
+      "equivalent_magnification": null,
+      "scanner": null,
+      "note": "Provider states approximate 0.5 micrometres/pixel for all released ROI images and masks. Pixel spacing is not an optical resolving-power measurement.",
+      "annotation": "Manual tissue compartment masks. RUMC/JB annotations by breast pathologists; TCGA regions adapted from BCSS/NuCLS."
+    },
+    "glas": {
+      "mpp_um": 0.62,
+      "status": "publication_reported",
+      "source": "https://arxiv.org/abs/1603.00275",
+      "equivalent_magnification": 20,
+      "scanner": "Zeiss MIRAX MIDI",
+      "scanner_native_mpp_um": 0.465,
+      "note": "Original slides were scanned at 0.465 micrometres/pixel and rescaled to 0.620 micrometres/pixel for the distributed tiles. BMP examples do not embed a reliable calibration.",
+      "annotation": "Expert-drawn individual gland boundaries. Positive pixel values identify gland instances, not tumor or stroma classes. Image-level grade is separate."
+    },
+    "crag": {
+      "mpp_um": 0.55,
+      "status": "publication_reported_original_release",
+      "source": "https://arxiv.org/abs/1806.01963",
+      "equivalent_magnification": 20,
+      "scanner": "Omnyx VL120",
+      "note": "Published resolution of the original CRAG release; canonical release is not acquired.",
+      "annotation": "Original release has expert gland instance annotations; these do not provide a general tumor/stroma tissue ontology."
+    },
+    "crag-candidate": {
+      "mpp_um": null,
+      "status": "unverified_mirror",
+      "source": "https://arxiv.org/abs/1806.01963",
+      "equivalent_magnification": null,
+      "scanner": null,
+      "original_release_mpp_um": 0.55,
+      "original_release_equivalent_magnification": 20,
+      "original_release_scanner": "Omnyx VL120",
+      "note": "Original CRAG is reported at 0.55 micrometres/pixel (20x). The candidate mirror has no calibration metadata or documented processing history; that spacing cannot yet be assigned to its files.",
+      "annotation": "Integer gland-instance-style masks are present, but original annotation fidelity/provenance is unverified; no tumor/stroma class labels."
+    },
+    "paip2019": {
+      "mpp_um": null,
+      "status": "not_acquired",
+      "source": "https://paip2019.grand-challenge.org/Dataset/",
+      "equivalent_magnification": null,
+      "objective_magnification": 20,
+      "scanner": "Aperio AT2",
+      "note": "Provider reports scanning at 20x. Micrometres/pixel must be obtained from approved SVS files; do not infer it from magnification alone.",
+      "annotation": "Provider training masks separately annotate whole tumor and viable tumor; data are pending approved access."
+    }
+  }
+}

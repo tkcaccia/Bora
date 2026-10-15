@@ -107,8 +107,10 @@ inferred here. Cite the original challenge and record the mirror version.
 Its patient table permits an overlap audit. The acquired official image
 splits share patient IDs, so retaining those splits alone does not establish
 patient-independent evaluation. Exact observed overlap is recorded in the
-acquisition report. Pixel spacing is left unset in the inventory until
-independently verified; magnification alone is insufficient calibration.
+acquisition report. The challenge paper reports distributed spacing of
+0.620 µm/pixel after rescaling native 0.465 µm/pixel scans. This dataset-level
+evidence is now recorded in the description layer; no reliable calibration is
+embedded in the acquired BMPs. See [ANNOTATIONS.md](ANNOTATIONS.md).
 
 ## CRAG
 
@@ -128,6 +130,9 @@ splits or unchanged instance identities. Candidate examples are labelled as
 such. Do not describe this candidate as a verified original CRAG release in
 a manuscript. Obtain a provider-approved release and reconcile its metadata
 before using the images for reported results.
+The original CRAG paper reports 0.55 µm/pixel at 20× with an Omnyx VL120;
+this nominal value is kept separately from the unknown actual spacing of
+the candidate mirror. Gland instance IDs do not encode tumor/stroma classes.
 
 ## Optional extensions
 
