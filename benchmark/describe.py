@@ -12,6 +12,7 @@ import numpy as np
 from PIL import Image
 
 from .download import DEFAULT_ROOT, digest
+from .image_types import TYPE_FIELDS, classify_image, export_classifications
 
 HERE = Path(__file__).parent
 COLORS = ["#cbd5e1", "#e53935", "#43a047", "#8e44ad", "#efb936", "#d5803c", "#1976d2", "#95a5a6",
@@ -83,6 +84,7 @@ def main(argv=None):
         if mask.shape != (height, width):
             raise ValueError("Example image/mask mismatch")
         row.update(width=width, height=height, resolution=dict(resolution["datasets"][row["dataset"]]))
+        row.update(classify_image(row))
         row["mpp_um"] = row["resolution"]["mpp_um"]
         row["mpp_x_um"] = row.get("mpp_x_um", row["mpp_um"])
         row["mpp_y_um"] = row.get("mpp_y_um", row["mpp_um"])
@@ -110,16 +112,19 @@ def main(argv=None):
              "Colours are a visualization of supplied annotations, not Bora predictions. Hover for a label; use the opacity control to see tissue.",
              "", "Pixel spacing describes sampling in micrometres per pixel, not optical resolving power or screen zoom.",
              "Unknown spacing and unverified semantic mappings are identified explicitly; magnification alone does not calibrate pixels.", "",
-             "| Dataset | Example | Pixels (W × H) | µm/pixel | Resolution evidence | Details |", "|---|---|---|---|---|---|"]
+             "WSI means a complete scanned slide. ROI includes tissue regions, tiles and small patches. All examples below are ROIs; the complete CAMELYON16 WSIs are stored on Chiamaka, not inside this local examples folder.", "",
+             "| Dataset | Image type | Example | Pixels (W × H) | µm/pixel | Resolution evidence | Details |", "|---|---|---|---|---|---|---|"]
     for row in rows:
         key = Path(row["image"]).stem.replace("-image", "")
         details = str(Path(row["image"]).parent / (key + "-metadata.json"))
         spacing = f"{row['mpp_x_um']:.7g} x {row['mpp_y_um']:.7g}" if row["mpp_x_um"] is not None else "Unknown"
-        lines.append(f"| {row['dataset']} | [RGB]({row['image']}) · [mask]({row['mask']}) | {row['width']} × {row['height']} | {spacing} | {row['resolution']['status']} | [legend and provenance]({details}) |")
-    lines += ["", "[Resolution and annotation information for all acquired images](all-image-information.csv)"]
+        lines.append(f"| {row['dataset']} | {row['image_type']} ({row['image_subtype']}) | [RGB]({row['image']}) · [mask]({row['mask']}) | {row['width']} × {row['height']} | {spacing} | {row['resolution']['status']} | [legend and provenance]({details}) |")
+    lines += ["", "[Resolution and annotation information for prepared image/mask pairs](all-image-information.csv)",
+              "", "[WSI/ROI classification for all inventoried images](image-types.csv) · [Counts and inventory scope](image-types-summary.json)",
+              "", "The classification inventory also includes complete CAMELYON16 WSIs, weakly labelled WSSS4LUAD training images embedded in Parquet, and quarantined WSSS4LUAD images. Their annotation status is retained; inclusion is not approval for boundary scoring."]
     (a.examples / "README.md").write_text("\n".join(lines) + "\n")
-    # Cover every acquired image, while preserving the original hashed acquisition inventories.
-    fields = ["dataset", "id", "image", "mask", "width", "height", "mpp_um", "mpp_x_um", "mpp_y_um", "resolution_status",
+    # Describe paired inputs while preserving the original hashed acquisition inventories.
+    fields = ["dataset", "id", *TYPE_FIELDS, "image", "mask", "width", "height", "mpp_um", "mpp_x_um", "mpp_y_um", "resolution_status",
               "resolution_source", "resolution_note", "reported_magnification", "original_release_mpp_um",
               "split", "group_id", "group_level", "source_status", "label_mode", "annotation_provenance", "raw_label_names"]
     count = 0
@@ -131,6 +136,7 @@ def main(argv=None):
                 item = json.loads(text)
                 info = resolution["datasets"][item["dataset"]]
                 writer.writerow({**{k: item[k] for k in ["dataset", "id", "image", "mask", "width", "height", "label_mode"]},
+                                 **classify_image(item),
                                  "mpp_um": info["mpp_um"], "resolution_status": info["status"],
                                  "mpp_x_um": item.get("mpp_x_um", info["mpp_um"]),
                                  "mpp_y_um": item.get("mpp_y_um", info["mpp_um"]),
@@ -145,7 +151,9 @@ def main(argv=None):
                 count += 1
     (a.root / "metadata" / "resolution-catalog.json").write_text(json.dumps(resolution, indent=2) + "\n")
     shutil.copy2(a.root / "metadata" / "image-information.csv", a.examples / "all-image-information.csv")
+    summary = export_classifications(a.root, a.examples)
     print(f"Described {count} acquired image/mask pairs and {len(rows)} local examples; no Bora execution")
+    print(f"Classified source image references: {summary['unique_image_references_by_type']}")
 
 
 HTML = r'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -159,16 +167,18 @@ aside{background:white;padding:20px;border:1px solid #d7dfdc;border-radius:6px;o
 a{color:#17695b}details{margin-top:16px}.legendbox{max-height:380px;overflow:auto}code{font-size:12px}@media(max-width:800px){.layout{grid-template-columns:1fr}main{padding:16px}}
 </style><main><div class="tag">Supplied dataset annotations · No Bora inference</div><h1>Histopathology example explorer</h1>
 <p>Overlay colours identify annotated tissue classes or individual gland IDs. Gland masks do not label tumor versus stroma.</p>
+<p class="muted">Every local example is an ROI (region, tile or patch). Complete CAMELYON16 WSIs remain on Chiamaka; their displayed example windows are ROIs. <a href="image-types.csv">All image classifications</a> · <a href="camelyon16-subset/whole-slide-information.json">Complete WSI metadata</a></p>
 <div class="bar"><select id="choose" aria-label="Example"></select><label>Mask opacity <input id="alpha" type="range" min="0" max="1" step=".05" value=".45"></label></div>
 <div class="layout"><section><div class="image"><img id="rgb" alt="Original histopathology image"><canvas id="mask"></canvas></div><p id="hover" class="status">Move over the image to inspect a label.</p>
 <p class="muted" id="samplingnote">Hover reads a nearest-neighbour display sample. Use the original mask for native-pixel coordinates. Percentages below are counted from the complete original mask.</p></section>
-<aside><div class="tag" id="dataset"></div><h2>Resolution and provenance</h2><p id="geometry"></p><p id="scale"></p><p id="evidence" class="muted"></p><p id="annotation"></p><p id="grade"></p>
+<aside><div class="tag" id="dataset"></div><h2>Image type</h2><p id="imagetype"></p><p id="typebasis" class="muted"></p><p id="parent" class="muted"></p><h2>Resolution and provenance</h2><p id="geometry"></p><p id="scale"></p><p id="evidence" class="muted"></p><p id="annotation"></p><p id="grade"></p>
 <h2 id="legendtitle">Annotation legend</h2><p class="muted">Percent of all image pixels; ignored areas are identified explicitly.</p><div class="legendbox" id="legend"></div><details><summary>Original sample and files</summary><p id="sample" class="muted"></p><p><a id="rawimage">Original RGB</a> · <a id="rawmask">Raw mask</a></p></details></aside></div></main>
 <script id="data" type="application/json">__CASES__</script><script>
 const cases=JSON.parse(document.getElementById('data').textContent), $=id=>document.getElementById(id);let current,grid,lookup;
-cases.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${c.dataset} / ${c.image.split('/').pop()} — ${c.width} × ${c.height}`;$('choose').append(o)});
+cases.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${c.dataset} / ${c.image.split('/').pop()} — ${c.image_type} · ${c.width} × ${c.height}`;$('choose').append(o)});
 function show(){current=cases[Number($('choose').value)];const c=current,raw=atob(c.grid),buf=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)buf[i]=raw.charCodeAt(i);if(c.grid_encoding==='rle-u16-u32'){const view=new DataView(buf.buffer);grid=new Uint16Array(c.preview_width*c.preview_height);let offset=0;for(let i=0;i<buf.length;i+=6){const count=view.getUint32(i+2,true);grid.fill(view.getUint16(i,true),offset,offset+count);offset+=count}if(offset!==grid.length)throw Error('Invalid display-grid length')}else grid=new Uint16Array(buf.buffer);lookup=new Map(c.legend.map(l=>[l.value,l]));
 $('rgb').src=c.image;$('dataset').textContent=c.dataset;$('geometry').textContent=`${c.width} × ${c.height} native pixels`;
+$('imagetype').textContent=`${c.image_type} — ${c.image_subtype.replaceAll('_',' ')}`;$('typebasis').textContent=c.image_type_basis;$('parent').textContent=c.parent_image?`Parent WSI on Chiamaka: /mnt/sata_ssd/Bora-benchmark/${c.parent_image}; crop (${c.crop_x}, ${c.crop_y}), level ${c.crop_level}.`:c.parent_image_type==='WSI'?`Source: WSI-derived image${c.parent_slide_id?`; slide ${c.parent_slide_id}`:''}. Complete source slide not acquired for this image.`:'Complete parent-slide provenance is unverified.';
 $('scale').textContent=c.field_of_view_um===null?`Actual pixel spacing unknown.${c.resolution.original_release_mpp_um?` Original release reference: ${c.resolution.original_release_mpp_um} µm/pixel; unverified for these files.`:''}`:`${Number(c.mpp_x_um.toPrecision(7))} × ${Number(c.mpp_y_um.toPrecision(7))} µm/pixel (X × Y) · field of view approximately ${c.field_of_view_um[0].toFixed(1)} × ${c.field_of_view_um[1].toFixed(1)} µm`;
 $('evidence').textContent=`${c.resolution.status}: ${c.resolution.note}`;$('annotation').textContent=c.annotation_provenance;$('grade').textContent=c.image_level_grade?`Image-level grade: ${c.image_level_grade}. This is not a pixel-wise tumor label.`:'';
 $('sample').textContent=c.sample_id;$('rawimage').href=c.image;$('rawmask').href=c.mask;$('legendtitle').textContent=c.overlay_supported===false?'Annotation status':'Annotation legend';$('legend').replaceChildren();

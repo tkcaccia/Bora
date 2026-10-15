@@ -1,0 +1,175 @@
+{
+  "date": "2026-10-15",
+  "data_root_on_chiamaka": "/mnt/sata_ssd/Bora-benchmark",
+  "bora_executed": false,
+  "inventory_summary": {
+    "classification_rule": "Acquired image extent from release provenance; ROI includes patches/tiles; no pixel-size heuristic",
+    "scope": "Inventoried image inputs, complete acquired source WSIs, weak WSSS training images embedded in Parquet, and quarantined WSSS images; masks and example copies are not extra images",
+    "counting_note": "Counts are source image references, not independent slides/patients or a content-hash deduplication. RINGS annotation targets share RGB images; CAMELYON crops and their parent WSIs are separate inputs from the same slides.",
+    "records": 34885,
+    "unique_image_references": 33385,
+    "records_by_type": {
+      "ROI": 34882,
+      "WSI": 3
+    },
+    "unique_image_references_by_type": {
+      "ROI": 33382,
+      "WSI": 3
+    },
+    "records_by_scope": {
+      "complete_source_wsi": 3,
+      "image_level_only": 10091,
+      "prepared_annotation_pair": 24711,
+      "quarantined_dense_pair": 80
+    },
+    "datasets": {
+      "bcss": {
+        "records": 151,
+        "unique_image_references": 151,
+        "records_by_type": {
+          "ROI": 151
+        }
+      },
+      "camelyon16-subset": {
+        "records": 6,
+        "unique_image_references": 6,
+        "records_by_type": {
+          "ROI": 3,
+          "WSI": 3
+        }
+      },
+      "cocahis-vista": {
+        "records": 302,
+        "unique_image_references": 302,
+        "records_by_type": {
+          "ROI": 302
+        }
+      },
+      "crag-candidate": {
+        "records": 213,
+        "unique_image_references": 213,
+        "records_by_type": {
+          "ROI": 213
+        }
+      },
+      "glas": {
+        "records": 165,
+        "unique_image_references": 165,
+        "records_by_type": {
+          "ROI": 165
+        }
+      },
+      "rings-glands": {
+        "records": 1500,
+        "unique_image_references": 1500,
+        "records_by_type": {
+          "ROI": 1500
+        }
+      },
+      "rings-tumor": {
+        "records": 1500,
+        "unique_image_references": 1500,
+        "records_by_type": {
+          "ROI": 1500
+        }
+      },
+      "segpath-asma": {
+        "records": 3,
+        "unique_image_references": 3,
+        "records_by_type": {
+          "ROI": 3
+        }
+      },
+      "segpath-cd235a": {
+        "records": 3,
+        "unique_image_references": 3,
+        "records_by_type": {
+          "ROI": 3
+        }
+      },
+      "segpath-cd3cd20": {
+        "records": 3,
+        "unique_image_references": 3,
+        "records_by_type": {
+          "ROI": 3
+        }
+      },
+      "segpath-cd45rb": {
+        "records": 3,
+        "unique_image_references": 3,
+        "records_by_type": {
+          "ROI": 3
+        }
+      },
+      "segpath-erg": {
+        "records": 3,
+        "unique_image_references": 3,
+        "records_by_type": {
+          "ROI": 3
+        }
+      },
+      "segpath-mist1": {
+        "records": 3,
+        "unique_image_references": 3,
+        "records_by_type": {
+          "ROI": 3
+        }
+      },
+      "segpath-mnda": {
+        "records": 3,
+        "unique_image_references": 3,
+        "records_by_type": {
+          "ROI": 3
+        }
+      },
+      "segpath-panck": {
+        "records": 3,
+        "unique_image_references": 3,
+        "records_by_type": {
+          "ROI": 3
+        }
+      },
+      "sicapv2": {
+        "records": 18783,
+        "unique_image_references": 18783,
+        "records_by_type": {
+          "ROI": 18783
+        }
+      },
+      "tiger": {
+        "records": 2030,
+        "unique_image_references": 2030,
+        "records_by_type": {
+          "ROI": 2030
+        }
+      },
+      "wsss4luad": {
+        "records": 10211,
+        "unique_image_references": 10211,
+        "records_by_type": {
+          "ROI": 10211
+        }
+      }
+    }
+  },
+  "local_examples": {
+    "pairs": 54,
+    "image_type_counts": {
+      "ROI": 54
+    },
+    "native_image_and_mask_hashes_verified": 108
+  },
+  "verification": {
+    "benchmark_tests_passed_locally": 27,
+    "benchmark_tests_passed_on_chiamaka": 27,
+    "unchanged_original_inventories_and_native_example_files_checked_on_chiamaka": 127,
+    "viewer_checked": "CAMELYON ROI category, parent full WSI path and crop coordinates verified in local browser"
+  },
+  "generated_file_sha256": {
+    "image-types.csv": "026aee97112af089777489ccb92e137492a822818e81e27b6667f5a991afde78",
+    "image-types-summary.json": "2038cff85d7aceed11597413623e26cd139c221d8396e1e02b578e362e5d79b4",
+    "all-image-information.csv": "35771b6882e248626351fe98de931fa47724a4bee395f1b9c45826ace2389b6e",
+    "examples.json": "5bd83b72a45e840b54b206ba6c9b0ddad3b206a6ffa0d73a376bcc1b88933110",
+    "camelyon16-subset/whole-slide-information.json": "b9aa1db7600786b06953e9d0b0a73ec70ed916c83855161575e8b7fc2e994df7"
+  }
+}

@@ -20,6 +20,9 @@ Full-release names and acquired subsets must be distinguished in a manuscript.
 SICAPv2's public archive contains patches, not original full-resolution WSIs.
 The three CAMELYON slides are not a representative cohort or a blind test set.
 SegPath's inspection examples do not constitute a statistically powered benchmark.
+[IMAGE_TYPES.md](IMAGE_TYPES.md) explicitly categorizes each acquired representation
+as full WSI or ROI: only the three complete CAMELYON16 TIFFs are WSIs; every
+local example is an ROI, including the native CAMELYON windows.
 [DATASETS.md](DATASETS.md) retains the broader study-design notes and
 [ADDITIONAL_DATASETS.md](ADDITIONAL_DATASETS.md) covers the paper-based additions.
 

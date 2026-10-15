@@ -7,6 +7,7 @@ from pathlib import Path
 import shutil
 
 from .download import DEFAULT_ROOT, digest
+from .image_types import classify_image, whole_slide_records
 
 
 def select_examples(rows, count):
@@ -55,8 +56,9 @@ def main(argv=None):
                       "raw_labels": row["raw_labels"], "label_mode": row["label_mode"],
                       "ignore_labels": row["ignore_labels"], "mpp_um": row["mpp_um"]}
             record.update(width=row["width"], height=row["height"])
+            record.update(classify_image(row), source_image=row["image"], source_mask=row["mask"])
             record.update({key: row[key] for key in ("split", "group_level", "preprocessing", "overlay_supported",
-                           "mpp_x_um", "mpp_y_um", "resolution_status", "crop_x", "crop_y", "crop_level") if key in row})
+                           "mpp_x_um", "mpp_y_um", "resolution_status", "crop_x", "crop_y", "crop_level", "slide_id") if key in row})
             if "grade" in row:
                 record["image_level_grade"] = row["grade"]
             if "source_status" in row:
@@ -79,18 +81,18 @@ def main(argv=None):
             records.append(record)
     if not records:
         raise ValueError("No validated dataset manifests found")
-    wsi_metadata = a.root / "metadata" / "camelyon16-subset-wsi.json"
-    if wsi_metadata.exists():
+    slides = whole_slide_records(a.root)
+    if slides:
         target = a.destination / "camelyon16-subset" / "whole-slide-information.json"
         target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(wsi_metadata, target)
+        target.write_text(json.dumps([{**row, **classify_image(row, whole_slide=True)} for row in slides], indent=2) + "\n")
     (a.destination / "examples.json").write_text(json.dumps(records, indent=2) + "\n")
     text = ["# Dataset examples", "", "Original image bytes and paired raw masks, copied without resizing or running Bora.",
             "Mask grayscale values are class/instance IDs, not display intensities; consult the dataset report.",
             "These examples are a convenience sample, not a representative evaluation cohort.", "",
-            "| Dataset | Example | Original sample |", "|---|---|---|"]
+            "| Dataset | Image type | Example | Original sample |", "|---|---|---|---|"]
     for row in records:
-        text.append(f"| {row['dataset']} | [RGB]({row['image']}) · [mask]({row['mask']}) | {row['sample_id']} |")
+        text.append(f"| {row['dataset']} | {row['image_type']} ({row['image_subtype']}) | [RGB]({row['image']}) · [mask]({row['mask']}) | {row['sample_id']} |")
     (a.destination / "README.md").write_text("\n".join(text) + "\n")
     print(f"Copied {len(records)} original image/mask pairs to {a.destination}")
 

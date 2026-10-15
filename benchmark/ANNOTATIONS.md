@@ -71,12 +71,17 @@ separate masks, rather than the BCSS/TIGER tissue ontology.
 
 ## Per-image files and examples
 
-All 2,559 acquired image/mask pairs are described in
+All 24,711 currently prepared image/mask annotation-target records are described in
 `/mnt/sata_ssd/Bora-benchmark/metadata/image-information.csv`. Each row records
-pixel dimensions, reported spacing, confidence/source, annotation provenance
+WSI/ROI type, pixel dimensions, reported spacing, confidence/source, annotation provenance
 and the names of the mask values present. The original acquisition inventories
 and their recorded SHA256 identities are preserved; the description layer
 adds subsequently researched resolution evidence without rewriting them.
+
+[IMAGE_TYPES.md](IMAGE_TYPES.md) distinguishes complete scanned slides from
+ROIs/patches and documents the broader `metadata/image-types.csv` inventory,
+which includes the three complete CAMELYON16 WSIs and images outside the paired
+inventory. All 54 local examples are ROIs; a native crop is not a complete WSI.
 
 The local examples contain `01-metadata.json` (and corresponding 02/03 files)
 with the original source ID, image/mask hashes, resolution evidence, tissue

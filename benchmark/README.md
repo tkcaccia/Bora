@@ -6,6 +6,9 @@ No benchmark scores, model predictions, or derived coarse labels are produced.
 
 The [eight-dataset status table](REQUESTED_DATASETS.md) records the current
 coverage, including original SICAPv2 and bounded CAMELYON16/SegPath subsets.
+The [WSI/ROI classification](IMAGE_TYPES.md) identifies every inventoried image
+by its acquired extent: three complete CAMELYON16 WSIs, with all other acquired
+images and all 54 local examples classified as ROIs (including patches).
 
 Read [DATASETS.md](DATASETS.md) for annotation definitions, source citations,
 access conditions, overlap, and limitations. [ACQUISITION.md](ACQUISITION.md)
@@ -80,8 +83,10 @@ data root if necessary. Inventory commands verify every image/mask shape and
 record each input's SHA256. BCSS, TIGER and GlaS pair counts are checked against
 the pinned releases. Existing inventories with different content are rejected.
 No evaluation split is assigned by this acquisition workflow.
-The description command writes a resolution/annotation CSV for every acquired
-image and creates per-example metadata plus an interactive local mask viewer.
+The description command writes a resolution/annotation CSV for every prepared
+image/mask pair and creates per-example metadata plus an interactive local mask viewer.
+It also exports per-image WSI/ROI classification, including complete source WSIs,
+weakly labelled images and quarantined images outside the paired inventory.
 It does not alter the original acquisition inventories or input image bytes.
 
 ## CRAG and PAIP access
