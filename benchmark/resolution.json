@@ -62,6 +62,48 @@
       "scanner": "Aperio AT2",
       "note": "Provider reports scanning at 20x. Micrometres/pixel must be obtained from approved SVS files; do not infer it from magnification alone.",
       "annotation": "Provider training masks separately annotate whole tumor and viable tumor; data are pending approved access."
+    },
+    "wsss4luad": {
+      "mpp_um": null,
+      "status": "magnification_reported_spacing_unverified",
+      "source": "https://arxiv.org/abs/2204.06455",
+      "equivalent_magnification": 10,
+      "scanner": "Leica GT 450 (GDPH source slides; TCGA slides heterogeneous)",
+      "source_slide_mpp_um": 0.2517,
+      "source_slide_objective_magnification": 40,
+      "note": "Challenge paper states all distributed patches are at 10x. GDPH source slides scanned at 40x / 0.2517 micrometres per pixel; no explicit calibration verified for pinned mirror patches. Source-slide spacing is not assigned to downsampled patches. Preserve native distributed dimensions.",
+      "annotation": "Pathologist-in-the-loop masks: model proposals manually refined, then reviewed by expert board. Validation has tumor epithelium, tumor-associated stroma and normal tissue; white background excluded. Mirror test pairs rejected by geometry audit."
+    },
+    "rings-glands": {
+      "mpp_um": null,
+      "status": "magnification_only_spacing_unavailable",
+      "source": "https://data.mendeley.com/datasets/h8bdwrtnr5/1",
+      "publication_source": "https://doi.org/10.1016/j.artmed.2021.102076",
+      "table_A1_magnification": 100,
+      "equivalent_magnification": null,
+      "scanner": null,
+      "note": "Attached PathSegmentor Table A1 lists 100x. Released 1500 x 1500 PNGs have no pixel-spacing metadata. Objective versus total magnification is unresolved; do not convert 100x into micrometres/pixel.",
+      "annotation": "Manual binary gland masks supplied with the original RINGS release; positive values do not encode individual gland instances."
+    },
+    "rings-tumor": {
+      "mpp_um": null,
+      "status": "magnification_only_spacing_unavailable",
+      "source": "https://data.mendeley.com/datasets/h8bdwrtnr5/1",
+      "publication_source": "https://doi.org/10.1016/j.artmed.2021.102076",
+      "table_A1_magnification": 100,
+      "equivalent_magnification": null,
+      "scanner": null,
+      "note": "Attached PathSegmentor Table A1 lists 100x. Released 1500 x 1500 PNGs have no pixel-spacing metadata. Objective versus total magnification is unresolved; do not convert 100x into micrometres/pixel.",
+      "annotation": "Manual binary cancer tissue masks supplied separately from gland masks. The complement is not an exhaustive stroma class."
+    },
+    "cocahis-vista": {
+      "mpp_um": null,
+      "status": "processed_subset_spacing_unverified",
+      "source": "https://huggingface.co/datasets/zhihuanglab/VISTA-PATH_data/tree/42d723a4d7dbd38bb605f2aaa8e32cb7353fe83e/CoCaHis",
+      "equivalent_magnification": null,
+      "scanner": null,
+      "note": "Author-released 1024 x 1024 processed training patches. Exact resampling, original physical spacing, stain variant and annotator aggregation are undocumented in this subset. Attached paper Table A1 reports original CoCaHis as 40x; that cannot calibrate this derivative.",
+      "annotation": "302 supplied binary image/mask pairs derived from CoCaHis. Original annotations concern metastatic colorectal cancer in liver; this release foreground mapping has not been independently reconciled. Treat as a staged exploratory subset."
     }
   }
 }

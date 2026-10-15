@@ -12,6 +12,10 @@ from .download import DEFAULT_ROOT, digest
 def select_examples(rows, count):
     """Retain stable examples, with tissue-scale TIGER regions rather than cell crops."""
     chosen, seen = [], set()
+    if rows and rows[0]["dataset"] == "wsss4luad":
+        rows = [r for r in rows if min(r["width"], r["height"]) >= 1000 and {0, 1}.issubset(r["raw_labels"])]
+    if rows and rows[0]["dataset"] in ("rings-glands", "rings-tumor"):
+        rows = [r for r in rows if .01 < r["positive_pixels"] / (r["width"] * r["height"]) < .95]
     if rows and rows[0]["dataset"] == "tiger":
         rows = [r for r in rows if min(r["width"], r["height"]) >= 1000]
         # Keep one large BCSS-derived ROI, then two independent non-TCGA ROIs.
@@ -51,6 +55,7 @@ def main(argv=None):
                       "raw_labels": row["raw_labels"], "label_mode": row["label_mode"],
                       "ignore_labels": row["ignore_labels"], "mpp_um": row["mpp_um"]}
             record.update(width=row["width"], height=row["height"])
+            record.update({key: row[key] for key in ("split", "group_level", "preprocessing") if key in row})
             if "grade" in row:
                 record["image_level_grade"] = row["grade"]
             if "source_status" in row:

@@ -9,6 +9,7 @@ import shutil
 import stat
 import subprocess
 import sys
+import tarfile
 import time
 import urllib.request
 import zipfile
@@ -156,9 +157,42 @@ def extract_zip(archive, destination, reserve_gib=20):
     marker.write_text(json.dumps({"archive_sha256": archive_hash, "members": len(members)}, indent=2) + "\n")
 
 
+def extract_tar(archive, destination, reserve_gib=20):
+    """Extract regular files and directories only; shard-specific markers allow paired TARs."""
+    destination = Path(destination).resolve()
+    destination.mkdir(parents=True, exist_ok=True)
+    archive_hash = digest(archive)
+    marker = destination / f".bora-tar-{archive_hash}.json"
+    if marker.exists():
+        return
+    with tarfile.open(archive, "r:*") as tar:
+        members = tar.getmembers()
+        names = set()
+        for member in members:
+            target = (destination / member.name).resolve()
+            if not target.is_relative_to(destination) or "\\" in member.name:
+                raise ValueError("Unsafe TAR path")
+            if not (member.isfile() or member.isdir()):
+                raise ValueError("TAR links/devices are unsupported")
+            if member.name in names or (target.exists() and member.isfile()):
+                raise ValueError("TAR duplicate or extraction collision")
+            names.add(member.name)
+        if shutil.disk_usage(destination).free < sum(m.size for m in members) + reserve_gib * 2**30:
+            raise ValueError("Insufficient space for TAR extraction and reserved capacity")
+        for member in members:
+            target = destination / member.name
+            if member.isdir():
+                target.mkdir(parents=True, exist_ok=True)
+            else:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                with tar.extractfile(member) as source, target.open("xb") as out:
+                    shutil.copyfileobj(source, out, length=8 * 2**20)
+    marker.write_text(json.dumps({"archive_sha256": archive_hash, "members": len(members)}, indent=2) + "\n")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("dataset", choices=("bcss", "tiger", "glas", "crag", "crag-candidate", "paip2019"))
+    parser.add_argument("dataset", choices=tuple(json.loads(LOCK.read_text())))
     parser.add_argument("--root", type=Path, default=DEFAULT_ROOT)
     parser.add_argument("--plan", action="store_true", help="Show sources without downloading")
     parser.add_argument("--extract", action="store_true")
@@ -198,7 +232,8 @@ def main(argv=None):
             hf = Path(sys.executable).with_name("hf")
             if not hf.exists():
                 raise ValueError("Install benchmark/requirements.txt in this Python environment")
-            subprocess.run([str(hf), "download", source["repo_id"], "--repo-type", "dataset",
+            selected = [f["path"] for f in source["files"]] if source.get("files_only") else []
+            subprocess.run([str(hf), "download", source["repo_id"], *selected, "--repo-type", "dataset",
                             "--revision", source["revision"], "--local-dir", str(raw),
                             "--max-workers", "2"], check=True)
             records = [verify(raw / f["path"], f) for f in source["files"]]
@@ -206,14 +241,20 @@ def main(argv=None):
             records = [(ranged_fetch(f, raw / f["path"], args.workers)
                         if args.workers > 1 and f.get("size", 0) > 128 * 2**20 else fetch(f, raw / f["path"], args.reserve_gib))
                        for f in source["files"]]
-        archives = [raw / f["path"] for f in source["files"] if f["path"].endswith(".zip")]
+        archives = [raw / f["path"] for f in source["files"] if f["path"].endswith((".zip", ".tar", ".tgz", ".tar.gz"))]
     report = {"observed_at": datetime.now(timezone.utc).isoformat(), "dataset": args.dataset,
               "source": source, "files": records, "extracted": False}
     report_path = metadata / f"{args.dataset}-acquisition.json"
     report_path.write_text(json.dumps(report, indent=2) + "\n")
     if args.extract:
         for archive in archives:
-            extract_zip(archive, raw / "extracted", args.reserve_gib)
+            destination = raw / "extracted"
+            if archive.suffix == ".zip" and len(archives) > 1:
+                destination /= archive.stem
+            if archive.suffix == ".zip":
+                extract_zip(archive, destination, args.reserve_gib)
+            else:
+                extract_tar(archive, destination, args.reserve_gib)
         report["extracted"] = bool(archives)
         report_path.write_text(json.dumps(report, indent=2) + "\n")
     print(f"Verified {len(records)} file(s); provenance: {report_path}")

@@ -115,5 +115,82 @@
       }
     ],
     "integrity_note": "Observed mirror SHA256 on 2026-10-15; not a publisher-supplied original CRAG checksum."
+  },
+  "wsss4luad": {
+    "access": "huggingface",
+    "canonical_source": "https://wsss4luad.grand-challenge.org/",
+    "repo_id": "MedOtter/WSSS4LUAD-v2",
+    "revision": "aa035a16f230622a17f51bc6b5180209a04bec7b",
+    "files_only": true,
+    "scope": "Full mirror: 10,091 image-level training patches, 40 usable dense validation pairs, 80 test RGBs with 10 missing and 70 geometry-mismatched masks. Test masks quarantined from paired inventories.",
+    "files": [
+      {
+        "path": "test.parquet",
+        "size": 245392188,
+        "sha256": "931a4ffd9407c8496a752d9276c3300a36c12927a5b53a818bec0405c182697d"
+      },
+      {
+        "path": "train.parquet",
+        "size": 1228833546,
+        "sha256": "bc6fffda4d514d534d0651f9bb7a372eb2e8947235f1d675eb892e8768f8bad2"
+      },
+      {
+        "path": "validation.parquet",
+        "size": 157876300,
+        "sha256": "3ebd0e6ea673a91caebbe796afc8ab347e48a3f001eaa122a3a75e4367574b1a"
+      }
+    ]
+  },
+  "rings": {
+    "access": "https",
+    "canonical_source": "https://data.mendeley.com/datasets/h8bdwrtnr5/1",
+    "doi": "10.17632/h8bdwrtnr5.1",
+    "license": "CC BY 4.0",
+    "files": [
+      {
+        "path": "TRAIN.zip",
+        "size": 3509562215,
+        "url": "https://data.mendeley.com/public-files/datasets/h8bdwrtnr5/files/8416eb6b-d1c8-4a8c-96fd-2f36a2768e46/file_downloaded",
+        "sha256": "af426249bd96d36e2c5e0110d42ceb67a8ebb79d94e2b2c15f4e727ebca38329"
+      },
+      {
+        "path": "TEST.zip",
+        "size": 1769772627,
+        "url": "https://data.mendeley.com/public-files/datasets/h8bdwrtnr5/files/5846b131-09fa-44c5-afa8-8fbc52adbd88/file_downloaded",
+        "sha256": "f8134f01ce4cbcfd703bf96a8501e6267fe87a66301e15749dac463742f8958d"
+      }
+    ],
+    "integrity_note": "SHA256 measured after acquisition on 2026-10-15; not a checksum supplied by the original publisher. Both original archives and safe extraction retained."
+  },
+  "cocahis": {
+    "access": "manual",
+    "canonical_source": "https://cocahis.irb.hr/",
+    "instructions": "Original provider host is currently unreachable from both the Mac and Chiamaka. Original file URL: http://cocahis.irb.hr/wp-content/uploads/2020/12/CoCaHis.hdf5; provider MD5 08fb7f767824de2aed8dd174d4b15ed7. Recheck only after connectivity changes; processed derivatives are separate datasets."
+  },
+  "digestpath2019": {
+    "access": "manual",
+    "canonical_source": "https://digestpath2019.grand-challenge.org/",
+    "instructions": "Original provider requires a signed DATABASE USE AGREEMENT and approved delivery. Do not download a restricted archive through a public link before the access condition is satisfied."
+  },
+  "cocahis-vista": {
+    "access": "huggingface",
+    "canonical_source": "https://cocahis.irb.hr/",
+    "repo_id": "zhihuanglab/VISTA-PATH_data",
+    "revision": "42d723a4d7dbd38bb605f2aaa8e32cb7353fe83e",
+    "files_only": true,
+    "scope": "Complete author-released CoCaHis train subset: 302 processed patches; not the original 82-image HDF5 or its held-out cases.",
+    "source_documentation": "https://github.com/zhihuanglab/VISTA-PATH",
+    "files": [
+      {
+        "path": "CoCaHis/images_train_000.tar",
+        "size": 428175360,
+        "sha256": "6daf4a084bc912fcf57d25d308cffff8ca456fb8505ea5ec056dfd9b03d0a063"
+      },
+      {
+        "path": "CoCaHis/masks_train_000.tar",
+        "size": 5867520,
+        "sha256": "d717bbe8608ed3f7c5a0e306720943ef48a5e3ab71ee4454157767415f85b626"
+      }
+    ]
   }
 }

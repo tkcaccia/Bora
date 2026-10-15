@@ -54,5 +54,42 @@
   },
   "paip2019": {
     "mask_semantics": "Separate official binary TIF masks for whole tumor and viable tumor; preserve negative pen exclusions"
+  },
+  "wsss4luad": {
+    "labels": {
+      "0": "tumor epithelium",
+      "1": "tumor-associated stroma",
+      "2": "normal tissue",
+      "3": "white background (excluded)"
+    },
+    "ignore_labels": [
+      3
+    ],
+    "source": "https://arxiv.org/abs/2204.06455",
+    "note": "Class 0 is tumor. Only validation masks pass pairing checks in this mirror."
+  },
+  "rings-glands": {
+    "labels": {
+      "0": "outside gland mask",
+      "1": "gland region"
+    },
+    "source": "https://data.mendeley.com/datasets/h8bdwrtnr5/1",
+    "note": "Binary manual gland target; no instance IDs or exhaustive stroma annotation."
+  },
+  "rings-tumor": {
+    "labels": {
+      "0": "outside tumor mask (not a stroma class)",
+      "1": "tumor region"
+    },
+    "source": "https://data.mendeley.com/datasets/h8bdwrtnr5/1",
+    "note": "Separate binary tumor target overlaps the gland target; never merge by class priority."
+  },
+  "cocahis-vista": {
+    "labels": {
+      "0": "background or unannotated (provider definition)",
+      "1": "supplied foreground (semantic mapping unverified)"
+    },
+    "source": "https://huggingface.co/datasets/zhihuanglab/VISTA-PATH_data/tree/42d723a4d7dbd38bb605f2aaa8e32cb7353fe83e/CoCaHis",
+    "note": "Original CoCaHis target is metastatic colon cancer in liver; exact VISTA foreground and annotator aggregation must be reconciled before evaluation."
   }
 }

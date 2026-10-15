@@ -101,3 +101,14 @@ To regenerate descriptions and the local viewer without running Bora:
 python -m benchmark.examples --destination /mnt/sata_ssd/Bora-benchmark/examples --count 3 --replace-changed
 python -m benchmark.describe --examples /mnt/sata_ssd/Bora-benchmark/examples
 ```
+
+## Additional datasets from the PathSegmentor paper
+
+See [ADDITIONAL_DATASETS.md](ADDITIONAL_DATASETS.md) for source-specific details.
+WSSS4LUAD uses **0 = tumor**, 1 = stroma, 2 = normal and **3 = ignored white
+background**. Only 40 geometrically valid validation pairs enter the inventory.
+RINGS supplies separate binary gland and tumor masks; a tumor-negative pixel
+is not a stroma annotation. The CoCaHis VISTA subset has binary masks whose
+foreground meaning still needs reconciliation. None of these new releases has
+verified distributed-image micrometres/pixel; the catalog preserves reported
+magnifications and source-slide information without inventing calibration.

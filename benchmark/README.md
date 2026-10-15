@@ -6,7 +6,10 @@ No benchmark scores, model predictions, or derived coarse labels are produced.
 
 Read [DATASETS.md](DATASETS.md) for annotation definitions, source citations,
 access conditions, overlap, and limitations. [ACQUISITION.md](ACQUISITION.md)
-records the actual acquisition on 15 October 2026.
+records the initial acquisition on 15 October 2026.
+[ADDITIONAL_DATASETS.md](ADDITIONAL_DATASETS.md) documents the paper-based
+additions: WSSS4LUAD, original RINGS and a separately identified processed
+CoCaHis subset, including failed mask pairings and limits on benchmark use.
 Read [ANNOTATIONS.md](ANNOTATIONS.md) for microscopy sampling, tumor/stroma
 label maps and per-image annotation metadata. Source-qualified spacing is
 stored in [resolution.json](resolution.json).
@@ -27,8 +30,8 @@ Bora-benchmark/
 ```
 
 BCSS is distributed as Parquet; inventory preparation extracts the embedded
-original PNG bytes. Other datasets retain their original extracted image and
-mask bytes. Images are not resized, stain-normalized, or passed through Bora.
+original PNG bytes. Other datasets retain their received extracted image and
+mask bytes; provider-created derivatives are explicitly identified. Images are not resized, stain-normalized, or passed through Bora.
 The BCSS mirror already contains normalized images; that source preprocessing
 is recorded separately. Preserve the downloaded archives as provenance.
 
@@ -67,7 +70,7 @@ streaming. Large HTTPS files support up to eight checked byte-range requests;
 completed chunks and an interrupted sequential transfer can be reused. Partial
 downloads and chunk files are retained for recovery, and count toward disk use.
 
-ZIP paths, symlinks, duplicate names, extraction collisions and free space are
+ZIP/TAR paths, links, duplicate names, extraction collisions and free space are
 checked before extraction. A completed extraction is identified by its archive
 hash. An interrupted extraction is not overwritten: inspect it and use a new
 data root if necessary. Inventory commands verify every image/mask shape and

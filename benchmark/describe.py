@@ -20,9 +20,11 @@ COLORS = ["#cbd5e1", "#e53935", "#43a047", "#8e44ad", "#efb936", "#d5803c", "#19
 
 
 def label_name(dataset, label, catalog):
-    if dataset in ("bcss", "tiger"):
+    if dataset in catalog and "labels" in catalog[dataset]:
         return catalog[dataset]["labels"][str(label)]
-    return "non-gland / background" if label == 0 else f"gland instance {label}"
+    if dataset in ("glas", "crag", "crag-candidate"):
+        return "non-gland / background" if label == 0 else f"gland instance {label}"
+    raise ValueError(f"No verified label description for {dataset}: {label}")
 
 
 def legend_rows(mask, row, labels):
@@ -35,6 +37,8 @@ def legend_rows(mask, row, labels):
         # Tissue colors deliberately encode different ontologies; IDs 3-7 differ.
         palette_index = ({3: 20, 4: 13, 5: 4, 6: 3}.get(value, value)
                          if row["dataset"] == "tiger" else value)
+        if row["dataset"] == "wsss4luad":
+            palette_index = {0: 1, 1: 2, 2: 6, 3: 0}[value]
         result.append({"value": value, "name": label_name(row["dataset"], value, labels),
                        "color": COLORS[palette_index % len(COLORS)], "ignored": ignored,
                        "pixels": count, "percent_of_image": 100 * count / mask.size,
@@ -83,7 +87,7 @@ def main(argv=None):
              "Original RGBs and raw annotation masks are retained without resizing. The viewer samples masks for display only.",
              "Colours are a visualization of supplied annotations, not Bora predictions. Hover for a label; use the opacity control to see tissue.",
              "", "Pixel spacing describes sampling in micrometres per pixel, not optical resolving power or screen zoom.",
-             "CRAG candidate spacing is unverified; the original dataset's published spacing is kept as a separate reference.", "",
+             "Unknown spacing and unverified semantic mappings are identified explicitly; magnification alone does not calibrate pixels.", "",
              "| Dataset | Example | Pixels (W × H) | µm/pixel | Resolution evidence | Details |", "|---|---|---|---|---|---|"]
     for row in rows:
         key = Path(row["image"]).stem.replace("-image", "")
@@ -94,7 +98,8 @@ def main(argv=None):
     (a.examples / "README.md").write_text("\n".join(lines) + "\n")
     # Cover every acquired image, while preserving the original hashed acquisition inventories.
     fields = ["dataset", "id", "image", "mask", "width", "height", "mpp_um", "resolution_status",
-              "resolution_source", "original_release_mpp_um", "label_mode", "annotation_provenance", "raw_label_names"]
+              "resolution_source", "resolution_note", "reported_magnification", "original_release_mpp_um",
+              "split", "group_id", "group_level", "source_status", "label_mode", "annotation_provenance", "raw_label_names"]
     count = 0
     with (a.root / "metadata" / "image-information.csv").open("w", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=fields)
@@ -105,6 +110,9 @@ def main(argv=None):
                 info = resolution["datasets"][item["dataset"]]
                 writer.writerow({**{k: item[k] for k in ["dataset", "id", "image", "mask", "width", "height", "label_mode"]},
                                  "mpp_um": info["mpp_um"], "resolution_status": info["status"],
+                                 "resolution_note": info["note"],
+                                 "reported_magnification": info.get("equivalent_magnification") or info.get("table_A1_magnification"),
+                                 **{k: item.get(k, "") for k in ("split", "group_id", "group_level", "source_status")},
                                  "resolution_source": info["source"], "original_release_mpp_um": info.get("original_release_mpp_um"),
                                  "annotation_provenance": info["annotation"],
                                  "raw_label_names": "; ".join(f"{v}={label_name(item['dataset'], v, labels)}" for v in item["raw_labels"])})
@@ -135,7 +143,7 @@ const cases=JSON.parse(document.getElementById('data').textContent), $=id=>docum
 cases.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${c.dataset} / ${c.image.split('/').pop()} — ${c.width} × ${c.height}`;$('choose').append(o)});
 function show(){current=cases[Number($('choose').value)];const c=current,raw=atob(c.grid),buf=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)buf[i]=raw.charCodeAt(i);grid=new Uint16Array(buf.buffer);lookup=new Map(c.legend.map(l=>[l.value,l]));
 $('rgb').src=c.image;$('dataset').textContent=c.dataset;$('geometry').textContent=`${c.width} × ${c.height} native pixels`;
-$('scale').textContent=c.mpp_um===null?`Actual pixel spacing unknown. Original CRAG reference: ${c.resolution.original_release_mpp_um} µm/pixel; not verified for this mirror.`:`${c.mpp_um} µm/pixel · field of view approximately ${c.field_of_view_um[0].toFixed(1)} × ${c.field_of_view_um[1].toFixed(1)} µm`;
+$('scale').textContent=c.mpp_um===null?`Actual pixel spacing unknown.${c.resolution.original_release_mpp_um?` Original release reference: ${c.resolution.original_release_mpp_um} µm/pixel; unverified for these files.`:''}`:`${c.mpp_um} µm/pixel · field of view approximately ${c.field_of_view_um[0].toFixed(1)} × ${c.field_of_view_um[1].toFixed(1)} µm`;
 $('evidence').textContent=`${c.resolution.status}: ${c.resolution.note}`;$('annotation').textContent=c.annotation_provenance;$('grade').textContent=c.image_level_grade?`Image-level grade: ${c.image_level_grade}. This is not a pixel-wise tumor label.`:'';
 $('sample').textContent=c.sample_id;$('rawimage').href=c.image;$('rawmask').href=c.mask;$('legend').replaceChildren();
 for(const l of c.legend){const r=document.createElement('div');r.className='legend';const s=document.createElement('span');s.className='swatch';s.style.background=l.color;const n=document.createElement('span');n.textContent=`${l.value}: ${l.name}${l.ignored?' (ignored)':''}`;const v=document.createElement('span');v.textContent=`${l.percent_of_image.toFixed(1)}%`;r.append(s,n,v);$('legend').append(r)}

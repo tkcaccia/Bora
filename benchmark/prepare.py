@@ -28,7 +28,7 @@ def entry(image, mask, root, dataset, sample, group, split, mode, ignore, mpp):
         rgb, labels = np.asarray(im), np.asarray(mk)
         if rgb.ndim != 3 or rgb.shape[2] != 3 or labels.ndim != 2 or rgb.shape[:2] != labels.shape:
             raise ValueError(f"Bad RGB/categorical mask geometry: {sample}")
-        if rgb.dtype != np.uint8 or not np.issubdtype(labels.dtype, np.integer):
+        if rgb.dtype != np.uint8 or not (np.issubdtype(labels.dtype, np.integer) or labels.dtype == np.bool_):
             raise ValueError(f"Unsupported image or mask dtype: {sample}")
         values = list(map(int, np.unique(labels)))
         if dataset == "bcss" and any(v < 0 or v > 21 for v in values):
