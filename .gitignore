@@ -29,3 +29,9 @@ inputs/
 outputs/
 tmp/
 third_party/PathSegmentor/
+
+# Benchmark datasets and copied examples stay outside version control.
+benchmark/examples/
+benchmark/raw/
+benchmark/prepared/
+benchmark/results/

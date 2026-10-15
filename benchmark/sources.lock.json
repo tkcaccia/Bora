@@ -1,0 +1,119 @@
+{
+  "bcss": {
+    "access": "huggingface",
+    "canonical_source": "https://github.com/PathologyDataScience/BCSS",
+    "repo_id": "MedOtter/BCSS",
+    "revision": "502d4a3fbc77dbaca6f4664c19e2379ff077d418",
+    "preprocessing": "Mirror reports color normalization; not raw upstream RGBs.",
+    "files": [
+      {
+        "path": "data/train-00000-of-00010.parquet",
+        "size": 494414301,
+        "sha256": "a5a53bc4b53dce4a1a25ef40a00b9c2bd7c4b46a606e919ee9d6c54a9b363228"
+      },
+      {
+        "path": "data/train-00001-of-00010.parquet",
+        "size": 383977819,
+        "sha256": "f2afdd04c6d20d925a1a520f47ba519ae5ff71eb2ef75d5fc0da890ce367eea7"
+      },
+      {
+        "path": "data/train-00002-of-00010.parquet",
+        "size": 415188313,
+        "sha256": "7f6c829e371502607c91de688bc964cf4178395920e392f9cfceedaad9b79c4b"
+      },
+      {
+        "path": "data/train-00003-of-00010.parquet",
+        "size": 330009971,
+        "sha256": "3e3ed641a46a7b7cba6055c86d82ace56eeb010812d21f5a55457506f358b647"
+      },
+      {
+        "path": "data/train-00004-of-00010.parquet",
+        "size": 412314105,
+        "sha256": "559e604a859aa3379b09e4da0804d4fc9eaeb4e72a91b7c94d9a972882818eea"
+      },
+      {
+        "path": "data/train-00005-of-00010.parquet",
+        "size": 585021142,
+        "sha256": "8109a198404cfcff33ec34791704aceffb02905d56dd7cfd46084f3bc8dc31e2"
+      },
+      {
+        "path": "data/train-00006-of-00010.parquet",
+        "size": 766562142,
+        "sha256": "a5f03f0bf706b4ffbe43441eb0f337415a7aa25db90e7ff964c7987422820767"
+      },
+      {
+        "path": "data/train-00007-of-00010.parquet",
+        "size": 598478276,
+        "sha256": "55d39f2ccc5ae95a1d4703743199737b1792c03a5642fdfddd8316af94bdf5ad"
+      },
+      {
+        "path": "data/train-00008-of-00010.parquet",
+        "size": 586505614,
+        "sha256": "f3ea6f21aba26659e509ccd06b9c36a14d6f2e09e4db2b8d9c5415956a8bcd01"
+      },
+      {
+        "path": "data/train-00009-of-00010.parquet",
+        "size": 338034883,
+        "sha256": "4e412a29b8fe7f87c4d9bbbc2198f0992058b91388acdcd7901f6c72ed7aef9f"
+      }
+    ]
+  },
+  "tiger": {
+    "access": "https",
+    "canonical_source": "https://tiger.grand-challenge.org/Data/",
+    "doi": "10.5281/zenodo.6014422",
+    "files": [
+      {
+        "path": "license.txt",
+        "size": 549,
+        "md5": "f74b50f4616d84895bf615cd8ff31f70",
+        "url": "https://zenodo.org/api/records/6014422/files/license.txt/content"
+      },
+      {
+        "path": "roi-level-annotations.zip",
+        "size": 2610151375,
+        "md5": "51d65ecc2837a98ff5ceee17fdedd7bd",
+        "url": "https://zenodo.org/records/6014422/files/roi-level-annotations.zip?download=1"
+      }
+    ]
+  },
+  "glas": {
+    "access": "https",
+    "canonical_source": "https://warwick.ac.uk/fac/cross_fac/tia/data/glascontest/",
+    "mirror": "https://www.kaggle.com/datasets/sani84/glasmiccai2015-gland-segmentation/versions/1",
+    "files": [
+      {
+        "path": "glas-v1.zip",
+        "url": "https://www.kaggle.com/api/v1/datasets/download/sani84/glasmiccai2015-gland-segmentation?datasetVersionNumber=1",
+        "size": 180682993,
+        "sha256": "2f9ca81961832c497c32110a63f96e007f996a946a014cc58768e9dad566887e"
+      }
+    ],
+    "integrity_note": "SHA256 was measured on the acquired mirror archive on 2026-10-15, not supplied by the original publisher; all 165 pairs verified."
+  },
+  "crag": {
+    "access": "manual",
+    "canonical_source": "https://warwick.ac.uk/fac/cross_fac/tia/data/mildnet/",
+    "instructions": "Official Warwick page requires sign-in. Obtain CRAG v2 from the provider or authorized OpenDataLab access, then use --local-archive /path/CRAG_v2.zip --extract. Never substitute the unrelated Meta RAG dataset."
+  },
+  "paip2019": {
+    "access": "manual",
+    "canonical_source": "https://paip2019.grand-challenge.org/Dataset/",
+    "instructions": "Requires provider-approved Data Use and Confidentiality Agreement. Obtain data through https://wisepaip.org/; import an approved local ZIP with --local-archive. Preserve official TIF whole/viable tumor masks; WSI window preparation requires explicit spatial metadata."
+  },
+  "crag-candidate": {
+    "access": "https",
+    "canonical_source": "https://warwick.ac.uk/fac/cross_fac/tia/data/mildnet/",
+    "mirror": "https://www.kaggle.com/datasets/hoinhnphm/crag-dataset/versions/1",
+    "use_status": "Quarantined candidate: uploader supplies no description or license. Original provenance and mask fidelity are unverified. Do not use for manuscript results until reconciled with provider data.",
+    "files": [
+      {
+        "path": "crag-candidate-v1.zip",
+        "url": "https://www.kaggle.com/api/v1/datasets/download/hoinhnphm/crag-dataset?datasetVersionNumber=1",
+        "size": 1067055555,
+        "sha256": "b06ecdabe95d6e3b9062dff287126650fc695bb4b754b8ac6dc05fec78989c47"
+      }
+    ],
+    "integrity_note": "Observed mirror SHA256 on 2026-10-15; not a publisher-supplied original CRAG checksum."
+  }
+}

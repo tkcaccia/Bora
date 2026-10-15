@@ -119,6 +119,11 @@ The Medical Image Analysis manuscript is available as Markdown, DOCX, and PDF
 under `docs/` and `output/pdf/`. Numerical findings remain explicit
 placeholders until a prespecified benchmark is run.
 
+Dataset acquisition code, provenance, annotation definitions and access status
+for the histopathology benchmark are available in [`benchmark/`](benchmark/).
+The acquisition workflow inventories public image/mask pairs and does not run
+Bora. Dataset files and local examples remain outside Git.
+
 ## License
 
 No license has yet been selected.

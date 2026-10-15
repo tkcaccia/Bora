@@ -1,0 +1,58 @@
+{
+  "bcss": {
+    "source_commit": "3c49d554497dd896cd02ffe382503ef4ce28b1c1",
+    "labels": {
+      "0": "outside_roi",
+      "1": "tumor",
+      "2": "stroma",
+      "3": "lymphocytic_infiltrate",
+      "4": "necrosis_or_debris",
+      "5": "glandular_secretions",
+      "6": "blood",
+      "7": "exclude",
+      "8": "metaplasia_NOS",
+      "9": "fat",
+      "10": "plasma_cells",
+      "11": "other_immune_infiltrate",
+      "12": "mucoid_material",
+      "13": "normal_acinus_or_duct",
+      "14": "lymphatics",
+      "15": "undetermined",
+      "16": "nerve",
+      "17": "skin_adnexa",
+      "18": "blood_vessel",
+      "19": "angioinvasion",
+      "20": "dcis",
+      "21": "other"
+    },
+    "proposed_ignore_labels": [
+      0,
+      7,
+      15
+    ]
+  },
+  "tiger": {
+    "labels": {
+      "0": "excluded",
+      "1": "invasive tumor",
+      "2": "tumor-associated stroma",
+      "3": "in-situ tumor",
+      "4": "healthy glands",
+      "5": "necrosis not in-situ",
+      "6": "inflamed stroma",
+      "7": "rest"
+    },
+    "ignore_labels": [
+      0
+    ]
+  },
+  "glas": {
+    "mask_semantics": "0 = non-gland; positive integers are gland instance IDs"
+  },
+  "crag": {
+    "mask_semantics": "Verify against provider-approved v2; retain original gland instance IDs"
+  },
+  "paip2019": {
+    "mask_semantics": "Separate official binary TIF masks for whole tumor and viable tumor; preserve negative pen exclusions"
+  }
+}
