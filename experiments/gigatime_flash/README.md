@@ -13,6 +13,9 @@ pair, with a matched H&E interface control. The earlier
 [global three-marker trial](../../docs/gigatime_top3_rgb.md) finds CD3, CD4 and
 PHH3-B, but is dominated by inflamed-stroma/rest contrasts and does not improve
 overlap over H&E Bora.
+The subsequent [RGB + class-marker PCA experiment](../../docs/gigatime_pca_rgb.md)
+preserves original R/G/B as input variables, adds the strongest marker per
+class, and passes the first three PCs as RGB to normal multiclass Bora.
 The [old Flash report](../../docs/gigatime_flash_pilot.md) is an archive of a
 failed pilot, not supporting evidence for the method.
 
@@ -101,6 +104,10 @@ Fine tissue masks enter only after predictions are fixed, for scoring.
   order, with separate shared 0–1 and per-channel P1–P99 display atlases,
   native-resolution PNGs and a channel/scaling manifest. It labels DAPI,
   background channels and proteins below the reference screen explicitly.
+- `pca_rgb.py`: standardized original RGB plus class-marker PCA, exact full
+  SVD, fixed PC signs/order, P1–P99 conversion to RGB and unchanged multiclass
+  Bora. It records all means/scales/component weights and compares deduplicated
+  class winners, literal one-column-per-class and RGB-only PCA controls.
 
 ## Reproduce on Chiamaka
 
@@ -248,3 +255,44 @@ junctions, order-independent merging and prior model/feature checks.
 atlases and `manifest.json`; individually stretched intensities cannot be
 compared quantitatively across channels. Use the shared-scale atlas when
 comparing predicted activation values.
+
+## Original RGB plus class-marker PCA
+
+```bash
+export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2
+PYTHONPATH=src:. python experiments/gigatime_flash/pca_rgb.py \
+  --source /mnt/sata_ssd/Bora-benchmark/results/gigatime-cnn-pilot-2026-10-16 \
+  --group-results /mnt/sata_ssd/Bora-benchmark/results/gigatime-group-rgb-2026-10-16 \
+  --output /mnt/sata_ssd/Bora-benchmark/results/gigatime-pca-rgb-2026-10-16
+PYTHONPATH=src:. pytest tests/test_pca_rgb.py tests/test_group_markers.py \
+  tests/test_top3_rgb.py tests/test_boundary.py tests/test_virtual_markers.py \
+  tests/test_gigatime_lora.py -q
+```
+
+Class winners are CD138 for invasive tumor and tumor-associated stroma, CD3
+for healthy glands and inflamed stroma, and T-bet for rest. These are empirical
+virtual features from the current ROI; their levels can distinguish classes
+without unique positive expression. The primary PCA uses each shared channel
+once: R/G/B, CD138, CD3, T-bet. A literal eight-column version retains repeated
+CD138/CD3 class winners as a sensitivity check; RGB-only PCA controls for the
+color projection itself. All three variants are fixed before scoring.
+
+PCA uses every coarse-foreground pixel of the same ROI after feature-wise
+mean/SD scaling, exact full SVD, no whitening and no class weighting. The
+largest absolute loading of each component is made positive. PC1/2/3 become
+R/G/B using fixed per-PC P1–P99 scaling over coarse support. This encoding
+changes relative component amplitudes, so explained variance is reported
+before encoding. No component/sign/color permutation is selected using
+accuracy. A single composite is reused at tile widths 56, 90 and 216.
+
+The `gigatime-pca-rgb-2026-10-16` directory under both result roots contains
+variant RGB PNGs/OME-TIFFs, exact feature/PCA/encoding parameters, raw scores
+and source hashes, class assignments, segmentation masks/metrics and four
+figures. Dense native PC-score arrays remain on Chiamaka. The primary three
+PCs retain 96.78% of standardized variance. At 90-pixel tiles, IoU and boundary
+F1 improve slightly versus original H&E Bora, but the previous pair-specific
+approach is stronger. Other tile sizes are mixed; see the full report.
+
+Thirty-two focused tests pass, including feature-unit invariance, exclusion
+of pixels outside coarse support, exact saved-transform reconstruction,
+deterministic PC signs, shared-marker deduplication and RGB channel order.

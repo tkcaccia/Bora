@@ -253,6 +253,9 @@ selects markers for each tissue group and each competing interface, then runs
 the RGB/Lab wand with pair-specific synthetic RGB. The earlier
 [global three-marker trial](docs/gigatime_top3_rgb.md) documents why a single
 omnibus ranking can be dominated by one tissue group.
+The [RGB plus class-marker PCA experiment](docs/gigatime_pca_rgb.md) combines
+the original color channels and class-selected markers, converts three PCs
+to RGB and tests the unchanged multiclass Bora path with PCA controls.
 The earlier Flash result was rejected for DAPI quality and remains archived.
 
 ## License
