@@ -244,11 +244,11 @@ dataset files and benchmark outputs remain outside Git.
 
 ## Virtual-marker refinement experiment
 
-An exploratory [GigaTIME-Flash marker-driven refinement pilot](experiments/gigatime_flash/README.md)
-includes physical-resolution metadata, expert-mask comparisons and transparent
-H&E overlays with DAPI and virtual protein channels. Its
-[single-ROI results](docs/gigatime_flash_pilot.md) do not establish a general
-improvement over RGB Bora.
+The [GigaTIME CNN marker-driven refinement experiment](experiments/gigatime_flash/README.md)
+includes paired-reference DAPI checks, physical-resolution metadata and
+transparent H&E overlays. The [current report](docs/gigatime_cnn_validation.md)
+records the CNN's reference performance and a controlled tissue-boundary pilot.
+The earlier Flash result was rejected for DAPI quality and remains archived.
 
 ## License
 

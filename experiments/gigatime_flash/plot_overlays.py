@@ -28,6 +28,7 @@ def draw(results, data_root, tile_size=90, alpha=.35):
     if not 0 < alpha < 1:
         raise ValueError("Mask overlay opacity must be strictly between zero and one")
     r = json.loads((results/"results.json").read_text())
+    model_name = r["model"].get("model_name", "GigaTIME-Flash")
     rgb = np.asarray(Image.open(data_root/r["sample"]["image"]).convert("RGB"))
     reference = tifffile.imread(results/"expert_reference.compact.tif")
     mpp_xy = [r["sample"]["mpp_um"]]*2
@@ -69,13 +70,20 @@ def draw(results, data_root, tile_size=90, alpha=.35):
     plt.close(fig)
     # Include DAPI plus both globally differential and tumor/stroma channels.
     marker_names = ["DAPI", "CK_1:150", "CD4", "CD14", "Actin-D", "Transgelin"]
+    if r.get("eligible_marker_channels"):
+        preferred = ["CK", "CD3", "CD4", "CD68", "Ki67"]
+        eligible = r["eligible_marker_channels"]
+        chosen = [name for name in preferred if name in eligible]
+        chosen += [name for name in eligible if name not in chosen]
+        marker_names = ["DAPI", *chosen[:5]]
     files = []
     for scale, inference in r["inference"].items():
         maps = np.load(results/f"inference_{scale}/virtual_markers.native.npy", mmap_mode="r")
         order = inference["channel_order"]
         fig, axes = plt.subplots(2, 3, figsize=(17, 12))
         for ax, name in zip(axes.flat, marker_names):
-            plane = np.asarray(maps[order.index(name)], np.float32)
+            actual = name if name in order else name.split("_")[0]
+            plane = np.asarray(maps[order.index(actual)], np.float32)
             ax.imshow(rgb)
             ax.imshow(plane, cmap="magma", vmin=0, vmax=1,
                       alpha=np.clip(.7*plane, 0, .7), interpolation="nearest")
@@ -86,8 +94,9 @@ def draw(results, data_root, tile_size=90, alpha=.35):
         mappable = plt.cm.ScalarMappable(norm=plt.Normalize(0, 1), cmap="magma")
         cbax = fig.add_axes([.31, .08, .38, .014])
         fig.colorbar(mappable, cax=cbax, orientation="horizontal", label="Predicted sigmoid activation; overlay opacity = 0.7 × activation")
-        scale_label = "native input" if scale == "0.500000" else "upsampled input; Flash calibration unverified"
-        fig.suptitle(f"GigaTIME-Flash virtual channels on original H&E | Inference {scale} µm/pixel ({scale_label})", fontsize=14)
+        native = inference["sampling"]["inference_shape_yx"] == list(rgb.shape[:2])
+        scale_label = "native input" if native else "resampled input; original optical detail unchanged"
+        fig.suptitle(f"{model_name} virtual channels on original H&E | Inference {scale} µm/pixel ({scale_label})", fontsize=14)
         fig.text(.5, .014, "DAPI is a nuclear channel. These are model predictions, not measured immunostains. All panels use the same original frame and activation scale.",
                  ha="center", fontsize=10)
         fig.subplots_adjust(left=.015, right=.985, top=.92, bottom=.15, hspace=.13, wspace=.06)
@@ -101,7 +110,8 @@ def draw(results, data_root, tile_size=90, alpha=.35):
                 "tile_size_px": tile_size, "native_mpp_xy": mpp_xy,
                 "all_panels_registered_to_original_image": True,
                 "zero_mask_label_transparent": True,
-                "displayed_marker_selection": "DAPI; CK/Actin/Transgelin for tissue interfaces; CD4/CD14 from global coarse-group contrasts"}
+                "displayed_marker_selection": "DAPI plus reference-screened protein channels" if r.get("eligible_marker_channels") else
+                    "DAPI; CK/Actin/Transgelin for tissue interfaces; CD4/CD14 from global coarse-group contrasts"}
     (results/"overlay_manifest.json").write_text(json.dumps(manifest, indent=2)+"\n")
     print(json.dumps(manifest, indent=2))
 

@@ -11,6 +11,7 @@ import csv
 from dataclasses import asdict
 import hashlib
 import importlib.metadata
+import inspect
 import json
 from pathlib import Path
 import platform
@@ -31,6 +32,11 @@ from bora.virtual_markers import sampling_plan, select_markers, standardize_mark
 
 REVISION = "47a5ee847d77cbe0e75f2f67f0c95d45e9bd7ca2"
 CHECKPOINT_SHA256 = "ac93f0ea65df2cc6de388415ec5f5c074feab4754aabab450216ef69fe5dd411"
+CNN_REVISION = "a6556030bdb8071857559e12b921620aa1bbac5b"
+CNN_SHA256 = "d200308302c7fefd13b259c62de546f2c859c28d1079e9f67dc8808915d95d0c"
+CHANNELS = ["DAPI", "TRITC", "Cy5", "PD-1", "CD14", "CD4", "T-bet", "CD34", "CD68",
+            "CD16", "CD11c", "CD138", "CD20", "CD3", "CD8", "PD-L1", "CK", "Ki67",
+            "Tryptase", "Actin-D", "Caspase3-D", "PHH3-B", "Transgelin"]
 SAMPLE = "tissue-cells--114S_[33188, 13944, 34412, 15110]"
 CLASS_NAMES = {1: "invasive tumor", 2: "tumor-associated stroma", 3: "in-situ tumor",
                4: "healthy glands", 5: "necrosis", 6: "inflamed stroma", 7: "rest"}
@@ -53,10 +59,17 @@ def starts(length, window=256, stride=128):
     return sorted(set([*range(0, last+1, stride), last]))
 
 
-def load_model(weights):
-    if digest(weights) != CHECKPOINT_SHA256:
-        raise ValueError("Checkpoint hash differs from the pinned released Flash weights")
-    model = GigaTIMEFlash(num_classes=23)
+def load_model(weights, family="flash"):
+    if family not in {"cnn", "flash"}:
+        raise ValueError("Unknown GigaTIME model family")
+    expected_sha = CNN_SHA256 if family == "cnn" else CHECKPOINT_SHA256
+    if digest(weights) != expected_sha:
+        raise ValueError(f"Checkpoint hash differs from the pinned released {family} weights")
+    if family == "cnn":
+        from experiments.gigatime_flash.original_cnn import gigatime
+        model = gigatime(num_classes=23)
+    else:
+        model = GigaTIMEFlash(num_classes=23)
     checkpoint = torch.load(weights, map_location="cpu", weights_only=True)
     if "state_dict" in checkpoint:
         checkpoint = checkpoint["state_dict"]
@@ -64,29 +77,41 @@ def load_model(weights):
     # which the official fallback notebook silently omits.
     model.load_state_dict(checkpoint, strict=True)
     count = sum(p.numel() for p in model.parameters())
-    if count != 23_806_559:
+    if family == "flash" and count != 23_806_559:
         raise ValueError(f"Unexpected Flash parameter count: {count}")
     model.eval().requires_grad_(False)
-    return model, {"model_repository": "prov-gigatime/gigatime-flash",
-                   "model_revision": REVISION, "checkpoint_sha256": CHECKPOINT_SHA256,
+    return model, {"model_family": family,
+                   "model_name": "GigaTIME CNN" if family == "cnn" else "GigaTIME-Flash",
+                   "model_repository": "prov-gigatime/GigaTIME" if family == "cnn" else "prov-gigatime/gigatime-flash",
+                   "model_revision": CNN_REVISION if family == "cnn" else REVISION,
+                   "checkpoint_sha256": expected_sha,
                    "parameters": count, "state_tensors": len(checkpoint),
                    "strict_load": True, "missing_tensors": [], "unexpected_tensors": []}
 
 
-def predict_maps(rgb, model, plan, config, folder, batch_size, device):
+def predict_maps(rgb, model, plan, config, folder, batch_size, device, model_info=None):
     """Overlap-add 256px windows; retain full maps and all partial image edges."""
     folder.mkdir(parents=True, exist_ok=True)
     nh, nw = plan["inference_shape_yx"]
     h, w = rgb.shape[:2]
+    checkpoint_sha = model_info["checkpoint_sha256"] if model_info else CHECKPOINT_SHA256
+    family = model_info.get("model_family", "flash") if model_info else "flash"
+    fingerprint_data = {"rgb_sha256": hashlib.sha256(np.ascontiguousarray(rgb).tobytes()).hexdigest(),
+        "sampling": plan, "config": config, "checkpoint_sha256": checkpoint_sha,
+        "inference_source": inspect.getsource(predict_maps), "torch": torch.__version__,
+        "architecture_source_sha256": digest(Path(__file__).with_name(
+            "original_cnn.py" if family == "cnn" else "model.py"))}
+    fingerprint = hashlib.sha256(json.dumps(fingerprint_data, sort_keys=True).encode()).hexdigest()
     native_path = folder / "virtual_markers.native.npy"
     meta_path = folder / "inference.json"
     if meta_path.exists():
         old = json.loads(meta_path.read_text())
-        if old["sampling"] != plan or old["checkpoint_sha256"] != CHECKPOINT_SHA256:
+        if old["sampling"] != plan or old["checkpoint_sha256"] != checkpoint_sha:
             raise ValueError("Output directory contains incompatible cached inference")
-        if digest(native_path) != old["native_maps_sha256"]:
-            raise ValueError("Cached marker maps failed checksum")
-        return np.load(native_path, mmap_mode="r"), old
+        if old.get("cache_fingerprint") == fingerprint:
+            if digest(native_path) != old["native_maps_sha256"]:
+                raise ValueError("Cached marker maps failed checksum")
+            return np.load(native_path, mmap_mode="r"), old
     began = time.perf_counter()
     if (nh, nw) == (h, w):
         scaled = rgb
@@ -134,10 +159,12 @@ def predict_maps(rgb, model, plan, config, folder, batch_size, device):
     model_grid.flush()
     native.flush()
     elapsed = time.perf_counter() - began
-    info = {"sampling": plan, "checkpoint_sha256": CHECKPOINT_SHA256,
+    info = {"sampling": plan, "checkpoint_sha256": checkpoint_sha, "model_family": family,
+            "cache_fingerprint": fingerprint,
             "input_window_px": [256, 256], "window_field_of_view_um_xy":
                 [256*x for x in plan["effective_inference_mpp_xy"]],
-            "vit_patch_px": [16, 16], "token_grid_yx": [16, 16],
+            "vit_patch_px": [16, 16] if family == "flash" else None,
+            "token_grid_yx": [16, 16] if family == "flash" else None,
             "output_window_px": [256, 256], "window_stride_px": 128,
             "windows": len(coordinates), "batch_size": batch_size, "precision": "float32",
             "input_interpolation": "none" if (nh, nw) == (h, w) else "bicubic",
@@ -205,8 +232,13 @@ def main():
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--weights", type=Path, required=True)
     p.add_argument("--config", type=Path, required=True)
+    p.add_argument("--model-family", choices=["cnn", "flash"], default="cnn")
+    p.add_argument("--dapi-validation-report", type=Path, required=True,
+                   help="Paired-reference audit confirmation.json; no unvalidated default run")
+    p.add_argument("--channel-validation-report", type=Path,
+                   help="Required for CNN: channel_validation.json from validate_channels.py")
     p.add_argument("--tile-sizes", nargs="+", type=int, default=[56, 90, 216])
-    p.add_argument("--sampling", nargs="+", type=float, default=[0.5, 128/556])
+    p.add_argument("--sampling", nargs="+", type=float, default=[0.25])
     p.add_argument("--batch-size", type=int, default=4)
     p.add_argument("--threads", type=int, default=2)
     args = p.parse_args()
@@ -232,16 +264,43 @@ def main():
     mapping = {int(k): int(v) for k, v in provenance["label_remap"].items()}
     names = {str(v): CLASS_NAMES[k] for k, v in mapping.items()}
     config = json.loads(args.config.read_text())
+    if args.model_family == "cnn":
+        if config.get("architecture") != "gigatime" or config.get("num_classes") != 23:
+            raise ValueError("Unexpected original GigaTIME CNN configuration")
+        config = {"num_channels": 23, "input_shape": [3, 256, 256],
+                  "normalization": {k: config["pretrained_cfg"][k] for k in ["mean", "std"]},
+                  "channels": CHANNELS}
     if config["num_channels"] != 23 or config["input_shape"] != [3, 256, 256]:
         raise ValueError("Unexpected model configuration")
     boundary_config = BoundaryConfig()
-    model, model_info = load_model(args.weights)
+    model, model_info = load_model(args.weights, args.model_family)
+    validation = json.loads(args.dapi_validation_report.read_text())
+    expected_validation_sha = validation.get("cnn_sha256") if args.model_family == "cnn" else validation["model"]["checkpoint_sha256"]
+    if expected_validation_sha != model_info["checkpoint_sha256"]:
+        raise ValueError("DAPI reference audit used a different model checkpoint")
+    audit_key = "original_cnn_raw" if args.model_family == "cnn" else "flash_raw"
+    reference_scores = validation["summary"][audit_key]
+    if (validation["n_confirmation"] < 20 or reference_scores["auc"]["mean"] < .85 or
+            reference_scores["pearson_8px"]["mean"] < .60):
+        raise ValueError("Reference DAPI sanity check failed; do not run marker refinement")
+    channel_validation = None
+    excluded_channels = ["DAPI", "TRITC", "Cy5"]
+    if args.model_family == "cnn" and not args.channel_validation_report:
+        raise ValueError("CNN refinement requires the paired-channel reference screen")
+    if args.channel_validation_report:
+        channel_validation = json.loads(args.channel_validation_report.read_text())
+        if channel_validation["model"]["checkpoint_sha256"] != model_info["checkpoint_sha256"]:
+            raise ValueError("Channel reference screen used a different checkpoint")
+        eligible = channel_validation["eligible_channels"]
+        if not eligible or not set(eligible).issubset(config["channels"]):
+            raise ValueError("Empty or incompatible eligible channel list")
+        excluded_channels += [name for name in config["channels"] if name not in eligible]
     maps_by_scale, inference = {}, {}
     for sampling in args.sampling:
         key = f"{sampling:.6f}"
         plan = sampling_plan(rgb.shape[:2], mpp_xy, sampling)
         maps_by_scale[key], inference[key] = predict_maps(rgb, model, plan, config,
-                            args.output/f"inference_{key}", args.batch_size, device)
+                            args.output/f"inference_{key}", args.batch_size, device, model_info)
     model.cpu()
     if device == "cuda":
         torch.cuda.empty_cache()
@@ -266,7 +325,10 @@ def main():
         for scale, maps in maps_by_scale.items():
             began = time.perf_counter()
             hwc = np.moveaxis(maps, 0, -1).astype(np.float32)
-            selection = select_markers(hwc, coarse, size, config["channels"])
+            selection = select_markers(hwc, coarse, size, config["channels"],
+                                       excluded=tuple(dict.fromkeys(excluded_channels)))
+            if channel_validation:
+                selection["reference_eligibility_rule"] = channel_validation["rule"]
             save_json(case/f"marker_selection_{scale}.json", selection)
             columns = list(selection["comparisons"][0])
             with (case/f"marker_contrasts_{scale}.csv").open("w", newline="") as f:
@@ -305,10 +367,19 @@ def main():
               "provider-reported approximate; scanner, objective NA and true optical resolving power unknown",
               "microscope_objective_magnification": None, "microscope_optical_resolution_um": None,
               "model": model_info, "inference": inference,
-              "reference_scale_um_per_pixel": 128/556,
-              "reference_scale_status": "inferred from original GigaTIME registered mIF grid; Flash-specific H&E calibration unverified",
+              "reference_scale_um_per_pixel": 128/512,
+              "reference_scale_status": "author-clarified: 128 um / 556 px registration patches resized to 512 px before 256 px windows",
+              "dapi_reference_validation": {"report_sha256": digest(args.dapi_validation_report),
+                  "method": audit_key, "n_patches": validation["n_confirmation"], "summary": reference_scores,
+                  "status": "passes reference sanity check; not clinical or target-domain marker validation",
+                  "target_has_measured_marker_ground_truth": False},
+              "eligible_marker_channels": channel_validation["eligible_channels"] if channel_validation else None,
+              "channel_reference_validation": {"report_sha256": digest(args.channel_validation_report),
+                  "rule": channel_validation["rule"], "summary": channel_validation["summary"]} if channel_validation else None,
               "sources": {"original_paper": "https://doi.org/10.1016/j.cell.2025.11.016",
                 "flash_paper": "https://arxiv.org/html/2607.18218v1",
+                "preprocessing_clarification": "https://github.com/prov-gigatime/GigaTIME/issues/4",
+                "channel_order_clarification": "https://github.com/prov-gigatime/GigaTIME/issues/8",
                 "tiger": "https://tiger.grand-challenge.org/Data/"},
               "coarse_protocol": "reference-derived C++ tile-majority labels, 0% injected border error; controlled reconstruction, not independently inferred groups",
               "coarse_generation": {k: v for k, v in provenance.items() if k != "inventory"},
@@ -323,6 +394,7 @@ def main():
                 "packages": {k: importlib.metadata.version(k) for k in ["torch", "torchvision", "timm", "numpy", "opencv-python", "scipy", "Pillow", "tifffile"]}},
               "source_sha256": {"image": digest(image_path), "mask": digest(mask_path),
                   "run_pilot.py": digest(__file__), "model.py": digest(Path(__file__).with_name("model.py")),
+                  "original_cnn.py": digest(Path(__file__).with_name("original_cnn.py")),
                   "boundary.py": digest(Path(__file__).resolve().parents[2]/"src/bora/boundary.py"),
                   "virtual_markers.py": digest(Path(__file__).resolve().parents[2]/"src/bora/virtual_markers.py")}}
     save_json(args.output/"results.json", report)

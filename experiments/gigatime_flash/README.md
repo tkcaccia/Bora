@@ -1,143 +1,140 @@
-# GigaTIME-Flash marker-driven Bora pilot
+# Reference-checked GigaTIME CNN refinement
 
-This experiment uses virtual mIF predictions from the **original H&E RGB** to
-replace RGB appearance channels in Bora's adaptive local wand. It compares a
-fixed RGB baseline with marker-driven refinement of the same coarse masks.
-It does not change Bora's CLI defaults. Results from one annotated tissue ROI
-are exploratory; see [the pilot report](../../docs/gigatime_flash_pilot.md).
+The current workflow uses **the original GigaTIME CNN**, with unmodified RGB
+and input sampling of **0.25 µm/pixel**. The earlier Flash pilot is rejected
+for target-image DAPI quality. This directory retains its historical name so
+that all diagnostic scripts and previous runs remain traceable.
 
-## Files and locations
+See [the CNN validation and results report](../../docs/gigatime_cnn_validation.md).
+The [old Flash report](../../docs/gigatime_flash_pilot.md) is an archive of a
+failed pilot, not supporting evidence for the method.
 
-- `model.py`: architecture adapted from the official Apache-2.0 notebook,
-  with the released patch-projection convolution's LoRA adapters included.
-- `run_pilot.py`: strict checkpoint loading, resolution-aware window inference,
-  marker selection, refinement, and native-frame expert-mask evaluation.
-- `plot_overlays.py`: semitransparent reference, tiling-mask, and Bora overlays
-  on the original image, plus DAPI and five other virtual-channel overlays.
-- `src/bora/virtual_markers.py`: sampling plans and coarse-label-only contrasts.
-- Chiamaka result root:
-  `/mnt/sata_ssd/Bora-benchmark/results/gigatime-flash-pilot-2026-10-16/`.
-- Local review copy:
-  `/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/gigatime-flash-pilot-2026-10-16/`.
-  Dense virtual maps remain on Chiamaka.
+## What is checked
 
-All datasets, checkpoints and image-derived outputs remain outside Git.
-Benchmark acquisition code and manifests are maintained in
-[Bora-extra](https://github.com/tkcaccia/Bora-extra).
+- Exact released CNN weights, loaded strictly; channel order is fixed to the
+  [author-confirmed order](https://github.com/prov-gigatime/GigaTIME/issues/8).
+- Author-confirmed preprocessing: a registered 128 µm field contains 556 pixels,
+  resized to 512 pixels, then processed in 256-pixel windows. The model sampling
+  is therefore **128/512 = 0.25 µm/pixel**, rather than the registration-grid
+  spacing of 128/556. [Author clarification](https://github.com/prov-gigatime/GigaTIME/issues/4).
+- The exact production overlap-add workflow is evaluated on 45 released paired
+  H&E/mIF examples, after five separate patches were used for diagnostic work.
+- All channels are screened against the paired reference masks. An exploratory
+  feature-eligibility rule requires mean 8-pixel-window Pearson correlation
+  at least 0.30 in at least 20 variable reference patches. DAPI and the two
+  background channels are excluded from protein-feature selection. CD20,
+  Tryptase, Actin-D and Transgelin fail this screen and cannot drive this run.
+- Cached predictions are reused only if the original RGB, model checkpoint,
+  preprocessing code, architecture, configuration and sampling fingerprint
+  match. Changing an inference implementation cannot silently reuse old maps.
 
-## Resolution contract
+These establish reference-data performance and reproducible implementation.
+They do not establish measured protein expression or cell-level accuracy on
+TIGER, which has expert tissue masks but no paired immunofluorescence.
+Reference patches also lack a released patient-level mapping for this audit;
+45 patches must not be described as 45 independent patients. No model is
+retrained and no tissue-reference masks are used to choose marker channels.
 
-Distinguish **optical resolving power**, objective magnification, **physical
-sampling** (µm per pixel), and array dimensions. Magnification alone does not
-establish sampling, and resampling cannot restore optical detail.
+## Scale and frame
 
-The selected TIGER 114S ROI is 1224 × 1166 pixels. The provider reports sampling
-of 0.5 µm/pixel, giving a field of view of approximately 612 × 583 µm.
-The PNG does not establish scanner, objective magnification or numerical
-aperture; these are recorded as unknown. [TIGER data](https://tiger.grand-challenge.org/Data/),
-[ROI release](https://zenodo.org/records/6014422).
+TIGER 114S is a **tissue ROI**, 1224 × 1166 native pixels at provider-reported
+approximately 0.5 µm/pixel. Its field of view is approximately 612 × 583 µm.
+The microscope objective, numerical aperture and optical resolving power are
+unknown. Upsampling to 2448 × 2332 pixels at 0.25 µm/pixel cannot recover lost
+optical detail. Native image dimensions, optical uncertainty, model sampling,
+256 × 256 input/output dimensions, and Bora's separate 2× working downsample
+are recorded independently.
 
-The original GigaTIME methods describe registered 128 × 128 µm mIF patches
-containing 556 × 556 pixels, with 256 × 256 training subregions. The implied
-registered-grid spacing is `128/556 ≈ 0.230216 µm/pixel`. Flash reports using
-the same training data, but its model card does **not** specify a separate H&E
-physical calibration. This inferred scale is therefore an **exploratory
-reference**, not a confirmed Flash requirement. The 20× tiling described for
-GigaPath slide classification is not a GigaTIME-Flash calibration.
-[Original methods](https://doi.org/10.1016/j.cell.2025.11.016),
-[Flash §3.1](https://arxiv.org/html/2607.18218v1).
+Inference uses RGB/ImageNet normalization, 256-pixel windows, 128-pixel stride,
+probability-space Hann overlap-add, and full edge coverage. Output maps return
+bilinearly to the original pixel-centre frame. Expert masks are never
+interpolated. Saved dense maps are float16 `C,Y,X` arrays, in the documented
+23-channel order. They are virtual sigmoid activations, not measured stains.
 
-Both native 0.5 µm/pixel and exploratory ≈0.230 µm/pixel inference are retained.
-For the latter, integer dimensions are 2658 × 2532 and the effective spacing
-is x=0.2302483, y=0.2302528 µm/pixel. Field of view is preserved. RGB is
-upsampled bicubically; predicted maps are returned bilinearly to the original
-pixel-centre frame. The expert mask is never interpolated. Bora's fixed 2×
-working downsample is separately recorded (approximately 1 µm/working pixel).
+The coarse masks are the existing `tiling-mask-cpp` tile-majority reconstructions
+at widths 56, 90 and 216, with 0% injected border error. They were generated
+from the expert mask: this is a **controlled reconstruction experiment**, not
+independent tissue classification. One central-half mean per original tile is
+used for marker contrasts. At least three tiles per group are required. The
+six eligible channels with largest absolute pairwise Hedges g are selected,
+then median-centred, scaled by `max(IQR, 0.05)` and clipped to ±10. These
+features drive the same local wand and spatial prior used by the RGB baseline.
+Fine tissue masks enter only after predictions are fixed, for scoring.
 
-The model consumes 256 × 256 RGB windows and outputs 23 × 256 × 256 maps.
-Its transformer patch is 16 × 16 pixels, giving a 16 × 16 token grid; dense
-output pixels do not establish optical or cellular accuracy. At native
-sampling a window spans 128 µm per side; at the exploratory scale it spans
-approximately 58.94 µm. Window stride is 128 pixels, overlapping probabilities
-are Hann blended, and partial image edges are retained.
+## Files
 
-## Selection and comparison
+- `download_reference.py`: checksummed acquisition of the authors' 50 examples.
+- `model.py`: Flash architecture, retained for diagnostics, with all released
+  LoRA tensors represented; `original_cnn.py`: official CNN architecture.
+- `audit_dapi.py`: explicit architecture/preprocessing hypotheses on five
+  calibration patches; no diagnostic forward variant is used in production.
+- `audit_transfer.py`, `audit_stains.py`, `audit_scale.py`, `audit_highres.py`:
+  model, stain and scale checks; all outcomes are retained, including failures.
+- `confirm_dapi.py`, `validate_channels.py`: reference checks with the official
+  disjoint-window control, for comparison between models.
+- `validate_production.py`: checks the actual overlap-add pipeline and saved
+  float16 maps, and writes the reports required by the CNN refinement runner.
+- `run_pilot.py`: reference-gated CNN inference, coarse-only marker selection,
+  Bora comparison and native-frame expert-mask scoring.
+- `plot_overlays.py`, `plot_dapi_qa.py`: mask overlays at 35% opacity, virtual
+  DAPI/CK/CD3/CD4/CD68/Ki67 overlays, fixed nuclear zoom and reference examples.
 
-The input coarse masks are existing **reference-derived tile-majority masks**
-from `tiling-mask-cpp`, at tile widths 56, 90 and 216, with 0% injected border
-error. This is controlled boundary reconstruction, not an independently
-predicted tissue-classification benchmark. The sample inventory and tiler hash
-are copied into the run metadata. Coarse arrays are copied unchanged.
+## Reproduce on Chiamaka
 
-Within each original tile, the central half supplies one mean per channel.
-Groups need at least three tiles. Channels are ranked by their largest
-absolute pairwise Hedges g, using a 0.01 activation-SD floor. The top six are
-selected independently for each coarse grid and sampling condition. DAPI
-(nuclear stain), TRITC and Cy5 (background) are excluded from protein-channel
-selection. DAPI is included in the requested visualizations. Effects are
-descriptive: spatial correlation prevents treating these tile observations as
-independent biological replicates.
+Use the isolated Python environment under
+`/mnt/sata_ssd/Bora-benchmark/experiments/gigatime-flash-2026-10-16/.venv/`.
+The exact runtime versions and source hashes are recorded in `results.json`.
+For another environment, install Bora, CUDA-compatible PyTorch/torchvision,
+`timm==1.0.22`, `safetensors==0.5.3`, `opencv-python==4.13.0.92`,
+`scikit-learn` and `matplotlib`. No other project's environment is modified.
 
-Selected activations are median-centred and divided by `max(IQR, 0.05)` over
-coarse foreground, clipped to ±10. The existing balanced local wand uses these
-channels for internal competition, with a unit variance floor. RGB baseline
-uses its unchanged Lab path. Both use the same `BoundaryConfig()` defaults,
-local spatial prior, protected seeds and H&E exterior stage. The run does not
-train a segmentation model, retrain Flash or tune against the expert mask.
-
-Only after all predictions are fixed does the runner read fine reference
-labels for evaluation. Class IDs are compacted with an explicit reversible
-map; original 0 is excluded, and original 7 (`rest`) remains a scored class.
-IoU/Dice and accuracy are scored in the native frame. Internal-boundary F1
-uses 4, 8 and 16 µm tolerances; ASSD and HD95 use physical x/y sampling.
-No protein-stain ground truth is available in this TIGER case.
-
-## Reproduce
-
-Use an isolated environment with a compatible CUDA PyTorch installation:
+Download approved model files using the Hugging Face CLI:
 
 ```bash
-python -m pip install -e '.[test]'
-python -m pip install timm==1.0.22 safetensors==0.5.3 opencv-python==4.13.0.92 matplotlib
-hf auth login
-hf download prov-gigatime/gigatime-flash \
-  --revision 47a5ee847d77cbe0e75f2f67f0c95d45e9bd7ca2 \
+hf download prov-gigatime/GigaTIME \
+  --revision a6556030bdb8071857559e12b921620aa1bbac5b \
   --include model.pth config.json LICENSE
+python experiments/gigatime_flash/download_reference.py
 ```
 
-Access must already be approved by the checkpoint owner. Do not put a token
-in scripts, reports or shell command arguments. This run used existing access
-and did not save a token on Chiamaka. The exact weights are SHA-256
-`ac93f0ea65df2cc6de388415ec5f5c074feab4754aabab450216ef69fe5dd411`.
-All 254 state tensors load strictly (23,806,559 parameters); missing or
-unexpected tensors abort the run. The official notebook fallback drops the
-patch convolution adapters; this implementation retains them.
-
-Set the two model paths to the pinned local snapshot, then run from Bora:
+The CNN weight SHA-256 is
+`d200308302c7fefd13b259c62de546f2c859c28d1079e9f67dc8808915d95d0c`.
+Existing approved access was used; no token is saved in code or reports.
+Set the following paths to the downloaded snapshot and output locations:
 
 ```bash
 export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2
+MODEL=/path/to/pinned/snapshot/model.pth
+CONFIG=/path/to/pinned/snapshot/config.json
+DATA=/mnt/sata_ssd/Bora-benchmark/raw/gigatime-official-test/extracted/sample_test_data/data
+QA=/mnt/sata_ssd/Bora-benchmark/results/gigatime-flash-audit-2026-10-16
+OUT=/mnt/sata_ssd/Bora-benchmark/results/gigatime-cnn-pilot-2026-10-16
+PYTHONPATH=src python experiments/gigatime_flash/validate_production.py \
+  --data "$DATA" --weights "$MODEL" --output "$QA/production"
 PYTHONPATH=src python experiments/gigatime_flash/run_pilot.py \
-  --data-root /mnt/sata_ssd/Bora-benchmark \
-  --output /mnt/sata_ssd/Bora-benchmark/results/gigatime-flash-pilot-2026-10-16 \
-  --weights /path/to/pinned/snapshot/model.pth \
-  --config /path/to/pinned/snapshot/config.json
-python experiments/gigatime_flash/plot_overlays.py \
-  --results /mnt/sata_ssd/Bora-benchmark/results/gigatime-flash-pilot-2026-10-16 \
-  --tile-size 90 --alpha 0.35
-PYTHONPATH=src pytest tests/test_boundary.py tests/test_virtual_markers.py -q
+  --model-family cnn --weights "$MODEL" --config "$CONFIG" --output "$OUT" \
+  --dapi-validation-report "$QA/production/production_dapi_validation.json" \
+  --channel-validation-report "$QA/production/production_channel_validation.json"
+PYTHONPATH=src python experiments/gigatime_flash/plot_dapi_qa.py \
+  --results "$OUT" --weights "$MODEL"
+PYTHONPATH=src pytest tests/test_boundary.py tests/test_virtual_markers.py tests/test_gigatime_lora.py -q
 ```
 
-The runner expects the prepared TIGER inventory and the existing pilot's
-`results/bora-pilot-independent-2026-10-16/tiger/sample.json` plus
-`error_0/tile_{56,90,216}/coarse.tif`. The coarse-generation implementation is
-[`Bora-extra/benchmark/run_bora_pilot.py`](https://github.com/tkcaccia/Bora-extra/blob/main/benchmark/run_bora_pilot.py).
-Use a fresh output directory for a different model, image or inference policy.
+The runner also expects `prepared/tiger.jsonl` and the existing benchmark's
+`results/bora-pilot-independent-2026-10-16/tiger/sample.json` and
+`error_0/tile_{56,90,216}/coarse.tif`. Acquisition and original coarse-generation
+code are maintained in [Bora-extra](https://github.com/tkcaccia/Bora-extra).
+`plot_dapi_qa.py` uses the retained diagnostic confirmation list and rejected
+Flash outputs for its fixed before/after comparison. The reference-check
+figures are not selected by score.
 
-Results include checksums, environment versions, physical sampling and
-dimensions, all marker contrasts and tile observations, refined masks,
-per-class scores, timings, dense maps, and an overlay manifest. Model-grid and
-native maps are `C,Y,X` float16 NumPy arrays, in `config.json` channel order.
-They are virtual sigmoid activations, not calibrated expression measurements.
-The code snapshot used for the run is retained on Chiamaka under
-`experiments/gigatime-flash-2026-10-16/code/`; source hashes are in `results.json`.
+## Saved artifacts
+
+Chiamaka: `/mnt/sata_ssd/Bora-benchmark/results/gigatime-cnn-pilot-2026-10-16/`.
+Local review copy:
+`/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/gigatime-cnn-pilot-2026-10-16/`.
+Dense marker maps remain on Chiamaka. The figures, source image, expert mask,
+coarse/refined rasters, scores, reference-check reports and provenance are
+available in the review copy. Failed Flash outputs and all diagnostic
+alternatives remain in their separate original folders. Raw imagery,
+checkpoints, dense maps and generated label rasters remain outside Git.

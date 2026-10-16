@@ -1,5 +1,11 @@
 # GigaTIME-Flash-driven Bora: annotated TIGER pilot, 16 October 2026
 
+**Rejected pilot: DAPI target-image QC failed.** This report is retained for
+traceability; its virtual-marker results must not support claims about Bora's
+performance. The inferred input scale below also omitted the authors' 556→512
+resize. The replacement uses the original CNN at 0.25 µm/pixel and includes
+paired-reference checks: [current report](gigatime_cnn_validation.md).
+
 **Finding:** virtual-marker refinement improves over the coarse tile masks but
 does not consistently outperform RGB-driven adaptive Bora. A boundary-distance
 improvement occurs at tile width 90; overlap and boundary F1 generally favour
