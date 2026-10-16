@@ -91,7 +91,7 @@ def scale_z(values,c):
     return scaler.transform(values.reshape(-1,values.shape[-1])).reshape(values.shape).astype(np.float32),scaler.transform(summaries)
 
 
-def run_method(number,c,variants):
+def run_method(number,c,variants,*,return_probabilities=False):
     z=c.z;extras={};details=dict(preset="original fixed hyperparameters, generalized class count",fine_reference_used=False)
     if number==4:
         positive=np.concatenate([np.maximum(z,0),np.maximum(-z,0)],-1)
@@ -158,4 +158,6 @@ def run_method(number,c,variants):
     else:raise ValueError(number)
     raw=c.classes[p.argmax(-1)].astype(np.uint8);raw[c.coarse==0]=0
     if rgb.shape!=(*c.shape,3) or not np.isfinite(rgb).all():raise ValueError("Invalid method RGB")
+    if return_probabilities:
+        return rgb,raw,details,extras,p
     return rgb,raw,details,extras

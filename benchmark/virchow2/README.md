@@ -1,5 +1,27 @@
 # Virchow2 experiments for Bora
 
+## Equal combination of algorithms 9, 19 and 4
+
+The fixed equal-probability combination followed by Bora scores **0.7625**,
+compared with **0.7611** for algorithm 9 on the same 49 ROIs, using equal dataset
+weight. It improves 34 images, worsens 12 and ties 3. This is a small exploratory
+gain on reused cases. The new viewer shows the original H&E, original reference
+mask, actual input tiled mask and selected Bora refinement in four synchronized
+panels. All earlier seven methods can also be selected.
+
+- [Combination report](ENSEMBLE_REPORT.md)
+- [Code, protocol and reproduction commands](../../experiments/virchow2_ensemble/)
+
+Outputs on Chiamaka:
+`/mnt/sata_ssd/Bora-benchmark/results/virchow2-ensemble-2026-10-16/`
+
+Local Mac copy:
+`/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/virchow2-ensemble-2026-10-16/`
+
+Keep the preceding multi-image result folder alongside this one. Open
+`gallery.html` for the four-panel viewer and `all_outputs.html` for all 49
+original/reference/tiled/algorithm-9/combined comparisons.
+
 ## Seven selected methods across 49 new regions
 
 Algorithms 4, 5, 8, 9, 10, 15 and 19 were executed on 49 new regions from TIGER (16),
