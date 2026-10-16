@@ -20,8 +20,10 @@ METHODS={4:"Class-specific concepts",5:"Worst-class colour geometry",8:"Stain-pe
 
 
 class Context:
-    def __init__(self,image,coarse,features,colours):
+    def __init__(self,image,coarse,features,colours,*,analysis_support=None):
         self.image=image;self.coarse=coarse;self.shape=coarse.shape;self.grid=features.shape[:2]
+        self.analysis_support=coarse>0 if analysis_support is None else np.asarray(analysis_support,bool)
+        if self.analysis_support.shape!=self.shape:raise ValueError("Analysis support geometry mismatch")
         self.summaries,self.labels,_,self.records=coarse_tile_observations(features,coarse)
         self.classes=np.unique(self.labels);self.colours=np.asarray(colours,np.float32)[self.classes-1]
         self.selection=select_features(self.summaries,self.labels,"balanced_mrmr",64)
@@ -133,7 +135,7 @@ def run_method(number,c,variants,*,return_probabilities=False):
         p=expand(combined,c.shape);rgb=c.probability_rgb(p)
         details.update(context_top_classes=min(2,len(c.classes)),other_class_weight=.15)
     elif number==15:
-        objects,nuclei,lumens,threshold=object_maps(c.image,c.coarse)
+        objects,nuclei,lumens,threshold=object_maps(c.image,c.analysis_support.astype(np.uint8))
         a=np.concatenate([c.native_p,objects],-1)
         scaler=StandardScaler().fit(coarse_summaries(a,c.records));scaler.scale_=np.maximum(scaler.scale_,1e-4)
         a=scaler.transform(a.reshape(-1,a.shape[2])).reshape(a.shape).astype(np.float32)

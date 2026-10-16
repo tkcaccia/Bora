@@ -1,5 +1,39 @@
 # Virchow2 experiments for Bora
 
+## Full tissue, background removal and all algorithms side by side
+
+The latest rerun separates **RGB-detected tissue** from **annotated scoring
+support**. All detected tissue receives labels, including 21,935,352 native
+pixels without annotations; those pixels are displayed but unscored. Background
+is removed after Bora. The original annotation-valid quality region is retained,
+so annotated tissue removed by the RGB detector is still penalized.
+
+The same 49 ROIs run methods **5, 8, 9, 10, 15 and 19**, **9 + 19**, and matched
+H&E/plain-feature controls. Algorithm 4 remains rejected. The main viewer shows
+every retained algorithm side by side, with its actual RGB conversion above its
+final Bora overlay. Shared zoom, crop, opacity, native scales and scores make
+the columns directly comparable. A separate matrix includes all 49 fields.
+
+The new equal-dataset native macro IoU ranking starts with **9 + 19: 0.7586**,
+**9: 0.7582**, and **19: 0.7564**. The combination's interval versus 9 includes
+zero. Completion and background removal change the pipeline; this ranking should
+not be interpreted as the earlier support-limited comparison. All reference
+classes and original annotation pixels remain in scoring.
+
+- [Full-tissue report and exact protocol](FULL_TISSUE_REPORT.md)
+- [Code and reproduction commands](../../experiments/virchow2_tissue/)
+
+Chiamaka output:
+`/mnt/sata_ssd/Bora-benchmark/results/virchow2-full-tissue-2026-10-16/`
+
+Mac copy:
+`/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/virchow2-full-tissue-2026-10-16/`
+
+Open **gallery.html** for all algorithms side by side on a selected image, or
+**all_outputs.html** for every image, conversion and final mask. Keep the original
+multi-image results folder alongside it. Earlier limited-support experiments
+below are preserved as historical results.
+
 ## Active selection: combine algorithms 9 and 19
 
 Algorithm **4 was rejected by the user after reviewing the complete gallery**.
