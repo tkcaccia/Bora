@@ -6,6 +6,13 @@ for target-image DAPI quality. This directory retains its historical name so
 that all diagnostic scripts and previous runs remain traceable.
 
 See [the CNN validation and results report](../../docs/gigatime_cnn_validation.md).
+The current [group-specific RGB experiment](../../docs/gigatime_group_markers.md)
+selects three candidates for each group by its weakest separation from the
+other groups. Refinement uses three markers chosen separately for each tissue
+pair, with a matched H&E interface control. The earlier
+[global three-marker trial](../../docs/gigatime_top3_rgb.md) finds CD3, CD4 and
+PHH3-B, but is dominated by inflamed-stroma/rest contrasts and does not improve
+overlap over H&E Bora.
 The [old Flash report](../../docs/gigatime_flash_pilot.md) is an archive of a
 failed pilot, not supporting evidence for the method.
 
@@ -78,6 +85,22 @@ Fine tissue masks enter only after predictions are fixed, for scoring.
   Bora comparison and native-frame expert-mask scoring.
 - `plot_overlays.py`, `plot_dapi_qa.py`: mask overlays at 35% opacity, virtual
   DAPI/CK/CD3/CD4/CD68/Ki67 overlays, fixed nuclear zoom and reference examples.
+- `top3_rgb.py`: Kruskal-Wallis ranking across five coarse tissue groups, BH
+  adjustment across 16 eligible proteins, all 169 toroidal grid shifts as a
+  spatial sensitivity check, and pairwise contrasts with separate adjustment
+  across all 160 marker/group pairs. It records selected-channel redundancy,
+  makes an explicit rank-ordered RGB image, runs unmodified RGB/Lab Bora, and
+  writes statistics, physical metadata, predictions and 35% opacity overlays.
+- `group_markers.py`: group-specific ranking by worst pairwise direction-free
+  AUC across all opponents; interface-specific RGB selection, the unchanged
+  Bora RGB/Lab local wand and a matched pairwise H&E control. Fixed nearest
+  original-interface ownership merges predictions; tied junctions and
+  background stay fixed. This is an experimental wrapper rather than a change
+  to the original multiclass RGB API.
+- `plot_all_markers.py`: original H&E plus all 23 CNN channels in canonical
+  order, with separate shared 0–1 and per-channel P1–P99 display atlases,
+  native-resolution PNGs and a channel/scaling manifest. It labels DAPI,
+  background channels and proteins below the reference screen explicitly.
 
 ## Reproduce on Chiamaka
 
@@ -120,6 +143,65 @@ PYTHONPATH=src python experiments/gigatime_flash/plot_dapi_qa.py \
 PYTHONPATH=src pytest tests/test_boundary.py tests/test_virtual_markers.py tests/test_gigatime_lora.py -q
 ```
 
+After the checked CNN run, reproduce the three-marker RGB follow-up:
+
+```bash
+export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2
+PYTHONPATH=src python experiments/gigatime_flash/top3_rgb.py \
+  --source /mnt/sata_ssd/Bora-benchmark/results/gigatime-cnn-pilot-2026-10-16 \
+  --output /mnt/sata_ssd/Bora-benchmark/results/gigatime-top3-rgb-2026-10-16
+PYTHONPATH=src:. pytest tests/test_top3_rgb.py tests/test_boundary.py \
+  tests/test_virtual_markers.py tests/test_gigatime_lora.py -q
+```
+
+The primary selection grid is the previous 90-pixel display grid, where each
+group has at least 12 tiles. One central-half activation mean per tile is the
+observation. Select the lowest omnibus nominal p-values after the independent
+reference-channel eligibility screen; report BH-adjusted values for the full
+16-marker family. The top three become R/G/B in that order. Primary encoding
+linearly maps P1–P99 over coarse foreground to 0–255, with minimum activation
+range 0.01. Fixed [0,1] encoding is a prespecified sensitivity comparison.
+The same composite is reused for tile widths 56, 90 and 216. No marker,
+encoding, colour permutation or parameter is chosen by fine-mask accuracy.
+
+The statistics are exploratory within one ROI. Nominal tests assume
+independent observations; neighbouring tiles are correlated. Toroidal shifts
+retain coarse group sizes and lattice patterns, but rely on stationarity and
+artificial periodic edges. Neither diagnostic establishes patient-level
+significance or measured target-sample protein expression. The three selected
+signals are highly redundant and do not significantly separate invasive tumor
+from tumor-associated stroma in their nominal pairwise tests.
+
+Reproduce the current group-specific experiment after the checked CNN run:
+
+```bash
+export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2
+PYTHONPATH=src:. python experiments/gigatime_flash/group_markers.py \
+  --source /mnt/sata_ssd/Bora-benchmark/results/gigatime-cnn-pilot-2026-10-16 \
+  --output /mnt/sata_ssd/Bora-benchmark/results/gigatime-group-rgb-2026-10-16
+PYTHONPATH=src:. python experiments/gigatime_flash/plot_all_markers.py \
+  --source /mnt/sata_ssd/Bora-benchmark/results/gigatime-cnn-pilot-2026-10-16 \
+  --output /mnt/sata_ssd/Bora-benchmark/results/gigatime-group-rgb-2026-10-16/all_markers
+PYTHONPATH=src:. pytest tests/test_group_markers.py tests/test_top3_rgb.py \
+  tests/test_boundary.py tests/test_virtual_markers.py tests/test_gigatime_lora.py -q
+```
+
+For group-specific ranking, each candidate is scored by the **minimum** of
+its four direction-free pairwise AUCs; mean pairwise AUC breaks ties. An easy
+contrast against one group cannot compensate for failure against another.
+These are descriptive single-marker separations from the same coarse tiles,
+not held-out estimates of a joint three-marker classifier. Higher or lower
+activation can be informative; no biological tissue-marker specificity is
+established on TIGER. The full ranking includes weak candidates as such.
+
+Each boundary has its own three-marker RGB, ranked by separation of that pair.
+For tumor–stroma this selects CK, CD138 and Caspase3-D. All 160 marker/pair
+tests are adjusted together. The normal Bora RGB/Lab interior wand runs in each
+two-class union with fixed parameters. Each editable pixel is assigned to its
+nearest original interface, and exact distance ties are protected. Costs from
+different RGB spaces are never compared. The original background stays fixed;
+the matched H&E control uses precisely the same wrapper and ownership rule.
+
 The runner also expects `prepared/tiger.jsonl` and the existing benchmark's
 `results/bora-pilot-independent-2026-10-16/tiger/sample.json` and
 `error_0/tile_{56,90,216}/coarse.tif`. Acquisition and original coarse-generation
@@ -138,3 +220,31 @@ coarse/refined rasters, scores, reference-check reports and provenance are
 available in the review copy. Failed Flash outputs and all diagnostic
 alternatives remain in their separate original folders. Raw imagery,
 checkpoints, dense maps and generated label rasters remain outside Git.
+
+Three-marker RGB outputs use the corresponding `gigatime-top3-rgb-2026-10-16`
+result directory on Chiamaka and locally. `marker_statistics.json`/`.csv`
+contains the full ranking; `tile_observations.csv` contains the analysis
+observations; `rgb_encoding.json` maps R/G/B to marker names and scaling.
+`top3_markers.rgb.png` is the exact primary Bora input. Its OME-TIFF companion
+records native physical pixel size; original probability planes remain on
+Chiamaka. `marker_statistics.png`, `top3_rgb_and_markers.png` and
+`segmentation_overlays_tile_90.png` show the marker ranking, DAPI/selected
+maps and transparent expert/coarse/Bora comparisons respectively.
+
+Current group-specific outputs are in `gigatime-group-rgb-2026-10-16` under
+both result roots. `selection.json`, `group_marker_ranking.csv` and
+`pairwise_statistics.csv` document all markers and contrasts. `group_rgb/`
+contains the five group-specific candidate composites; `pair_rgb/` contains
+the ten interface composites actually used for refinement. Both encoding JSON
+files record channel names and intensity transforms. `results.json` records
+the native physical frame, fixed configuration, source hashes and full scores.
+Figures include `markers_by_group.png`, `markers_by_interface.png`,
+`group_rgb_composites.png`, `tumor_stroma_rgb_and_markers.png` (including DAPI)
+and `group_specific_segmentation.png` (35% opacity masks). Twenty-four focused
+tests cover rank adjustment, group-specific selection, constant/sparse cases,
+channel/frame preservation, unchanged two-class RGB wand behavior, protected
+junctions, order-independent merging and prior model/feature checks.
+`all_markers/` contains 23 native-resolution display PNGs, two complete
+atlases and `manifest.json`; individually stretched intensities cannot be
+compared quantitatively across channels. Use the shared-scale atlas when
+comparing predicted activation values.

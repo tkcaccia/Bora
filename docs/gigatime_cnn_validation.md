@@ -116,6 +116,14 @@ results support further testing rather than an overall superiority claim.
 
 ## Deliverables and verification
 
+The subsequent [global three-marker RGB experiment](gigatime_top3_rgb.md) selects
+CD3, CD4 and PHH3-B by all-group Kruskal-Wallis ranking with multiplicity
+adjustment, then runs the normal RGB/Lab Bora path. It records the strong
+redundancy of these channels and their weak tumor–stroma separation; it does
+not establish an overall segmentation advantage. The current
+[group-specific follow-up](gigatime_group_markers.md) instead selects markers
+for each group and competing pair, with a matched pairwise H&E control.
+
 - `dapi_paired_reference_check.png`: fixed unused examples, reference nuclei,
   CNN DAPI and overlays.
 - `dapi_correction_zoom.png`: the same TIGER nuclear crop, rejected Flash
