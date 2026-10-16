@@ -37,3 +37,9 @@ cpp/*.so
 cpp/build/
 output/figures/
 output/pdf/*report.pdf
+
+# Benchmark datasets and copied examples stay outside version control.
+benchmark/examples/
+benchmark/raw/
+benchmark/prepared/
+benchmark/results/

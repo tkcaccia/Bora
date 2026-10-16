@@ -237,6 +237,11 @@ pixels, retained classes, and measured processing time. The current input
 GeoJSONs differ from the older 216-pixel benchmark annotations, so their
 scores are kept in a separate versioned benchmark directory.
 
+Dataset acquisition code, provenance, annotation definitions and access status
+for the histopathology benchmark are available in [`benchmark/`](benchmark/).
+The acquisition workflow inventories public image/mask pairs and does not run
+Bora. Dataset files and local examples remain outside Git.
+
 ## License
 
 No license has yet been selected.

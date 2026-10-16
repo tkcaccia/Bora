@@ -1,0 +1,8 @@
+# Dataset acquisition only; installing Bora is not required.
+huggingface_hub>=0.34,<3
+pyarrow>=15,<26
+
+# Native WSI inspection and read-only provider partition tables
+openslide-python>=1.4,<2
+openslide-bin>=4.0,<5
+openpyxl>=3.1,<4
