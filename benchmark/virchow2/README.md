@@ -1,4 +1,34 @@
-# Virchow2: twenty experimental ideas for Bora
+# Virchow2 experiments for Bora
+
+## Seven selected methods across 49 new regions
+
+Algorithms 4, 5, 8, 9, 10, 15 and 19 were executed on 49 new regions from TIGER (16),
+BCSS (16), CAMELYON16 (7) and BEETLE (10), producing 343 algorithm images and
+final Bora masks. Algorithm 9 has the highest equal-dataset mean macro IoU:
+0.7611, versus 0.7295 for matched H&E/Bora and 0.7548 for plain Virchow2 feature
+RGB/Bora. It improves 41 of 49 regions over the H&E control. Every result,
+including weaker cases and before/after masks, is retained.
+
+- [Multi-image report and rankings](MULTICASE_REPORT.md)
+- [Code and reproduction commands](../../experiments/virchow2_multi/)
+
+All images are ROIs. Processing uses a calibrated approximately 0.5µm/px grid;
+scores compare projected native-coordinate predictions with native reference
+masks. Coarse labels are reference-derived. CAMELYON's negative tissue label is
+automatically detected, and its cohort is also ranked separately. These are
+controlled refinement experiments, not independently predicted coarse labels.
+
+Remote output:
+`/mnt/sata_ssd/Bora-benchmark/results/virchow2-multicase-2026-10-16/`
+
+Local Mac output:
+`/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/virchow2-multicase-2026-10-16/`
+
+Open `gallery.html` for ranking and adjustable native-mask overlays, or
+`all_outputs.html` to inspect every algorithm input and final mask. Models,
+images and numerical feature caches remain outside Git.
+
+## Twenty original hypotheses on one region
 
 This benchmark tests twenty distinct interventions on one expert-annotated
 TIGER breast tissue ROI. The image is 1224 × 1166 pixels at provider-reported
