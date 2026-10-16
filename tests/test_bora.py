@@ -72,7 +72,10 @@ def test_ome_roundtrip(tmp_path):
 
 def test_streaming_roundtrip(tmp_path):
     image, mask = synthetic(); ip=tmp_path/"i.tif"; mp=tmp_path/"m.tif"; op=tmp_path/"o.tif"; gp=tmp_path/"o.geojson"
-    tifffile.imwrite(ip,image,tile=(32,32),compression="deflate"); tifffile.imwrite(mp,mask)
+    tifffile.imwrite(ip,image,tile=(32,32),compression="deflate")
+    # Match tiling-mask's compressed/tiled Bora-ready output; this path cannot
+    # be opened with tifffile.memmap and must use bounded Rasterio windows.
+    tifffile.imwrite(mp,mask,tile=(32,32),compression="deflate")
     report=refine_streaming(ip,mp,op,WatershedBackend(),RefineConfig(4,6,64,8,10,1),64)
     assert report["blocks"] == 6 and read_mask(op).shape == mask.shape
     assert write_geojson_streaming(gp,op,64,.5,10) > 0

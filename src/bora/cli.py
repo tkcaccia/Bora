@@ -17,7 +17,25 @@ def parser():
     p = sub.add_parser("refine", help="refine a coarse label mask")
     p.add_argument("image"); p.add_argument("mask")
     p.add_argument("--output", required=True); p.add_argument("--geojson", required=True); p.add_argument("--report")
-    p.add_argument("--backend", choices=("watershed","medsam","pathsegmentor","pathsegmentator"), default="watershed")
+    p.add_argument("--class-metadata", help="tiling-mask metrics_cpp.json for named wsiTools annotations")
+    p.add_argument("--backend", choices=("watershed","adaptive-wand","medsam","pathsegmentor","pathsegmentator"), default="watershed")
+    p.add_argument("--source-tile-size", type=int,
+                   help="original square tile width, required for adaptive-wand")
+    p.add_argument("--external-core-fraction", type=float, default=0.37)
+    p.add_argument("--adaptive-external-core", action="store_true")
+    p.add_argument("--internal-core-fraction", type=float, default=0.28)
+    p.add_argument("--grabcut-iterations", type=int, default=1)
+    p.add_argument("--watershed-compactness", type=float, default=0.1)
+    p.add_argument("--median-size", type=int, default=5)
+    p.add_argument("--repair-block-seams", action="store_true")
+    p.add_argument("--min-seam-run", type=int, default=24)
+    p.add_argument("--seam-roi-tiles", type=int, default=2)
+    p.add_argument("--repair-external-only", action="store_true")
+    p.add_argument("--protect-internal-band", type=int, default=0)
+    p.add_argument("--internal-search-fraction", type=float, default=0.28)
+    p.add_argument("--local-color-fraction", type=float, default=0.70)
+    p.add_argument("--internal-spatial-weight", type=float, default=1.5)
+    p.add_argument("--internal-median-size", type=int, default=9)
     p.add_argument("--checkpoint"); p.add_argument("--repo-dir"); p.add_argument("--device", default="cuda")
     p.add_argument("--label-map", help="JSON object mapping label IDs to PathSegmentor text prompts")
     p.add_argument("--pathsegmentor-config", help="override the official inference YAML")
@@ -60,44 +78,97 @@ def parser():
     p.add_argument("--watershed-resolution", choices=("native","accelerated"), default="native")
     p.add_argument("--watershed-max-side", type=int, default=256,
                    help="analysis size used only in accelerated watershed mode")
+    b = sub.add_parser("benchmark", help="run tiling-mask, Bora, and compare with GeoJSON truth")
+    b.add_argument("input_dir"); b.add_argument("--output", required=True)
+    b.add_argument("--image-dir", help="optional directory containing the matching TIFF images")
+    b.add_argument("--tile-size", default="224", help="source tile size: N or WIDTHxHEIGHT")
+    b.add_argument("--tiling-mask-command", default="tiling-mask")
+    b.add_argument("--tiling-mask-backend", choices=("python", "cpp"), default="python")
+    b.add_argument("--coordinates", choices=("pixel", "world"), default="pixel")
+    b.add_argument("--class-property"); b.add_argument("--workers", type=int, default=4)
+    b.add_argument("--backend", choices=("watershed","adaptive-wand","medsam","pathsegmentor","pathsegmentator"), default="watershed")
+    b.add_argument("--checkpoint"); b.add_argument("--repo-dir"); b.add_argument("--device", default="cuda")
+    b.add_argument("--block-size", type=int, default=2048)
+    b.add_argument("--resume", action=argparse.BooleanOptionalAction, default=True)
+    b.add_argument("--bora-arg", action="append", default=[], help="extra argument passed to bora refine; repeatable")
     return root
 
 
 def main(argv=None):
     a = parser().parse_args(argv)
-    cfg = RefineConfig(a.core_erosion, a.outer_dilation, a.tile_size, a.tile_overlap, a.min_area, a.smooth_radius)
-    watershed_max_side = 0 if a.watershed_resolution == "native" else a.watershed_max_side
-    watershed = make_backend("watershed", watershed_max_side=watershed_max_side)
-    selected = make_backend(a.backend, a.checkpoint, a.device, a.repo_dir, watershed_max_side,
-                            a.label_map, a.pathsegmentor_config)
-    backends = [watershed] if a.backend == "watershed" else [watershed, selected]
-    wand = ({"boundary_radius":a.wand_boundary_radius,"iterations":a.wand_iterations,
-             "initial_temperature":a.wand_initial_temperature,"final_temperature":a.wand_final_temperature,
-             "data_weight":a.wand_data_weight,"smoothness_weight":a.wand_smoothness_weight,
-             "edge_beta":a.wand_edge_beta,"connectivity":a.wand_connectivity}
-            if a.annealed_wand else None)
-    with tifffile.TiffFile(a.mask) as tif:
-        shape = tif.series[0].shape
-    stream = a.stream if a.stream is not None else int(np.prod(shape[-2:])) > 100_000_000
-    if stream:
-        report = refine_streaming(a.image, a.mask, a.output, backends, cfg, a.block_size,
-                                  wand, a.wand_downsample)
+    if a.command == "benchmark":
+        from .benchmark_pipeline import run_pipeline
+        try:
+            summary = run_pipeline(
+                a.input_dir, a.output, image_dir=a.image_dir, tile_size=a.tile_size,
+                tiling_mask_command=a.tiling_mask_command,
+                tiling_mask_backend=a.tiling_mask_backend, coordinates=a.coordinates,
+                class_property=a.class_property, workers=a.workers, backend=a.backend,
+                checkpoint=a.checkpoint, repo_dir=a.repo_dir, device=a.device,
+                block_size=a.block_size, resume=a.resume, extra_bora_args=a.bora_arg)
+        except (OSError, RuntimeError, ValueError) as exc:
+            raise SystemExit(f"bora benchmark: error: {exc}") from exc
+        print(json.dumps(summary, indent=2))
+        return
+    if a.backend == "adaptive-wand":
+        if not a.source_tile_size or a.source_tile_size <= 0:
+            raise SystemExit("--source-tile-size must be positive for adaptive-wand")
+        from .boundary import BoundaryConfig, smooth_boundaries_streaming
+        boundary_config = BoundaryConfig(
+            external_core_fraction=a.external_core_fraction,
+            adaptive_external_core=a.adaptive_external_core,
+            internal_core_fraction=a.internal_core_fraction,
+            grabcut_iterations=a.grabcut_iterations,
+            watershed_compactness=a.watershed_compactness,
+            median_size=a.median_size,
+            repair_block_seams=a.repair_block_seams,
+            min_seam_run=a.min_seam_run,
+            seam_roi_tiles=a.seam_roi_tiles,
+            repair_external_only=a.repair_external_only,
+            protect_internal_band=a.protect_internal_band,
+            internal_search_fraction=a.internal_search_fraction,
+            local_color_fraction=a.local_color_fraction,
+            internal_spatial_weight=a.internal_spatial_weight,
+            internal_median_size=a.internal_median_size)
+        report = smooth_boundaries_streaming(
+            Path(a.image), Path(a.mask), Path(a.output),
+            a.source_tile_size, a.block_size, boundary_config)
+        backends, wand = [], None
     else:
-        image, labels = read_image(a.image), read_mask(a.mask)
-        if wand:
-            labels, wand_report = run_annealed_wand(
-                image, labels, labels > 0, downsample=a.wand_downsample, **wand)
+        cfg = RefineConfig(a.core_erosion, a.outer_dilation, a.tile_size,
+                           a.tile_overlap, a.min_area, a.smooth_radius)
+        watershed_max_side = 0 if a.watershed_resolution == "native" else a.watershed_max_side
+        watershed = make_backend("watershed", watershed_max_side=watershed_max_side)
+        selected = make_backend(a.backend, a.checkpoint, a.device, a.repo_dir, watershed_max_side,
+                                a.label_map, a.pathsegmentor_config)
+        backends = [watershed] if a.backend == "watershed" else [watershed, selected]
+        wand = ({"boundary_radius":a.wand_boundary_radius,"iterations":a.wand_iterations,
+                 "initial_temperature":a.wand_initial_temperature,"final_temperature":a.wand_final_temperature,
+                 "data_weight":a.wand_data_weight,"smoothness_weight":a.wand_smoothness_weight,
+                 "edge_beta":a.wand_edge_beta,"connectivity":a.wand_connectivity}
+                if a.annealed_wand else None)
+        with tifffile.TiffFile(a.mask) as tif:
+            shape = tif.series[0].shape
+        stream = a.stream if a.stream is not None else int(np.prod(shape[-2:])) > 100_000_000
+        if stream:
+            report = refine_streaming(a.image, a.mask, a.output, backends, cfg, a.block_size,
+                                      wand, a.wand_downsample)
         else:
-            wand_report = {"enabled":False,"applied":False,"changed_pixels":0}
-        refined = labels
-        stage_reports = []
-        for stage_backend in backends:
-            refined, stage_report = refine_labels(image, refined, stage_backend, cfg)
-            stage_report["backend"] = type(stage_backend).__name__
-            stage_reports.append(stage_report)
-        report = {"stages":stage_reports}
-        report["annealed_wand"] = wand_report
-        write_ome_mask(a.output, refined)
+            image, labels = read_image(a.image), read_mask(a.mask)
+            if wand:
+                labels, wand_report = run_annealed_wand(
+                    image, labels, labels > 0, downsample=a.wand_downsample, **wand)
+            else:
+                wand_report = {"enabled":False,"applied":False,"changed_pixels":0}
+            refined = labels
+            stage_reports = []
+            for stage_backend in backends:
+                refined, stage_report = refine_labels(image, refined, stage_backend, cfg)
+                stage_report["backend"] = type(stage_backend).__name__
+                stage_reports.append(stage_report)
+            report = {"stages":stage_reports}
+            report["annealed_wand"] = wand_report
+            write_ome_mask(a.output, refined)
     if a.pyramid:
         pyramidize_mask(a.output, a.pyramid_compression, a.pyramid_workers)
     if a.geojson_backend in ("multicpu", "cuda"):
@@ -134,10 +205,17 @@ def main(argv=None):
             fill_holes=a.geojson_fill_holes,
             preserve_topology=a.geojson_preserve_topology,
             polygon_backend=a.geojson_polygon_backend)
+    if a.class_metadata:
+        from .geojson_compat import enrich_wsitools_geojson
+        with tifffile.TiffFile(a.output) as tif:
+            height, width = tif.series[0].shape[-2:]
+        report["annotation_metadata"] = enrich_wsitools_geojson(
+            Path(a.geojson), Path(a.class_metadata), width, height)
     report["pyramidal"] = bool(a.pyramid)
     report["watershed_resolution"] = a.watershed_resolution
-    report["refinement_chain"] = ((["annealed_wand"] if wand else []) +
-                                  [type(item).__name__ for item in backends])
+    report["refinement_chain"] = (["adaptive_boundary_wand"] if a.backend == "adaptive-wand" else
+                                  ((["annealed_wand"] if wand else []) +
+                                   [type(item).__name__ for item in backends]))
     report["wand_downsample"] = a.wand_downsample if wand else None
     report["geojson_converter"] = a.geojson_backend
     report["geojson_profile"] = a.geojson_profile

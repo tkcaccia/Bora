@@ -25,7 +25,15 @@ __pycache__/
 Thumbs.db
 
 # Large local data and generated results
+Benchmark/
+docs/.~lock.*#
 inputs/
 outputs/
+output/benchmark_geojson_eval/
+output/adaptive_wand_geojson_eval/
 tmp/
 third_party/PathSegmentor/
+cpp/*.so
+cpp/build/
+output/figures/
+output/pdf/*report.pdf

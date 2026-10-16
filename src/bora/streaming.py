@@ -4,6 +4,8 @@ from time import perf_counter
 import json
 import numpy as np
 import tifffile
+import rasterio
+from rasterio.windows import Window
 from shapely.geometry import Polygon, box, mapping
 from skimage import measure
 from .io import label_dtype
@@ -22,9 +24,27 @@ def refine_streaming(image_path, mask_path, output_path, backends, config, block
     import pyvips
     if not isinstance(backends, (list, tuple)):
         backends = [backends]
-    source = tifffile.memmap(mask_path, mode="r")
-    if source.ndim != 2:
-        raise ValueError(f"Streaming mask must be a flat 2-D TIFF; got {source.shape}")
+    raster_source = None
+    try:
+        source = tifffile.memmap(mask_path, mode="r")
+        if source.ndim != 2:
+            raise ValueError(f"Streaming mask must be a flat 2-D TIFF; got {source.shape}")
+        source_shape = source.shape
+        source_dtype = source.dtype
+        read_window = lambda y0, y1, x0, x1: np.asarray(source[y0:y1, x0:x1])
+    except ValueError:
+        # tiling-mask emits compressed tiled TIFFs.  They are intentionally not
+        # memory-mappable, so use Rasterio's bounded random windows rather than
+        # expanding or decompressing a second full-slide intermediate.
+        raster_source = rasterio.open(mask_path)
+        if raster_source.count != 1:
+            raster_source.close()
+            raise ValueError(f"Streaming mask must contain one label band; got {raster_source.count}")
+        source = None
+        source_shape = (raster_source.height, raster_source.width)
+        source_dtype = np.dtype(raster_source.dtypes[0])
+        read_window = lambda y0, y1, x0, x1: raster_source.read(
+            1, window=Window(x0, y0, x1-x0, y1-y0))
     # Boundary-only access is sparse and non-monotonic because halo windows
     # overlap; random access prevents repeated decoding from the image origin.
     image = pyvips.Image.new_from_file(str(image_path), access="random")
@@ -32,22 +52,24 @@ def refine_streaming(image_path, mask_path, output_path, backends, config, block
         pages = [pyvips.Image.new_from_file(str(image_path), page=i, access="random")
                  for i in range(3)]
         image = pages[0].bandjoin(pages[1:])
-    if (image.height, image.width) != source.shape:
-        raise ValueError(f"Image/mask mismatch: {(image.height,image.width)} vs {source.shape}")
-    dtype = label_dtype(int(source.max()))
+    if (image.height, image.width) != source_shape:
+        if raster_source is not None:
+            raster_source.close()
+        raise ValueError(f"Image/mask mismatch: {(image.height,image.width)} vs {source_shape}")
+    dtype = label_dtype(int(np.iinfo(source_dtype).max))
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
-    dest = tifffile.memmap(output_path, shape=source.shape, dtype=dtype,
+    dest = tifffile.memmap(output_path, shape=source_shape, dtype=dtype,
                            photometric="minisblack", metadata={"axes":"YX"}, bigtiff=True)
     competition_radius = int((annealed_kwargs or {}).get("boundary_radius", 0))
     halo = max(config.core_erosion, config.outer_dilation, config.smooth_radius, competition_radius) + 4
     total = refined = copied = competition_changed = 0
     t0 = perf_counter()
-    for y in range(0, source.shape[0], block_size):
-        for x in range(0, source.shape[1], block_size):
-            h, w = min(block_size, source.shape[0]-y), min(block_size, source.shape[1]-x)
+    for y in range(0, source_shape[0], block_size):
+        for x in range(0, source_shape[1], block_size):
+            h, w = min(block_size, source_shape[0]-y), min(block_size, source_shape[1]-x)
             y0, x0 = max(0,y-halo), max(0,x-halo)
-            y1, x1 = min(source.shape[0],y+h+halo), min(source.shape[1],x+w+halo)
-            mask = np.asarray(source[y0:y1,x0:x1])
+            y1, x1 = min(source_shape[0],y+h+halo), min(source_shape[1],x+w+halo)
+            mask = read_window(y0, y1, x0, x1)
             center = mask[y-y0:y-y0+h,x-x0:x-x0+w]
             total += 1
             if np.unique(mask).size == 1:
@@ -70,9 +92,11 @@ def refine_streaming(image_path, mask_path, output_path, backends, config, block
             dest[y:y+h,x:x+w] = local[y-y0:y-y0+h,x-x0:x-x0+w].astype(dtype, copy=False)
             refined += 1
         dest.flush()
-        print(f"[Bora] row {min(y+block_size,source.shape[0])}/{source.shape[0]} blocks={total} refined={refined}", flush=True)
+        print(f"[Bora] row {min(y+block_size,source_shape[0])}/{source_shape[0]} blocks={total} refined={refined}", flush=True)
     dest.flush()
-    return {"mode":"streaming", "shape":list(source.shape), "blocks":total,
+    if raster_source is not None:
+        raster_source.close()
+    return {"mode":"streaming", "shape":list(source_shape), "blocks":total,
             "refined_blocks":refined, "copied_interior_blocks":copied,
             "annealed_wand_changed_pixels":competition_changed,
             "runtime_seconds":perf_counter()-t0}

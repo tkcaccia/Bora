@@ -115,9 +115,127 @@ Full installation and compilation instructions are in
 [`docs/pathsegmentor_install.md`](docs/pathsegmentor_install.md); the exact
 modern-PyTorch compatibility patch is retained under `compat/`.
 
-The Medical Image Analysis manuscript is available as Markdown, DOCX, and PDF
-under `docs/` and `output/pdf/`. Numerical findings remain explicit
-placeholders until a prespecified benchmark is run.
+The six-tissue, 56-pixel technical benchmark draft is available as Markdown,
+DOCX, and PDF under `docs/` and `output/pdf/`. A separate
+[`Medical Image Analysis` manuscript draft](docs/Bora_manuscript_Medical_Image_Analysis_draft.docx)
+and [highlights](docs/Bora_highlights_Medical_Image_Analysis.docx) follow that
+journal's submission format. The latter draft still requires verified results,
+author declarations, and other submission materials. Neither draft includes
+the ongoing regenerated multi-size benchmark.
+
+## Multi-image GeoJSON benchmark pipeline
+
+The `benchmark` command runs the complete experiment for every matched TIFF
+and GeoJSON pair in a directory:
+
+1. `tiling-mask` rasterizes the original GeoJSON and produces a majority-vote
+   tile grid. Its `mask_pixel.tif` is retained as the pixel-level reference.
+2. Bora uses a full-resolution categorical tile mask directly, or expands a
+   compact tile index grid to the original dimensions without interpolation,
+   then refines that coarse mask against the original image.
+3. Both the unrefined baseline and Bora result are compared with the reference.
+   Per-class and aggregate Dice, IoU, and accuracy are written to
+   `comparison.json`, `summary.json`, and `summary.csv`.
+
+Install both repositories into the same environment:
+
+```bash
+git clone https://github.com/tkcaccia/tiling-mask.git
+python -m pip install -e ./tiling-mask
+python -m pip install -e ./Bora
+```
+
+Image and annotation names are paired by sample stem. The CellPhenotyper
+suffix `_standard_grown_mask_smooth_class.geojson` is removed automatically,
+so `sample.btf` pairs with
+`sample_standard_grown_mask_smooth_class.geojson`.
+
+```bash
+bora benchmark /mnt/sata_ssd/benchmarks/Bora \
+  --output /mnt/sata_ssd/benchmarks/Bora_results \
+  --tile-size 224 --backend watershed --workers 4
+```
+
+If images and GeoJSON files live in different directories, add
+`--image-dir /path/to/images`; matching is still performed by sample stem.
+
+The default is native-resolution watershed with annealed-wand competition and
+pyramidal output. Runs are resumable by default. Use `--no-resume` to rebuild
+completed stages, `--coordinates world` for geospatial GeoJSON, or
+`--class-property classification.name` to select an explicit class field.
+MedSAM and PathSegmentor accept the same `--backend`, `--checkpoint`,
+`--repo-dir`, and `--device` options as `bora refine`. Extra refine options can
+be repeated as `--bora-arg=--option` (and `--bora-arg=value` where needed).
+For the native implementation, pass `--tiling-mask-backend cpp` together with
+`--tiling-mask-command /path/to/tiling-mask-cpp`. The native backend supports
+pixel-coordinate GeoJSON and its standard automatic QuPath class properties.
+
+## 216-pixel image-guided boundary study
+
+The 216-pixel experiment reuses the existing full-resolution
+`mask_tile_grid_216x216_cpp.tif` files. Bora's `adaptive-wand` backend uses
+seeded GrabCut for tissue-background edges and a balanced local-color wand
+for every interface between foreground tissue classes. The wand estimates
+each class's nearby LAB distribution from protected interior pixels, lets
+adjacent classes compete symmetrically within a tile-scale band, and removes
+detached class islands. MedSAM and PathSegmentor are not used here.
+
+```bash
+PYTHONPATH=src python scripts/run_adaptive_boundary_benchmark.py \
+  --images /mnt/sata_ssd/benchmarks/Bora/input \
+  --tiles /mnt/sata_ssd/benchmarks/Bora/output-tilling-mask \
+  --output /mnt/sata_ssd/benchmarks/Bora/output-bora-cycle-06 \
+  --tile-size 216 --block-size 2048
+```
+
+Every sample directory contains `bora_refined.geojson`, a pyramidal OME-TIFF,
+and a comparison JSON. The GeoJSON carries the original tiling-mask class
+names and colors as wsiTools annotation metadata. A new experimental cycle
+gets a new numbered output folder. Cycles 01-05 were removed at the user's
+request after visual review showed unchanged tile steps at internal borders.
+
+Accuracy is evaluated from the final GeoJSON rasterized at native resolution.
+The primary gate compares only fixed 64-pixel bands around ground-truth or
+original tile-mask borders. Internal tissue-class borders and the
+tissue-background border are reported separately, along with 8-pixel
+boundary F1 and the number of pixels that switch between foreground classes.
+Pancreas has one tissue class, so only its exterior border is scored. A candidate is accepted only
+when border macro IoU and border pixel accuracy do not fall for any tissue,
+at least one measure rises, and all ground-truth classes remain represented.
+The whole-mask scores remain available in each `comparison.json` as secondary
+diagnostics. Use `scripts/score_bora_geojson.py`,
+`scripts/score_216_borders.py`, and `scripts/evaluate_216_cycle.py` to
+reproduce the decision from saved outputs.
+
+## Experimental C++ triangular-mesh refinement
+
+The newer contour stage regularizes a categorical mask on a triangular mesh,
+then optionally rounds the mesh corners. It edits only internal tissue-class
+boundaries; external tissue/background contours remain the responsibility of
+the preceding image-guided Bora stage. Mesh support grows in locally ambiguous
+color regions and stays narrower where nearby tissue classes have distinct
+RGB distributions. The kernel uses OpenMP, and the streaming wrapper processes
+WSI blocks in multiple worker processes.
+
+```bash
+cmake -S cpp -B cpp/build
+cmake --build cpp/build -j 4
+PYTHONPATH=src python scripts/run_tri_mesh_cycle.py \
+  --source-root /path/to/pre-strong-bora-output \
+  --output /path/to/numbered-cycle \
+  --tiling-root /path/to/regenerated-tile-masks \
+  --images /path/to/original-images \
+  --adaptive-by-tile-size --mesh-spacing 64 --support-radius 112 \
+  --band-radius 216 --color-weight 0.2 --post-smooth-radius 16
+```
+
+The regenerated four-slide, three-size benchmark and the planned 200 numbered
+cycles are documented in [the experiment protocol](docs/tri_mesh_200_cycle_protocol.md).
+Every full cycle must export 12 GeoJSONs and is scored on internal-border
+macro IoU, accuracy, 8/16/32-pixel contour F1, ASSD, HD95, false tile-edge
+pixels, retained classes, and measured processing time. The current input
+GeoJSONs differ from the older 216-pixel benchmark annotations, so their
+scores are kept in a separate versioned benchmark directory.
 
 ## License
 

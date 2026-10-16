@@ -102,9 +102,9 @@ for name in ("List Bullet","List Number"):
     style.paragraph_format.space_after=Pt(4); style.paragraph_format.line_spacing=1.208
 
 header=section.header.paragraphs[0]; header.alignment=WD_ALIGN_PARAGRAPH.LEFT
-font(header.add_run("Bora | Medical Image Analysis manuscript"),9,bold=True,color=GRAY)
+font(header.add_run("Bora | Nature Communications manuscript"),9,bold=True,color=GRAY)
 footer=section.footer.paragraphs[0]; footer.alignment=WD_ALIGN_PARAGRAPH.RIGHT
-font(footer.add_run("Protocol-stage draft  |  "),9,color=GRAY); add_page_field(footer)
+font(footer.add_run("Technical benchmark draft  |  "),9,color=GRAY); add_page_field(footer)
 
 lines=SOURCE.read_text().splitlines(); i=0; title_done=False; number_id=None; previous_numbered=False
 while i < len(lines):
@@ -138,8 +138,8 @@ while i < len(lines):
     if not re.match(r"^\d+\. ",stripped): previous_numbered=False
     i+=1
 
-doc.core_properties.title = "Bora: scalable boundary-constrained refinement of tile-level tissue labels"
-doc.core_properties.subject = "Protocol-stage manuscript for Medical Image Analysis"
+doc.core_properties.title = "Boundary refinement improves tissue extent but can erode semantic fidelity in gigapixel pathology maps"
+doc.core_properties.subject = "Technical benchmark manuscript for Nature Communications"
 doc.core_properties.author = "Bora project contributors"
 doc.save(OUTPUT)
 print(OUTPUT)
