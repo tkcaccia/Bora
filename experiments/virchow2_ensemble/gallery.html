@@ -10,7 +10,7 @@
 
 <div class="box"><div class="controls">
 <button id="previous">← Previous</button><label>Image <select id="case"></select></label><button id="next">Next →</button>
-<label>Bora uses <select id="method"><option value="ensemble">Combined 9 + 19 + 4</option><option value="09">Algorithm 9 · scale-persistent evidence</option><option value="04">Algorithm 4 · class-specific concepts</option><option value="19">Algorithm 19 · predictable latent structure</option><option value="05">Algorithm 5 · worst-class colour geometry</option><option value="08">Algorithm 8 · stain invariance</option><option value="10">Algorithm 10 · context and detail</option><option value="15">Algorithm 15 · object relationships</option><option value="he">Original H&E</option></select></label>
+<label>Bora uses <select id="method"><option value="ensemble">Combined selected algorithms</option><option value="09">Algorithm 9 · scale-persistent evidence</option><option value="04">Algorithm 4 · class-specific concepts</option><option value="19">Algorithm 19 · predictable latent structure</option><option value="05">Algorithm 5 · worst-class colour geometry</option><option value="08">Algorithm 8 · stain invariance</option><option value="10">Algorithm 10 · context and detail</option><option value="15">Algorithm 15 · object relationships</option><option value="he">Original H&E</option></select></label>
 <label>Layout <select id="layout"><option value="row">Four side by side</option><option value="large">Large 2 × 2</option></select></label>
 <label>Mask opacity <input id="opacity" type="range" min="0" max="1" step=".05" value=".35"><output id="opacityText">35%</output></label>
 <label>Shared zoom <input id="zoom" type="range" min="1" max="6" step=".25" value="1"><output id="zoomText">1×</output></label><button id="reset">Reset view</button>
@@ -28,12 +28,13 @@
 </main><script>
 const DATA=__DATA__;
 const $=id=>document.getElementById(id), fmt=x=>Number(x).toFixed(4), signed=x=>(x>=0?'+':'')+fmt(x), escapeHTML=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const combo=DATA.components||[9,19,4],comboTitle=combo.join(' + ');$('method').querySelector('option[value="ensemble"]').textContent='Combined '+comboTitle;for(const id of DATA.rejected_methods||[]){$('method').querySelector('option[value="'+String(id).padStart(2,'0')+'"]')?.remove();}
 const source='../'+DATA.source_folder;let images={},center=[.5,.5],generation=0;
 const current=()=>DATA.cases.find(r=>r.case===$('case').value), method=()=>$('method').value;
 const score=(r,k)=>k==='he'?r.controls.he:r.methods[k].after;
 const deltaText=(x)=>`<span class="${x>=0?'good':'bad'}">${signed(x)}</span>`;
 const s=DATA.summary,v=s.dataset_balanced;
-$('summary').innerHTML=`<b>49 paired ROIs · dataset-balanced native macro IoU</b><br>Input tiled: ${fmt(v.coarse)} · Bora with algorithm 9: <b>${fmt(v['09'])}</b> · Bora with combined 9 + 19 + 4: <b>${fmt(v.ensemble)}</b><br>Combined minus #9: ${deltaText(s.dataset_balanced_delta)}; paired bootstrap 95% interval [${signed(s.paired_delta_bootstrap95[0])}, ${signed(s.paired_delta_bootstrap95[1])}]. Better / worse / tied images: ${s.wins} / ${s.losses} / ${s.ties}.`;
+$('summary').innerHTML=`<b>49 paired ROIs · dataset-balanced native macro IoU</b><br>Input tiled: ${fmt(v.coarse)} · Bora with algorithm 9: <b>${fmt(v['09'])}</b> · Bora with combined ${comboTitle}: <b>${fmt(v.ensemble)}</b><br>Combined minus #9: ${deltaText(s.dataset_balanced_delta)}; paired bootstrap 95% interval [${signed(s.paired_delta_bootstrap95[0])}, ${signed(s.paired_delta_bootstrap95[1])}]. Better / worse / tied images: ${s.wins} / ${s.losses} / ${s.ties}.`;
 $('case').innerHTML=DATA.cases.map((r,i)=>`<option value="${r.case}">${i+1}/49 · ${r.case} · ${escapeHTML(r.dataset)}</option>`).join('');
 $('allScores').innerHTML='<table><tr><th>Image</th><th>Tiled IoU</th><th>#9 Bora IoU</th><th>Combined Bora IoU</th><th>Δ combined − #9</th></tr>'+DATA.cases.map(r=>`<tr><td><a href="#${r.case}">${r.case}</a></td><td>${fmt(r.controls.coarse.macro_iou)}</td><td>${fmt(r.methods['09'].after.macro_iou)}</td><td>${fmt(r.methods.ensemble.after.macro_iou)}</td><td>${deltaText(r.methods.ensemble.delta_vs_09)}</td></tr>`).join('')+'</table>';
 async function loadImage(url){const im=new Image();im.src=url;await im.decode();return im;}
@@ -44,7 +45,7 @@ async function update(){const token=++generation,r=current(),k=method(),src=`${s
   $('meta').innerHTML=`<b>${r.case}</b> · ${escapeHTML(r.group)} · ROI ${r.sample.native_shape_yx[1]} × ${r.sample.native_shape_yx[0]} native pixels · native sampling ${r.sample.native_mpp_xy.map(x=>x.toFixed(4)).join(' × ')} µm/px · working sampling ${r.sample.working_mpp_xy.map(x=>x.toFixed(4)).join(' × ')} µm/px`;
   $('legend').innerHTML=Object.entries(r.sample.class_names).map(([id,name])=>`<span><i class="swatch" style="background:rgb(${r.sample.palette[Number(id)-1]})"></i>${escapeHTML(name)}</span>`).join('')+'<span>Transparent: ignore / unlabelled</span>';
   $('coarseScore').textContent=`Actual coarse labels supplied to Bora · IoU ${fmt(coarse)}`;
-  $('refinedTitle').textContent='4. Bora refined mask · '+(k==='ensemble'?'combined 9 + 19 + 4':k==='he'?'original H&E':'algorithm '+Number(k));
+  $('refinedTitle').textContent='4. Bora refined mask · '+(k==='ensemble'?'combined '+comboTitle:k==='he'?'original H&E':'algorithm '+Number(k));
   $('refinedScore').textContent=`IoU ${fmt(after.macro_iou)} · change from tiled input ${signed(after.macro_iou-coarse)}`;
   $('comparison').innerHTML=`Refinement versus tiled input: ${deltaText(after.macro_iou-coarse)} IoU · versus algorithm 9: ${deltaText(after.macro_iou-r.methods['09'].after.macro_iou)} · Dice ${fmt(after.macro_dice)} · boundary F1 at 8 µm ${after.boundary_f1_at_um['8']===null?'n/a':fmt(after.boundary_f1_at_um['8'])}`;
   $('downloads').innerHTML=`<a href="${src}/original.native.png">Original image</a> · <a href="${src}/reference.native.tif">Original numeric reference</a> · <a href="${src}/coarse.tif">Input tiled numeric mask (working grid)</a> · <a href="${target}/bora.native.tif">Refined numeric mask (native grid)</a> · <a href="${target}/mask.png">Refined colour mask</a> · <a href="${out}/four_panel.jpg">Four-panel export (combined)</a> · <a href="${out}/comparison.jpg">Five-panel comparison image</a> · <a href="${out}/scores.json">All case scores</a>`;

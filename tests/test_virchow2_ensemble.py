@@ -21,6 +21,12 @@ def test_refuses_incompatible_vocabularies_and_invalid_mass():
         mean_evidence([p,p,p*2],[[1,3]]*3)
 
 
+def test_two_component_fusion_does_not_require_rejected_third_method():
+    a=np.array([[[.8,.2]]],np.float32);b=np.array([[[.6,.4]]],np.float32)
+    result=mean_evidence([a,b],[[1,7],[7,1]])
+    assert result[0,0]==pytest.approx([.6,.4])
+
+
 def test_paired_summary_keeps_dataset_weight_and_negative_results():
     def case(dataset,baseline,combined):
         return dict(dataset=dataset,controls={k:dict(macro_iou=.5) for k in ('coarse','he')},

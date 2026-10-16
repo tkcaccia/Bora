@@ -27,6 +27,7 @@ def main():
         if not np.array_equal(native,projected):raise ValueError('Native projection mismatch')
         if not np.array_equal(np.array(Image.open(folder/'mask.png')),rgba(native,sample['palette'])):raise ValueError('Colour mask mismatch')
         details=json.loads((folder/'details.json').read_text())
+        if details['component_methods']!=protocol['components'] or [r['method'] for r in details['component_parity']]!=protocol['components']:raise ValueError('Unexpected/rejected component used')
         if not all(r['rgb_identical'] and r['before_mask_identical'] for r in details['component_parity']):raise ValueError('Component mismatch')
         for file in ['original.jpg','reference.jpg','coarse.jpg','09.jpg','thumb.jpg','overlay.jpg','comparison.jpg','four_panel.jpg','mask.png','representation.png']:
             with Image.open(folder/file) as im:im.verify()
@@ -38,7 +39,7 @@ def main():
                 if not (src/key/file).is_file():raise FileNotFoundError(src/key/file)
     for file in ('gallery.html','all_outputs.html','scores.csv','REPORT.md','COMPLETE.json'):
         if not (a.root/file).is_file():raise FileNotFoundError(file)
-    audit=json.loads((a.root/'AUDIT.json').read_text());audit.update(native_masks_and_projections_verified=49,colour_masks_verified=49,
+    audit=json.loads((a.root/'AUDIT.json').read_text());audit.update(selected_components_verified=protocol['components'],native_masks_and_projections_verified=49,colour_masks_verified=49,
         visual_images_verified=len(visual_files),all_original_reference_tiled_and_prior_method_assets_present=True,all_checks_passed=True)
     save_json(a.root/'AUDIT.json',audit)
     save_json(a.root/'VISUAL_MANIFEST.json',{str(f.relative_to(a.root)):digest(f) for f in visual_files})

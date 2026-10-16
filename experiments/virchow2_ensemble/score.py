@@ -49,18 +49,20 @@ def main():
         if baseline!=old[name]['methods']['09']['after']:raise ValueError('Baseline scores not reproduced exactly')
         row=old[name]
         before=evaluator.score(tifffile.imread(folder/'before.native.tif'));after=evaluator.score(tifffile.imread(folder/'bora.native.tif'))
-        row['methods']['ensemble']=dict(id='ensemble',title='Combined 9 + 19 + 4',before=before,after=after,
+        title='Combined '+' + '.join(map(str,protocol['components']))
+        row['methods']['ensemble']=dict(id='ensemble',title=title,before=before,after=after,
             delta_vs_09=after['macro_iou']-baseline['macro_iou'],delta_vs_coarse=after['macro_iou']-row['controls']['coarse']['macro_iou'])
         save_json(folder/'scores.json',row);cases.append(row)
         for key,value in row['methods'].items():
+            if key=='04' and 4 not in protocol['components']:continue
             score=value['after'];rows.append(dict(case=name,dataset=row['dataset'],method=key,macro_iou=score['macro_iou'],macro_dice=score['macro_dice'],
                 coarse_iou=row['controls']['coarse']['macro_iou'],delta_vs_coarse=score['macro_iou']-row['controls']['coarse']['macro_iou'],
                 delta_vs_09=score['macro_iou']-baseline['macro_iou'],boundary_f1_8um=score['boundary_f1_at_um']['8'],before_iou=value['before']['macro_iou']))
         print(json.dumps(dict(scored=name,ensemble=after['macro_iou'],algorithm_9=baseline['macro_iou'],delta=after['macro_iou']-baseline['macro_iou'])),flush=True)
-    result=dict(cases=cases,summary=summarize(cases),source_folder=a.source.name,
+    result=dict(cases=cases,summary=summarize(cases),source_folder=a.source.name,components=protocol['components'],rejected_methods=[4] if 4 not in protocol['components'] else [],
         metric='Per-image native macro IoU; average within dataset, then equal weight across four datasets',
         uncertainty='3000 paired bootstrap resamples within dataset; descriptive case/slide groups, patient mapping incompletely verified',
-        comparison='Fixed equal evidence mean of 9,19,4 + unchanged Bora vs frozen algorithm 9 + Bora',baseline_reproduced_exactly=True)
+        comparison='Fixed equal evidence mean of '+','.join(map(str,protocol['components']))+' + unchanged Bora vs frozen algorithm 9 + Bora',baseline_reproduced_exactly=True)
     save_json(a.root/'results.json',result)
     with (a.root/'scores.csv').open('w',newline='') as f:
         writer=csv.DictWriter(f,fieldnames=list(rows[0]));writer.writeheader();writer.writerows(rows)

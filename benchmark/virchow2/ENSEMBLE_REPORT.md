@@ -1,3 +1,5 @@
+> Historical three-way trial. The user subsequently rejected algorithm 4. The active experiment uses only algorithms 9 and 19; see ENSEMBLE_9_19_REPORT.md.
+
 # Equal evidence combination: algorithms 9, 19 and 4
 
 Same 49 tissue ROIs as the preceding study: 16 TIGER, 16 BCSS, 7 CAMELYON16 and 10 BEETLE. No case, crop or coarse label was changed. This is ROI processing, not full-WSI inference.
