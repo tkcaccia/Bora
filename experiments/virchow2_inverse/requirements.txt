@@ -1,0 +1,16 @@
+# Install in a dedicated environment; CUDA-enabled torch is required for GPU ideas.
+torch==2.10.0
+torchvision==0.25.0
+timm==1.0.22
+safetensors==0.5.3
+numpy>=2.2,<2.5
+scipy>=1.15,<1.18
+scikit-learn>=1.7,<1.9
+scikit-image>=0.25,<0.27
+PyWavelets==1.8.0
+opencv-python-headless>=4.11,<5
+Pillow>=11,<13
+tifffile>=2023.7.10
+threadpoolctl>=3.5
+pytest>=8
+matplotlib>=3.10,<3.11
