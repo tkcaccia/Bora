@@ -155,7 +155,8 @@ def _gradient(image: np.ndarray, sigma: float) -> np.ndarray:
 
 
 def _interior(image: np.ndarray, labels: np.ndarray, tile: float,
-              config: BoundaryConfig) -> np.ndarray:
+              config: BoundaryConfig,
+              feature_image: np.ndarray | None = None) -> np.ndarray:
     """Compete neighboring classes using symmetric, local H&E color models.
 
     Each class gets a color distribution from its own reliable pixels near the
@@ -181,12 +182,19 @@ def _interior(image: np.ndarray, labels: np.ndarray, tile: float,
     radius = max(2, int(round(tile * config.internal_search_fraction)))
     distance_from_edge = cv2.distanceTransform((~internal).astype(np.uint8), cv2.DIST_L2, 3)
     editable = foreground & (distance_from_edge <= radius)
-    lab = cv2.cvtColor(image, cv2.COLOR_RGB2LAB).astype(np.float32)
-    lab = cv2.GaussianBlur(lab, (0, 0), 1.4)
-    # OpenCV LAB has channel ranges 0..255; scaling makes the three channels
-    # comparable and keeps variance floors meaningful for H&E images.
-    lab[..., 0] *= 0.55
-    lab[..., 1:] *= 0.8
+    if feature_image is None:
+        lab = cv2.cvtColor(image, cv2.COLOR_RGB2LAB).astype(np.float32)
+        lab = cv2.GaussianBlur(lab, (0, 0), 1.4)
+        # Keep the established RGB path numerically unchanged.
+        lab[..., 0] *= 0.55
+        lab[..., 1:] *= 0.8
+        variance_floor = 64.0
+    else:
+        # Caller supplies comparable, standardized channels, aligned to H&E.
+        lab = cv2.GaussianBlur(np.asarray(feature_image, np.float32), (0, 0), 1.4)
+        if lab.ndim == 2:
+            lab = lab[..., None]
+        variance_floor = 1.0
     sigma = max(3.0, tile * config.local_color_fraction)
     best = np.full(labels.shape, np.inf, np.float32)
     answer = labels.copy()
@@ -206,15 +214,15 @@ def _interior(image: np.ndarray, labels: np.ndarray, tile: float,
         global_mean = np.mean(global_values, axis=0)
         global_var = np.var(global_values, axis=0)
         cost = np.zeros(labels.shape, np.float32)
-        for channel in range(3):
+        for channel in range(lab.shape[-1]):
             values = lab[..., channel]
             mean = cv2.GaussianBlur(values * sample, (0, 0), sigma) / np.maximum(mass, 1e-4)
             second = cv2.GaussianBlur(values * values * sample, (0, 0), sigma) / np.maximum(mass, 1e-4)
             mean = np.where(mass > 1e-4, mean, global_mean[channel])
             variance = np.where(mass > 1e-4, second - mean * mean, global_var[channel])
-            variance = np.maximum(variance, 64.0)
+            variance = np.maximum(variance, variance_floor)
             cost += (values - mean) ** 2 / variance
-        cost /= 3.0
+        cost /= float(lab.shape[-1])
         # Symmetric wand range: only labels within the same radius can claim
         # a pixel. A modest spatial cost stabilizes genuinely ambiguous color.
         outside = cv2.distanceTransform((~region).astype(np.uint8), cv2.DIST_L2, 3)
@@ -249,8 +257,15 @@ def _interior(image: np.ndarray, labels: np.ndarray, tile: float,
 def smooth_tile_boundaries(image: np.ndarray | None, labels: np.ndarray,
                            source_tile_size: int,
                            config: BoundaryConfig = BoundaryConfig(),
-                           slide_models: tuple[np.ndarray, np.ndarray] | None = None) -> np.ndarray:
-    """Move exterior and class boundaries toward local H&E contours."""
+                           slide_models: tuple[np.ndarray, np.ndarray] | None = None,
+                           *, feature_image: np.ndarray | None = None) -> np.ndarray:
+    """Move boundaries using RGB, or optional standardized HWC appearance maps.
+
+    Extra channels drive the internal local wand only; H&E still drives the
+    exterior. They must be finite, aligned to the native RGB frame, and scaled
+    to comparable units (a variance floor of one is used). No label truth is
+    consulted. The default RGB path is unchanged.
+    """
     labels = np.asarray(labels)
     if labels.ndim != 2 or source_tile_size <= 0 or config.downsample <= 0:
         raise ValueError("Expected a 2-D label mask and positive tile/downsample sizes")
@@ -260,6 +275,11 @@ def smooth_tile_boundaries(image: np.ndarray | None, labels: np.ndarray,
         raise ValueError("Balanced wand fractions must be positive and median size odd")
     if image is not None and image.shape[:2] != labels.shape:
         raise ValueError("Image and mask dimensions differ")
+    if feature_image is not None:
+        feature_image = np.asarray(feature_image, np.float32)
+        if (feature_image.ndim != 3 or feature_image.shape[:2] != labels.shape or
+                feature_image.shape[-1] < 1 or not np.isfinite(feature_image).all()):
+            raise ValueError("Feature image must be a finite native-frame HWC array")
     if np.unique(labels).size <= 1:
         return labels.copy()
     if image is None:
@@ -273,7 +293,12 @@ def smooth_tile_boundaries(image: np.ndarray | None, labels: np.ndarray,
     coarse = cv2.resize(labels, shape, interpolation=cv2.INTER_NEAREST)
     exterior = _exterior(rgb, coarse, source_tile_size / factor,
                          config, slide_models)
-    interior = _interior(rgb, coarse, source_tile_size / factor, config)
+    work_features = None
+    if feature_image is not None:
+        work_features = cv2.resize(feature_image, shape, interpolation=cv2.INTER_AREA)
+        if work_features.ndim == 2:
+            work_features = work_features[..., None]
+    interior = _interior(rgb, coarse, source_tile_size / factor, config, work_features)
     result = np.where(exterior, interior, 0).astype(labels.dtype)
     return cv2.resize(result, (width, height), interpolation=cv2.INTER_NEAREST)
 

@@ -242,6 +242,22 @@ generation code is maintained in [Bora-extra](https://github.com/tkcaccia/Bora-e
 The acquisition workflow inventories public tissue image/mask pairs. Local
 dataset files and benchmark outputs remain outside Git.
 
+## Virtual-marker refinement experiment
+
+The [GigaTIME CNN marker-driven refinement experiment](experiments/gigatime_flash/README.md)
+includes paired-reference DAPI checks, physical-resolution metadata and
+transparent H&E overlays. The [current report](docs/gigatime_cnn_validation.md)
+records the CNN's reference performance and a controlled tissue-boundary pilot.
+The current [group-specific marker experiment](docs/gigatime_group_markers.md)
+selects markers for each tissue group and each competing interface, then runs
+the RGB/Lab wand with pair-specific synthetic RGB. The earlier
+[global three-marker trial](docs/gigatime_top3_rgb.md) documents why a single
+omnibus ranking can be dominated by one tissue group.
+The [RGB plus class-marker PCA experiment](docs/gigatime_pca_rgb.md) combines
+the original color channels and class-selected markers, converts three PCs
+to RGB and tests the unchanged multiclass Bora path with PCA controls.
+The earlier Flash result was rejected for DAPI quality and remains archived.
+
 ## License
 
 No license has yet been selected.
