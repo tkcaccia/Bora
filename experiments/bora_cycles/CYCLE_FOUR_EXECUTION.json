@@ -1,13 +1,13 @@
 {
   "cycle": 4,
-  "status": "Full execution and remote audits complete; actual149-case visual review and five-survivor selection pending.",
-  "completed_cycles": 3,
+  "status": "Full execution, integrity audits, actual149-case overview review, four full native crops and signed five-survivor selection complete.",
+  "completed_cycles": 4,
   "complete_goal": false,
   "remote_root": "/mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-04",
   "local_root": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-04-chiamaka",
   "source_model_commit": "03c77ad",
   "posthoc_source_commit": "cdad3b5",
-  "report_source_commit": "666c61a",
+  "report_source_commit": "cf71bf2",
   "cases": 149,
   "methods": 22,
   "candidates": 20,
@@ -998,22 +998,34 @@
     "coarse_recovered_but_all_refinements_below_50pct": 123
   },
   "G03_additional_annotated_unassigned_pixels": 5726334,
-  "actual_full_overview_reviews_at_checkpoint": 24,
-  "actual_full_native_crops_at_checkpoint": 2,
-  "remaining_full_overview_reviews": 125,
-  "selection_made": false,
+  "actual_full_overview_reviews_at_checkpoint": 149,
+  "actual_full_native_crops_at_checkpoint": 4,
+  "remaining_full_overview_reviews": 0,
+  "selection_made": true,
   "primary_improvement": "No new child exceeds F01 meanIoU0.679528955; no accuracy improvement claimed.",
   "evidence_sha256": {
     "PROTOCOL.json": "db82c6c0e522e64cb489fdd01be533548e4e9787121a021214eca5b668a8fb6c",
     "RESULTS.json": "4a9d7cca21fc1d63f79b9d2bbe58ba2d3901c2c6311d037086ce735941bc3a4d",
     "POSTHOC_COMPLETE.json": "e8a068e3e8b0d4597f7ab76c0ca1cceed95443cfd00966c6517eda81142cdbe4",
     "PILOT_FULL_NATIVE_PARITY.json": "83f2d26c5d76f15298d2753db93bf310cc6b9946a7f7801e70431f0bb50b4520",
-    "LOCAL_INTEGRITY_AUDIT.json": "764c53727fb144535cff7522cf2e3463524048b13cc61a352e33f95a36740728"
+    "LOCAL_INTEGRITY_AUDIT.json": "764c53727fb144535cff7522cf2e3463524048b13cc61a352e33f95a36740728",
+    "SELECTION.json": "02b4e433fc46727ef6b3c6a039f70e9da6485f4883d3b49329e5ce0d4d7fa46f",
+    "VISUAL_REVIEW.json": "e48ba9679eda95f5ef99e5c9043b6564b2f352474875f2d2dba427729d74d947",
+    "NATIVE_REVIEW.json": "e0dc94199ae0681bbd5ae26c8cfe2cd8ff0fdd3431e4f85a803d07bc8469fe43",
+    "VIEWER_READY.json": "c2942ea08b310f0ab216b3b12bd455f55d21793f1cc2bef0c78efbd930ea7b3f",
+    "selected.html": "b996e550a8acda8487747b6ac4cc1161786e7fc6123f8896b5c11794867dec8b"
   },
   "development_notice": "All149 repeated development cases, not independent validation.",
-  "viewer_delivery": "Only selectedfive, after all149 actual reviews and signed selection.",
-  "checkpoint_utc": "2026-10-17T17:42:09.260254+00:00",
+  "viewer_delivery": "Open selected.html showing only F01,C17,C01,D08,C15 across all149 cases.",
+  "checkpoint_utc": "2026-10-17T18:16:52.636110+00:00",
   "local_integrity_passed": true,
   "G03_additional_annotated_unassigned_area_um2": 762023.1324091852,
-  "G03_deletion_notice": "Pixel totals span multiple native spacings; physical area sums per-case spacing products. Positive annotation includes CAMELYON inferred non-tumour support, not universally expert-labelled glass."
+  "G03_deletion_notice": "Pixel totals span multiple native spacings; physical area sums per-case spacing products. Positive annotation includes CAMELYON inferred non-tumour support, not universally expert-labelled glass.",
+  "survivors": [
+    "F01",
+    "C17",
+    "C01",
+    "D08",
+    "C15"
+  ]
 }

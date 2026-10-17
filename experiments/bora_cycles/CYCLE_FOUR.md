@@ -173,7 +173,7 @@ kernel measurements include wrapper allocation, not whole-mask execution;
 CPU affinity and machine exclusivity were not controlled. The historical Mac
 profiles remain separately labelled.
 
-## Completed execution; visual review in progress
+## Historical execution checkpoint before review completion
 
 The full Chiamaka run is terminal with all 3278 predictions, scores and all
 149 all-method comparison sheets. Both Chiamaka and the local mirror passed
@@ -206,3 +206,13 @@ class fits report success, but this does not imply better tissue masks or
 arbitrarily small gradients. G05 meets its mass tolerance on all149 cases yet
 has lower accuracy; satisfying a mathematical constraint does not validate
 its assumed biological class totals. All149 cases remain development data.
+
+## Completed review and selection
+
+All149 all-method contact sheets have now actually been viewed and journalled,
+plus four full-run native crops. The signed selection retains F01, C17, C01,
+D08 and C15 unchanged: none of the fifteen children improves the primary
+accuracy leader. [CYCLE_FOUR_REVIEW.md](CYCLE_FOUR_REVIEW.md) records the
+accuracy/time/small-region tradeoffs, native evidence and remaining failures.
+`CYCLE_FOUR_SELECTION.json` gives all twenty decisions. Four of twenty cycles
+are complete; cycle five and the final five-conversion evaluation remain.

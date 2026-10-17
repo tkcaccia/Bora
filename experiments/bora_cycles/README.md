@@ -1,5 +1,12 @@
 # Twenty review-gated Bora improvement cycles
 
+Current verified status: **four of twenty cycles complete**. Cycle four has
+149 actual all-method overview reviews, four full-run native crop reviews and
+a signed five-survivor selection. No new child improves the primary accuracy
+leader; the five survivors remain F01, C17, C01, D08 and C15. See
+[CYCLE_FOUR_REVIEW.md](CYCLE_FOUR_REVIEW.md). Earlier checkpoints below describe
+their historical stages; cycle five has not been implemented or executed.
+
 The requested endpoint is **twenty completed cycles**, each testing twenty
 algorithms on all 149 frozen ROIs. A pilot or a completed prediction job is not
 a completed cycle. Each cycle must be scored, rendered and actually inspected
