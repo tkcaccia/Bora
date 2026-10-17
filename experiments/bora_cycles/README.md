@@ -82,7 +82,7 @@ cycle or select survivors. The pilot.sh script checks one case from each of
 the four dataset groups. Changed source/protocol requires a fresh output
 folder; executed source and compiled library hashes are archived.
 
-The runner implements cycles one and two. Cycle one has 149 actual contact
+The runner implements cycles one, two and three. Cycle one has 149 actual contact
 sheet reviews, additional native crop reviews, and a signed five-survivor
 selection. Cycle two retains C18/C17/C01/C03/C15 unchanged and implements
 fifteen distinct children. Its mathematical changes and risks are described
@@ -140,3 +140,12 @@ proposal code and every cached diagnostic file pass hash checks. These maps
 are independent of the candidate masks; they do not need to be recomputed or
 copied for each cycle. Relative links preserve all diagnostic images, with a
 DIAGNOSTICS_REUSE.json audit. This was verified across all 149 cycle-two cases.
+
+Cycle three keeps the signed cycle-two survivors D10/C17/C01/D08/C15.
+Its fifteen F-series implementations, equations and risks are described in
+[CYCLE_THREE.md](CYCLE_THREE.md) and registry.py. F03 alone tests a new
+component-shape glass policy; expert-labelled tissue it deletes still counts
+against its score. The new C++ hull kernel is tested against NumPy and across
+thread counts, and is not counted as a separate innovation. The runner requires
+the complete cycle-two visual review and matching signed survivor lineage.
+Cycle three cannot be called complete before all 149 outputs are reviewed.

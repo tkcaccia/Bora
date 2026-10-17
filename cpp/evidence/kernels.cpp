@@ -37,6 +37,24 @@ extern "C" int bora_evidence_openmp() {
 #endif
 }
 
+// Signed depth of a point in a convex polytope whose facet normals have unit
+// length. Stream facets rather than materializing a pixels-by-facets matrix.
+extern "C" int bora_hull_depth(const float* x, const double* planes, float* out,
+    int64_t n, int d, int facets, int threads) {
+    if(n<0 || d<1 || facets<1 || threads<1) return -1;
+    #pragma omp parallel for num_threads(threads) schedule(static)
+    for(int64_t i=0;i<n;++i) {
+        double maximum=-INFINITY;
+        for(int f=0;f<facets;++f) {
+            double v=planes[f*(d+1)+d];
+            for(int j=0;j<d;++j) v+=planes[f*(d+1)+j]*x[i*d+j];
+            maximum=std::max(maximum,v);
+        }
+        out[i]=static_cast<float>(-maximum);
+    }
+    return 0;
+}
+
 extern "C" int bora_linear_logits(const float* x,const double* coef,
     const double* intercept,float* out,int64_t n,int d,int k,int threads) {
     if(n<0||d<1||k<1||threads<1) return -1;

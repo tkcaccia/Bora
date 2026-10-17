@@ -59,6 +59,23 @@ def logits(x, coefficient, intercept, threads=2):
     return out
 
 
+def hull_depth(x, planes, threads=2):
+    x = np.ascontiguousarray(x, dtype=np.float32)
+    planes = np.ascontiguousarray(planes, dtype=np.float64)
+    if x.ndim != 2 or planes.ndim != 2 or planes.shape[1] != x.shape[1]+1 or not len(planes):
+        raise ValueError("Incompatible convex support geometry")
+    function = library().bora_hull_depth
+    function.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p,
+                         ctypes.c_int64, ctypes.c_int, ctypes.c_int, ctypes.c_int]
+    function.restype = ctypes.c_int
+    out = np.empty(len(x), np.float32)
+    status = function(x.ctypes.data, planes.ctypes.data, out.ctypes.data,
+                      len(x), x.shape[1], len(planes), threads)
+    if status:
+        raise RuntimeError("C++ convex support kernel rejected input")
+    return out
+
+
 def simplex_qp(rgb, prior, colors, ridge=.012, tolerance=1e-8, threads=2):
     rgb = np.ascontiguousarray(rgb, dtype=np.float32)
     prior = np.ascontiguousarray(prior, dtype=np.float32)

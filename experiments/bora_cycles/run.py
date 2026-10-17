@@ -21,7 +21,8 @@ import tifffile
 from threadpoolctl import threadpool_limits
 from bora.evidence import predict_evidence, resize
 from .methods import predict
-from .registry import candidates, roster, CHILDREN_TWO, CYCLE_TWO_SURVIVORS
+from .registry import (candidates, roster, CHILDREN_TWO, CYCLE_TWO_SURVIVORS,
+                       CHILDREN_THREE, CYCLE_THREE_SURVIVORS)
 from .diagnostics import novelty, white_regions, mask_diagnostics
 
 
@@ -97,7 +98,7 @@ def freeze_case(args):
                         raise RuntimeError("Non-deterministic candidate")
                     previous = native
                 assert native.shape == tuple(sample["native_shape_yx"])
-                if key not in ("C20", "D12"):
+                if key not in ("C20", "D12", "F03"):
                     assert np.all(native[native_support] > 0)
                 assert np.all(native[~native_support] == 0)
                 assert set(np.unique(native)) <= set(np.unique(coarse)) | {0}
@@ -323,7 +324,7 @@ def main():
     parser.add_argument("--keys", nargs="+")
     parser.add_argument("--workers", type=int, choices=(1, 2, 3), default=3)
     parser.add_argument("--repeats", type=int, default=1)
-    parser.add_argument("--cycle", type=int, choices=(1, 2), default=1)
+    parser.add_argument("--cycle", type=int, choices=(1, 2, 3), default=1)
     parser.add_argument("--previous", type=Path)
     parser.add_argument("--metric-backend", choices=("numpy", "cpp"), default="cpp")
     args = parser.parse_args()
@@ -332,23 +333,25 @@ def main():
     plan = json.loads((args.source/"PLAN.json").read_text())
     active = candidates(args.cycle)
     lineage = None
-    if args.cycle == 2:
+    if args.cycle >= 2:
         # A completed previous inference job is insufficient: actual all-case
         # visual review and a signed five-survivor selection are mandatory.
         from .review import require_review, validate_children
         if args.previous is None:
-            parser.error("Cycle two requires the reviewed previous result")
+            parser.error("A new cycle requires the reviewed previous result")
         previous = require_review(args.previous)
         selection = json.loads((args.previous/"SELECTION.json").read_text())
-        if previous["cycle"] != 1 or selection["survivors"] != list(CYCLE_TWO_SURVIVORS):
+        survivors, children = {2: (CYCLE_TWO_SURVIVORS, CHILDREN_TWO),
+                               3: (CYCLE_THREE_SURVIVORS, CHILDREN_THREE)}[args.cycle]
+        if previous["cycle"] != args.cycle-1 or selection["survivors"] != list(survivors):
             parser.error("Implemented children do not match the actual reviewed survivors")
         if digest(args.previous/"VISUAL_REVIEW.json") != selection["review_sha256"]:
             parser.error("Previous visual review changed after selection")
         if digest(args.previous/"RESULTS.json") != selection["results_sha256"]:
             parser.error("Previous scored evidence changed after selection")
-        validate_children(selection, CHILDREN_TWO)
+        validate_children(selection, children)
         lineage = dict(previous=str(args.previous), selection_sha256=digest(args.previous/"SELECTION.json"),
-                       unchanged_survivors=list(CYCLE_TWO_SURVIVORS), children=CHILDREN_TWO)
+                       unchanged_survivors=list(survivors), children=children)
     keys = args.keys or ["B21", "B22"]+list(active)
     available = {key for key, value in active.items() if value.implemented} | {"B21", "B22"}
     if set(keys)-available:

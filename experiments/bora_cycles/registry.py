@@ -163,11 +163,94 @@ CYCLE_TWO.update({item["id"]: Candidate(item["title"], item["intervention"],
     item["equation_or_rule"], item["failure_hypothesis"], True, item["parent"])
     for item in CHILDREN_TWO})
 
+CYCLE_THREE_SURVIVORS = ("D10", "C17", "C01", "D08", "C15")
+CHILDREN_THREE = [
+    dict(id="F01", parent="D10", title="Uncertain local prototype",
+         intervention="integrated-local-regression-predictive-variance",
+         equation_or_rule="Integrate Gaussian uncertainty in the local affine intercept: score RGB residual with covariance Sigma times (1 + 0.015 M_inverse[0,0]) and its log determinant.",
+         failure_hypothesis="Variance inflation can make unsupported class extrapolations too tolerant or penalize a genuinely rare local class.",
+         difference_from_parent="The parent treats estimated local RGB prototypes as exact; this child propagates their location-dependent posterior uncertainty into a normalized predictive likelihood."),
+    dict(id="F02", parent="D10", title="Leave-query-tile-out local fit",
+         intervention="honest-local-prototype-tile-exclusion",
+         equation_or_rule="Subtract the full query tile's clipped-window sufficient statistics before the local affine fit, using exact integral-image rectangle sums; retain the global coarse-trained shrinkage prior.",
+         failure_hypothesis="A small class represented in one tile loses its only local evidence and must fall back on a contaminated global prototype.",
+         difference_from_parent="Remove self-explanation by the tile being corrected; unlike prior cross-fitted reliability weights, this changes each query's local training set without reweighting held-out prediction confidence."),
+    dict(id="F03", parent="D10", title="Geometric white clefts",
+         intervention="white-component-physical-inertia-glass-state",
+         equation_or_rule="Use the parent tissue likelihood, but assign a whole original-H&E white component to glass only if area >=20 um2, inertia length >=16 um, axis ratio >=4 and area/length <=10 um.",
+         failure_hypothesis="An elongated genuine gland lumen can be deleted; a broad round empty cavity will remain filled. Expert-labelled white tissue is still scored.",
+         difference_from_parent="Introduce a component-geometry glass state independent of annotation, border connectivity or learned per-pixel white frequency; rounded fat and lumina are not deleted merely for being bright."),
+    dict(id="F04", parent="C17", title="Forward-blur palette inverse",
+         intervention="spatial-point-spread-observation-inversion",
+         equation_or_rule="Minimize 0.5 ||B(q P)-RGB|| squared +0.006 ||q-prior|| squared on per-pixel simplexes, where B is a symmetric 2 um Gaussian point-spread operator; record projected-gradient residual.",
+         failure_hypothesis="The assumed blur can be wrong and amplify noise or create ringing; erased structure is not uniquely recoverable from RGB.",
+         difference_from_parent="Model spatial colour mixing before observation instead of solving independent RGB pixels; this is deconvolution of one forward model, not post-hoc label smoothing or TV."),
+    dict(id="F05", parent="C17", title="Coarse-calibrated colour sensor",
+         intervention="affine-observation-calibration-before-mixture-inverse",
+         equation_or_rule="Fit one identity-shrunk affine map from known palette vertices to coarse-trained class RGB means, with residual-map ridge 0.05; invert the resulting observed palette by the checked simplex quadratic.",
+         failure_hypothesis="Coarse mixtures can bias the sensor map and erase valid palette separation, especially with only a few observed classes.",
+         difference_from_parent="Estimate a nuisance observation map instead of assuming the palette is observed exactly; the conversion image bytes and class supervision remain unchanged."),
+    dict(id="F06", parent="C17", title="Simplicial colour manifold",
+         intervention="intrinsic-palette-delaunay-barycentric-decoding",
+         equation_or_rule="Project palette vertices to their intrinsic affine space, triangulate that space, and interpolate class coordinates in the containing simplex; outside the hull choose the nearest palette vertex.",
+         failure_hypothesis="An arbitrary tessellation can choose the wrong mixture branch and nearest-vertex extrapolation can make abrupt transitions outside the palette hull.",
+         difference_from_parent="Replace globally overlapping colour-mixture explanations by one nonoverlapping local simplicial manifold; unlike rejected pair-only inversion this permits full-dimensional three/four-vertex cells."),
+    dict(id="F07", parent="C01", title="Convex mean-logit tile evidence",
+         intervention="geometric-probability-pool-convex-bag-likelihood",
+         equation_or_rule="Fit ridge multinomial cross entropy to the mean pixel logit of each original known tile; solve the small convex problem by damped analytic Newton steps and report gradient residual.",
+         failure_hypothesis="A tile mean can hide small discriminating structures and does not encode the actual count-winner event.",
+         difference_from_parent="Replace the nonconvex approximate count likelihood with a geometric probability-pooling observation model; convergence is assessed separately from segmentation quality."),
+    dict(id="F08", parent="C01", title="Representative-pixel tile evidence",
+         intervention="latent-colour-witness-log-mean-exp-supervision",
+         equation_or_rule="For each class pool pixel logits inside a tile by log-mean-exp, then maximize bag-label cross entropy with a single ridge-regularized model and analytic gradient.",
+         failure_hypothesis="One bright or unusual pixel can act as a spurious witness, overexpanding a class outside its true architecture.",
+         difference_from_parent="The tile label supplies representative-instance evidence rather than a majority count; no pairwise normal or Poisson count distribution is fitted."),
+    dict(id="F09", parent="C01", title="Kernel distribution regression",
+         intervention="kernel-mean-embedding-coarse-bag-regression",
+         equation_or_rule="Average 48 fixed Gaussian random Fourier colour features within each known tile; solve class-balanced ridge regression to tile labels, then evaluate the same learned function on each pixel.",
+         failure_hypothesis="A tile-distribution predictor need not be calibrated for a single pixel; weak labels can confound nonlinear colour contrasts.",
+         difference_from_parent="Treat a tile as an empirical colour distribution rather than independent class counts or its mean RGB; the sole predictor is an analytic kernel-embedding regression, not a CNN."),
+    dict(id="F10", parent="D08", title="Local colour-increment covariance",
+         intervention="stationary-increment-nuisance-estimation",
+         equation_or_rule="Keep equally weighted tile class centroids but estimate nuisance covariance as half the second moment of adjacent known within-tile RGB differences, with the parent's covariance shrinkage.",
+         failure_hypothesis="Correlated noise and genuine microscopic boundaries violate independent-increment assumptions; colour drifts may be treated as strong tissue evidence.",
+         difference_from_parent="Estimate noise through spatial increments rather than all deviations from a tile mean; this cancels constant tile offsets without a spatial smoothing or propagation stage."),
+    dict(id="F11", parent="D08", title="Random-intercept tissue appearance",
+         intervention="between-within-bag-variance-component-discrimination",
+         equation_or_rule="For each class subtract pooled within-tile covariance/25 from the covariance of its tile means, project the signal covariance onto PSD matrices, and add pixel noise for a class-specific predictive Gaussian.",
+         failure_hypothesis="Few tiles make between-tile variability unstable; a broad class covariance may engulf small neighboring tissues.",
+         difference_from_parent="Separate latent tissue variation from sampling noise using a random-intercept model rather than using one shared within-tile covariance for every class."),
+    dict(id="F12", parent="D08", title="Joint maximum-margin tile contrasts",
+         intervention="whitened-multiclass-max-rival-hinge",
+         equation_or_rule="Whiten tile means by pooled within-tile covariance and fit one ridge-regularized multiclass squared maximum-rival hinge objective; apply the learned linear discriminant to all pixels.",
+         failure_hypothesis="Ambiguous coarse tile means can force an inappropriate separating plane and suppress rare weakly represented tissue.",
+         difference_from_parent="Use noise geometry to learn a discriminative worst-rival margin, replacing plug-in Gaussian likelihoods; this is a single joint classifier rather than separately coupled pairwise models."),
+    dict(id="F13", parent="C15", title="Distributional colour energy",
+         intervention="class-measure-energy-score-potential",
+         equation_or_rule="For each weighted class colour measure score a query by half the expected within-class Euclidean colour distance minus expected query-to-class distance; compute potentials by 3D FFT convolution.",
+         failure_hypothesis="A broad or multimodal class can have a deceptively central energy minimum; subtle small-class modes may be lost.",
+         difference_from_parent="Compare an empirical colour distribution by a proper distributional energy score rather than estimating a marginal/copula probability density."),
+    dict(id="F14", parent="C15", title="Polyhedral colour support",
+         intervention="class-convex-support-signed-depth",
+         equation_or_rule="Estimate each class's intrinsic RGB convex hull from known coarse colour samples; choose greatest signed distance to its supporting planes, minus any off-subspace residual; stream facet tests in C++ OpenMP.",
+         failure_hypothesis="A convex hull bridges genuine holes and modes, and coarse contamination can enlarge support around unrelated colours.",
+         difference_from_parent="Represent class colour support geometrically, with no fitted density or patch dictionary; the compiled facet kernel is engineering and is not counted as another innovation."),
+    dict(id="F15", parent="C15", title="Split-sample colour typicality",
+         intervention="class-conditional-held-out-density-rank-decision",
+         equation_or_rule="Fit copula densities on one checkerboard half of coarse tiles, rank test log densities among held-out observations of each class, and classify by the largest empirical typicality value; report all-class tail regions separately.",
+         failure_hypothesis="A broad class can seem typical for many unrelated colours; weak labels and spatial dependence preclude formal conformal guarantees.",
+         difference_from_parent="Change the decision scale from incomparable raw class density heights to held-out class-specific ranks, while exposing colours atypical for every known class without inventing biological identities."),
+]
+CYCLE_THREE = {key: CYCLE_TWO[key] for key in CYCLE_THREE_SURVIVORS}
+CYCLE_THREE.update({item["id"]: Candidate(item["title"], item["intervention"],
+    item["equation_or_rule"], item["failure_hypothesis"], True, item["parent"])
+    for item in CHILDREN_THREE})
+
 
 def candidates(cycle=1):
-    if cycle not in (1, 2):
+    if cycle not in (1, 2, 3):
         raise ValueError("This cycle has no implemented, reviewed lineage")
-    return CYCLE_ONE if cycle == 1 else CYCLE_TWO
+    return {1: CYCLE_ONE, 2: CYCLE_TWO, 3: CYCLE_THREE}[cycle]
 
 
 def roster(cycle=1):
