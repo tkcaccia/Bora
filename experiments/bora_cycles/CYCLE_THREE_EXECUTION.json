@@ -674,17 +674,18 @@
   ],
   "numerical_status": {
     "B22": {
-      "recorded_fits": 0,
       "optimizer_false_cases": 0,
       "false_fit_iterations": [],
       "maxima": {
         "gradient_infinity_norm": null,
         "projected_gradient_residual": null,
         "max_kkt_residual": null
-      }
+      },
+      "records_with_optimizer_flag": 0,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 149
     },
     "C01": {
-      "recorded_fits": 149,
       "optimizer_false_cases": 67,
       "false_fit_iterations": [
         0,
@@ -694,60 +695,72 @@
         "gradient_infinity_norm": null,
         "projected_gradient_residual": null,
         "max_kkt_residual": null
-      }
+      },
+      "records_with_optimizer_flag": 149,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 149
     },
     "F04": {
-      "recorded_fits": 0,
       "optimizer_false_cases": 0,
       "false_fit_iterations": [],
       "maxima": {
         "gradient_infinity_norm": null,
         "projected_gradient_residual": 0.0003766164014406061,
         "max_kkt_residual": null
-      }
+      },
+      "records_with_optimizer_flag": 0,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 149
     },
     "F05": {
-      "recorded_fits": 0,
       "optimizer_false_cases": 0,
       "false_fit_iterations": [],
       "maxima": {
         "gradient_infinity_norm": null,
         "projected_gradient_residual": null,
         "max_kkt_residual": 7.874546598118926e-09
-      }
+      },
+      "records_with_optimizer_flag": 0,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 149
     },
     "F07": {
-      "recorded_fits": 149,
       "optimizer_false_cases": 0,
       "false_fit_iterations": [],
       "maxima": {
         "gradient_infinity_norm": 9.296884299382635e-08,
         "projected_gradient_residual": null,
         "max_kkt_residual": null
-      }
+      },
+      "records_with_optimizer_flag": 149,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 149
     },
     "F08": {
-      "recorded_fits": 149,
       "optimizer_false_cases": 0,
       "false_fit_iterations": [],
       "maxima": {
         "gradient_infinity_norm": 1.1960567141998824e-05,
         "projected_gradient_residual": null,
         "max_kkt_residual": null
-      }
+      },
+      "records_with_optimizer_flag": 149,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 149
     },
     "F09": {
-      "recorded_fits": 0,
       "optimizer_false_cases": 0,
       "false_fit_iterations": [],
       "maxima": {
         "gradient_infinity_norm": null,
         "projected_gradient_residual": null,
         "max_kkt_residual": null
-      }
+      },
+      "records_with_optimizer_flag": 0,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 149
     },
     "F12": {
-      "recorded_fits": 149,
       "optimizer_false_cases": 56,
       "false_fit_iterations": [
         150
@@ -756,17 +769,22 @@
         "gradient_infinity_norm": 0.004410865973333766,
         "projected_gradient_residual": null,
         "max_kkt_residual": null
-      }
+      },
+      "records_with_optimizer_flag": 149,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 149
     },
     "C17": {
-      "recorded_fits": 0,
       "optimizer_false_cases": 0,
       "false_fit_iterations": [],
       "maxima": {
         "gradient_infinity_norm": null,
         "projected_gradient_residual": null,
         "max_kkt_residual": 6.661338147750939e-16
-      }
+      },
+      "records_with_optimizer_flag": 0,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 25
     }
   },
   "small_region_constraints": {
@@ -845,5 +863,6 @@
     "Class-0 reference is unscored, and some reference-positive white tissue is intentional. No expert glass-accuracy claim is made.",
     "F12 has finite-budget fits; C01 retains its previously documented zero-iteration BCSS50 termination, whose original message is unavailable.",
     "Kernel profiling does not establish an end-to-end speedup."
-  ]
+  ],
+  "numerical_status_interpretation": "All methods ran on all 149 cases. Numerical records cover emitted diagnostics; a missing optimizer_success flag does not mean a method was skipped. F04 emits a projected-gradient residual rather than that flag."
 }
