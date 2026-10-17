@@ -4,6 +4,7 @@ This publication step never overwrites predictions, original novelty files,
 their hashes, scores or timings. Reference data enter only proposal evaluation.
 """
 import argparse
+from html import escape
 import json
 from pathlib import Path
 import cv2
@@ -14,7 +15,7 @@ from scipy import ndimage as ndi
 from bora.evidence import resize
 from .diagnostics import rare_colors
 from .metrics import RegionEvaluator
-from .run import digest, save
+from .run import digest, save, palette_image
 
 
 def proposal_metrics(selected, truth, coarse_ids, mpp_xy):
@@ -59,6 +60,10 @@ def publish(source, root):
         he = np.array(Image.open(src/"original.native.png").convert("RGB"))
         support = tifffile.imread(src/"tissue.working.tif") > 0
         coarse = tifffile.imread(src/"coarse.tif")
+        preview = root/"cases"/case
+        Image.fromarray(he).save(preview/"original-he.jpg", quality=90)
+        native_coarse = resize(coarse, he.shape[:2], True)
+        palette_image(native_coarse, samples[case]["palette"]).save(preview/"coarse.jpg", quality=90)
         rarity, rare_regions, detail = rare_colors(rgb, support, samples[case]["working_mpp_xy"])
         novelty_regions = np.load(root/"cases"/case/"NOVELTY.npz")["regions"]
         combined = (rare_regions > 0) | (novelty_regions > 0)
@@ -102,6 +107,29 @@ def publish(source, root):
         '<h1>Rare and unseen RGB colour regions</h1><p>Diagnostic proposals only. '
         'Fine annotations do not generate these maps. Neither map establishes a new biological class. '
         'Segmentation predictions and their timing remain frozen.</p>'+"".join(sections))
+    gallery = root/"gallery.html"
+    if gallery.is_file():
+        html = gallery.read_text()
+        for case in protocol["cases"]:
+            old = f"cases/{case}/original.jpg"
+            # The earliest renderer used 'Original' for two panel filenames.
+            # Fix only publication links; the actual contact sheet was correct.
+            html = html.replace(old, f"cases/{case}/original-he.jpg", 2)
+            html = html.replace(old, f"cases/{case}/coarse.jpg")
+        if 'id="method-catalogue"' not in html:
+            catalogue = ('<details id="method-catalogue" open><summary>'
+                         'What each algorithm changes</summary><table>'
+                         '<tr><th>ID</th><th>Algorithm</th><th>Hypothesis</th><th>Risk</th></tr>')
+            for key, entry in protocol["roster"].items():
+                catalogue += (f'<tr><td>{key}</td><td>{escape(entry["title"])}</td>'
+                              f'<td>{escape(entry["hypothesis"])}</td>'
+                              f'<td>{escape(entry["risk"])}</td></tr>')
+            catalogue += "</table></details>"
+            html = html.replace("</h1>", "</h1>"+catalogue, 1)
+        if 'href="outliers.html"' not in html:
+            html = html.replace("</h1>", '</h1><p><a href="outliers.html">'
+                                'Rare and unseen colour-region proposals</a></p>', 1)
+        gallery.write_text(html)
 
 
 def main():
@@ -109,6 +137,7 @@ def main():
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--root", type=Path, required=True)
     args = parser.parse_args()
+    cv2.setNumThreads(2)
     publish(args.source, args.root)
 
 

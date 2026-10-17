@@ -216,12 +216,13 @@ def publish(source, root, result):
         original = Image.open(src/"original.native.png").convert("RGB")
         truth = palette_image(tifffile.imread(src/"reference.native.tif"), colors)
         coarse = resize(tifffile.imread(src/"coarse.tif"), original.size[::-1], True)
-        panels = [("Original H&E", original), ("Reference", truth),
-                  ("Original coarse mask", palette_image(coarse, colors)),
-                  ("Fixed converted RGB", Image.open(src/"ensemble/representation.png").convert("RGB"))]
+        panels = [("Original H&E", "original-he.jpg", original),
+                  ("Reference", "reference.jpg", truth),
+                  ("Original coarse mask", "coarse.jpg", palette_image(coarse, colors)),
+                  ("Fixed converted RGB", "converted.jpg",
+                   Image.open(src/"ensemble/representation.png").convert("RGB"))]
         tiles = []
-        for title, panel in panels:
-            name = title.split()[0].lower()+".jpg"
+        for title, name, panel in panels:
             panel.save(out/name, quality=90)
             tiles.append((title, name, panel))
         for key in keys:
