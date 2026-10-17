@@ -142,6 +142,13 @@ updates only the gallery's report status and writes VIEWER_READY.json; masks,
 scores and actually reviewed contact sheets stay unchanged. Open each viewer
 for inspection while continuing the full twenty-cycle objective.
 
+The user's later display preference narrows the delivered viewer to the five
+selected algorithms. `selected.html` shows those five only, with all 149 cases,
+original H&E, reference annotation, input tile mask, fixed converted RGB,
+class/resolution metadata and adjustable semitransparent overlays. It is a
+report built from the signed selection; all-candidate evidence remains for
+the required internal review. Every later cycle's selection creates this view.
+
 ## Chiamaka validation and full execution
 
 The immutable 03c77ad snapshot passed 132 focused tests on Chiamaka. Its expanded

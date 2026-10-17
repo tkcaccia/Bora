@@ -121,9 +121,14 @@ requires a written benefit/limitation or rejection reason. The validate_children
 function enforces five parents with three distinct interventions each. All
 numerical and visual evidence remains available, including failures.
 
-At the user's updated request, open the viewer after every completed cycle
-for inspection. Selection refreshes its report-only completion status and
-records VIEWER_READY.json. Only after all twenty cycles are complete should
+At the user's updated request, open `selected.html` after every completed
+cycle. This viewer shows only the five signed survivors, their aggregate and
+per-image scores, and all 149 original/reference/coarse/converted input views.
+Masks overlay the H&E with adjustable opacity. Selection publishes it from
+signed evidence without changing predictions or scores, and records its
+hash and displayed methods in VIEWER_READY.json. The all-candidate gallery
+and contact sheets remain available for the required internal review.
+Only after all twenty cycles are complete should
 the final all-conversion benchmark and complete history be presented as a
 finished study.
 

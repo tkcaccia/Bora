@@ -56,8 +56,21 @@ def test_each_of_five_parents_needs_three_real_interventions():
 
 def report_fixture(root):
     fixture(root, True)
-    save(root/"RESULTS.json", dict(cases=[]))
-    selection = dict(cycle=3, survivors=["F01", "C17", "C01", "D08", "C15"],
+    survivors = ["F01", "C17", "C01", "D08", "C15"]
+    protocol = dict(cycle=3, pilot=False, cases=["example"], methods=survivors+["REJECTED"],
+                    roster={key: dict(title=key+" title") for key in survivors+["REJECTED"]})
+    save(root/"PROTOCOL.json", protocol)
+    score = dict(macro_iou=.6, macro_dice=.7, annotated_unassigned_pixels=0,
+                 regions=dict(small_le_400_um2=dict(recall_at_50pct=.2, completely_missed=3)))
+    methods = {key: dict(status="ok", median_seconds=.1, score=score) for key in protocol["methods"]}
+    ranking = [dict(method=key, complete=True, mean_iou=.6, mean_dice=.7,
+                    mean_seconds=.1, small_region_recall=.2, completely_missed_small_regions=3)
+               for key in protocol["methods"]]
+    sample = dict(native_shape_yx=[10,20], native_mpp_xy=[.5,.5], source_region_type="ROI",
+                  class_names={"1":"tumour"}, palette=[[220,45,65]])
+    save(root/"RESULTS.json", dict(protocol=protocol, ranking=ranking,
+        cases=[dict(case="example", dataset="test", sample=sample, methods=methods)]))
+    selection = dict(cycle=3, survivors=survivors,
         results_sha256=digest(root/"RESULTS.json"), review_sha256=digest(root/"VISUAL_REVIEW.json"),
         protocol_sha256=digest(root/"PROTOCOL.json"))
     save(root/"SELECTION.json", selection)
@@ -76,6 +89,15 @@ def test_completed_viewer_status_uses_signed_selection_and_is_idempotent(tmp_pat
     assert 'CYCLE AWAITING VISUAL REVIEW' not in html
     assert html.count('id="cycle-selection"') == 1
     assert digest(tmp_path/"cases/example/contact.jpg") == contact
+    selected = (tmp_path/"selected.html").read_text()
+    assert selected.count('<figure>') == 9
+    assert 'REJECTED' not in selected
+    assert 'contact.jpg' not in selected
+    assert 'cases/example/F01/mask.png' in selected
+    data = json.loads((tmp_path/"SELECTED_RESULTS.json").read_text())
+    assert set(data['cases'][0]['methods']) == {'F01','C17','C01','D08','C15'}
+    assert first['selected_gallery'] == 'selected.html'
+    assert first['displayed_cases'] == 1
 
 
 def test_completed_viewer_refuses_changed_scored_evidence(tmp_path):

@@ -99,10 +99,13 @@ def publish_selection_status(root):
     else:
         html = html.replace("</h1>", "</h1>"+info, 1)
     gallery.write_text(html)
+    from .selected_viewer import publish_selected
+    selected_viewer = publish_selected(root)
     record = dict(cycle=cycle, gallery="gallery.html", gallery_sha256=digest(gallery),
         selection_sha256=digest(root/"SELECTION.json"),
-        requested_delivery="Open this cycle viewer for user inspection after each completed cycle",
-        predictions_modified=False, scores_modified=False, contact_sheets_modified=False)
+        requested_delivery="Open selected.html showing only the five survivors after each completed cycle",
+        predictions_modified=False, scores_modified=False, contact_sheets_modified=False,
+        **selected_viewer)
     save(root/"VIEWER_READY.json", record)
     return record
 
