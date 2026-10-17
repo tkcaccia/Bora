@@ -6,6 +6,8 @@ their hashes, scores or timings. Reference data enter only proposal evaluation.
 import argparse
 from html import escape
 import json
+import os
+import shutil
 from pathlib import Path
 import cv2
 import numpy as np
@@ -15,7 +17,7 @@ from scipy import ndimage as ndi
 from bora.evidence import resize
 from .diagnostics import rare_colors
 from .metrics import RegionEvaluator
-from .run import digest, save, palette_image
+from .run import digest, save, palette_image, verify
 
 
 def proposal_metrics(selected, truth, coarse_ids, mpp_xy):
@@ -107,6 +109,10 @@ def publish(source, root):
         '<h1>Rare and unseen RGB colour regions</h1><p>Diagnostic proposals only. '
         'Fine annotations do not generate these maps. Neither map establishes a new biological class. '
         'Segmentation predictions and their timing remain frozen.</p>'+"".join(sections))
+    decorate_gallery(root, protocol)
+
+
+def decorate_gallery(root, protocol):
     gallery = root/"gallery.html"
     if gallery.is_file():
         html = gallery.read_text()
@@ -132,13 +138,69 @@ def publish(source, root):
         gallery.write_text(html)
 
 
+def reuse(source, root, previous):
+    """Reuse annotation-free maps only when inputs and their algorithm match.
+
+    Segmentation outputs never enter these diagnostic proposals. Recomputing
+    identical maps per cycle would waste time and disk without new evidence.
+    """
+    protocol = json.loads((root/"PROTOCOL.json").read_text())
+    old_protocol = json.loads((previous/"PROTOCOL.json").read_text())
+    if (protocol["input_plan_sha256"] != old_protocol["input_plan_sha256"]
+            or digest(source/"PLAN.json") != protocol["input_plan_sha256"]
+            or protocol["cases"] != old_protocol["cases"]):
+        raise ValueError("Diagnostic reuse requires the identical frozen input plan and cases")
+    manifest_path = previous/"diagnostics-v2"/"MANIFEST.json"
+    manifest = json.loads(manifest_path.read_text())
+    if manifest["source_sha256"]["diagnostics.py"] != digest(Path(__file__).with_name("diagnostics.py")):
+        raise ValueError("Annotation-free proposal algorithm changed; recompute instead")
+    frozen = json.loads((root/"ALL_PREDICTIONS_FROZEN.json").read_text())
+    for case in protocol["cases"]:
+        current_path = root/"cases"/case/"PREDICTIONS.json"
+        if digest(current_path) != frozen["manifests"][case]:
+            raise ValueError("Current prediction record changed")
+        current = json.loads(current_path.read_text())
+        old = json.loads((previous/"cases"/case/"PREDICTIONS.json").read_text())
+        for field in ("input_manifest_sha256", "rgb_sha256"):
+            if current[field] != old[field]:
+                raise ValueError("Diagnostic input changed: "+case)
+        src = source/"cases"/case
+        if digest(src/"INPUTS_FROZEN.json") != current["input_manifest_sha256"]:
+            raise ValueError("Current source manifest changed: "+case)
+        verify(src, json.loads((src/"INPUTS_FROZEN.json").read_text())["files_sha256"])
+    # Validate cached maps rather than trusting only a directory name.
+    verify(previous/"diagnostics-v2", manifest["files_sha256"])
+    destination = root/"diagnostics-v2"
+    target = previous/"diagnostics-v2"
+    if destination.exists() or destination.is_symlink():
+        if not destination.is_symlink() or destination.resolve() != target.resolve():
+            raise ValueError("Do not replace existing diagnostics")
+    else:
+        destination.symlink_to(os.path.relpath(target, root), target_is_directory=True)
+    shutil.copy2(previous/"outliers.html", root/"outliers.html")
+    decorate_gallery(root, protocol)
+    save(root/"DIAGNOSTICS_REUSE.json", dict(
+        reused_from=str(previous), previous_manifest_sha256=digest(manifest_path),
+        proposal_algorithm_sha256=digest(Path(__file__).with_name("diagnostics.py")),
+        publication_code_sha256=digest(Path(__file__)), cases_verified=len(protocol["cases"]),
+        identical_input_plan=True, identical_case_inputs_and_rgb=True,
+        every_current_input_file_hash_verified=True,
+        every_cached_file_hash_verified=True, predictions_modified=False,
+        segmentation_scores_modified=False,
+        explanation="Rare/unseen colour proposals depend only on the same frozen inputs, not on the candidate segmentation method."))
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--root", type=Path, required=True)
+    parser.add_argument("--reuse", type=Path)
     args = parser.parse_args()
     cv2.setNumThreads(2)
-    publish(args.source, args.root)
+    if args.reuse:
+        reuse(args.source, args.root, args.reuse)
+    else:
+        publish(args.source, args.root)
 
 
 if __name__ == "__main__":

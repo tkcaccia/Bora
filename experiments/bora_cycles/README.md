@@ -124,3 +124,10 @@ and does not alter segmentation scores or measured candidate times.
 
 The publish_only.py module can render existing predictions into a new folder,
 without rerunning segmentation or overwriting signed visual-review evidence.
+
+The publish_diagnostics.py `--reuse` option reuses colour-proposal maps only
+when the frozen input plan, every current input file, case/RGB fingerprints,
+proposal code and every cached diagnostic file pass hash checks. These maps
+are independent of the candidate masks; they do not need to be recomputed or
+copied for each cycle. Relative links preserve all diagnostic images, with a
+DIAGNOSTICS_REUSE.json audit. This was verified across all 149 cycle-two cases.
