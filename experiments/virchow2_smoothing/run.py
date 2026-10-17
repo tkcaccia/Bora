@@ -11,7 +11,7 @@ from bora.boundary import BoundaryConfig
 from experiments.virchow2_inverse.common import digest, save_json
 from experiments.virchow2_inverse.protocol import bora_rgb
 
-PRIMARY = ('05', '08', '09', '10', '15', '19', 'ensemble')
+PRIMARY = ('09', '10', '15', '19', 'ensemble')
 METHODS = (*PRIMARY, 'he', 'features')
 VARIANTS = {
     'median9': ('Current median 9 × 9', BoundaryConfig()),

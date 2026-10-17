@@ -56,19 +56,15 @@ def freeze_case(folder,sample,model,refresh=False):
     c=Context(image,coarse,f,sample["palette"])
     save_json(folder/"selection.json",c.selection)
     variants={};records=[]
-    transforms={"stain_a":np.array([[1.12,.03,0],[0,.88,.03],[.02,0,1.03]]),"stain_b":np.array([[.88,0,.04],[.03,1.12,0],[0,.03,.97]])}
-    for name in ["stain_a","stain_b","scale_1","scale_2"]:
+    for name in ["scale_1","scale_2"]:
         path=featdir/(name+".npy");meta_path=featdir/(name+".json")
-        if name in transforms:
-            od=-np.log((image.astype(float)+1)/256);out=np.rint(256*np.exp(-(od@transforms[name].T))-1).clip(0,255).astype(np.uint8)
-        else:
-            factor=2 if name=="scale_1" else 4
-            out=np.array(Image.fromarray(image).resize((round(image.shape[1]/factor),round(image.shape[0]/factor)),Image.Resampling.LANCZOS))
+        factor=2 if name=="scale_1" else 4
+        out=np.array(Image.fromarray(image).resize((round(image.shape[1]/factor),round(image.shape[0]/factor)),Image.Resampling.LANCZOS))
         if not path.exists() or not meta_path.exists():
             values,meta=encode(model,out,c.selected);np.save(path,values)
             save_json(meta_path,dict(**meta,shape_yx=list(out.shape[:2]),mpp_xy=[sample["fov_um_xy"][0]/out.shape[1],sample["fov_um_xy"][1]/out.shape[0]],sha256=digest(path)))
         values=np.load(path).astype(np.float32)
-        variants[name]=values if name in transforms else align_variant(values,out.shape[:2],c)
+        variants[name]=align_variant(values,out.shape[:2],c)
         records.append(dict(name=name,**json.loads(meta_path.read_text())))
     save_json(folder/"inference.json",dict(encoder_revision=MODEL_REVISION,encoder_sha256=MODEL_SHA256,base=json.loads((featdir/"READY.json").read_text()),
         variants=records,model_input_mpp_xy=sample["working_mpp_xy"],nominal_window_fov_um=112,all_weights_frozen=True,fine_reference_read=False))

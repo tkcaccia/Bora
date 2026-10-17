@@ -3,7 +3,7 @@
 Fine annotations are used here ONLY to choose boundary-containing fields and
 make controlled majority-tile inputs. Prediction modules cannot open them.
 """
-import argparse,colorsys,json,re
+import argparse,colorsys,json,re,shutil
 from collections import Counter
 from pathlib import Path
 import cv2
@@ -75,15 +75,25 @@ def candidate_windows(truth,spacing,max_side=1280):
 
 def main():
     p=argparse.ArgumentParser();p.add_argument("--data-root",type=Path,required=True);p.add_argument("--root",type=Path,required=True)
-    p.add_argument("--max-side",type=int,default=1280);a=p.parse_args();a.root.mkdir(parents=True,exist_ok=True)
+    p.add_argument("--max-side",type=int,default=1280);p.add_argument("--previous",type=Path);p.add_argument("--seed",type=int,default=7730);p.add_argument("--quotas",nargs="+");a=p.parse_args();a.root.mkdir(parents=True,exist_ok=True)
+    quotas=QUOTAS if a.quotas is None else {k:int(v) for k,v in (item.split("=") for item in a.quotas)}
     if (a.root/"PLAN.json").exists():raise FileExistsError("Use a new output directory; do not silently replace an evaluated corpus")
-    rng=np.random.default_rng(7730);samples=[];excluded=[]
-    for dataset,quota in QUOTAS.items():
+    rng=np.random.default_rng(a.seed);samples=[];excluded=[]
+    if a.previous:
+        previous=json.loads((a.previous/"PLAN.json").read_text())
+        for old in previous["samples"]:
+            row={**old,"benchmark_cohort":"previously_inspected"};folder=a.root/"cases"/row["case"];folder.mkdir(parents=True)
+            for name in ("original.png","original.native.png","coarse.tif","reference.native.tif"):
+                shutil.copy2(a.previous/"cases"/row["case"]/name,folder/name)
+            save_json(folder/"sample.json",row);samples.append(row)
+    for dataset,quota in quotas.items():
         manifests=[dataset+".jsonl"] if dataset!="camelyon16-subset" else ["camelyon16-subset.jsonl","camelyon16-extension.jsonl"]
         candidates=[]
         for name in manifests:candidates.extend(json.loads(line) for line in (a.data_root/"prepared"/name).read_text().splitlines() if line)
         if dataset=="tiger":candidates=[r for r in candidates if r.get("cohort")=="non-TCGA" and group_key(r)!="114"]
-        candidates=sorted(candidates,key=lambda r:r["id"]);rng.shuffle(candidates);used=set();accepted=0
+        candidates=sorted(candidates,key=lambda r:r["id"]);rng.shuffle(candidates)
+        prior=[r for r in samples if r["dataset"]==dataset];used={r["group"] for r in prior};accepted=len(prior)
+        if accepted>=quota:continue
         for row in candidates:
             group=group_key(row)
             if group in used:continue
@@ -118,7 +128,7 @@ def main():
             Image.fromarray(rgb).save(folder/"original.native.png");Image.fromarray(working).save(folder/"original.png")
             tifffile.imwrite(folder/"reference.native.tif",fine,compression="deflate")
             tifffile.imwrite(folder/"coarse.tif",compact,compression="deflate")
-            metadata=dict(case=case,dataset=dataset,group=group,source=row,native_crop_xywh=[x,y,cw,ch],
+            metadata=dict(case=case,dataset=dataset,group=group,source=row,benchmark_cohort="new_extension" if a.previous else "initial",native_crop_xywh=[x,y,cw,ch],
                 source_region_type="ROI" if dataset in ["tiger","bcss"] else "native ROI cropped from WSI",
                 native_mpp_xy=spacing,working_mpp_xy=[cw*spacing[0]/shape[1],ch*spacing[1]/shape[0]],
                 target_mpp=.5,working_shape_yx=shape,native_shape_yx=[ch,cw],fov_um_xy=[cw*spacing[0],ch*spacing[1]],
@@ -130,8 +140,8 @@ def main():
             save_json(folder/"sample.json",metadata);samples.append(metadata);used.add(group)
             print(json.dumps(dict(prepared=case,group=group,working_shape=shape,classes=len(raw_codes))),flush=True)
             if accepted==quota:break
-    save_json(a.root/"PLAN.json",dict(seed=7730,requested_quotas=QUOTAS,samples=samples,exclusions=excluded,
-        methods=[4,5,8,9,10,15,19],field_selection="maximum annotated-class entropy among deterministic overlapping windows; no algorithm-score selection",
+    save_json(a.root/"PLAN.json",dict(seed=a.seed,requested_quotas=quotas,previous_plan_sha256=digest(a.previous/"PLAN.json") if a.previous else None,samples=samples,exclusions=excluded,
+        methods=[9,10,15,19],field_selection="maximum annotated-class entropy among deterministic overlapping windows; no algorithm-score selection",
         max_working_side=a.max_side,min_working_side=896,target_mpp=.5,coarse_tile_um=45,
         source_case114_excluded=True,tiger_bcss_overlap_avoidance="TIGER uses non-TCGA only; BCSS uses TCGA cases",
         exclusions_by_dataset={"sicapv2":"JPEG mask semantics unreconciled","cocahis-vista":"foreground semantics and pixel spacing unreconciled",

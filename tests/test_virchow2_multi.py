@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from experiments.virchow2_multi.plan import coarse_mask,group_key,palette
-from experiments.virchow2_multi.methods import Context,maxmin_projection
+from experiments.virchow2_multi.methods import Context
 from experiments.virchow2_multi.score import Evaluator,ranking
 
 
@@ -18,11 +18,6 @@ def test_conservative_tiger_case_group():
     assert group_key(dict(dataset="tiger",slide_id="TC_S01_P000159_C001"))=="TC_S01_P000159"
 
 
-def test_binary_projection_still_has_three_finite_rgb_axes():
-    rng=np.random.default_rng(4);values=rng.normal(size=(20,64)).astype(np.float32);labels=np.repeat([1,3],10)
-    projection,_=maxmin_projection(values,labels)
-    assert projection.shape==(64,3)
-    assert np.isfinite(projection).all()
 
 
 def test_probability_columns_follow_observed_nonconsecutive_labels():
@@ -61,11 +56,11 @@ def test_primary_ranking_weights_datasets_not_image_counts():
     for dataset in ("tiger","tiger","bcss"):
         methods={}
         for n in METHODS:
-            value=(.5 if dataset=="tiger" else .9) if n==4 else .6 if n==5 else .4
+            value=(.5 if dataset=="tiger" else .9) if n==9 else .6 if n==10 else .4
             methods[f"{n:02d}"]=dict(after=dict(macro_iou=value),before=dict(macro_iou=.4),rank=1)
         cases.append(dict(dataset=dataset,methods=methods,controls=dict(he=dict(macro_iou=.5))))
     rows=ranking(cases,bootstrap=50)
-    assert rows[0]["id"]==4
+    assert rows[0]["id"]==9
     assert rows[0]["dataset_balanced_macro_iou"]==pytest.approx(.7)
     assert rows[0]["image_mean_iou"]==pytest.approx(1.9/3)
     assert rows[0]["dataset_balanced_delta_vs_he"]==pytest.approx(.2)

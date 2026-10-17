@@ -245,3 +245,13 @@ dataset files and benchmark outputs remain outside Git.
 ## License
 
 No license has yet been selected.
+
+## Retained-strategy Virchow2 benchmark
+
+The expanded experiment retains eight Bora strategies (B02, B03, B05, B08,
+B09, B10, B12, B19) and five RGB inputs (#9, #10, #15, #19, 9+19). Rejected
+benchmark implementations are removed. B19 now combines only retained solvers.
+The 149-ROI scope includes 100 additional TIGER/BCSS groups. See
+[the protocol and commands](experiments/bora_strategies/README.md). Historical
+20-strategy outputs remain archives; the active viewer is
+`benchmark/results/bora-retained-expanded-2026-10-17/gallery.html`.

@@ -33,27 +33,6 @@ def balanced_features(values,labels,penalty=None,k=32):
         lists.append(np.argsort(-score))
     return round_robin(lists,min(k,values.shape[1]))
 
-def maxmin_projection(values,labels):
-    import torch
-    torch.set_num_threads(2);torch.manual_seed(430)
-    means=np.stack([values[labels==g].mean(0) for g in range(1,6)])
-    centered=np.concatenate([values[labels==g]-means[g-1] for g in range(1,6)])
-    cov=centered.T@centered/len(centered)+np.eye(values.shape[1])*.25
-    eig,vec=np.linalg.eigh(cov);whiten=(vec/np.sqrt(eig))@vec.T
-    m=torch.tensor(means@whiten,dtype=torch.float32)
-    _,_,vh=np.linalg.svd((means-means.mean(0))@whiten,full_matrices=False)
-    w=torch.nn.Parameter(torch.tensor(vh[:3].T,dtype=torch.float32))
-    optimizer=torch.optim.Adam([w],lr=.03);history=[]
-    pairs=list(combinations(range(5),2))
-    for step in range(350):
-        optimizer.zero_grad();unit=w/torch.linalg.norm(w,dim=0,keepdim=True).clamp_min(1e-5)
-        projected=m@unit
-        distance=torch.stack([((projected[a]-projected[b])**2).sum() for a,b in pairs])
-        loss=torch.logsumexp(-4*distance,0)/4+.2*((unit.T@unit-torch.eye(3))**2).mean()
-        loss.backward();optimizer.step()
-        if step%100==0:history.append({"iteration":step,"weakest_squared_distance":float(distance.min().detach())})
-    learned=(w/w.norm(dim=0,keepdim=True)).detach().numpy()
-    return (whiten@learned).astype(np.float32),history
 
 def additional_grid(ctx,name):
     meta=next(r for r in json.loads((ctx.root/"additional_inference/manifest.json").read_text()) if r["name"]==name)
@@ -75,22 +54,7 @@ def scale_z(ctx,name):
 def run_idea(n,c):
     z=c.z;shape=c.shape;root=c.root;extras={};prediction=None
     details={"preset":"one fixed exploratory preset, no fine-mask selection","output_type":"feature RGB","original_rgb_supplies_detail":False}
-    if n==4:
-        positive=np.concatenate([np.maximum(z,0),np.maximum(-z,0)],-1)
-        nmf=NMF(n_components=12,init="nndsvda",random_state=430,max_iter=350,alpha_W=.01,alpha_H=.01,l1_ratio=.5)
-        concepts=nmf.fit_transform(positive.reshape(-1,positive.shape[-1])).reshape(*c.grid,12)
-        summaries,y,_,_=coarse_tile_observations(concepts,c.coarse)
-        means=np.stack([summaries[y==g].mean(0) for g in range(1,6)])
-        specificity=np.std(means,0)/(np.mean(means,0)+.05)
-        keep=np.argsort(-specificity)[:8];suppressed=np.argsort(specificity)[:4]
-        p=grid_prob(concepts[...,keep],c);rgb=rgb_prob_grid(p,c)
-        extras={"concepts":concepts.astype(np.float32),"dictionary":nmf.components_.astype(np.float32)}
-        details.update(kept_concepts=keep.tolist(),suppressed_shared_concepts=suppressed.tolist(),specificity=specificity.tolist(),iterations=int(nmf.n_iter_))
-    elif n==5:
-        projection,history=maxmin_projection(c.tile_z,c.labels)
-        rgb=rgb_scale(expand(z@projection,shape));extras={"projection":projection}
-        details.update(objective="maximize soft minimum of ten within-class-whitened class-pair distances in three dimensions",history=history)
-    elif n==6:
+    if n==6:
         rgb,prediction,extras,selected=pair_experts(c)
         details.update(pair_dimensions=selected,wrapper="pair-restricted Bora wand, fixed nearest-interface ownership; tied junctions protected")
     elif n==7:
@@ -103,14 +67,6 @@ def run_idea(n,c):
         scaler.scale_=np.maximum(scaler.scale_,.05);residual=scaler.transform(residual.reshape(-1,z.shape[2])).reshape(z.shape)
         rgb=rgb_prob_grid(grid_prob(residual,c),c);extras={"residual_features":residual.astype(np.float32),"nuisance_coefficients":reg.coef_.astype(np.float32)}
         details.update(nuisance="patch mean RGB, optical density and squared optical density",original_rgb_used="estimate the colour-explained feature subspace",residual_variance_fraction=float(np.mean(residual.var((0,1)))))
-    elif n==8:
-        variants=[additional_grid(c,name)[0] for name in ("stain_a","stain_b")]
-        base=z*c.scaler.scale_+c.scaler.mean_
-        sensitivity=np.mean([np.mean(((v-base)/c.scaler.scale_)**2,axis=(0,1)) for v in variants],0)
-        keep=balanced_features(c.tile_z,c.labels,1/(.1+sensitivity),32)
-        rgb=rgb_prob_grid(grid_prob(z[...,keep],c),c)
-        extras={"stain_sensitivity":expand(np.mean(np.stack([((v-base)/c.scaler.scale_)**2 for v in variants]),axis=(0,3)),shape).astype(np.float32)}
-        details.update(selected_dimensions=c.selected[keep].tolist(),response_sensitivity=sensitivity.tolist(),genuine_encoder_reencodings=2)
     elif n==9:
         middle,mt,_=scale_z(c,"scale_1");wide,wt,_=scale_z(c,"scale_2")
         correlations=np.stack([np.array([np.corrcoef(c.tile_z[:,i],other[:,i])[0,1] for i in range(z.shape[2])]) for other in [mt,wt]])
@@ -224,7 +180,7 @@ def run_idea(n,c):
 
 def main():
     p=argparse.ArgumentParser();p.add_argument("--source",type=Path,required=True);p.add_argument("--root",type=Path,required=True)
-    p.add_argument("--ids",type=int,nargs="+",default=list(range(4,21)));a=p.parse_args()
+    p.add_argument("--ids",type=int,nargs="+",default=list([6,7,9,10,11,12,13,14,15,16,17,18,19,20]));a=p.parse_args()
     c=Context(a.source,a.root)
     Image.fromarray(c.image).save(a.root/"original.png")
     import tifffile

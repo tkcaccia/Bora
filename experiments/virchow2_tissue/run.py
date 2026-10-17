@@ -12,7 +12,7 @@ from experiments.virchow2_multi.methods import Context,align_variant,run_method,
 from experiments.virchow2_ensemble.run import mean_evidence
 from .support import POLICY,tissue_support,complete_tiles,encoder_coverage
 
-ACTIVE=(5,8,9,10,15,19)
+ACTIVE=(9,10,15,19)
 TITLES={**{f'{n:02d}':METHODS[n] for n in ACTIVE},'ensemble':'Equal evidence 9 + 19','he':'Original H&E','features':'Plain selected-feature RGB'}
 
 
@@ -43,7 +43,7 @@ def freeze_case(source,root,sample):
     completed,completion=complete_tiles(original_coarse,c.native_p,c.classes,work_support)
     tifffile.imwrite(out/'coarse.completed.tif',completed,compression='deflate');save_json(out/'completion.json',completion)
     variants={}
-    for name in ('stain_a','stain_b','scale_1','scale_2'):
+    for name in ('scale_1','scale_2'):
         meta=json.loads((src/'features'/f'{name}.json').read_text());path=src/'features'/f'{name}.npy'
         if digest(path)!=meta['sha256']:raise ValueError('Variant cache changed')
         values=np.load(path).astype(np.float32)

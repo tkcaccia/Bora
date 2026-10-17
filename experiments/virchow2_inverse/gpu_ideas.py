@@ -106,22 +106,17 @@ def main():
     params=np.load(root/"classifier_parameters.npz");selected=params["selected"].tolist()
     image=np.asarray(Image.open(a.source/"image.original.png").convert("RGB"));model=load_model(a.model_dir)
     # Genuine re-encodings, completed before the slower optimization experiments.
-    transforms={"stain_a":np.array([[1.12,.03,0],[0,.88,.03],[.02,0,1.03]]),"stain_b":np.array([[.88,0,.04],[.03,1.12,0],[0,.03,.97]])}
     metadata=[]
-    for name in ["stain_a","stain_b","scale_1","scale_2"]:
-        if name.startswith("stain"):
-            od=-np.log((image.astype(float)+1)/256);out=np.rint(256*np.exp(-(od@transforms[name].T))-1).clip(0,255).astype(np.uint8)
-            physical=[.5,.5]
-        else:
-            factor=2 if name=="scale_1" else 4
-            out=np.asarray(Image.fromarray(image).resize((round(image.shape[1]/factor),round(image.shape[0]/factor)),Image.Resampling.LANCZOS))
-            physical=[.5*image.shape[1]/out.shape[1],.5*image.shape[0]/out.shape[0]]
+    for name in ["scale_1","scale_2"]:
+        factor=2 if name=="scale_1" else 4
+        out=np.asarray(Image.fromarray(image).resize((round(image.shape[1]/factor),round(image.shape[0]/factor)),Image.Resampling.LANCZOS))
+        physical=[.5*image.shape[1]/out.shape[1],.5*image.shape[0]/out.shape[0]]
         destination=extra/(name+".npy")
         if not destination.exists():
             values,coords=encode(model,out,selected);np.save(destination,values);Image.fromarray(out).save(extra/(name+".png"))
         metadata.append({"name":name,"shape_yx":list(out.shape[:2]),"effective_mpp_xy":physical,"window_fov_um_xy":[224*v for v in physical],
                          "selected_dimensions":selected,"data_sha256":digest(destination),"original_pixel_detail_added":False,
-                         "stain_matrix":transforms[name].tolist() if name in transforms else None})
+                         "stain_matrix":None})
         save_json(extra/"manifest.json",metadata);print(json.dumps({"additional_inference":name,"complete":True}),flush=True)
     save_json(extra/"READY.json",{"complete":True,"fine_reference_used":False})
     model.set_grad_checkpointing(True)
