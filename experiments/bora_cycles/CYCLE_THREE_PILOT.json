@@ -168,5 +168,27 @@
   },
   "source_snapshot_remote": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-cycles-2026-10-17/cycle-03-code-v2",
   "v1_history": "First pilot preserved: F12 maximum-rival loss stopped at zero iterations on TIGER32 and BCSS17. Corrected all-rival loss in v2; all 84 non-F12 masks are exactly unchanged.",
-  "selection": "No survivors selected from the pilot. All 149 images and actual full visual review remain required."
+  "selection": "No survivors selected from the pilot. All 149 images and actual full visual review remain required.",
+  "posthoc_validation": {
+    "local_additional_tests_passed": 6,
+    "integrity_verified_native_masks": 88,
+    "integrity_verified_display_rasters": 88,
+    "all_20_survivor_parity_checks": true,
+    "small_region_totals": {
+      "small_components": 111,
+      "absent_coarse_class": 14,
+      "support_cannot_reach_50pct": 0,
+      "no_method_reaches_50pct": 54,
+      "all_methods_completely_miss": 35,
+      "coarse_recovered_but_all_refinements_below_50pct": 6
+    },
+    "actual_additional_native_crop_reviews": 4,
+    "native_review_scope": "Four 256x256 native-coordinate crops, eight candidate overlays each. This is not an all-22-method native review or a complete cycle.",
+    "artifact_sha256": {
+      "INTEGRITY_AUDIT.json": "9f00d01cb8766e069245542300bfd7684a7f746c4ef949d050a00172a56f5582",
+      "SMALL_REGION_ATLAS.json": "13d3c69b30543a5dcc2d2ba536f30f5006b9ced5712abc9511fa4fa8855c3c58",
+      "NATIVE_REVIEW.json": "d1dc130c1eecbca3da19b5d51a277a3687307b4cdde264712ff3a54f74d9ec84",
+      "PILOT_NATIVE_CROPS.json": "3df2067557bb57c83305e9299835297d22b87c2896f283c08fb0a31214ed680a"
+    }
+  }
 }
