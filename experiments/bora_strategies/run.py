@@ -35,7 +35,7 @@ def freeze_case(source,root,sample):
                     path=target/name;tifffile.imwrite(path,array,compression='deflate');files[str(path.relative_to(folder))]=digest(path)
                 records[key]=dict(seconds=time.monotonic()-started,diagnostics=c.diagnostics.get(key,{}),fine_reference_used=False)
                 save_json(target/'details.json',records[key]);files[key+'/details.json']=digest(target/'details.json')
-            save_json(folder/'FROZEN.json',dict(files_sha256=files,records=records,input_manifest_sha256=digest(src/'INPUTS_FROZEN.json'),rgb_sha256=digest(src/conversion/'representation.png'),
+            save_json(folder/'FROZEN.json',dict(files_sha256=files,records=records,tiles_native_sha256=digest(out/'tiles.native.tif'),input_manifest_sha256=digest(src/'INPUTS_FROZEN.json'),rgb_sha256=digest(src/conversion/'representation.png'),
                 source_coarse_sha256=sample['coarse_sha256'],analysis_shape_yx=list(c.shape),analysis_mpp_xy=c.mpp_xy.tolist(),native_shape_yx=sample['native_shape_yx'],native_mpp_xy=sample['native_mpp_xy'],fine_reference_read=False))
             manifests[case+'/'+conversion]=digest(folder/'FROZEN.json');del c;gc.collect()
             print(json.dumps(dict(predicted=case,conversion=conversion,strategies=len(STRATEGIES))),flush=True)

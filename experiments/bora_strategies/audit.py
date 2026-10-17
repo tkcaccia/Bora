@@ -25,8 +25,11 @@ def main():
         assert digest(src/'reference.native.tif')==row['sample']['reference_native_sha256'];assert int(valid.sum())==row['coverage']['annotated_pixels']
         assert json.loads((src/'encoder_coverage.json').read_text())['all_original_tokens_covered'];allowed=set(map(int,np.unique(tifffile.imread(src/'coarse.tif'))))|{0}
         tiles=tifffile.imread(out/'tiles.native.tif')
+        import cv2
+        expected=cv2.resize(tifffile.imread(src/'coarse.completed.tif'),tuple(truth.shape[::-1]),interpolation=cv2.INTER_NEAREST);expected[~support]=0
+        assert np.array_equal(tiles,expected)
         for m in CONVERSIONS:
-            folder=out/m;record=json.loads((folder/'FROZEN.json').read_text());assert digest(folder/'FROZEN.json')==frozen['conversion_manifest_sha256'][case+'/'+m];verify(folder,record)
+            folder=out/m;record=json.loads((folder/'FROZEN.json').read_text());assert digest(folder/'FROZEN.json')==frozen['conversion_manifest_sha256'][case+'/'+m];verify(folder,record);assert record['tiles_native_sha256']==digest(out/'tiles.native.tif')
             assert record['input_manifest_sha256']==digest(src/'INPUTS_FROZEN.json') and record['rgb_sha256']==digest(src/m/'representation.png')
             if row['cohort']=='previously_inspected':
                 previous_rgb=a.previous_results.parent/'virchow2-full-tissue-2026-10-16'/'cases'/case/m/'representation.png'

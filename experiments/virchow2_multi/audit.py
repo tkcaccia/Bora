@@ -28,7 +28,7 @@ def main():
             physical_fov_matches=bool(np.allclose(np.array(sample["working_shape_yx"])[::-1]*sample["working_mpp_xy"],sample["fov_um_xy"])),
             seven_methods=set(m["id"] for m in manifest["methods"])==set(METHODS),context_head_revision=manifest.get("context_head_revision")==2)
         meta=json.loads((folder/"features/READY.json").read_text());row["base_feature_hash"]=digest(folder/"features/base.npy")==meta["sha256"]
-        row["variant_feature_hashes"]=all(digest(folder/f"features/{name}.npy")==json.loads((folder/f"features/{name}.json").read_text())["sha256"] for name in ("stain_a","stain_b","scale_1","scale_2"))
+        row["variant_feature_hashes"]=all(digest(folder/f"features/{name}.npy")==json.loads((folder/f"features/{name}.json").read_text())["sha256"] for name in ("scale_1","scale_2"))
         row["native_mask_shapes"]=True;row["working_mask_shapes"]=True;row["all_visual_outputs"]=True
         for n in METHODS:
             key=f"{n:02d}"

@@ -21,7 +21,7 @@ def main():
         expected=json.loads((a.previous/"initial_feature_selection.json").read_text())["indices"]
         if c.selected.tolist()!=expected:raise ValueError("Feature selection changed on the original five-class case")
         c.output=lambda number,rgb,*args:rgb
-        variants={name:additional_grid(c,name)[0] for name in ("stain_a","stain_b","scale_1","scale_2")}
+        variants={name:additional_grid(c,name)[0] for name in ("scale_1","scale_2")}
         for n in METHODS:
             rgb,_,_,_=run_method(n,c,variants);original_formula=run_idea(n,c)
             reference=np.array(Image.open(a.previous/f"{n:02d}/representation.png").convert("RGB"))

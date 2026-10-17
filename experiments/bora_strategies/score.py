@@ -63,7 +63,8 @@ def main():
     for pair,sha in frozen['conversion_manifest_sha256'].items():
         folder=a.root/'cases'/pair
         if digest(folder/'FROZEN.json')!=sha:raise ValueError('Prediction manifest changed')
-        verify(folder,json.loads((folder/'FROZEN.json').read_text()))
+        record=json.loads((folder/'FROZEN.json').read_text());verify(folder,record)
+        if digest(folder.parent/'tiles.native.tif')!=record['tiles_native_sha256']:raise ValueError('Tile baseline changed')
     cases=[];csvrows=[]
     with ProcessPoolExecutor(max_workers=a.workers,mp_context=get_context('spawn')) as pool:
         for row,records in pool.map(score_case,protocol['cases'],[a.root]*len(protocol['cases']),[a.source]*len(protocol['cases']),[protocol]*len(protocol['cases'])):cases.append(row);csvrows.extend(records)
