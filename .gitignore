@@ -34,6 +34,7 @@ output/adaptive_wand_geojson_eval/
 tmp/
 third_party/PathSegmentor/
 cpp/*.so
+cpp/evidence/*.so
 cpp/build/
 output/figures/
 output/pdf/*report.pdf
@@ -43,3 +44,5 @@ benchmark/examples/
 benchmark/raw/
 benchmark/prepared/
 benchmark/results/
+benchmark/models/
+benchmark/experiments/

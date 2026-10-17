@@ -1,0 +1,112 @@
+{
+  "cycle": 7,
+  "completed_cycles": 7,
+  "status": "All149 predictions/scoring/audits,149 actual overview reviews and8 actual native label crops complete; five survivors signed.",
+  "model_commit": "1ad219254115963a2b9efd2396d942732fd89bfb",
+  "model_snapshot": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-cycles-2026-10-17/cycle-07-code-v1",
+  "archive_sha256": "c30f16937f3946459ec8fec7be3f45afe9da4d86181e4dea3967258ebc9a0319",
+  "parents": [
+    "J01",
+    "H02",
+    "C17",
+    "J07",
+    "H10"
+  ],
+  "new_children": [
+    "K01",
+    "K02",
+    "K03",
+    "K04",
+    "K05",
+    "K06",
+    "K07",
+    "K08",
+    "K09",
+    "K10",
+    "K11",
+    "K12",
+    "K13",
+    "K14",
+    "K15"
+  ],
+  "local_focused_tests_passed": 241,
+  "chiamaka_focused_tests_passed": 241,
+  "remote_test_invocations": [
+    {
+      "checks": 205,
+      "log": "cycle-07-preflight-v1.log"
+    },
+    {
+      "checks": 36,
+      "log": "cycle-07-supplemental-retained-parent-tests.log"
+    }
+  ],
+  "launcher_notice": "The frozen preflight wrapper ran205 distinct tests, omitting the36 J-series checks. All36 supplemental checks passed on that exact snapshot before the full run. The repository wrapper is corrected; frozen prediction source is untouched.",
+  "pilot_pid": 1081740,
+  "pilot_process_terminal": true,
+  "pilot_remote_result": "/mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-07-pilot-v1",
+  "pilot_successful_masks": 176,
+  "pilot_unchanged_parent_comparisons": 40,
+  "pilot_actual_overviews": 8,
+  "pilot_actual_native_crops": 3,
+  "pilot_ready_sha256": "5ee768ed80ef1dcbb82221ed8db6b1879a476d2e30cd02655bc52d0430a01764",
+  "full_run_launched": true,
+  "full_pid": 1090822,
+  "posthoc_pid": 1093871,
+  "full_remote_result": "/mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-07",
+  "full_local_result": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-07-chiamaka",
+  "full_actual_overviews": 149,
+  "full_actual_native_crops": 8,
+  "last_verified_status": {
+    "verified_at_utc": "2026-10-17T22:13:45.022691+00:00",
+    "main": {
+      "pid": 1090822,
+      "live": false,
+      "terminal_evidence": "Exact PID missing from remote ps"
+    },
+    "posthoc": {
+      "pid": 1093871,
+      "live": false,
+      "terminal_evidence": "Exact PID missing from remote ps"
+    },
+    "predicted_cases": 149,
+    "scored_cases": 149,
+    "contacts": 149,
+    "posthoc_complete": true,
+    "failed_methods": {},
+    "stage": {
+      "state": "cycle_reviewed_and_selected",
+      "cycle": 7,
+      "completed_cycles": 7,
+      "complete_goal": false
+    },
+    "actual_overviews": 149,
+    "actual_native_crops": 8,
+    "selected": true,
+    "selection_sha256": "8a346fe3880cc06e9b7043bd5608683825882cdc1163c6022c2250011867622f"
+  },
+  "main_log": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-cycles-2026-10-17/cycle-07-v1.log",
+  "posthoc_log": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-cycles-2026-10-17/cycle-07-posthoc-v1.log",
+  "next_action": "Deliver selected-five cycle7 viewer, then prepare expanded349-image inputs/conversions/gates and cycle8 hypotheses from the signed five. Thirteen cycles plus final all-conversion evaluation remain.",
+  "predictions_frozen_before_scoring": true,
+  "complete_goal": false,
+  "selection_created": true,
+  "kernel_evidence": "Large serial Chiamaka medians1.58275/.799729 seconds,1.979x, exact thread outputs.29564/32768 synthetic nodes miss1e-7 gap; max1.393e-5. Kernel-only evidence.",
+  "numerical_notice": "Full-run flags:K04 unconverged in148/149;K07 unfinished gaps126/149;K10 optimizer unsuccessful37/149;K13 unsuccessful18/149;K15 proximal flags144/149. All finite masks scored; not asserted optima.",
+  "checkpoint_utc": "2026-10-17T22:40:58.909052+00:00",
+  "main_process_terminal": true,
+  "posthoc_process_terminal": true,
+  "full_native_masks_audited": 3278,
+  "full_unchanged_parent_comparisons": 745,
+  "survivors": [
+    "J01",
+    "K05",
+    "C17",
+    "J07",
+    "K13"
+  ],
+  "selection_sha256": "8a346fe3880cc06e9b7043bd5608683825882cdc1163c6022c2250011867622f",
+  "review_sha256": "33ca9c58f648a3912ffb44138cd28bd55dfbc8132308717acc909128f64f5a40",
+  "native_review_sha256": "68b70ec8da59f88217b865bc36c0ed8686a19c4a4bcad92a5d955d945be21177",
+  "paired_analysis_sha256": "ad0424aafea0d75ed5110ff3f93548495561d09915a50e1eea26501f72137e13"
+}

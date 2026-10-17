@@ -1,0 +1,72 @@
+{
+  "cycle": 6,
+  "survivors": [
+    "J01",
+    "H02",
+    "C17",
+    "J07",
+    "H10"
+  ],
+  "rejected": [
+    "C01",
+    "H04",
+    "J02",
+    "J03",
+    "J04",
+    "J05",
+    "J06",
+    "J08",
+    "J09",
+    "J10",
+    "J11",
+    "J12",
+    "J13",
+    "J14",
+    "J15"
+  ],
+  "tradeoffs": {
+    "J01": "SELECT: primary runtime-adjusted leader, mean IoU0.674658 at0.193s. Original-H&E edge conductance adds0.27685 IoU percentage points over H02, with90 wins/57 losses/2 ties and linear residual at most1.36e-14. Native BCSS45 corrects much of the vessel-to-fat error, but native BCSS53 erases a tumour band. Mean small-region recall drops from0.19257 to0.18455; retain H02 alongside it. White clefts and missing coarse classes remain unresolved.",
+    "H02": "SELECT: unchanged fast appearance-field comparator, IoU0.671889 at0.192s, small-region recall0.192574. It preserves regions that J01 loses, including the native BCSS53 tumour band and TIGER33 geometry. Its slight time advantage over J01 is not claimed as a stable speed improvement. Broad white clefts and false grey in BCSS60 remain; it is retained for complementary accuracy and an unchanged reference branch.",
+    "C17": "SELECT: unchanged exact palette-mixture inverse, IoU0.671604 at0.163s. The native BCSS45 and BCSS87 vessels avoid the fat islands seen in Gaussian discriminants, and BCSS60 avoids the false grey stripe. It gives a structurally different direct model with no learned colour classifier. It still fragments lymphocytic tissue in native BCSS74 and misses unrepresented coarse classes; small-region recall0.183608.",
+    "J07": "SELECT: expected Gaussian squared-hinge risk, IoU0.668524 at0.0753s,0.10996 percentage points above H10 with77 wins/67 losses/5 ties. Native BCSS87 removes H10's false fat island, offering a fast statistical branch. It loses more of the stromal wedge in native TIGER23, and its mean small recall0.197088 is below H10.25/149 optimizers return unsuccessful termination, maximum gradient infinity norm0.003051; these are finite-budget masks, not asserted converged optima.",
+    "H10": "SELECT: unchanged expected exponential Gaussian discriminant, IoU0.667425 at0.0613s, fastest retained method. It has higher small-region recall0.199198 and fewer unsuccessful optimizers8/149 than J07, despite a slightly lower aggregate IoU. Vessel-to-fat islands in native BCSS45/87 and excess red in TIGER37 remain. Keep as a transparent speed/accuracy comparator; no artificial bonus is awarded below one second.",
+    "J02": "REJECT: joint convex shared-nuisance field is fast0.1088s and small recall0.20368, but IoU0.667717 is0.4172 percentage points below H02. J07 has higher mean IoU and lower runtime. Native TIGER23 shows excessive in-situ expansion deleting the stromal wedge; BCSS26 loses8.18 points relative to H02. The restricted shared drift model has too large a class-specific regression despite a sound linear solve.",
+    "J03": "REJECT: harmonic exterior-glass probability is slower than H020.2282 versus0.1923s and slightly less accurate0.671798 versus0.671889. It changes100/149 case scores not at all, loses44 and gains only5 by tiny amounts. Native BCSS06 deletes additional annotated fat, while overview clefts remain filled across many BCSS cases. Its extra support deletion is fully penalized; it is not a demonstrated general white-cleft solution.",
+    "J04": "REJECT: posterior dominant-class integration yields IoU0.662780 at0.2494s, below C17 in both accuracy and speed. Finite Sobol importance quadrature remains approximate. Native/overview evidence gives no consistent gain in gland separation or small-region recovery; BCSS74 has false grey and BCSS60 remains sensitive to palette confusion.",
+    "J05": "REJECT: colour-graph fraction coupling yields IoU0.665982 at0.2587s, lower accuracy and slower than C17. Small recall0.183127 is also lower. Overview false-grey tissue on BCSS74/86 and retained broad clefts show that smoothness across neighbouring colours does not reliably establish anatomical similarity. Finite projected-gradient residuals remain reported.",
+    "J06": "REJECT: coarse-label log-fraction decoder gives IoU0.665271 at0.2094s, below C17. Small recall0.204917 increases, but overview BCSS25/26/41/63 and TIGER02 show extra speckles and false contour classes; an additional tiny region is not necessarily recovered anatomy. Its tile-label calibration distorts an already useful palette inverse.",
+    "J08": "REJECT: noise-subtracted quadratic class densities yield IoU0.656234 at0.0620s,1.1190 points below H10 with104 losses/41 wins. Native BCSS74 invents a broad grey necrosis band; native BCSS45 inserts fat inside a vessel. Native/pilot BCSS26 likewise confuses vessel and fat. New C++ kernel and exact thread parity are useful engineering evidence, not justification for a less accurate model.",
+    "J09": "REJECT: additive nonlinear expected colour risk gives IoU0.668078 at0.2559s. J07 is more accurate, faster and has higher small-region recall.67/149 optimizations return unsuccessful flags. Overview TIGER38 still misses purple structure and BEETLE10 overmerges unannotated red regions; the extra basis complexity does not establish a useful advantage.",
+    "H04": "REJECT: unchanged calibrated palette model gives IoU0.665594 at0.2576s, below C17 while slower. Native BCSS74 inserts grey necrosis/debris absent from the reference. Its child J11 slightly improves it, but neither reaches the retained palette or Gaussian methods; iterative calibration can distort a useful fixed conversion.",
+    "J10": "REJECT: proper rigid palette calibration gives IoU0.665690 at0.2595s. It preserves inter-endmember distances but barely improves H04 and remains below C17 with greater cost. Native BCSS45 retains vessel class, yet overview BCSS74/86 false grey and lower accuracy persist. Rigid calibration cannot explain the relevant conversion errors.",
+    "J11": "REJECT: dominance-constrained latent fractions improve H04 by0.11957 points toIoU0.666790, at0.2533s. Native TIGER23 preserves more stroma than J02/J07, but overall accuracy and speed remain below J07 and C17. Native BCSS74 still inserts grey, while finite dominance-QP and outer-alternation residuals prevent calling the joint fit a certified global optimum.",
+    "J12": "REJECT: propagated endmember covariance gives IoU0.665654 at0.2713s, almost unchanged from H04 and slower. The interior-Gaussian uncertainty ignores active endmember bounds. Native BCSS45 vessel classification is reasonable, but the false-grey compartment in BCSS74 remains and small recall0.182992 does not improve H04.",
+    "C01": "REJECT: unchanged tile-count likelihood gives IoU0.663706 at0.0851s. H10 is faster and more accurate on average; slightly better small recall0.203302 does not offset its false-region contours and lower mean segmentation accuracy. It preserves more of the native TIGER23 wedge than J07, but is not selected on that single crop. Missing gradient diagnostics are unavailable, not assumed zero.",
+    "J13": "REJECT: shared-own-count Gaussian integration yields IoU0.661554 at0.1605s, below C01 while slower and with similar small recall. Independent Gaussian counts still omit multinomial anticorrelation. Overview BCSS60 false grey persists; analytical conditioning alone does not repair the coarse winner-likelihood mismatch.",
+    "J14": "REJECT: latent uniform contamination gives IoU0.663931 at0.1678s, only0.02242 points above C01 and approximately twice its runtime. Small recall falls to0.197246. BCSS74 loses6.17 points relative to C01; gains in TIGER26/27 do not justify the inconsistent fit.12/149 optimizers are unsuccessful.",
+    "J15": "REJECT: eight-unit nonlinear colour-vote field gives IoU0.662102 at0.3077s despite higher small recall0.219928.118/149 optimizers are unsuccessful. Overview BCSS04/25/63/78/80, CAM04 and TIGER03/38 show nested contours, false rings and fragmentation; these explain why raw recovery counts alone would reward artifacts. The nonconvex extra capacity does not preserve anatomy."
+  },
+  "results_sha256": "9d72cc61993c4829a705bea7e7ff2b837a5bab928c67ca3d1cf5d030f19d8dec",
+  "review_sha256": "337719305b7ffaa02a01f6ecc45ab9c1cf33e2ee8ffc63ae54ba548d564e1c9b",
+  "protocol_sha256": "00480143adbac5a3d0477897a731a7d1b2131909bde54213cec547c4dcce0ec2",
+  "selection_code_sha256": "a4a9f7c607d222432e7dd2428660dd249f588d541eca1aef1442b37ea52163e5",
+  "primary_accuracy_leaders": [
+    "J01"
+  ],
+  "primary_selection_leaders": [
+    "J01"
+  ],
+  "primary_selection_metric": "runtime_adjusted_score",
+  "runtime_penalty_policy": {
+    "id": "one-second-excess-runtime-v1",
+    "effective_from_cycle": 5,
+    "threshold_seconds": 1.0,
+    "iou_penalty_per_excess_second": 0.05,
+    "formula": "mean_i(macro_IoU_i - 0.05 * max(seconds_i - 1, 0))",
+    "timing": "Per-image median candidate seconds, including preparation and native projection",
+    "interpretation": "Five IoU percentage points per excess second; no bonus below one second",
+    "historical_scope": "Posthoc display for cycles1-4; signed historical selections unchanged"
+  },
+  "no_next_cycle_implemented_by_this_selection": true,
+  "completed_at_utc": "2026-10-17T21:06:03.250487+00:00"
+}

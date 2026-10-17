@@ -1,0 +1,72 @@
+{
+  "cycle": 5,
+  "survivors": [
+    "H02",
+    "C17",
+    "H10",
+    "H04",
+    "C01"
+  ],
+  "rejected": [
+    "C15",
+    "D08",
+    "F01",
+    "H01",
+    "H03",
+    "H05",
+    "H06",
+    "H07",
+    "H08",
+    "H09",
+    "H11",
+    "H12",
+    "H13",
+    "H14",
+    "H15"
+  ],
+  "tradeoffs": {
+    "H02": "Retain as the primary runtime-adjusted leader: mean IoU 0.671889, 0.180560 s/image and zero images above one second. The screened appearance field avoids F01's expensive per-pixel uncertain prototype calculations. Its advantage over C17 is only 0.000285 IoU; native BCSS45 shows a false fat stripe in true vessel, and BCSS23/45/60 regress strongly. It does not repair all lumina or missing small structures.",
+    "C17": "Retain the checked simplex palette solver as the second runtime-adjusted candidate: mean IoU 0.671604 at 0.158000 s, zero over one second. It is unchanged from the previous cycle and remains a strong inexpensive reference. Native BCSS45 preserves vessel better than H02, but neither the palette observation nor shared support resolves all small glands and positive white anatomy.",
+    "H10": "Retain as the third runtime-adjusted candidate: mean IoU 0.667425 at 0.059427 s with no over-budget images. Gaussian-noise-marginalized exponential discrimination improves D08 by 0.011375 mean IoU (98 wins, 45 losses, six ties), with native BCSS26 vessel recovery. Eight finite optimizer runs report unsuccessful termination; BCSS83/87 and TIGER27 regress, and thin tissue branches and glands remain missed.",
+    "H04": "Retain as the fourth runtime-adjusted candidate: mean IoU 0.665594 at 0.256255 s, no over-budget images. Joint bounded palette calibration provides a distinct fitted appearance model, with coherent broad tissue on many reviewed cases and valid decreasing alternating objectives. It is not an improvement over C17: 0.006010 lower mean IoU, 42 wins/105 losses/two ties and slower. BCSS23/74/78 expose contamination drift; finite nonconvex fitting is not a global optimum.",
+    "C01": "Retain as the fifth runtime-adjusted candidate: mean IoU 0.663706 at 0.086688 s, zero over-budget images. Tile-plurality observation preserves an inexpensive alternative to palette and discriminant models, with small-region recall 0.203302. Coarse ambiguity, missing glands and false region connections remain visible. The unchanged finite optimizer reports unsuccessful termination on 67 cases; its gradient norm was not stored and must not be called zero.",
+    "F01": "Reject under the newly frozen runtime policy despite the best raw mean IoU 0.679529. Uncertain local prototype takes 1.654383 s on average and exceeds one second on 121/149 images, reducing adjusted utility to 0.645593. Its local adaptation has real casewise benefits but does not justify this cost under the requested preference. Keep its frozen masks as historical evidence rather than carrying it into the next roster.",
+    "D08": "Reject in favour of its child H10: the unchanged covariance discriminant is slightly faster (0.049341 versus 0.059427 s) but loses 0.011375 mean IoU on the full paired benchmark. Both remain well below one second. Native BCSS26 demonstrates a corrected vessel/fat error, although H10 also regresses on 45 cases.",
+    "C15": "Reject: mean IoU 0.644943 at 0.302529 s ranks far below the five retained candidates. Its small-region recall 0.225562 is not enough to offset surplus fragments and enlarged false tissue seen in multiple BCSS/TIGER sheets. Copula density alone does not separate all fixed converted-colour classes.",
+    "H01": "Reject: spatial two-state Gaussian mixtures reach mean IoU 0.656806 at 0.279354 s. They accelerate the F01 branch but lose substantial raw accuracy and add false appearance fragments, including surplus grey/red/violet on reviewed sheets. The separately measured C++ kernel scaling is not evidence of superior end-to-end masks.",
+    "H03": "Reject: interface-conditioned white cavities give raw IoU 0.677807 but mean time 1.697990 s, 125 over-budget cases and utility 0.641733. The rule opens the native BCSS18 reference-zero cleft, yet also deletes positively annotated fat/lumina in TIGER38/40 and leaves BCSS07's large cleft filled. It is neither a reliable background rule nor an acceptable runtime survivor.",
+    "H05": "Reject: brightness/offset nuisance planes lower mean IoU to 0.639489 at 0.229580 s. Reviewed outputs show false class rims and overlapping appearance planes, including cyan around violet in TIGER38. The extra invariance removes useful class contrast and does not improve its parent C17.",
+    "H06": "Reject: nonlinear cardinal palette coordinates give mean IoU 0.644438 at 0.229352 s and small-region recall 0.173014. Constant reproduction and simplex projection are numerically valid, but nonlinear interpolation introduces false regions and loses true mixture geometry. It is worse and slower than C17.",
+    "H07": "Reject: minimal plurality support sets yield mean IoU 0.644365 at 0.081199 s. A necessary supporting-pixel count does not represent the full winning-class event. Enlarged blue glands, green holes in cyan and minority fragments in reviewed TIGER images outweigh its small-region recall. Six finite fits report unsuccessful termination.",
+    "H08": "Reject: the explicit coarse-label corruption channel gives mean IoU 0.645210 at 0.067322 s. Palette-based channel estimates cannot distinguish true appearance overlap from label corruption; enlarged red/blue/violet regions and false connections recur across reviewed cases. Better small-region recall 0.220256 does not compensate for overall errors.",
+    "H09": "Reject narrowly below C01: information-volume correction gives mean IoU 0.663046 at 0.069066 s, versus C01 0.663706 at 0.086688 s. Both have no over-budget cases, so the policy gives no extra bonus for this subsecond saving. Broad geometry often remains similar, with no consistent visual advantage and lower small-region recall 0.192431.",
+    "H11": "Reject: whole-tissue prevalence inference reaches mean IoU 0.654958 at 0.226460 s, slower and less accurate than H10. Fixed-density label-shift inference suppresses several small grey regions in TIGER37 and can turn much of native BCSS45 into fat. Unannotated tissue is analysed, but inferred prevalence does not establish absent biological classes.",
+    "H12": "Reject: robust class-centroid locations give mean IoU 0.652581 at 0.054612 s. Small-region recall 0.207677 exceeds H10, but overall class geometry and vessel/fat ambiguity remain worse. Replacing means by medians can discard a genuine minority tissue appearance rather than merely remove coarse-label contamination.",
+    "H13": "Reject: RGB dependence-tree density gives mean IoU 0.648389 at 0.093957 s. It is normalized, but two RGB dependency edges miss genuine joint colour structure; reviewed cases show enlarged red/blue/violet fragments and a false violet band at native BCSS07. It does not offer an accuracy/runtime advantage.",
+    "H14": "Reject strongly: adaptive nearest-neighbour density gives mean IoU 0.573017 at 0.222493 s. Repeated nested contours, class collapse and false islands are visible across datasets, including broad green-to-red replacement in native BCSS18. Its apparently higher small-region recall 0.251324 is confounded by excess false positives; colour outliers retain unknown biological identity.",
+    "H15": "Reject: positive Bernstein density gives mean IoU 0.651114 at 0.207825 s. Some broad masks are cleaner, but false rims and loss of minority colour structure persist, including the gold rim in TIGER40. All 505 class fits hit the finite EM budget without convergence; monotone finite likelihood does not establish an accurate or converged tissue model."
+  },
+  "results_sha256": "a4b08d7cbe666eb6f8d2cc382a61a069719768c8b3a1fb6f0fa1f6cdc2a4d113",
+  "review_sha256": "19c7b0df45e8e32a14a286fd48f333283064d76185db23da3ea809496d982f3b",
+  "protocol_sha256": "c587650752393aae5cc4fe4741d808f2e63f61ad8a6aa3e1a0fa3ce6cd954a7c",
+  "selection_code_sha256": "a4a9f7c607d222432e7dd2428660dd249f588d541eca1aef1442b37ea52163e5",
+  "primary_accuracy_leaders": [
+    "F01"
+  ],
+  "primary_selection_leaders": [
+    "H02"
+  ],
+  "primary_selection_metric": "runtime_adjusted_score",
+  "runtime_penalty_policy": {
+    "id": "one-second-excess-runtime-v1",
+    "effective_from_cycle": 5,
+    "threshold_seconds": 1.0,
+    "iou_penalty_per_excess_second": 0.05,
+    "formula": "mean_i(macro_IoU_i - 0.05 * max(seconds_i - 1, 0))",
+    "timing": "Per-image median candidate seconds, including preparation and native projection",
+    "interpretation": "Five IoU percentage points per excess second; no bonus below one second",
+    "historical_scope": "Posthoc display for cycles1-4; signed historical selections unchanged"
+  },
+  "no_next_cycle_implemented_by_this_selection": true,
+  "completed_at_utc": "2026-10-17T19:41:57.116338+00:00"
+}

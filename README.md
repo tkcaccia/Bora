@@ -245,3 +245,39 @@ dataset files and benchmark outputs remain outside Git.
 ## License
 
 No license has yet been selected.
+
+## Retained-strategy Virchow2 benchmark
+
+The expanded experiment retains eight Bora strategies (B02, B03, B05, B08,
+B09, B10, B12, B19) and five RGB inputs (#9, #10, #15, #19, 9+19). Rejected
+benchmark implementations are removed. B19 now combines only retained solvers.
+The 149-ROI scope includes 100 additional TIGER/BCSS groups. See
+[the protocol and commands](experiments/bora_strategies/README.md). Historical
+20-strategy outputs remain archives; the active viewer is
+`benchmark/results/bora-retained-expanded-2026-10-17/gallery.html`.
+
+
+## Whole-field refinement of converted evidence RGB
+
+The `bora evidence` command uses a fixed converted RGB image and original coarse
+labels, allowing every tissue pixel to change without a fixed boundary margin
+or hard seed points. `simplex` interprets the known RGB conversion palette;
+`linear` uses a fast shared-covariance classifier. These methods are developed
+for ROI refinement with reference-derived coarse labels; benchmark results do
+not establish independent classifier generalization or full-WSI performance.
+
+Install the optional `evidence` dependency. Provide independent tissue support,
+actual input pixel spacing and the original coarse tile width. The simplex
+palette must be the exact palette used by the RGB conversion, indexed by label
+ID minus one. More than four affine-dependent classes cannot be uniquely
+recovered from RGB; the simplex method uses coarse-trained regularization.
+
+```bash
+bora evidence converted.png coarse.tif --tissue-mask tissue.tif \
+  --method simplex --palette palette.json --mpp-x 0.5 --mpp-y 0.5 \
+  --source-tile-size 90 --output refined.ome.tif --report details.json
+```
+
+The output preserves input geometry, removes pixels outside tissue support and
+records pixel spacing. Pixel spacing does not determine optical resolving power.
+Experimental protocol and development history: `experiments/bora_elegant/`.

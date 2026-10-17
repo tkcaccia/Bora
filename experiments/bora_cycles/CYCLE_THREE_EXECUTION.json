@@ -1,0 +1,868 @@
+{
+  "cycle": 3,
+  "status": "computed_and_audited_awaiting_full_visual_review",
+  "completed_cycles": 2,
+  "recorded_at_utc": "2026-10-17T15:42:52.814408+00:00",
+  "model_code_commit": "39000f9",
+  "posthoc_code_commit": "a017e91",
+  "cases": 149,
+  "candidates": 20,
+  "controls": 2,
+  "successful_method_image_runs": 3278,
+  "failed_method_image_runs": 0,
+  "fixed_conversion": "ensemble: unchanged equal 9+19 RGB",
+  "unchanged_survivors": [
+    "D10",
+    "C17",
+    "C01",
+    "D08",
+    "C15"
+  ],
+  "integrity": {
+    "frozen_files": 6854,
+    "native_masks": 3278,
+    "exact_display_rasters": 3278,
+    "unchanged_survivor_comparisons": 745
+  },
+  "local_integrity": {
+    "frozen_files": 6854,
+    "native_masks": 3278,
+    "exact_display_rasters": 3278,
+    "unchanged_survivor_comparisons": 745
+  },
+  "prediction_tests_previously_passed_on_Chiamaka": 93,
+  "additional_posthoc_tests_passed_on_Chiamaka": 6,
+  "ranking": [
+    {
+      "method": "F01",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6795289552668143,
+      "mean_dice": 0.7599667984673169,
+      "mean_seconds": 1.740170440211542,
+      "small_region_recall": 0.18966441423567537,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4417,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.6029038081479419
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.873577289206277
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.8447208633878593
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7783461262341723
+        }
+      }
+    },
+    {
+      "method": "D10",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6723967730807058,
+      "mean_dice": 0.7539062427682103,
+      "mean_seconds": 0.862050324178382,
+      "small_region_recall": 0.19809098181782314,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4402,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5938128444221151
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8737619519057096
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.8412087549554838
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7732564174611275
+        }
+      }
+    },
+    {
+      "method": "C17",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6716041092892011,
+      "mean_dice": 0.7536804284431817,
+      "mean_seconds": 0.17154771822110917,
+      "small_region_recall": 0.18360751209542425,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4491,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5942438244395705
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8677613775821401
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.8404868592702769
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7709389661234289
+        }
+      }
+    },
+    {
+      "method": "F03",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6712954953738515,
+      "mean_dice": 0.7532110804412158,
+      "mean_seconds": 0.8891616031377507,
+      "small_region_recall": 0.19787572088827649,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4402,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5935932015359889
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8736578353748337
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.841111472542911
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7697023901961041
+        }
+      }
+    },
+    {
+      "method": "B22",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6705447850043178,
+      "mean_dice": 0.7530001020015846,
+      "mean_seconds": 0.1712939967557588,
+      "small_region_recall": 0.18426888178906028,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4492,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5925281796738355
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8677613775821401
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.8404868592702769
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7709389661234289
+        }
+      }
+    },
+    {
+      "method": "F02",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6667515158238713,
+      "mean_dice": 0.7497160033537016,
+      "mean_seconds": 2.4757037487993605,
+      "small_region_recall": 0.19667682252790106,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4400,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5869780351995363
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8721028613654684
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.8378693837684912
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7689470579841341
+        }
+      }
+    },
+    {
+      "method": "F05",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6656336385215539,
+      "mean_dice": 0.7493500286013284,
+      "mean_seconds": 0.25636905896783674,
+      "small_region_recall": 0.18622165058583054,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4456,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5867422847526854
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8720998681718237
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.8379754361893179
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7653073801855255
+        }
+      }
+    },
+    {
+      "method": "C01",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6637063748721175,
+      "mean_dice": 0.747556592553502,
+      "mean_seconds": 0.08677747228101595,
+      "small_region_recall": 0.2033016543832125,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4239,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5857871620754556
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8706018606016468
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.8333945195965604
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7615012675452802
+        }
+      }
+    },
+    {
+      "method": "F04",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6614241735145615,
+      "mean_dice": 0.7459572494330415,
+      "mean_seconds": 17.115814366096618,
+      "small_region_recall": 0.18889567551040098,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4388,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5815529911868949
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8695536684200015
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.8351767447747106
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7626888191713086
+        }
+      }
+    },
+    {
+      "method": "F06",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6575807055168265,
+      "mean_dice": 0.7423314976134802,
+      "mean_seconds": 0.14747242281375916,
+      "small_region_recall": 0.1794333744874926,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4491,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5747570311776912
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8677549316069403
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.8404873478501754
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7635229375659733
+        }
+      }
+    },
+    {
+      "method": "F12",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.657502045656997,
+      "mean_dice": 0.7417650197245796,
+      "mean_seconds": 0.05986403207600917,
+      "small_region_recall": 0.1900737492592231,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4374,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5759172058935601
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8679252103256552
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.8356099836759905
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7613724967924134
+        }
+      }
+    },
+    {
+      "method": "B21",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6573579568445012,
+      "mean_dice": 0.7420888545622523,
+      "mean_seconds": 0.10143094686103747,
+      "small_region_recall": 0.19013669245979697,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4441,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5753983378304003
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8708865715628781
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.835032325298534
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7613899124178831
+        }
+      }
+    },
+    {
+      "method": "D08",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6560497869932923,
+      "mean_dice": 0.740867337654492,
+      "mean_seconds": 0.04980865965953609,
+      "small_region_recall": 0.19462570834921641,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4423,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5739732312960681
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.872012620009922
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.8343683114433409
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7596294150639921
+        }
+      }
+    },
+    {
+      "method": "F11",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6546273955099381,
+      "mean_dice": 0.7397193963730453,
+      "mean_seconds": 0.13002096725965306,
+      "small_region_recall": 0.19139831765836934,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4430,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5722165953778646
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8718711683056485
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.8337747239885483
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7585105101310227
+        }
+      }
+    },
+    {
+      "method": "F13",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6533926131033662,
+      "mean_dice": 0.7390577892554577,
+      "mean_seconds": 0.18334494288010686,
+      "small_region_recall": 0.18821142062025198,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4466,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5701748780244398
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8712876751941245
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.8344826278311247
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7586288856848497
+        }
+      }
+    },
+    {
+      "method": "F07",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6532798440373193,
+      "mean_dice": 0.7377917885637918,
+      "mean_seconds": 0.05551550071686506,
+      "small_region_recall": 0.1875819856617411,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4418,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5695231069970391
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8711175686307657
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.834585111508905
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7597324862740746
+        }
+      }
+    },
+    {
+      "method": "F09",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6528589172306792,
+      "mean_dice": 0.7388049523069052,
+      "mean_seconds": 0.28437748238844357,
+      "small_region_recall": 0.20633868844197553,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4442,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5697692176646747
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8722318258576317
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.832401571589959
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7577020345628777
+        }
+      }
+    },
+    {
+      "method": "F10",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.65094456579269,
+      "mean_dice": 0.7358136301096208,
+      "mean_seconds": 0.07830048529368719,
+      "small_region_recall": 0.18977978452561742,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4446,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5665366609229993
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8720177615134537
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.8343683114433409
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7577152925739238
+        }
+      }
+    },
+    {
+      "method": "F08",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6484649061089285,
+      "mean_dice": 0.7338100274179288,
+      "mean_seconds": 0.10840762394086627,
+      "small_region_recall": 0.18670221358178732,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4497,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5606121739016533
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8677211001583955
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.8351262492412592
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7630464066251366
+        }
+      }
+    },
+    {
+      "method": "C15",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6449431612484133,
+      "mean_dice": 0.7336076624272171,
+      "mean_seconds": 0.30730201050189115,
+      "small_region_recall": 0.22556207568713058,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 4233,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5680924701075636
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.8647799192587696
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.8124599055257502
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.7374251311212449
+        }
+      }
+    },
+    {
+      "method": "F15",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.6044821170425863,
+      "mean_dice": 0.6990871527618183,
+      "mean_seconds": 0.349314912122318,
+      "small_region_recall": 0.2636534279449944,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 3859,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.5474275819358418
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.7665852814077984
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.7398774734735537
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.6714875693213761
+        }
+      }
+    },
+    {
+      "method": "F14",
+      "complete": true,
+      "cases": 149,
+      "mean_iou": 0.4582498756500248,
+      "mean_dice": 0.5744058308450182,
+      "mean_seconds": 0.1797021192829781,
+      "small_region_recall": 0.2620865459139027,
+      "small_region_cases": 130,
+      "completely_missed_small_regions": 3448,
+      "per_dataset": {
+        "bcss": {
+          "cases": 92,
+          "mean_iou": 0.45154140393768044
+        },
+        "beetle": {
+          "cases": 10,
+          "mean_iou": 0.42851532223364613
+        },
+        "camelyon16-subset": {
+          "cases": 7,
+          "mean_iou": 0.46393705768556076
+        },
+        "tiger": {
+          "cases": 40,
+          "mean_iou": 0.48011774208629243
+        }
+      }
+    }
+  ],
+  "numerical_status": {
+    "B22": {
+      "optimizer_false_cases": 0,
+      "false_fit_iterations": [],
+      "maxima": {
+        "gradient_infinity_norm": null,
+        "projected_gradient_residual": null,
+        "max_kkt_residual": null
+      },
+      "records_with_optimizer_flag": 0,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 149
+    },
+    "C01": {
+      "optimizer_false_cases": 67,
+      "false_fit_iterations": [
+        0,
+        35
+      ],
+      "maxima": {
+        "gradient_infinity_norm": null,
+        "projected_gradient_residual": null,
+        "max_kkt_residual": null
+      },
+      "records_with_optimizer_flag": 149,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 149
+    },
+    "F04": {
+      "optimizer_false_cases": 0,
+      "false_fit_iterations": [],
+      "maxima": {
+        "gradient_infinity_norm": null,
+        "projected_gradient_residual": 0.0003766164014406061,
+        "max_kkt_residual": null
+      },
+      "records_with_optimizer_flag": 0,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 149
+    },
+    "F05": {
+      "optimizer_false_cases": 0,
+      "false_fit_iterations": [],
+      "maxima": {
+        "gradient_infinity_norm": null,
+        "projected_gradient_residual": null,
+        "max_kkt_residual": 7.874546598118926e-09
+      },
+      "records_with_optimizer_flag": 0,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 149
+    },
+    "F07": {
+      "optimizer_false_cases": 0,
+      "false_fit_iterations": [],
+      "maxima": {
+        "gradient_infinity_norm": 9.296884299382635e-08,
+        "projected_gradient_residual": null,
+        "max_kkt_residual": null
+      },
+      "records_with_optimizer_flag": 149,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 149
+    },
+    "F08": {
+      "optimizer_false_cases": 0,
+      "false_fit_iterations": [],
+      "maxima": {
+        "gradient_infinity_norm": 1.1960567141998824e-05,
+        "projected_gradient_residual": null,
+        "max_kkt_residual": null
+      },
+      "records_with_optimizer_flag": 149,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 149
+    },
+    "F09": {
+      "optimizer_false_cases": 0,
+      "false_fit_iterations": [],
+      "maxima": {
+        "gradient_infinity_norm": null,
+        "projected_gradient_residual": null,
+        "max_kkt_residual": null
+      },
+      "records_with_optimizer_flag": 0,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 149
+    },
+    "F12": {
+      "optimizer_false_cases": 56,
+      "false_fit_iterations": [
+        150
+      ],
+      "maxima": {
+        "gradient_infinity_norm": 0.004410865973333766,
+        "projected_gradient_residual": null,
+        "max_kkt_residual": null
+      },
+      "records_with_optimizer_flag": 149,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 149
+    },
+    "C17": {
+      "optimizer_false_cases": 0,
+      "false_fit_iterations": [],
+      "maxima": {
+        "gradient_infinity_norm": null,
+        "projected_gradient_residual": null,
+        "max_kkt_residual": 6.661338147750939e-16
+      },
+      "records_with_optimizer_flag": 0,
+      "successful_method_image_runs": 149,
+      "numerical_case_records": 25
+    }
+  },
+  "small_region_constraints": {
+    "small_components": 5578,
+    "absent_coarse_class": 377,
+    "support_cannot_reach_50pct": 5,
+    "no_method_reaches_50pct": 3643,
+    "all_methods_completely_miss": 2676,
+    "coarse_recovered_but_all_refinements_below_50pct": 137
+  },
+  "cpp_geometry_profile": {
+    "median_seconds": {
+      "numpy_1": 0.16646121628582478,
+      "numpy_2": 0.14573961403220892,
+      "cpp_1": 0.06424783635884523,
+      "cpp_2": 0.03325373213738203
+    },
+    "cpp_1_to_2_threads_speedup": 1.932048892840552,
+    "numpy_2_to_cpp_2_speedup": 4.382654356813574,
+    "repeats": 7,
+    "pixels": 250000,
+    "facets": 178,
+    "exact_cpp_thread_parity": true,
+    "interpretation": "Synthetic kernel-only measurement on the recorded host, no CPU affinity or exclusive machine access; not an end-to-end speedup or accuracy result."
+  },
+  "actual_full_cycle_contact_reviews": 30,
+  "reviewed_cases": [
+    "bcss_01",
+    "bcss_02",
+    "bcss_03",
+    "bcss_04",
+    "bcss_05",
+    "bcss_06",
+    "bcss_07",
+    "bcss_08",
+    "bcss_09",
+    "bcss_10",
+    "bcss_11",
+    "bcss_12",
+    "bcss_13",
+    "bcss_14",
+    "bcss_15",
+    "bcss_16",
+    "bcss_17",
+    "bcss_18",
+    "bcss_19",
+    "bcss_20",
+    "bcss_21",
+    "bcss_22",
+    "bcss_23",
+    "bcss_24",
+    "bcss_25",
+    "bcss_26",
+    "bcss_27",
+    "bcss_28",
+    "bcss_29",
+    "bcss_30"
+  ],
+  "remaining_full_cycle_reviews": 119,
+  "native_evidence": "Four actually viewed pilot crops, eight methods each, with all 88 pilot/full mask arrays checked identical. No new native view is inferred from this parity.",
+  "selection_created": false,
+  "goal_complete": false,
+  "evidence_sha256": {
+    "PROTOCOL.json": "0c7b24a230e3fca6092d86fc9c4044d549e038afd1109f702772a5cd5cea1713",
+    "RESULTS.json": "297e085f9dfacf8ac582dc41ee60cec814a40afba83040c01b99aeb65bceeb82",
+    "INTEGRITY_AUDIT.json": "5492f7d5e549e7b446c966a070a335936a0c8a8c0a062e74d31c129cb8c20ad2",
+    "LOCAL_INTEGRITY_AUDIT.json": "8655be6b12246420fdc7ae1cbce33cacb8e052304b50bb76a2986075f5c953a4",
+    "SMALL_REGION_ATLAS.json": "c630642e16b00c3798192ac76a1b7f7530a4b7ca6535265d14baacbee07665b7",
+    "CPP_HULL_PROFILE_CHIAMAKA.json": "b7e7b18ab789e9e021b7c633875f6eb649564a298b6d73966774926fedf25a44",
+    "DIAGNOSTICS_REUSE.json": "183ed8bdcb2b7567d0c30b4ea6aca2876a7b0cc473b884feffd9d42bd92d35d3",
+    "PILOT_NATIVE_PARITY.json": "b4e57b4ded9f2b0b5bf2d25a5d5f63a51b61c5eb91fbb7cec2e310eeca371939",
+    "VISUAL_REVIEW.json": "23b2f4e4fd13e618a17ccdbd7e03485654fdef8eea345d2050a1c5d9f9826495"
+  },
+  "limitations": [
+    "All 149 cases are repeatedly used for development; this is not independent validation.",
+    "Class-0 reference is unscored, and some reference-positive white tissue is intentional. No expert glass-accuracy claim is made.",
+    "F12 has finite-budget fits; C01 retains its previously documented zero-iteration BCSS50 termination, whose original message is unavailable.",
+    "Kernel profiling does not establish an end-to-end speedup."
+  ],
+  "numerical_status_interpretation": "All methods ran on all 149 cases. Numerical records cover emitted diagnostics; a missing optimizer_success flag does not mean a method was skipped. F04 emits a projected-gradient residual rather than that flag."
+}

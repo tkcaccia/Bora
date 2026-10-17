@@ -1,0 +1,5478 @@
+{
+  "seed": 7730,
+  "requested_quotas": {
+    "tiger": 16,
+    "bcss": 16,
+    "camelyon16-subset": 8,
+    "beetle": 10
+  },
+  "samples": [
+    {
+      "case": "tiger_01",
+      "dataset": "tiger",
+      "group": "198",
+      "source": {
+        "cohort": "non-TCGA",
+        "dataset": "tiger",
+        "group_id": "198B",
+        "group_level": "slide_patient_mapping_unverified",
+        "height": 1214,
+        "id": "tissue-cells--198B_[19017, 3481, 20279, 4695]",
+        "ignore_labels": [
+          0
+        ],
+        "image": "raw/tiger/extracted/roi-level-annotations/tissue-cells/images/198B_[19017, 3481, 20279, 4695].png",
+        "image_sha256": "3f95c4dce922e524ab93fa23dd0417491a4eb40f09c3713b159048f31bd01a2a",
+        "label_mode": "semantic",
+        "mask": "raw/tiger/extracted/roi-level-annotations/tissue-cells/masks/198B_[19017, 3481, 20279, 4695].png",
+        "mask_sha256": "ccc13631bccc849b1f804ee9dc7e1977424a979c50e16f2ddb0876ea3a6dd3da",
+        "mpp_um": 0.5,
+        "raw_labels": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "slide_id": "198B",
+        "source_subset": "tissue-cells",
+        "split": "unsplit",
+        "width": 1262
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        1262,
+        1214
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1214,
+        1262
+      ],
+      "native_shape_yx": [
+        1214,
+        1262
+      ],
+      "fov_um_xy": [
+        631.0,
+        607.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "tiger"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 4
+      },
+      "class_names": {
+        "1": "invasive tumor",
+        "2": "tumor-associated stroma",
+        "3": "in-situ tumor",
+        "4": "healthy glands"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          20,
+          190,
+          205
+        ],
+        [
+          55,
+          110,
+          230
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "c0e202c0a2aa46606d23c244095039e87697210638861a451b5f3072fdcee1cb",
+      "coarse_sha256": "3b3d79dc517698baa8e35b141f8784abf42ddcd1e58674f033ea1bcd164a8703",
+      "reference_native_sha256": "9183fdd882136420a346cac487b8612a5c24151638e0f88dff5f76b20e766c7e"
+    },
+    {
+      "case": "tiger_02",
+      "dataset": "tiger",
+      "group": "234",
+      "source": {
+        "cohort": "non-TCGA",
+        "dataset": "tiger",
+        "group_id": "234B",
+        "group_level": "slide_patient_mapping_unverified",
+        "height": 1220,
+        "id": "tissue-cells--234B_[30161, 18531, 31333, 19751]",
+        "ignore_labels": [
+          0
+        ],
+        "image": "raw/tiger/extracted/roi-level-annotations/tissue-cells/images/234B_[30161, 18531, 31333, 19751].png",
+        "image_sha256": "184b1b49d2799afa9a14ad0a8838e5b2b250772de0b8a2e3f28985d0dbe55bbf",
+        "label_mode": "semantic",
+        "mask": "raw/tiger/extracted/roi-level-annotations/tissue-cells/masks/234B_[30161, 18531, 31333, 19751].png",
+        "mask_sha256": "cefb0e14ae85dacc95e0ad8e7acbbbe9ffe584c48533e07e9c950e89bb283875",
+        "mpp_um": 0.5,
+        "raw_labels": [
+          0,
+          1,
+          5,
+          7
+        ],
+        "slide_id": "234B",
+        "source_subset": "tissue-cells",
+        "split": "unsplit",
+        "width": 1172
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        1172,
+        1220
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1220,
+        1172
+      ],
+      "native_shape_yx": [
+        1220,
+        1172
+      ],
+      "fov_um_xy": [
+        586.0,
+        610.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "tiger"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "5": 2,
+        "7": 3
+      },
+      "class_names": {
+        "1": "invasive tumor",
+        "2": "necrosis",
+        "3": "rest"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          115,
+          120,
+          135
+        ],
+        [
+          220,
+          180,
+          55
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "859a35f4ad0d0e533f90ac6f72afc9a19c06dc401a1a019a2adda723036a0cf0",
+      "coarse_sha256": "c7065176d618234b8bb8a9f7a562e766db0658121c4de5ac054e1f865973bc3d",
+      "reference_native_sha256": "b5ab90ea26d64201b5f31012097c8f0260626ad1ae7258d8dfae284cfa9fa351"
+    },
+    {
+      "case": "tiger_03",
+      "dataset": "tiger",
+      "group": "TC_S01_P000057",
+      "source": {
+        "cohort": "non-TCGA",
+        "dataset": "tiger",
+        "group_id": "TC_S01_P000057_C0001_B105",
+        "group_level": "slide_patient_mapping_unverified",
+        "height": 1145,
+        "id": "tissue-cells--TC_S01_P000057_C0001_B105_[112700, 64564, 113976, 65709]",
+        "ignore_labels": [
+          0
+        ],
+        "image": "raw/tiger/extracted/roi-level-annotations/tissue-cells/images/TC_S01_P000057_C0001_B105_[112700, 64564, 113976, 65709].png",
+        "image_sha256": "965e74c4d1fa84648e85f24953c512dbb11fb1ddc28ad7d693294623c82c7db6",
+        "label_mode": "semantic",
+        "mask": "raw/tiger/extracted/roi-level-annotations/tissue-cells/masks/TC_S01_P000057_C0001_B105_[112700, 64564, 113976, 65709].png",
+        "mask_sha256": "77c3cefe0c771a9f0d6fea87aeda23240f8604f903df37e3f902977c1c1f6b8a",
+        "mpp_um": 0.5,
+        "raw_labels": [
+          0,
+          1,
+          2
+        ],
+        "slide_id": "TC_S01_P000057_C0001_B105",
+        "source_subset": "tissue-cells",
+        "split": "unsplit",
+        "width": 1276
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        1276,
+        1145
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1145,
+        1276
+      ],
+      "native_shape_yx": [
+        1145,
+        1276
+      ],
+      "fov_um_xy": [
+        638.0,
+        572.5
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "tiger"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2
+      },
+      "class_names": {
+        "1": "invasive tumor",
+        "2": "tumor-associated stroma"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "9f17fdaacd131844c780fc4a8d427c10edc9ef8cb0494fa42c1345f3708435f6",
+      "coarse_sha256": "cae4e042f72dc55f4c0f6ea4ccf7daa5dc79d567540bbf0deedd1409473d48c8",
+      "reference_native_sha256": "91534c2f96673472ee042f054cfb83a2bcb455e1f34540f37a71a7c9df569098"
+    },
+    {
+      "case": "tiger_04",
+      "dataset": "tiger",
+      "group": "TC_S01_P000016",
+      "source": {
+        "cohort": "non-TCGA",
+        "dataset": "tiger",
+        "group_id": "TC_S01_P000016_C0001_B205",
+        "group_level": "slide_patient_mapping_unverified",
+        "height": 1078,
+        "id": "tissue-cells--TC_S01_P000016_C0001_B205_[59828, 107213, 60998, 108291]",
+        "ignore_labels": [
+          0
+        ],
+        "image": "raw/tiger/extracted/roi-level-annotations/tissue-cells/images/TC_S01_P000016_C0001_B205_[59828, 107213, 60998, 108291].png",
+        "image_sha256": "837ae434f7f280f14dac69ee1396473b8774b6a62332992d4bd8bf01c881d360",
+        "label_mode": "semantic",
+        "mask": "raw/tiger/extracted/roi-level-annotations/tissue-cells/masks/TC_S01_P000016_C0001_B205_[59828, 107213, 60998, 108291].png",
+        "mask_sha256": "e32fb2d926be96082eae8e954d2c2c29e2238bb82e3adb61d17958f06dfb2aec",
+        "mpp_um": 0.5,
+        "raw_labels": [
+          0,
+          1,
+          2
+        ],
+        "slide_id": "TC_S01_P000016_C0001_B205",
+        "source_subset": "tissue-cells",
+        "split": "unsplit",
+        "width": 1170
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        1170,
+        1078
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1078,
+        1170
+      ],
+      "native_shape_yx": [
+        1078,
+        1170
+      ],
+      "fov_um_xy": [
+        585.0,
+        539.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "tiger"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2
+      },
+      "class_names": {
+        "1": "invasive tumor",
+        "2": "tumor-associated stroma"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "5dcb124f0ac40d5e645cc63c1823121f751a409665b7c81f9ce19e6e346e1960",
+      "coarse_sha256": "3cd387a62a4aad63803493bfa0792c152d8b84087ae1a7ab1b5a973a099bb2e9",
+      "reference_native_sha256": "d3543d6c695f2f1ef5c374746abfbcc4f0a295022bd3722e9e4db7a50500a10c"
+    },
+    {
+      "case": "tiger_05",
+      "dataset": "tiger",
+      "group": "133",
+      "source": {
+        "cohort": "non-TCGA",
+        "dataset": "tiger",
+        "group_id": "133S",
+        "group_level": "slide_patient_mapping_unverified",
+        "height": 1150,
+        "id": "tissue-cells--133S_[51264, 28776, 52498, 29926]",
+        "ignore_labels": [
+          0
+        ],
+        "image": "raw/tiger/extracted/roi-level-annotations/tissue-cells/images/133S_[51264, 28776, 52498, 29926].png",
+        "image_sha256": "9a88d2fb58f0c4670ea639254e37188d43addf18fbbf3f9ca1d7ac44ddff8fa1",
+        "label_mode": "semantic",
+        "mask": "raw/tiger/extracted/roi-level-annotations/tissue-cells/masks/133S_[51264, 28776, 52498, 29926].png",
+        "mask_sha256": "2e790d382ccef3e8c24c65f93b96ca9b4bc6a97e340d3267d4a14e4430937d70",
+        "mpp_um": 0.5,
+        "raw_labels": [
+          0,
+          1,
+          2
+        ],
+        "slide_id": "133S",
+        "source_subset": "tissue-cells",
+        "split": "unsplit",
+        "width": 1234
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        1234,
+        1150
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1150,
+        1234
+      ],
+      "native_shape_yx": [
+        1150,
+        1234
+      ],
+      "fov_um_xy": [
+        617.0,
+        575.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "tiger"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2
+      },
+      "class_names": {
+        "1": "invasive tumor",
+        "2": "tumor-associated stroma"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "8289beac212da08652c62d8b5da772a66af999c3fbfa4661d85105a3e80249ad",
+      "coarse_sha256": "a1db9196e34a71fdf2ba2037340486363b5d695b3f0739cefeedadddf7df70c3",
+      "reference_native_sha256": "645e5709f2516c8350b0bd792c8b5085669eae6448fed2706152f5d3e8c9f08a"
+    },
+    {
+      "case": "tiger_06",
+      "dataset": "tiger",
+      "group": "242",
+      "source": {
+        "cohort": "non-TCGA",
+        "dataset": "tiger",
+        "group_id": "242B",
+        "group_level": "slide_patient_mapping_unverified",
+        "height": 1183,
+        "id": "tissue-cells--242B_[21123, 2015, 22347, 3198]",
+        "ignore_labels": [
+          0
+        ],
+        "image": "raw/tiger/extracted/roi-level-annotations/tissue-cells/images/242B_[21123, 2015, 22347, 3198].png",
+        "image_sha256": "910b2390078e743394fbab63a44c8ed7a57e0ef0797e3fdd9675a8278fe81d22",
+        "label_mode": "semantic",
+        "mask": "raw/tiger/extracted/roi-level-annotations/tissue-cells/masks/242B_[21123, 2015, 22347, 3198].png",
+        "mask_sha256": "91dfebbb9889fe65464df858c290c769e076dbb1d249230589d0bc18c17dc960",
+        "mpp_um": 0.5,
+        "raw_labels": [
+          0,
+          1,
+          2
+        ],
+        "slide_id": "242B",
+        "source_subset": "tissue-cells",
+        "split": "unsplit",
+        "width": 1224
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        1224,
+        1183
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1183,
+        1224
+      ],
+      "native_shape_yx": [
+        1183,
+        1224
+      ],
+      "fov_um_xy": [
+        612.0,
+        591.5
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "tiger"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2
+      },
+      "class_names": {
+        "1": "invasive tumor",
+        "2": "tumor-associated stroma"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "9100acd5227b494dcbae5a8706529bab6daf074c5202108763ffaa6d9483fe58",
+      "coarse_sha256": "5c1de5c64608effa33d39a50d4fcc688d6f69ec30983049ed099bf4fde565623",
+      "reference_native_sha256": "8df2b31f05a40ceabc30ce7446c6014ad3b0ffa45c6bfb5c3be68657abfe8d16"
+    },
+    {
+      "case": "tiger_07",
+      "dataset": "tiger",
+      "group": "TC_S01_P000054",
+      "source": {
+        "cohort": "non-TCGA",
+        "dataset": "tiger",
+        "group_id": "TC_S01_P000054_C0001_B101",
+        "group_level": "slide_patient_mapping_unverified",
+        "height": 1226,
+        "id": "tissue-cells--TC_S01_P000054_C0001_B101_[27671, 88267, 28946, 89493]",
+        "ignore_labels": [
+          0
+        ],
+        "image": "raw/tiger/extracted/roi-level-annotations/tissue-cells/images/TC_S01_P000054_C0001_B101_[27671, 88267, 28946, 89493].png",
+        "image_sha256": "1b7edab929679bd1c028c647ebc64fd52fe3f0b377a453576b627a053b112e9c",
+        "label_mode": "semantic",
+        "mask": "raw/tiger/extracted/roi-level-annotations/tissue-cells/masks/TC_S01_P000054_C0001_B101_[27671, 88267, 28946, 89493].png",
+        "mask_sha256": "d2fdfae2c53febf007dd1a710e54e38e9d6c6a4999d399c82517947360a41a6f",
+        "mpp_um": 0.5,
+        "raw_labels": [
+          0,
+          1,
+          2,
+          5
+        ],
+        "slide_id": "TC_S01_P000054_C0001_B101",
+        "source_subset": "tissue-cells",
+        "split": "unsplit",
+        "width": 1275
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        1275,
+        1226
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1226,
+        1275
+      ],
+      "native_shape_yx": [
+        1226,
+        1275
+      ],
+      "fov_um_xy": [
+        637.5,
+        613.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "tiger"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "5": 3
+      },
+      "class_names": {
+        "1": "invasive tumor",
+        "2": "tumor-associated stroma",
+        "3": "necrosis"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          115,
+          120,
+          135
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "6fc56a95d52577c4b08dee5d7e63a3f32c535689e73449515f6549856fd31b43",
+      "coarse_sha256": "b6956d33acff14b59da4dd50d4ec0437cab36aca2c88fceb9bef5c55ccb7ef80",
+      "reference_native_sha256": "d3affac1fd9c1e07d8003b6f7e57b131f982e0eebb5ac8fa225825a5caff93ae"
+    },
+    {
+      "case": "tiger_08",
+      "dataset": "tiger",
+      "group": "100",
+      "source": {
+        "cohort": "non-TCGA",
+        "dataset": "tiger",
+        "group_id": "100B",
+        "group_level": "slide_patient_mapping_unverified",
+        "height": 1190,
+        "id": "tissue-cells--100B_[35129, 6567, 36429, 7757]",
+        "ignore_labels": [
+          0
+        ],
+        "image": "raw/tiger/extracted/roi-level-annotations/tissue-cells/images/100B_[35129, 6567, 36429, 7757].png",
+        "image_sha256": "76f8284d37c875fc27dc248310c42c7527368099b0d97e448bf62907b685a897",
+        "label_mode": "semantic",
+        "mask": "raw/tiger/extracted/roi-level-annotations/tissue-cells/masks/100B_[35129, 6567, 36429, 7757].png",
+        "mask_sha256": "5bfe2282827833b9c008fe39bcd6b7c39621570e3a670e70be777eff8392c385",
+        "mpp_um": 0.5,
+        "raw_labels": [
+          0,
+          4,
+          7
+        ],
+        "slide_id": "100B",
+        "source_subset": "tissue-cells",
+        "split": "unsplit",
+        "width": 1300
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        1280,
+        1190
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1190,
+        1280
+      ],
+      "native_shape_yx": [
+        1190,
+        1280
+      ],
+      "fov_um_xy": [
+        640.0,
+        595.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "tiger"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "4": 1,
+        "7": 2
+      },
+      "class_names": {
+        "1": "healthy glands",
+        "2": "rest"
+      },
+      "palette": [
+        [
+          55,
+          110,
+          230
+        ],
+        [
+          220,
+          180,
+          55
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "a2fb68728d64cd8d580a8467ac0fbddca4377486209cf3f84188d4df2b51513c",
+      "coarse_sha256": "143d68923fe450652c8d13685816000038ef6a8c67614f7b620ec23fbdd22376",
+      "reference_native_sha256": "b645015e6ffd7e216000a6dc78731a67994c392eeaebfba2227bd3a379557171"
+    },
+    {
+      "case": "tiger_09",
+      "dataset": "tiger",
+      "group": "TC_S01_P000024",
+      "source": {
+        "cohort": "non-TCGA",
+        "dataset": "tiger",
+        "group_id": "TC_S01_P000024_C0001_B102",
+        "group_level": "slide_patient_mapping_unverified",
+        "height": 1036,
+        "id": "tissue-cells--TC_S01_P000024_C0001_B102_[40786, 75110, 41937, 76146]",
+        "ignore_labels": [
+          0
+        ],
+        "image": "raw/tiger/extracted/roi-level-annotations/tissue-cells/images/TC_S01_P000024_C0001_B102_[40786, 75110, 41937, 76146].png",
+        "image_sha256": "cb61a77b5197b1693224d909d9a890af3fe00be7ebaac817136ca0b12325aecd",
+        "label_mode": "semantic",
+        "mask": "raw/tiger/extracted/roi-level-annotations/tissue-cells/masks/TC_S01_P000024_C0001_B102_[40786, 75110, 41937, 76146].png",
+        "mask_sha256": "f5528e9e140e50a634f1b6f06e123745049921a9d17019eeb9ca8a83bebb898e",
+        "mpp_um": 0.5,
+        "raw_labels": [
+          0,
+          1,
+          2
+        ],
+        "slide_id": "TC_S01_P000024_C0001_B102",
+        "source_subset": "tissue-cells",
+        "split": "unsplit",
+        "width": 1151
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        1151,
+        1036
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1036,
+        1151
+      ],
+      "native_shape_yx": [
+        1036,
+        1151
+      ],
+      "fov_um_xy": [
+        575.5,
+        518.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "tiger"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2
+      },
+      "class_names": {
+        "1": "invasive tumor",
+        "2": "tumor-associated stroma"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "10d35219658afcd0d06e460544d37d13507ae2fc10708167f8aea99ceee230b0",
+      "coarse_sha256": "7dbcf994c7868befc4f6c46e608289cd0fdebfb5cda6b7cc11d0856252436219",
+      "reference_native_sha256": "9cef6207410245752d50220be0743260359f2a2724bfb6a10a59a2609d904217"
+    },
+    {
+      "case": "tiger_10",
+      "dataset": "tiger",
+      "group": "250",
+      "source": {
+        "cohort": "non-TCGA",
+        "dataset": "tiger",
+        "group_id": "250B",
+        "group_level": "slide_patient_mapping_unverified",
+        "height": 1174,
+        "id": "tissue-cells--250B_[29477, 26912, 30725, 28086]",
+        "ignore_labels": [
+          0
+        ],
+        "image": "raw/tiger/extracted/roi-level-annotations/tissue-cells/images/250B_[29477, 26912, 30725, 28086].png",
+        "image_sha256": "455e42d079cbdadd2e365f447e4d1715bf6aba00ff988863b48768a222280eb3",
+        "label_mode": "semantic",
+        "mask": "raw/tiger/extracted/roi-level-annotations/tissue-cells/masks/250B_[29477, 26912, 30725, 28086].png",
+        "mask_sha256": "17a6cd840ab523487e1ecbc2df9d2e3dadc496776888cb38aae9de597c44dadf",
+        "mpp_um": 0.5,
+        "raw_labels": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "slide_id": "250B",
+        "source_subset": "tissue-cells",
+        "split": "unsplit",
+        "width": 1248
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        1248,
+        1174
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1174,
+        1248
+      ],
+      "native_shape_yx": [
+        1174,
+        1248
+      ],
+      "fov_um_xy": [
+        624.0,
+        587.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "tiger"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "3": 3
+      },
+      "class_names": {
+        "1": "invasive tumor",
+        "2": "tumor-associated stroma",
+        "3": "in-situ tumor"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          20,
+          190,
+          205
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "bddd4e15b3a372b73e5b3fea86dcf4c6839bc79d2a3718e005c1c6dafb277c02",
+      "coarse_sha256": "74fcefaad83e58cb8813c3a165f55ce2cd5e7f8cebc567120ccfdd54a2b8a044",
+      "reference_native_sha256": "a17b43371a0616b200eed6526532874f3a2685e6bc3119ab267fbf791ecdce1b"
+    },
+    {
+      "case": "tiger_11",
+      "dataset": "tiger",
+      "group": "TC_S01_P000130",
+      "source": {
+        "cohort": "non-TCGA",
+        "dataset": "tiger",
+        "group_id": "TC_S01_P000130_C0001_B104",
+        "group_level": "slide_patient_mapping_unverified",
+        "height": 1151,
+        "id": "tissue-cells--TC_S01_P000130_C0001_B104_[105125, 51988, 106336, 53139]",
+        "ignore_labels": [
+          0
+        ],
+        "image": "raw/tiger/extracted/roi-level-annotations/tissue-cells/images/TC_S01_P000130_C0001_B104_[105125, 51988, 106336, 53139].png",
+        "image_sha256": "74a8bfbe0ec1e6ef15a62e7775e12c77edcb7d51480cb755b5167daa247f05b1",
+        "label_mode": "semantic",
+        "mask": "raw/tiger/extracted/roi-level-annotations/tissue-cells/masks/TC_S01_P000130_C0001_B104_[105125, 51988, 106336, 53139].png",
+        "mask_sha256": "05e66d4527c851edf0cd715a6bdb4e5df6d722db6be6b9f1784529d114e35ee4",
+        "mpp_um": 0.5,
+        "raw_labels": [
+          1,
+          2,
+          3
+        ],
+        "slide_id": "TC_S01_P000130_C0001_B104",
+        "source_subset": "tissue-cells",
+        "split": "unsplit",
+        "width": 1211
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        1211,
+        1151
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1151,
+        1211
+      ],
+      "native_shape_yx": [
+        1151,
+        1211
+      ],
+      "fov_um_xy": [
+        605.5,
+        575.5
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "tiger"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "3": 3
+      },
+      "class_names": {
+        "1": "invasive tumor",
+        "2": "tumor-associated stroma",
+        "3": "in-situ tumor"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          20,
+          190,
+          205
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "a904494489abfe71a4f0406026ea1eac74e1a27a4210a97edbdbb893328922b3",
+      "coarse_sha256": "c1627e59836c0360d010592f1c548edca8e99aaab48a8581ffc05891aca06bb6",
+      "reference_native_sha256": "f74b9bb5ce87c3301e40600d1390ad4aa7810e628497035b6eab06daeefdf490"
+    },
+    {
+      "case": "tiger_12",
+      "dataset": "tiger",
+      "group": "TC_S01_P000015",
+      "source": {
+        "cohort": "non-TCGA",
+        "dataset": "tiger",
+        "group_id": "TC_S01_P000015_C0001_B104",
+        "group_level": "slide_patient_mapping_unverified",
+        "height": 1073,
+        "id": "tissue-cells--TC_S01_P000015_C0001_B104_[64395, 87751, 65649, 88824]",
+        "ignore_labels": [
+          0
+        ],
+        "image": "raw/tiger/extracted/roi-level-annotations/tissue-cells/images/TC_S01_P000015_C0001_B104_[64395, 87751, 65649, 88824].png",
+        "image_sha256": "018d20ff3b82f710dfaf5e96ab94850a67456ae1ca39e6b9bc533a4e667529ab",
+        "label_mode": "semantic",
+        "mask": "raw/tiger/extracted/roi-level-annotations/tissue-cells/masks/TC_S01_P000015_C0001_B104_[64395, 87751, 65649, 88824].png",
+        "mask_sha256": "9fc11464fb4215767a82c57dfb262a1a30f21d2a51b3524452672f16670a209c",
+        "mpp_um": 0.5,
+        "raw_labels": [
+          0,
+          1,
+          2,
+          3,
+          7
+        ],
+        "slide_id": "TC_S01_P000015_C0001_B104",
+        "source_subset": "tissue-cells",
+        "split": "unsplit",
+        "width": 1254
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        1254,
+        1073
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1073,
+        1254
+      ],
+      "native_shape_yx": [
+        1073,
+        1254
+      ],
+      "fov_um_xy": [
+        627.0,
+        536.5
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "tiger"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "7": 4
+      },
+      "class_names": {
+        "1": "invasive tumor",
+        "2": "tumor-associated stroma",
+        "3": "in-situ tumor",
+        "4": "rest"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          20,
+          190,
+          205
+        ],
+        [
+          220,
+          180,
+          55
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "3418833aa318be87971fc2eada61e48dc08f2d7413be5537c92a0e22bff79169",
+      "coarse_sha256": "17f2e1fd0fc06c7611a0e06e4735edf3bfa4868c2f41e9d3041b770d263f6829",
+      "reference_native_sha256": "d3bd10d0fb9e9a1a462aeebaee82b36a2f272482564a21efb6cdf67e1b5fca63"
+    },
+    {
+      "case": "tiger_13",
+      "dataset": "tiger",
+      "group": "TC_S01_P000013",
+      "source": {
+        "cohort": "non-TCGA",
+        "dataset": "tiger",
+        "group_id": "TC_S01_P000013_C0001_B204",
+        "group_level": "slide_patient_mapping_unverified",
+        "height": 987,
+        "id": "tissue-cells--TC_S01_P000013_C0001_B204_[70375, 112538, 71362, 113525]",
+        "ignore_labels": [
+          0
+        ],
+        "image": "raw/tiger/extracted/roi-level-annotations/tissue-cells/images/TC_S01_P000013_C0001_B204_[70375, 112538, 71362, 113525].png",
+        "image_sha256": "0f9f15ebfa8e88454e000deb485bd957dc10d98dee674edd805cf82dd7035a85",
+        "label_mode": "semantic",
+        "mask": "raw/tiger/extracted/roi-level-annotations/tissue-cells/masks/TC_S01_P000013_C0001_B204_[70375, 112538, 71362, 113525].png",
+        "mask_sha256": "ecf8e1953bdf59b013f6cdc72e8fde8f40f23d68177876a80484e817a195d1e3",
+        "mpp_um": 0.5,
+        "raw_labels": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "slide_id": "TC_S01_P000013_C0001_B204",
+        "source_subset": "tissue-cells",
+        "split": "unsplit",
+        "width": 987
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        987,
+        987
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        987,
+        987
+      ],
+      "native_shape_yx": [
+        987,
+        987
+      ],
+      "fov_um_xy": [
+        493.5,
+        493.5
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "tiger"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "3": 3
+      },
+      "class_names": {
+        "1": "invasive tumor",
+        "2": "tumor-associated stroma",
+        "3": "in-situ tumor"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          20,
+          190,
+          205
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "eee37676e6611599c9e0ac359bcb8403ff9b448182ea27fd6bcf9de561ac640f",
+      "coarse_sha256": "c8e0ee1e5c4452c678b1af5d8661a13fabea1f1b3b33e66f715fe45b5c189d46",
+      "reference_native_sha256": "1d1bf86570c75c951ee23bf77cd472d96ae7ae1d1e0cb30faec40f752fec60c6"
+    },
+    {
+      "case": "tiger_14",
+      "dataset": "tiger",
+      "group": "TC_S01_P000147",
+      "source": {
+        "cohort": "non-TCGA",
+        "dataset": "tiger",
+        "group_id": "TC_S01_P000147_C0001_B104",
+        "group_level": "slide_patient_mapping_unverified",
+        "height": 1108,
+        "id": "tissue-cells--TC_S01_P000147_C0001_B104_[23485, 67614, 24676, 68722]",
+        "ignore_labels": [
+          0
+        ],
+        "image": "raw/tiger/extracted/roi-level-annotations/tissue-cells/images/TC_S01_P000147_C0001_B104_[23485, 67614, 24676, 68722].png",
+        "image_sha256": "c75ead8358583076591dafb9a39ca697df34ba632e91505df823779d8f8c35d8",
+        "label_mode": "semantic",
+        "mask": "raw/tiger/extracted/roi-level-annotations/tissue-cells/masks/TC_S01_P000147_C0001_B104_[23485, 67614, 24676, 68722].png",
+        "mask_sha256": "b7ed7540b188e3584664ca9605a24fbd47e8ba696c6f8205e7b5217c0fe52df8",
+        "mpp_um": 0.5,
+        "raw_labels": [
+          0,
+          1,
+          2
+        ],
+        "slide_id": "TC_S01_P000147_C0001_B104",
+        "source_subset": "tissue-cells",
+        "split": "unsplit",
+        "width": 1191
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        1191,
+        1108
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1108,
+        1191
+      ],
+      "native_shape_yx": [
+        1108,
+        1191
+      ],
+      "fov_um_xy": [
+        595.5,
+        554.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "tiger"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2
+      },
+      "class_names": {
+        "1": "invasive tumor",
+        "2": "tumor-associated stroma"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "48d8365a343debaf4b8078dcc5ea3a77442b50f5842be2e7f945bf1c0e2ee611",
+      "coarse_sha256": "f148ab6b11680b85ba67189747243c99fade44ed324db70a5098af4d3f9464f1",
+      "reference_native_sha256": "50b0304a3c9d014d6d2a1a5540b6db5bf96fba356cc4b086ca54d18eed34a31c"
+    },
+    {
+      "case": "tiger_15",
+      "dataset": "tiger",
+      "group": "TC_S01_P000158",
+      "source": {
+        "cohort": "non-TCGA",
+        "dataset": "tiger",
+        "group_id": "TC_S01_P000158_C0001_B101",
+        "group_level": "slide_patient_mapping_unverified",
+        "height": 1135,
+        "id": "tissue-cells--TC_S01_P000158_C0001_B101_[103602, 82756, 104838, 83891]",
+        "ignore_labels": [
+          0
+        ],
+        "image": "raw/tiger/extracted/roi-level-annotations/tissue-cells/images/TC_S01_P000158_C0001_B101_[103602, 82756, 104838, 83891].png",
+        "image_sha256": "79e9603f7e802bc58c2bcc916ce4b6c6f0a347de879001c05a69b52d5796a4cc",
+        "label_mode": "semantic",
+        "mask": "raw/tiger/extracted/roi-level-annotations/tissue-cells/masks/TC_S01_P000158_C0001_B101_[103602, 82756, 104838, 83891].png",
+        "mask_sha256": "727a63f72786495bbd15f9bba64bfd895a8dcbd215a9067473400aa1ee921dce",
+        "mpp_um": 0.5,
+        "raw_labels": [
+          1,
+          2
+        ],
+        "slide_id": "TC_S01_P000158_C0001_B101",
+        "source_subset": "tissue-cells",
+        "split": "unsplit",
+        "width": 1236
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        1236,
+        1135
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1135,
+        1236
+      ],
+      "native_shape_yx": [
+        1135,
+        1236
+      ],
+      "fov_um_xy": [
+        618.0,
+        567.5
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "tiger"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2
+      },
+      "class_names": {
+        "1": "invasive tumor",
+        "2": "tumor-associated stroma"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "8da1dda922eff0a940bf1edf7e9f03fd1a5f37da7929005dc794bd8c1771600a",
+      "coarse_sha256": "0a61d8d054f4737cd7fdfb294cafb1200965b2f897c3111b5647d30f61afb665",
+      "reference_native_sha256": "576d74fb9c3d2146398c3f45212460f60fcc1e3506d506eb5e17a85d2d78cb1d"
+    },
+    {
+      "case": "tiger_16",
+      "dataset": "tiger",
+      "group": "TC_S01_P000039",
+      "source": {
+        "cohort": "non-TCGA",
+        "dataset": "tiger",
+        "group_id": "TC_S01_P000039_C0001_B101",
+        "group_level": "slide_patient_mapping_unverified",
+        "height": 1188,
+        "id": "tissue-cells--TC_S01_P000039_C0001_B101_[28589, 78512, 29857, 79700]",
+        "ignore_labels": [
+          0
+        ],
+        "image": "raw/tiger/extracted/roi-level-annotations/tissue-cells/images/TC_S01_P000039_C0001_B101_[28589, 78512, 29857, 79700].png",
+        "image_sha256": "38dac656a3dc5685e3d9d4b3f23d95effe97d3e93cccef6b74d1a15c813ef79d",
+        "label_mode": "semantic",
+        "mask": "raw/tiger/extracted/roi-level-annotations/tissue-cells/masks/TC_S01_P000039_C0001_B101_[28589, 78512, 29857, 79700].png",
+        "mask_sha256": "bad5fef5d6c57ee2d64b479cff0a6447d5b5fb1612b7cd7252cd20a4ad0962d1",
+        "mpp_um": 0.5,
+        "raw_labels": [
+          1,
+          2,
+          3
+        ],
+        "slide_id": "TC_S01_P000039_C0001_B101",
+        "source_subset": "tissue-cells",
+        "split": "unsplit",
+        "width": 1268
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        1268,
+        1188
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1188,
+        1268
+      ],
+      "native_shape_yx": [
+        1188,
+        1268
+      ],
+      "fov_um_xy": [
+        634.0,
+        594.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "tiger"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "3": 3
+      },
+      "class_names": {
+        "1": "invasive tumor",
+        "2": "tumor-associated stroma",
+        "3": "in-situ tumor"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          20,
+          190,
+          205
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "fab564275decf6432930cd84f0baf64f63aca5ba6be5782a8fce5479d12a541d",
+      "coarse_sha256": "10caaae84ce94d0b2c11eef55a5d40dfa6333ea6ee1f58610b35d5a7f688030a",
+      "reference_native_sha256": "dbb0bfd3d086e372b32c8ec8c5fafb02fcd53aeee025bb53fddd90e81f15cc61"
+    },
+    {
+      "case": "bcss_01",
+      "dataset": "bcss",
+      "group": "TCGA-BH-A1EW",
+      "source": {
+        "dataset": "bcss",
+        "group_id": "TCGA-BH-A1EW",
+        "height": 3161,
+        "id": "TCGA-BH-A1EW-DX1_xmin66752_ymin42706_MPP-0.2500",
+        "ignore_labels": [
+          0,
+          7,
+          15
+        ],
+        "image": "prepared/bcss/pairs/TCGA-BH-A1EW-DX1_xmin66752_ymin42706_MPP-0.2500.png",
+        "image_sha256": "08dc361098cc1096f7dfb9db54f4b6fb4adc03484933975c04411883d4cec40e",
+        "label_mode": "semantic",
+        "mask": "prepared/bcss/pairs/TCGA-BH-A1EW-DX1_xmin66752_ymin42706_MPP-0.2500_mask.png",
+        "mask_sha256": "14443b43698d36ec153eb37e96541966723f414841fc0047841172a32fd7fe62",
+        "mpp_um": 0.25,
+        "preprocessing": "mirror_color_normalized",
+        "raw_labels": [
+          1,
+          2,
+          4,
+          6,
+          7,
+          9,
+          18,
+          19
+        ],
+        "split": "unsplit",
+        "width": 4495,
+        "xmin": 66752,
+        "ymin": 42706
+      },
+      "native_crop_xywh": [
+        0,
+        601,
+        2560,
+        2560
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2560,
+        2560
+      ],
+      "fov_um_xy": [
+        640.0,
+        640.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "bcss"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "4": 3,
+        "6": 4,
+        "9": 5,
+        "18": 6,
+        "19": 7
+      },
+      "class_names": {
+        "1": "tumor",
+        "2": "stroma",
+        "3": "necrosis/debris",
+        "4": "blood",
+        "5": "fat",
+        "6": "blood vessel",
+        "7": "angioinvasion"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          115,
+          120,
+          135
+        ],
+        [
+          109,
+          69,
+          230
+        ],
+        [
+          220,
+          180,
+          55
+        ],
+        [
+          230,
+          189,
+          69
+        ],
+        [
+          142,
+          69,
+          230
+        ]
+      ],
+      "raw_ignore_codes": [
+        0,
+        7,
+        15
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "a8e9d0f180308639a733329694a937478b6a8e589a9417b137e4bc8e7ee77ed6",
+      "coarse_sha256": "cc90b352a9d081598851df04d02b5d8d71f48bf6fcb3904bcc773fce27ca6ad0",
+      "reference_native_sha256": "eb2aac1f973b5161825446173f54e437afe06e4a7b738ccdc62bcdfa14c9df62"
+    },
+    {
+      "case": "bcss_02",
+      "dataset": "bcss",
+      "group": "TCGA-A2-A0D2",
+      "source": {
+        "dataset": "bcss",
+        "group_id": "TCGA-A2-A0D2",
+        "height": 2418,
+        "id": "TCGA-A2-A0D2-DX1_xmin96887_ymin22299_MPP-0.2500",
+        "ignore_labels": [
+          0,
+          7,
+          15
+        ],
+        "image": "prepared/bcss/pairs/TCGA-A2-A0D2-DX1_xmin96887_ymin22299_MPP-0.2500.png",
+        "image_sha256": "9b36445938d9633a9256bd9a3afad3804acaed3f63886ab27c74b5e8300efebd",
+        "label_mode": "semantic",
+        "mask": "prepared/bcss/pairs/TCGA-A2-A0D2-DX1_xmin96887_ymin22299_MPP-0.2500_mask.png",
+        "mask_sha256": "6342418ae1a8bebe6996711248f685de57d9f575cb6cb02b678227cbb1c2a785",
+        "mpp_um": 0.25,
+        "preprocessing": "mirror_color_normalized",
+        "raw_labels": [
+          1,
+          2,
+          4,
+          7
+        ],
+        "split": "unsplit",
+        "width": 3391,
+        "xmin": 96887,
+        "ymin": 22299
+      },
+      "native_crop_xywh": [
+        831,
+        0,
+        2560,
+        2418
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1209,
+        1280
+      ],
+      "native_shape_yx": [
+        2418,
+        2560
+      ],
+      "fov_um_xy": [
+        640.0,
+        604.5
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "bcss"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "4": 3
+      },
+      "class_names": {
+        "1": "tumor",
+        "2": "stroma",
+        "3": "necrosis/debris"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          115,
+          120,
+          135
+        ]
+      ],
+      "raw_ignore_codes": [
+        0,
+        7,
+        15
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "3731ac866d243511c116616b96a08f0e02f2d86bc9050d35f58bd79f74153624",
+      "coarse_sha256": "53b4358a1244ece262d0c50fd22bb9b936438c321550ddefe0a72ae1988d67cf",
+      "reference_native_sha256": "ed447a2dff4646e275d9b66306c4940682c3a8cab91313a9519781fdfdb68188"
+    },
+    {
+      "case": "bcss_03",
+      "dataset": "bcss",
+      "group": "TCGA-E2-A1LH",
+      "source": {
+        "dataset": "bcss",
+        "group_id": "TCGA-E2-A1LH",
+        "height": 3147,
+        "id": "TCGA-E2-A1LH-DX1_xmin22770_ymin24149_MPP-0.2500",
+        "ignore_labels": [
+          0,
+          7,
+          15
+        ],
+        "image": "prepared/bcss/pairs/TCGA-E2-A1LH-DX1_xmin22770_ymin24149_MPP-0.2500.png",
+        "image_sha256": "3088423a5d0f9c16c0330229026f6782695ba0d5f17105430ff182847224a657",
+        "label_mode": "semantic",
+        "mask": "prepared/bcss/pairs/TCGA-E2-A1LH-DX1_xmin22770_ymin24149_MPP-0.2500_mask.png",
+        "mask_sha256": "9540c76f06eedfe064b0a1203323735a9986976698018dd1d5f7cc3d0714d0d9",
+        "mpp_um": 0.25,
+        "preprocessing": "mirror_color_normalized",
+        "raw_labels": [
+          0,
+          1,
+          2,
+          5,
+          7,
+          10,
+          13,
+          18
+        ],
+        "split": "unsplit",
+        "width": 3257,
+        "xmin": 22770,
+        "ymin": 24149
+      },
+      "native_crop_xywh": [
+        697,
+        0,
+        2560,
+        2560
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2560,
+        2560
+      ],
+      "fov_um_xy": [
+        640.0,
+        640.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "bcss"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "5": 3,
+        "10": 4,
+        "13": 5,
+        "18": 6
+      },
+      "class_names": {
+        "1": "tumor",
+        "2": "stroma",
+        "3": "glandular secretions",
+        "4": "plasma cells",
+        "5": "normal acinus/duct",
+        "6": "blood vessel"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          230,
+          156,
+          69
+        ],
+        [
+          216,
+          230,
+          69
+        ],
+        [
+          55,
+          110,
+          230
+        ],
+        [
+          230,
+          189,
+          69
+        ]
+      ],
+      "raw_ignore_codes": [
+        0,
+        7,
+        15
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "fbbba5996e0d713b4ebfa63c8d8293f454f66da4554cbbbe28b6f4eb1aea85b4",
+      "coarse_sha256": "6342d83462e9cb4a836310fd29a37dbec9f27a4fbddfa0672a6373a76a2fb147",
+      "reference_native_sha256": "eb4c27b96683ebb942a8b4dbf8b5d9174233943d818b9d8174d5580908a9a9ae"
+    },
+    {
+      "case": "bcss_04",
+      "dataset": "bcss",
+      "group": "TCGA-A1-A0SK",
+      "source": {
+        "dataset": "bcss",
+        "group_id": "TCGA-A1-A0SK",
+        "height": 2467,
+        "id": "TCGA-A1-A0SK-DX1_xmin45749_ymin25055_MPP-0.2500",
+        "ignore_labels": [
+          0,
+          7,
+          15
+        ],
+        "image": "prepared/bcss/pairs/TCGA-A1-A0SK-DX1_xmin45749_ymin25055_MPP-0.2500.png",
+        "image_sha256": "149feaf768fa32048bb9c9d472f59610741685c16d92e7d4be3b8d1169e87a35",
+        "label_mode": "semantic",
+        "mask": "prepared/bcss/pairs/TCGA-A1-A0SK-DX1_xmin45749_ymin25055_MPP-0.2500_mask.png",
+        "mask_sha256": "9c1447fe00119f37fe65438efd320252a38cddac68a19e8009d0aa1ffc413e92",
+        "mpp_um": 0.25,
+        "preprocessing": "mirror_color_normalized",
+        "raw_labels": [
+          1,
+          2,
+          3,
+          4,
+          9
+        ],
+        "split": "unsplit",
+        "width": 3394,
+        "xmin": 45749,
+        "ymin": 25055
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        2560,
+        2467
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.4997974068071313
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1234,
+        1280
+      ],
+      "native_shape_yx": [
+        2467,
+        2560
+      ],
+      "fov_um_xy": [
+        640.0,
+        616.75
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "bcss"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "9": 5
+      },
+      "class_names": {
+        "1": "tumor",
+        "2": "stroma",
+        "3": "lymphocytic infiltrate",
+        "4": "necrosis/debris",
+        "5": "fat"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          200,
+          100,
+          220
+        ],
+        [
+          115,
+          120,
+          135
+        ],
+        [
+          220,
+          180,
+          55
+        ]
+      ],
+      "raw_ignore_codes": [
+        0,
+        7,
+        15
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "2ede9016b98df4c46dbe99a5173ec09a84cb44ad0b1ecfa354419e6d80899d98",
+      "coarse_sha256": "b672e1b8695181254f0ba8605992c3614740ac2640b50dbef5e31743d44f7417",
+      "reference_native_sha256": "d390e48068b07ba19c4984a417a12ba8449f44b822720af118a522fc2595871e"
+    },
+    {
+      "case": "bcss_05",
+      "dataset": "bcss",
+      "group": "TCGA-A2-A04P",
+      "source": {
+        "dataset": "bcss",
+        "group_id": "TCGA-A2-A04P",
+        "height": 2919,
+        "id": "TCGA-A2-A04P-DX1_xmin104246_ymin48517_MPP-0.2500",
+        "ignore_labels": [
+          0,
+          7,
+          15
+        ],
+        "image": "prepared/bcss/pairs/TCGA-A2-A04P-DX1_xmin104246_ymin48517_MPP-0.2500.png",
+        "image_sha256": "5740675d8784771bd5412231601f05c730043d94c61a82f3dc5858cdc2d9045e",
+        "label_mode": "semantic",
+        "mask": "prepared/bcss/pairs/TCGA-A2-A04P-DX1_xmin104246_ymin48517_MPP-0.2500_mask.png",
+        "mask_sha256": "7d0ad9ca628354e41bde089dca74b78028345f36d5e1f5164755705da79ef54e",
+        "mpp_um": 0.25,
+        "preprocessing": "mirror_color_normalized",
+        "raw_labels": [
+          1,
+          2,
+          3,
+          4,
+          13,
+          18
+        ],
+        "split": "unsplit",
+        "width": 3794,
+        "xmin": 104246,
+        "ymin": 48517
+      },
+      "native_crop_xywh": [
+        0,
+        359,
+        2560,
+        2560
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2560,
+        2560
+      ],
+      "fov_um_xy": [
+        640.0,
+        640.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "bcss"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "13": 5,
+        "18": 6
+      },
+      "class_names": {
+        "1": "tumor",
+        "2": "stroma",
+        "3": "lymphocytic infiltrate",
+        "4": "necrosis/debris",
+        "5": "normal acinus/duct",
+        "6": "blood vessel"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          200,
+          100,
+          220
+        ],
+        [
+          115,
+          120,
+          135
+        ],
+        [
+          55,
+          110,
+          230
+        ],
+        [
+          230,
+          189,
+          69
+        ]
+      ],
+      "raw_ignore_codes": [
+        0,
+        7,
+        15
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "9b45770e1c2ac10144677183c0e39f41db39d1e18b4752c8937dfd25de944ba1",
+      "coarse_sha256": "82707b00210c2b84602332445dba6e569fc55f62b58dbef24186133e06761d5f",
+      "reference_native_sha256": "f8ef74f7888e1233f805b08e7ec6a7c2a25b0c2947ee45b8812c5473023f2095"
+    },
+    {
+      "case": "bcss_06",
+      "dataset": "bcss",
+      "group": "TCGA-C8-A26Y",
+      "source": {
+        "dataset": "bcss",
+        "group_id": "TCGA-C8-A26Y",
+        "height": 4347,
+        "id": "TCGA-C8-A26Y-DX1_xmin29748_ymin36769_MPP-0.2500",
+        "ignore_labels": [
+          0,
+          7,
+          15
+        ],
+        "image": "prepared/bcss/pairs/TCGA-C8-A26Y-DX1_xmin29748_ymin36769_MPP-0.2500.png",
+        "image_sha256": "e56bab263b25891571de57cc8f14ff2c06f8be5966e161cbb256ab31964673b1",
+        "label_mode": "semantic",
+        "mask": "prepared/bcss/pairs/TCGA-C8-A26Y-DX1_xmin29748_ymin36769_MPP-0.2500_mask.png",
+        "mask_sha256": "c81199098c58f11de634d2c34c83efa26a768840c6be28dd2d3895123f0614e5",
+        "mpp_um": 0.25,
+        "preprocessing": "mirror_color_normalized",
+        "raw_labels": [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7,
+          9,
+          18
+        ],
+        "split": "unsplit",
+        "width": 5074,
+        "xmin": 29748,
+        "ymin": 36769
+      },
+      "native_crop_xywh": [
+        1280,
+        0,
+        2560,
+        2560
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2560,
+        2560
+      ],
+      "fov_um_xy": [
+        640.0,
+        640.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "bcss"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "6": 4,
+        "9": 5,
+        "18": 6
+      },
+      "class_names": {
+        "1": "tumor",
+        "2": "stroma",
+        "3": "lymphocytic infiltrate",
+        "4": "blood",
+        "5": "fat",
+        "6": "blood vessel"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          200,
+          100,
+          220
+        ],
+        [
+          109,
+          69,
+          230
+        ],
+        [
+          220,
+          180,
+          55
+        ],
+        [
+          230,
+          189,
+          69
+        ]
+      ],
+      "raw_ignore_codes": [
+        0,
+        7,
+        15
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "fe563f1527233640e273be377414abfd1aa90233ca6226353530bc1b1d4af398",
+      "coarse_sha256": "2d1c5010096a4673cfb6749fb07542b9291f5789a5d19b4af0c4c2fd235ee40a",
+      "reference_native_sha256": "df95edf5320922ef46e34f738e179a6efab1805ea7691fef330406af98042e13"
+    },
+    {
+      "case": "bcss_07",
+      "dataset": "bcss",
+      "group": "TCGA-AN-A0AL",
+      "source": {
+        "dataset": "bcss",
+        "group_id": "TCGA-AN-A0AL",
+        "height": 2458,
+        "id": "TCGA-AN-A0AL-DX1_xmin15698_ymin29806_MPP-0.2500",
+        "ignore_labels": [
+          0,
+          7,
+          15
+        ],
+        "image": "prepared/bcss/pairs/TCGA-AN-A0AL-DX1_xmin15698_ymin29806_MPP-0.2500.png",
+        "image_sha256": "45d6b592cf2ed52a8645ad2e5e19f7db670d43775e52b1d81ec2408aa1eab614",
+        "label_mode": "semantic",
+        "mask": "prepared/bcss/pairs/TCGA-AN-A0AL-DX1_xmin15698_ymin29806_MPP-0.2500_mask.png",
+        "mask_sha256": "ed2a5d0293dc9b7c8c016b6794b8e41c063a62a816db2fe2db0a7029c1295155",
+        "mpp_um": 0.25,
+        "preprocessing": "mirror_color_normalized",
+        "raw_labels": [
+          1,
+          2,
+          4,
+          6,
+          7,
+          18
+        ],
+        "split": "unsplit",
+        "width": 6150,
+        "xmin": 15698,
+        "ymin": 29806
+      },
+      "native_crop_xywh": [
+        2560,
+        0,
+        2560,
+        2458
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1229,
+        1280
+      ],
+      "native_shape_yx": [
+        2458,
+        2560
+      ],
+      "fov_um_xy": [
+        640.0,
+        614.5
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "bcss"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "4": 3,
+        "6": 4
+      },
+      "class_names": {
+        "1": "tumor",
+        "2": "stroma",
+        "3": "necrosis/debris",
+        "4": "blood"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          115,
+          120,
+          135
+        ],
+        [
+          109,
+          69,
+          230
+        ]
+      ],
+      "raw_ignore_codes": [
+        0,
+        7,
+        15
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "20ea3097aa943bf80b06d807179d27d0322ec791adc59c51764f3da199f55f76",
+      "coarse_sha256": "fcc2eaaf6b95fb335cd0c345b93a4e39d088caa52cb6d3f5dd28bfd7dd3b04a6",
+      "reference_native_sha256": "e05723984cce1a35838af2f512c88d0aeef28bc71befee378906670284ee7480"
+    },
+    {
+      "case": "bcss_08",
+      "dataset": "bcss",
+      "group": "TCGA-A7-A5ZV",
+      "source": {
+        "dataset": "bcss",
+        "group_id": "TCGA-A7-A5ZV",
+        "height": 2652,
+        "id": "TCGA-A7-A5ZV-DX1_xmin103009_ymin26581_MPP-0.2500",
+        "ignore_labels": [
+          0,
+          7,
+          15
+        ],
+        "image": "prepared/bcss/pairs/TCGA-A7-A5ZV-DX1_xmin103009_ymin26581_MPP-0.2500.png",
+        "image_sha256": "a26b4d83c53f5ea7b1819b8e72dc5d867c7ec5b9b02bb6675123b40937336306",
+        "label_mode": "semantic",
+        "mask": "prepared/bcss/pairs/TCGA-A7-A5ZV-DX1_xmin103009_ymin26581_MPP-0.2500_mask.png",
+        "mask_sha256": "bce80d6993ed31e0e0fbbc31cc8659768a2607f5e66fa3ef8deaab406d6ca53c",
+        "mpp_um": 0.25,
+        "preprocessing": "mirror_color_normalized",
+        "raw_labels": [
+          1,
+          2,
+          3,
+          6,
+          7,
+          15,
+          18
+        ],
+        "split": "unsplit",
+        "width": 3891,
+        "xmin": 103009,
+        "ymin": 26581
+      },
+      "native_crop_xywh": [
+        0,
+        92,
+        2560,
+        2560
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2560,
+        2560
+      ],
+      "fov_um_xy": [
+        640.0,
+        640.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "bcss"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "6": 4,
+        "18": 5
+      },
+      "class_names": {
+        "1": "tumor",
+        "2": "stroma",
+        "3": "lymphocytic infiltrate",
+        "4": "blood",
+        "5": "blood vessel"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          200,
+          100,
+          220
+        ],
+        [
+          109,
+          69,
+          230
+        ],
+        [
+          230,
+          189,
+          69
+        ]
+      ],
+      "raw_ignore_codes": [
+        0,
+        7,
+        15
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "cc1f8ffa5397ae114c7e133b13cc4a0d35f6a7f435a5665c2de495d3db048996",
+      "coarse_sha256": "88fdd2901ce5addb00873212e51cfcd6121c651838c11f7e8cda06f3df82c5f1",
+      "reference_native_sha256": "d56c1e33b9d0455513c9ede134484a7c75a5e37d7ffd11acb096bd0a4a74b2d7"
+    },
+    {
+      "case": "bcss_09",
+      "dataset": "bcss",
+      "group": "TCGA-EW-A1PB",
+      "source": {
+        "dataset": "bcss",
+        "group_id": "TCGA-EW-A1PB",
+        "height": 3982,
+        "id": "TCGA-EW-A1PB-DX1_xmin57214_ymin25940_MPP-0.2500",
+        "ignore_labels": [
+          0,
+          7,
+          15
+        ],
+        "image": "prepared/bcss/pairs/TCGA-EW-A1PB-DX1_xmin57214_ymin25940_MPP-0.2500.png",
+        "image_sha256": "eebb5f856ff5c38eb4de688bce9e114ef631481159ed4eb9c01f1b433cfc0e18",
+        "label_mode": "semantic",
+        "mask": "prepared/bcss/pairs/TCGA-EW-A1PB-DX1_xmin57214_ymin25940_MPP-0.2500_mask.png",
+        "mask_sha256": "4f599dfc47f21aa77757459ac76064b7d45daa2c6d2ab86631d7319487746e0c",
+        "mpp_um": 0.25,
+        "preprocessing": "mirror_color_normalized",
+        "raw_labels": [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7
+        ],
+        "split": "unsplit",
+        "width": 3476,
+        "xmin": 57214,
+        "ymin": 25940
+      },
+      "native_crop_xywh": [
+        0,
+        1280,
+        2560,
+        2560
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2560,
+        2560
+      ],
+      "fov_um_xy": [
+        640.0,
+        640.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "bcss"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "6": 4
+      },
+      "class_names": {
+        "1": "tumor",
+        "2": "stroma",
+        "3": "lymphocytic infiltrate",
+        "4": "blood"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          200,
+          100,
+          220
+        ],
+        [
+          109,
+          69,
+          230
+        ]
+      ],
+      "raw_ignore_codes": [
+        0,
+        7,
+        15
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "5894bc75458b4a691e4d75bc4f8ecd0652b4bf3f3672a7ce21c6188de2498180",
+      "coarse_sha256": "f8bc70fbd9226730d8cc63c95ce6b9cdaba05b6487129b073647987df05352b6",
+      "reference_native_sha256": "a3dace2e11318faac29388c1f1d3633f7cb998a40aa04b3d9e32afa23e9a3602"
+    },
+    {
+      "case": "bcss_10",
+      "dataset": "bcss",
+      "group": "TCGA-A2-A04T",
+      "source": {
+        "dataset": "bcss",
+        "group_id": "TCGA-A2-A04T",
+        "height": 3169,
+        "id": "TCGA-A2-A04T-DX1_xmin72145_ymin39078_MPP-0.2500",
+        "ignore_labels": [
+          0,
+          7,
+          15
+        ],
+        "image": "prepared/bcss/pairs/TCGA-A2-A04T-DX1_xmin72145_ymin39078_MPP-0.2500.png",
+        "image_sha256": "05d8d1812e8046486456e4406fdeacc317eb71fcda967777b522c0a1cae622ea",
+        "label_mode": "semantic",
+        "mask": "prepared/bcss/pairs/TCGA-A2-A04T-DX1_xmin72145_ymin39078_MPP-0.2500_mask.png",
+        "mask_sha256": "d32ca057d89e1bd694952a2af52bbfea923cc51a01dfb88bbc03ab0193ec1c48",
+        "mpp_um": 0.25,
+        "preprocessing": "mirror_color_normalized",
+        "raw_labels": [
+          1,
+          2,
+          3,
+          4,
+          7,
+          18
+        ],
+        "split": "unsplit",
+        "width": 6275,
+        "xmin": 72145,
+        "ymin": 39078
+      },
+      "native_crop_xywh": [
+        1280,
+        0,
+        2560,
+        2560
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2560,
+        2560
+      ],
+      "fov_um_xy": [
+        640.0,
+        640.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "bcss"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "18": 5
+      },
+      "class_names": {
+        "1": "tumor",
+        "2": "stroma",
+        "3": "lymphocytic infiltrate",
+        "4": "necrosis/debris",
+        "5": "blood vessel"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          200,
+          100,
+          220
+        ],
+        [
+          115,
+          120,
+          135
+        ],
+        [
+          230,
+          189,
+          69
+        ]
+      ],
+      "raw_ignore_codes": [
+        0,
+        7,
+        15
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "8f143ed7c4e8e76289b8a7ce0efb7e82b7da8585f9d9da16f8c5bb307bafcf56",
+      "coarse_sha256": "39215e70ee5bf102479d9326100e7c9e932e1d8f482f0a230e8525a1109f3def",
+      "reference_native_sha256": "edbe40ae643e67679124dcbb2fa42af548aa853478572935fa4272238fe85c19"
+    },
+    {
+      "case": "bcss_11",
+      "dataset": "bcss",
+      "group": "TCGA-S3-AA10",
+      "source": {
+        "dataset": "bcss",
+        "group_id": "TCGA-S3-AA10",
+        "height": 3257,
+        "id": "TCGA-S3-AA10-DX1_xmin43039_ymin23986_MPP-0.2500",
+        "ignore_labels": [
+          0,
+          7,
+          15
+        ],
+        "image": "prepared/bcss/pairs/TCGA-S3-AA10-DX1_xmin43039_ymin23986_MPP-0.2500.png",
+        "image_sha256": "2821d83a14d3c4c0c5291dd5dc6939eb15ab230eb627103326b5e2536d79f17c",
+        "label_mode": "semantic",
+        "mask": "prepared/bcss/pairs/TCGA-S3-AA10-DX1_xmin43039_ymin23986_MPP-0.2500_mask.png",
+        "mask_sha256": "0b33e154a4fb33225c6755b28d1c71e9d88cbed08030bbe9077ece3136bc9018",
+        "mpp_um": 0.25,
+        "preprocessing": "mirror_color_normalized",
+        "raw_labels": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          6,
+          7,
+          18
+        ],
+        "split": "unsplit",
+        "width": 3243,
+        "xmin": 43039,
+        "ymin": 23986
+      },
+      "native_crop_xywh": [
+        683,
+        697,
+        2560,
+        2560
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2560,
+        2560
+      ],
+      "fov_um_xy": [
+        640.0,
+        640.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "bcss"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "6": 5,
+        "18": 6
+      },
+      "class_names": {
+        "1": "tumor",
+        "2": "stroma",
+        "3": "lymphocytic infiltrate",
+        "4": "necrosis/debris",
+        "5": "blood",
+        "6": "blood vessel"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          200,
+          100,
+          220
+        ],
+        [
+          115,
+          120,
+          135
+        ],
+        [
+          109,
+          69,
+          230
+        ],
+        [
+          230,
+          189,
+          69
+        ]
+      ],
+      "raw_ignore_codes": [
+        0,
+        7,
+        15
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "916cb3d543c5f2628ddb2209406a2f8aa66faaa367619f3f518bea3ca6a86f47",
+      "coarse_sha256": "bb1df8c96c9d9173b63823a7b42cb323eeb55b826e6576a6cb5edd650770847e",
+      "reference_native_sha256": "68e5dc02c95f3a2f765a14c21316421a2b4349c9ee14be93b1061cf2ec495057"
+    },
+    {
+      "case": "bcss_12",
+      "dataset": "bcss",
+      "group": "TCGA-AC-A2QH",
+      "source": {
+        "dataset": "bcss",
+        "group_id": "TCGA-AC-A2QH",
+        "height": 4851,
+        "id": "TCGA-AC-A2QH-DX1_xmin42173_ymin16859_MPP-0.2500",
+        "ignore_labels": [
+          0,
+          7,
+          15
+        ],
+        "image": "prepared/bcss/pairs/TCGA-AC-A2QH-DX1_xmin42173_ymin16859_MPP-0.2500.png",
+        "image_sha256": "13b0b678ee9e1955523183ce89db8b179bf4d1fad6a74338065f18baf278e65b",
+        "label_mode": "semantic",
+        "mask": "prepared/bcss/pairs/TCGA-AC-A2QH-DX1_xmin42173_ymin16859_MPP-0.2500_mask.png",
+        "mask_sha256": "56b088e664119f9d23765adaec022c54efd643c00ea482511c756f1e5b0da586",
+        "mpp_um": 0.25,
+        "preprocessing": "mirror_color_normalized",
+        "raw_labels": [
+          1,
+          2,
+          7,
+          9,
+          18
+        ],
+        "split": "unsplit",
+        "width": 4960,
+        "xmin": 42173,
+        "ymin": 16859
+      },
+      "native_crop_xywh": [
+        2400,
+        2291,
+        2560,
+        2560
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2560,
+        2560
+      ],
+      "fov_um_xy": [
+        640.0,
+        640.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "bcss"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "18": 3
+      },
+      "class_names": {
+        "1": "tumor",
+        "2": "stroma",
+        "3": "blood vessel"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          230,
+          189,
+          69
+        ]
+      ],
+      "raw_ignore_codes": [
+        0,
+        7,
+        15
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "66c082ff51abff72db2177a0375f815eb94e01b657d1acaadf7287e2271dfe0e",
+      "coarse_sha256": "3bbf6e23297b344679b726bf613e334016a3fc0aec99526c5b431b1981e69011",
+      "reference_native_sha256": "e1b4d721d9821cf2fa49355e037a00a693fa475bc5542429ae8cbfe093ce97a5"
+    },
+    {
+      "case": "bcss_13",
+      "dataset": "bcss",
+      "group": "TCGA-LL-A441",
+      "source": {
+        "dataset": "bcss",
+        "group_id": "TCGA-LL-A441",
+        "height": 3304,
+        "id": "TCGA-LL-A441-DX1_xmin82006_ymin43121_MPP-0.2500",
+        "ignore_labels": [
+          0,
+          7,
+          15
+        ],
+        "image": "prepared/bcss/pairs/TCGA-LL-A441-DX1_xmin82006_ymin43121_MPP-0.2500.png",
+        "image_sha256": "830aa3f9396574271af4fa74a6943ca18d512fd333fd31b3c787984f3c38a90e",
+        "label_mode": "semantic",
+        "mask": "prepared/bcss/pairs/TCGA-LL-A441-DX1_xmin82006_ymin43121_MPP-0.2500_mask.png",
+        "mask_sha256": "62ec08f284b5a59cf79879fcbe893cb95ccc2677f218037cc0d0a76cea9ae58a",
+        "mpp_um": 0.25,
+        "preprocessing": "mirror_color_normalized",
+        "raw_labels": [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7,
+          13,
+          18
+        ],
+        "split": "unsplit",
+        "width": 3435,
+        "xmin": 82006,
+        "ymin": 43121
+      },
+      "native_crop_xywh": [
+        875,
+        0,
+        2560,
+        2560
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2560,
+        2560
+      ],
+      "fov_um_xy": [
+        640.0,
+        640.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "bcss"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "6": 4,
+        "13": 5,
+        "18": 6
+      },
+      "class_names": {
+        "1": "tumor",
+        "2": "stroma",
+        "3": "lymphocytic infiltrate",
+        "4": "blood",
+        "5": "normal acinus/duct",
+        "6": "blood vessel"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          200,
+          100,
+          220
+        ],
+        [
+          109,
+          69,
+          230
+        ],
+        [
+          55,
+          110,
+          230
+        ],
+        [
+          230,
+          189,
+          69
+        ]
+      ],
+      "raw_ignore_codes": [
+        0,
+        7,
+        15
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "d19b36226023204b4e5a108a7bcf1d3cdc44904c3b6a5fcd94cb0e4000d49e48",
+      "coarse_sha256": "8cd67bff29f8c75ca015df05ed72ffc6f21f2d7c90fd8506a864eee450214932",
+      "reference_native_sha256": "a5c6921e0e05c4e7d4c641c34e2f3b0250d6ebacbe14e87011c7923040542f11"
+    },
+    {
+      "case": "bcss_14",
+      "dataset": "bcss",
+      "group": "TCGA-AC-A2QJ",
+      "source": {
+        "dataset": "bcss",
+        "group_id": "TCGA-AC-A2QJ",
+        "height": 4607,
+        "id": "TCGA-AC-A2QJ-DX1_xmin36620_ymin8672_MPP-0.2500",
+        "ignore_labels": [
+          0,
+          7,
+          15
+        ],
+        "image": "prepared/bcss/pairs/TCGA-AC-A2QJ-DX1_xmin36620_ymin8672_MPP-0.2500.png",
+        "image_sha256": "63db369f0fa9ec21b122be722ab6d9e4ff4fdafb0a84f8b3eee2aad70158fa06",
+        "label_mode": "semantic",
+        "mask": "prepared/bcss/pairs/TCGA-AC-A2QJ-DX1_xmin36620_ymin8672_MPP-0.2500_mask.png",
+        "mask_sha256": "9d4708985e702e64a6751b6c485aad5dbc72aa36de36140b2bf1bc594a3e0eea",
+        "mpp_um": 0.25,
+        "preprocessing": "mirror_color_normalized",
+        "raw_labels": [
+          1,
+          2,
+          4,
+          11
+        ],
+        "split": "unsplit",
+        "width": 2114,
+        "xmin": 36620,
+        "ymin": 8672
+      },
+      "native_crop_xywh": [
+        0,
+        1280,
+        2114,
+        2560
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1057
+      ],
+      "native_shape_yx": [
+        2560,
+        2114
+      ],
+      "fov_um_xy": [
+        528.5,
+        640.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "bcss"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "4": 3,
+        "11": 4
+      },
+      "class_names": {
+        "1": "tumor",
+        "2": "stroma",
+        "3": "necrosis/debris",
+        "4": "other immune infiltrate"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          115,
+          120,
+          135
+        ],
+        [
+          196,
+          69,
+          230
+        ]
+      ],
+      "raw_ignore_codes": [
+        0,
+        7,
+        15
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "bc25929b5be72bd3933de6be735555006e8868e8f2dce7a21cbea43525c11ac5",
+      "coarse_sha256": "408dccde1c3254f937685b0d65cebec3aa71ac65fc950d095bc1ee3b34626c61",
+      "reference_native_sha256": "65975f44ee2e911bef1e5e85d82cf890c0201ca1cd41d52f87ea9408165153b9"
+    },
+    {
+      "case": "bcss_15",
+      "dataset": "bcss",
+      "group": "TCGA-E2-A159",
+      "source": {
+        "dataset": "bcss",
+        "group_id": "TCGA-E2-A159",
+        "height": 3623,
+        "id": "TCGA-E2-A159-DX1_xmin38620_ymin28700_MPP-0.2500",
+        "ignore_labels": [
+          0,
+          7,
+          15
+        ],
+        "image": "prepared/bcss/pairs/TCGA-E2-A159-DX1_xmin38620_ymin28700_MPP-0.2500.png",
+        "image_sha256": "a6cd23ffd1924d1268144f52d72d2014cc9fe101689ce981bd2c45d5091bddcd",
+        "label_mode": "semantic",
+        "mask": "prepared/bcss/pairs/TCGA-E2-A159-DX1_xmin38620_ymin28700_MPP-0.2500_mask.png",
+        "mask_sha256": "a9e1a80db6452c36bd109e04832f678f0f92128a034915fa09d56a8e0f775f0b",
+        "mpp_um": 0.25,
+        "preprocessing": "mirror_color_normalized",
+        "raw_labels": [
+          1,
+          2,
+          4,
+          6,
+          7,
+          10
+        ],
+        "split": "unsplit",
+        "width": 6295,
+        "xmin": 38620,
+        "ymin": 28700
+      },
+      "native_crop_xywh": [
+        1280,
+        1063,
+        2560,
+        2560
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2560,
+        2560
+      ],
+      "fov_um_xy": [
+        640.0,
+        640.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "bcss"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "4": 3,
+        "10": 4
+      },
+      "class_names": {
+        "1": "tumor",
+        "2": "stroma",
+        "3": "necrosis/debris",
+        "4": "plasma cells"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          115,
+          120,
+          135
+        ],
+        [
+          216,
+          230,
+          69
+        ]
+      ],
+      "raw_ignore_codes": [
+        0,
+        7,
+        15
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "1d789b391a781b9bf9f3d99cbc3f13561439ca11b9500ae8eea388d3040ff30b",
+      "coarse_sha256": "5cd60e87053178fa994269ea47298a8dafff228fef504c572d2a333e83d206fb",
+      "reference_native_sha256": "b12cfbc0307308536b94ea8748194dbb7049bd296f893383d2930469f6a53545"
+    },
+    {
+      "case": "bcss_16",
+      "dataset": "bcss",
+      "group": "TCGA-GM-A3XL",
+      "source": {
+        "dataset": "bcss",
+        "group_id": "TCGA-GM-A3XL",
+        "height": 4237,
+        "id": "TCGA-GM-A3XL-DX1_xmin29910_ymin15820_MPP-0.2500",
+        "ignore_labels": [
+          0,
+          7,
+          15
+        ],
+        "image": "prepared/bcss/pairs/TCGA-GM-A3XL-DX1_xmin29910_ymin15820_MPP-0.2500.png",
+        "image_sha256": "d615ae35d90f3cd2dfe1c87a6033c591e6aa265d08ed49c7ab85817c1cf4952d",
+        "label_mode": "semantic",
+        "mask": "prepared/bcss/pairs/TCGA-GM-A3XL-DX1_xmin29910_ymin15820_MPP-0.2500_mask.png",
+        "mask_sha256": "40bf53e39d41e7d472a76e6853b2c042553fcc0e2043efdbce7d959e2c7e5f8c",
+        "mpp_um": 0.25,
+        "preprocessing": "mirror_color_normalized",
+        "raw_labels": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          6,
+          7,
+          18
+        ],
+        "split": "unsplit",
+        "width": 5758,
+        "xmin": 29910,
+        "ymin": 15820
+      },
+      "native_crop_xywh": [
+        3198,
+        0,
+        2560,
+        2560
+      ],
+      "source_region_type": "ROI",
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "working_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2560,
+        2560
+      ],
+      "fov_um_xy": [
+        640.0,
+        640.0
+      ],
+      "resolution": {
+        "status": "provider/mirror reported",
+        "source_dataset": "bcss"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "18": 4
+      },
+      "class_names": {
+        "1": "tumor",
+        "2": "stroma",
+        "3": "lymphocytic infiltrate",
+        "4": "blood vessel"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          200,
+          100,
+          220
+        ],
+        [
+          230,
+          189,
+          69
+        ]
+      ],
+      "raw_ignore_codes": [
+        0,
+        7,
+        15
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "60e3448b2199c9b2ad83b720fea2623d059a22803dc98e68f4c6d3198bafc9a8",
+      "coarse_sha256": "b1f089720e188ebde54c28c3ce137af149d763697386f804bd00ba89fb61cd2c",
+      "reference_native_sha256": "15d9189f8f444ec3b4bdba526034617a481ecfa15a44dd86e4e9effeb382d96e"
+    },
+    {
+      "case": "camelyon16-subset_01",
+      "dataset": "camelyon16-subset",
+      "group": "tumor_058",
+      "source": {
+        "crop_height": 4096,
+        "crop_level": 0,
+        "crop_width": 4096,
+        "crop_x": 48384,
+        "crop_y": 107075,
+        "dataset": "camelyon16-subset",
+        "group_id": "tumor_058",
+        "group_level": "slide_patient_mapping_unavailable",
+        "height": 4096,
+        "id": "tumor_058--native-example",
+        "ignore_labels": [
+          0
+        ],
+        "image": "prepared/camelyon16-subset/native_examples/tumor_058.png",
+        "image_sha256": "d65c54e2a72b825e26a2c8c10028897b57df4cc85bc94358ee5be6e7e966bc7b",
+        "label_mode": "semantic",
+        "mask": "prepared/camelyon16-subset/native_examples/tumor_058_mask.png",
+        "mask_sha256": "c04d6d6b0d2708054ac742f4c2ab143f35a37dac0c182bc649c0cc4600c2d45e",
+        "mpp_um": null,
+        "mpp_x_um": 0.24309399999999998,
+        "mpp_y_um": 0.24309399999999998,
+        "preprocessing": "Level-0 example window only; no resampling or new mask rasterization",
+        "raw_labels": [
+          1,
+          2
+        ],
+        "resolution_status": "embedded_WSI_axis_spacing",
+        "slide_id": "tumor_058",
+        "source_status": "original_publisher_WSI_and_mask_native_crop",
+        "split": "train",
+        "width": 4096
+      },
+      "native_crop_xywh": [
+        1316,
+        0,
+        2633,
+        2633
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.24309399999999998,
+        0.24309399999999998
+      ],
+      "working_mpp_xy": [
+        0.5000519546875,
+        0.5000519546875
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2633,
+        2633
+      ],
+      "fov_um_xy": [
+        640.0665019999999,
+        640.0665019999999
+      ],
+      "resolution": {
+        "status": "embedded WSI axis spacing",
+        "source_slide": "tumor_058"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2
+      },
+      "class_names": {
+        "1": "automatically detected non-tumor tissue",
+        "2": "expert-derived tumor"
+      },
+      "palette": [
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          220,
+          45,
+          65
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "4ea25e8c3c7f16d6c598ec77536ba8e1097cb9d1ed7783add95df2679d881b5d",
+      "coarse_sha256": "3e08fff2d71e93b8b35d61e9318e38e81a5ce7e327065fd7bc568294eef2b472",
+      "reference_native_sha256": "b27c19d42b7a4c68d83a44c4db7faf4270d1700337b6c1c1ff5c58e7a8878be2"
+    },
+    {
+      "case": "camelyon16-subset_02",
+      "dataset": "camelyon16-subset",
+      "group": "tumor_091",
+      "source": {
+        "crop_height": 4096,
+        "crop_level": 0,
+        "crop_width": 4096,
+        "crop_x": 34436,
+        "crop_y": 34768,
+        "dataset": "camelyon16-subset",
+        "group_id": "tumor_091",
+        "group_level": "slide_patient_mapping_unavailable",
+        "height": 4096,
+        "id": "tumor_091--native-example",
+        "ignore_labels": [
+          0
+        ],
+        "image": "prepared/camelyon16-subset/native_examples/tumor_091.png",
+        "image_sha256": "b6817f4a65546d34e798707b508f8049a5db78092fc72590d617155aece26b90",
+        "label_mode": "semantic",
+        "mask": "prepared/camelyon16-subset/native_examples/tumor_091_mask.png",
+        "mask_sha256": "b5e983f78b9ab645b781798fb5b83217a44fefb378dc6e4c5341bfe08b52c250",
+        "mpp_um": null,
+        "mpp_x_um": 0.226321,
+        "mpp_y_um": 0.22631600000000002,
+        "preprocessing": "Level-0 example window only; no resampling or new mask rasterization",
+        "raw_labels": [
+          1,
+          2
+        ],
+        "resolution_status": "embedded_WSI_axis_spacing",
+        "slide_id": "tumor_091",
+        "source_status": "original_publisher_WSI_and_mask_native_crop",
+        "split": "train",
+        "width": 4096
+      },
+      "native_crop_xywh": [
+        1268,
+        0,
+        2828,
+        2828
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.226321,
+        0.22631600000000002
+      ],
+      "working_mpp_xy": [
+        0.500027959375,
+        0.5000169125
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2828,
+        2828
+      ],
+      "fov_um_xy": [
+        640.035788,
+        640.021648
+      ],
+      "resolution": {
+        "status": "embedded WSI axis spacing",
+        "source_slide": "tumor_091"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2
+      },
+      "class_names": {
+        "1": "automatically detected non-tumor tissue",
+        "2": "expert-derived tumor"
+      },
+      "palette": [
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          220,
+          45,
+          65
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "e19cf2e08d4424fecb75b1b7b3e9f72a25d92c523a92d95b58cede1b126af043",
+      "coarse_sha256": "943811fbc2b7e0d6fb2fc341592d19f927c14437f5b01fd98804c2d61490a651",
+      "reference_native_sha256": "ea0431229665c15622a64a1b814e4eb410c7b76ab7c0c451e0a9172f5412f123"
+    },
+    {
+      "case": "camelyon16-subset_03",
+      "dataset": "camelyon16-subset",
+      "group": "tumor_075",
+      "source": {
+        "crop_height": 4096,
+        "crop_level": 0,
+        "crop_width": 4096,
+        "crop_x": 30757,
+        "crop_y": 47935,
+        "dataset": "camelyon16-subset",
+        "group_id": "tumor_075",
+        "group_level": "slide_patient_mapping_unavailable",
+        "height": 4096,
+        "id": "tumor_075--native-example",
+        "ignore_labels": [
+          0
+        ],
+        "image": "prepared/camelyon16-subset/native_examples/tumor_075.png",
+        "image_sha256": "ba2bc3b5413eeba2b87bc6d5583937f791d4a208e7c9d679d6fbd976db6da75a",
+        "label_mode": "semantic",
+        "mask": "prepared/camelyon16-subset/native_examples/tumor_075_mask.png",
+        "mask_sha256": "7938aed1f649a9f7ac6b02a92bbd0f8410ebae58cbd8ecff07d5c271bcf0fc56",
+        "mpp_um": null,
+        "mpp_x_um": 0.226321,
+        "mpp_y_um": 0.22631600000000002,
+        "preprocessing": "Level-0 example window only; no resampling or new mask rasterization",
+        "raw_labels": [
+          0,
+          1,
+          2
+        ],
+        "resolution_status": "embedded_WSI_axis_spacing",
+        "slide_id": "tumor_075",
+        "source_status": "original_publisher_WSI_and_mask_native_crop",
+        "split": "train",
+        "width": 4096
+      },
+      "native_crop_xywh": [
+        0,
+        1268,
+        2828,
+        2828
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.226321,
+        0.22631600000000002
+      ],
+      "working_mpp_xy": [
+        0.500027959375,
+        0.5000169125
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2828,
+        2828
+      ],
+      "fov_um_xy": [
+        640.035788,
+        640.021648
+      ],
+      "resolution": {
+        "status": "embedded WSI axis spacing",
+        "source_slide": "tumor_075"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2
+      },
+      "class_names": {
+        "1": "automatically detected non-tumor tissue",
+        "2": "expert-derived tumor"
+      },
+      "palette": [
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          220,
+          45,
+          65
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "5b3b9b35741a3ff3b16588e832828940a4f7ca76d7c2d9df0b8cee9e59c5070f",
+      "coarse_sha256": "36b3568f92b3933850439f29a27aa1bed5a59a9cd10f7ab82214ee5e5f4fccbc",
+      "reference_native_sha256": "01885ab19ef87894f6be5f009a5e6b404f27ccb5e271284c095e1bd09b78c56b"
+    },
+    {
+      "case": "camelyon16-subset_04",
+      "dataset": "camelyon16-subset",
+      "group": "tumor_107",
+      "source": {
+        "crop_height": 4096,
+        "crop_level": 0,
+        "crop_width": 4096,
+        "crop_x": 23734,
+        "crop_y": 59190,
+        "dataset": "camelyon16-subset",
+        "group_id": "tumor_107",
+        "group_level": "slide_patient_mapping_unavailable",
+        "height": 4096,
+        "id": "tumor_107--native-example",
+        "ignore_labels": [
+          0
+        ],
+        "image": "prepared/camelyon16-subset/native_examples/tumor_107.png",
+        "image_sha256": "e2997c34aff5122c2ceb4462196cdbc9c3d65824871be88c0771c82a7dc2cdbe",
+        "label_mode": "semantic",
+        "mask": "prepared/camelyon16-subset/native_examples/tumor_107_mask.png",
+        "mask_sha256": "a52c536de4e8a6eda067596b0c71553946ad9a9fab65d87d460be9cc41cc84a2",
+        "mpp_um": null,
+        "mpp_x_um": 0.226321,
+        "mpp_y_um": 0.22631600000000002,
+        "preprocessing": "Level-0 example window only; no resampling or new mask rasterization",
+        "raw_labels": [
+          0,
+          1,
+          2
+        ],
+        "resolution_status": "embedded_WSI_axis_spacing",
+        "slide_id": "tumor_107",
+        "source_status": "original_publisher_WSI_and_mask_native_crop",
+        "split": "train",
+        "width": 4096
+      },
+      "native_crop_xywh": [
+        1268,
+        0,
+        2828,
+        2828
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.226321,
+        0.22631600000000002
+      ],
+      "working_mpp_xy": [
+        0.500027959375,
+        0.5000169125
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2828,
+        2828
+      ],
+      "fov_um_xy": [
+        640.035788,
+        640.021648
+      ],
+      "resolution": {
+        "status": "embedded WSI axis spacing",
+        "source_slide": "tumor_107"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2
+      },
+      "class_names": {
+        "1": "automatically detected non-tumor tissue",
+        "2": "expert-derived tumor"
+      },
+      "palette": [
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          220,
+          45,
+          65
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "1309f62a550732fc5c164e3cee0ec8a0de4c3f6c23ecb264000e61e5ea405272",
+      "coarse_sha256": "f96fae4e3a3c5cceabfb96263bcc41c582611669bf8ce5f8098959b1eae130fb",
+      "reference_native_sha256": "17589b0f424cfc35889cab159b704af1b45f0ce557d24e36afdb4dfdd8e18d32"
+    },
+    {
+      "case": "camelyon16-subset_05",
+      "dataset": "camelyon16-subset",
+      "group": "tumor_084",
+      "source": {
+        "crop_height": 4096,
+        "crop_level": 0,
+        "crop_width": 4096,
+        "crop_x": 21603,
+        "crop_y": 53114,
+        "dataset": "camelyon16-subset",
+        "group_id": "tumor_084",
+        "group_level": "slide_patient_mapping_unavailable",
+        "height": 4096,
+        "id": "tumor_084--native-example",
+        "ignore_labels": [
+          0
+        ],
+        "image": "prepared/camelyon16-subset/native_examples/tumor_084.png",
+        "image_sha256": "3a3747eac1566cfba038bc27db9ede9686863b5467a06e2774c9d401ec8e83fd",
+        "label_mode": "semantic",
+        "mask": "prepared/camelyon16-subset/native_examples/tumor_084_mask.png",
+        "mask_sha256": "aa114506a1d79104b506bee4a2b9cf75a05857c58eda82e6404bd7efd1938bc9",
+        "mpp_um": null,
+        "mpp_x_um": 0.226321,
+        "mpp_y_um": 0.22631600000000002,
+        "preprocessing": "Level-0 example window only; no resampling or new mask rasterization",
+        "raw_labels": [
+          1,
+          2
+        ],
+        "resolution_status": "embedded_WSI_axis_spacing",
+        "slide_id": "tumor_084",
+        "source_status": "original_publisher_WSI_and_mask_native_crop",
+        "split": "train",
+        "width": 4096
+      },
+      "native_crop_xywh": [
+        0,
+        1268,
+        2828,
+        2828
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.226321,
+        0.22631600000000002
+      ],
+      "working_mpp_xy": [
+        0.500027959375,
+        0.5000169125
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2828,
+        2828
+      ],
+      "fov_um_xy": [
+        640.035788,
+        640.021648
+      ],
+      "resolution": {
+        "status": "embedded WSI axis spacing",
+        "source_slide": "tumor_084"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2
+      },
+      "class_names": {
+        "1": "automatically detected non-tumor tissue",
+        "2": "expert-derived tumor"
+      },
+      "palette": [
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          220,
+          45,
+          65
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "5bf83b36ca4d283a7fcb7db32a21fdfbf2ede86e87ffe65a6bad4da4936508c8",
+      "coarse_sha256": "4afb6830232dcefb07220f499a7f7f69d978567b79c6df27f17ffb16d67e913c",
+      "reference_native_sha256": "9caa599bdab3218ba451aaa1f5ea47850e5b5780121240518fc72a72b3117853"
+    },
+    {
+      "case": "camelyon16-subset_06",
+      "dataset": "camelyon16-subset",
+      "group": "tumor_087",
+      "source": {
+        "crop_height": 4096,
+        "crop_level": 0,
+        "crop_width": 4096,
+        "crop_x": 61348,
+        "crop_y": 41127,
+        "dataset": "camelyon16-subset",
+        "group_id": "tumor_087",
+        "group_level": "slide_patient_mapping_unavailable",
+        "height": 4096,
+        "id": "tumor_087--native-example",
+        "ignore_labels": [
+          0
+        ],
+        "image": "prepared/camelyon16-subset/native_examples/tumor_087.png",
+        "image_sha256": "acd411d6258311fe8f8767168c3c635615f333651ee6d47c2835b0b07fcb4120",
+        "label_mode": "semantic",
+        "mask": "prepared/camelyon16-subset/native_examples/tumor_087_mask.png",
+        "mask_sha256": "13da22383905a58fd183a5e1c3bf3167a46111e341bf8ca7db3e800b82325204",
+        "mpp_um": null,
+        "mpp_x_um": 0.226321,
+        "mpp_y_um": 0.22631600000000002,
+        "preprocessing": "Level-0 example window only; no resampling or new mask rasterization",
+        "raw_labels": [
+          0,
+          1,
+          2
+        ],
+        "resolution_status": "embedded_WSI_axis_spacing",
+        "slide_id": "tumor_087",
+        "source_status": "original_publisher_WSI_and_mask_native_crop",
+        "split": "train",
+        "width": 4096
+      },
+      "native_crop_xywh": [
+        1268,
+        0,
+        2828,
+        2828
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.226321,
+        0.22631600000000002
+      ],
+      "working_mpp_xy": [
+        0.500027959375,
+        0.5000169125
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2828,
+        2828
+      ],
+      "fov_um_xy": [
+        640.035788,
+        640.021648
+      ],
+      "resolution": {
+        "status": "embedded WSI axis spacing",
+        "source_slide": "tumor_087"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2
+      },
+      "class_names": {
+        "1": "automatically detected non-tumor tissue",
+        "2": "expert-derived tumor"
+      },
+      "palette": [
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          220,
+          45,
+          65
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "1e4a793ba807a3f7a1f782c5d161f30e33962fe6bd7b130f8e212c39a3175e0f",
+      "coarse_sha256": "c25ec3ae1f8c680476e7071167cdf09c0bb53f32d91bbd0d798fe499c1ade735",
+      "reference_native_sha256": "ee903840816614422e90eac4a732acc3367be5b80bf9343ee9f7e5a80adee944"
+    },
+    {
+      "case": "camelyon16-subset_07",
+      "dataset": "camelyon16-subset",
+      "group": "tumor_081",
+      "source": {
+        "crop_height": 4096,
+        "crop_level": 0,
+        "crop_width": 4096,
+        "crop_x": 39981,
+        "crop_y": 39664,
+        "dataset": "camelyon16-subset",
+        "group_id": "tumor_081",
+        "group_level": "slide_patient_mapping_unavailable",
+        "height": 4096,
+        "id": "tumor_081--native-example",
+        "ignore_labels": [
+          0
+        ],
+        "image": "prepared/camelyon16-subset/native_examples/tumor_081.png",
+        "image_sha256": "8a036e9879e3cfe7adbe486f1451d6932b0580b0e1ede765083dee34782ef653",
+        "label_mode": "semantic",
+        "mask": "prepared/camelyon16-subset/native_examples/tumor_081_mask.png",
+        "mask_sha256": "f9383f62d3909177a4c4b4e87cfea842e2835be6ff2ce90befeb4d26d709a8e4",
+        "mpp_um": null,
+        "mpp_x_um": 0.226321,
+        "mpp_y_um": 0.22631600000000002,
+        "preprocessing": "Level-0 example window only; no resampling or new mask rasterization",
+        "raw_labels": [
+          0,
+          1,
+          2
+        ],
+        "resolution_status": "embedded_WSI_axis_spacing",
+        "slide_id": "tumor_081",
+        "source_status": "original_publisher_WSI_and_mask_native_crop",
+        "split": "train",
+        "width": 4096
+      },
+      "native_crop_xywh": [
+        0,
+        0,
+        2828,
+        2828
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.226321,
+        0.22631600000000002
+      ],
+      "working_mpp_xy": [
+        0.500027959375,
+        0.5000169125
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        2828,
+        2828
+      ],
+      "fov_um_xy": [
+        640.035788,
+        640.021648
+      ],
+      "resolution": {
+        "status": "embedded WSI axis spacing",
+        "source_slide": "tumor_081"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "2": 2
+      },
+      "class_names": {
+        "1": "automatically detected non-tumor tissue",
+        "2": "expert-derived tumor"
+      },
+      "palette": [
+        [
+          55,
+          165,
+          75
+        ],
+        [
+          220,
+          45,
+          65
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "86a8e4af210afa690173dcda1b76e61075fe8e3b7d395d83d590855fbf4015a8",
+      "coarse_sha256": "51b0bf21a45947934faca0d55c9fe3212501d226ab6ba1b5aa4be0f05c9c6816",
+      "reference_native_sha256": "a92598a0b8b5bca5be07c5b6e201c6cacdbbbfcf4a071738e05421b776889921"
+    },
+    {
+      "case": "beetle_01",
+      "dataset": "beetle",
+      "group": "patient166",
+      "source": {
+        "dataset": "beetle",
+        "id": "patient166_wsi1--x5121_y10250_w4096",
+        "group_id": "patient166",
+        "patient_id": "patient166",
+        "source_subset": "development",
+        "source_slide": "patient166_wsi1",
+        "image": "prepared/beetle/patient166_wsi1--x5121_y10250_w4096_image.png",
+        "mask": "prepared/beetle/patient166_wsi1--x5121_y10250_w4096_mask.png",
+        "width": 4096,
+        "height": 4096,
+        "source_wsi_width": 49799,
+        "source_wsi_height": 20853,
+        "crop_x": 5121,
+        "crop_y": 10250,
+        "selection": "maximum internal border in downsampled source mask",
+        "downsampled_border_pixels": 94,
+        "native_internal_border_pixels": 3515,
+        "raw_labels": [
+          0,
+          3,
+          4
+        ],
+        "ignore_labels": [
+          0
+        ],
+        "label_names": {
+          "1": "other",
+          "2": "non-invasive epithelium",
+          "3": "invasive epithelium",
+          "4": "necrosis"
+        },
+        "image_sha256": "d8e5277f2ffa11c9d2b94d15564f6d2ded00f8f726521ca483d73313033a292c",
+        "mask_sha256": "12d44f160a8a138dd927c8d0bb81a8594701187355a7b6e727cf53d8c62ff82c",
+        "source_record": "https://doi.org/10.5281/zenodo.16812932",
+        "split": "development",
+        "group_level": "patient",
+        "source_status": "native_wsi_window_mask_pair_verified"
+      },
+      "native_crop_xywh": [
+        2829,
+        2532,
+        1267,
+        1267
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.5050007900500642,
+        0.5050007900500642
+      ],
+      "working_mpp_xy": [
+        0.4998718757761182,
+        0.4998718757761182
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        1267,
+        1267
+      ],
+      "fov_um_xy": [
+        639.8360009934313,
+        639.8360009934313
+      ],
+      "resolution": {
+        "source": "/mnt/sata_ssd/Bora-benchmark/raw/beetle/patient166_wsi1_image.tif",
+        "unit": 3,
+        "rationals": [
+          [
+            5069299,
+            256
+          ],
+          [
+            5069299,
+            256
+          ]
+        ],
+        "status": "embedded TIFF axis spacing"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "3": 1,
+        "4": 2
+      },
+      "class_names": {
+        "1": "invasive epithelium",
+        "2": "necrosis"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          115,
+          120,
+          135
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "475ec13f0952d8831855adb8e636ca6ce1c4440c0985c433cae09cadde83af66",
+      "coarse_sha256": "870fc2a994120bc44fbba02defaa88a189206e726802d117025cef4dd41f9bd8",
+      "reference_native_sha256": "8c9c4da1e17b6c3ad6e9b6f3683048f467384b4796186203e43926b64fbc42bf"
+    },
+    {
+      "case": "beetle_02",
+      "dataset": "beetle",
+      "group": "patient170",
+      "source": {
+        "dataset": "beetle",
+        "id": "patient170_wsi1--x1024_y18433_w4096",
+        "group_id": "patient170",
+        "patient_id": "patient170",
+        "source_subset": "development",
+        "source_slide": "patient170_wsi1",
+        "image": "prepared/beetle/patient170_wsi1--x1024_y18433_w4096_image.png",
+        "mask": "prepared/beetle/patient170_wsi1--x1024_y18433_w4096_mask.png",
+        "width": 4096,
+        "height": 4096,
+        "source_wsi_width": 10955,
+        "source_wsi_height": 25058,
+        "crop_x": 1024,
+        "crop_y": 18433,
+        "selection": "maximum internal border in downsampled source mask",
+        "downsampled_border_pixels": 58,
+        "native_internal_border_pixels": 253,
+        "raw_labels": [
+          0,
+          1,
+          3
+        ],
+        "ignore_labels": [
+          0
+        ],
+        "label_names": {
+          "1": "other",
+          "2": "non-invasive epithelium",
+          "3": "invasive epithelium",
+          "4": "necrosis"
+        },
+        "image_sha256": "634ff487a5f93a3968ff234fed02ecf40f6d82d88574de121225c0e21b24dc39",
+        "mask_sha256": "77b575649a48b0ea1a8b77324ece533662248093d0827bd3ea3870e408906074",
+        "source_record": "https://doi.org/10.5281/zenodo.16812932",
+        "split": "development",
+        "group_level": "patient",
+        "source_status": "native_wsi_window_mask_pair_verified"
+      },
+      "native_crop_xywh": [
+        2532,
+        2532,
+        1267,
+        1267
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.5050187720014832,
+        0.5050187720014832
+      ],
+      "working_mpp_xy": [
+        0.49988967509834314,
+        0.49988967509834314
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        1267,
+        1267
+      ],
+      "fov_um_xy": [
+        639.8587841258792,
+        639.8587841258792
+      ],
+      "resolution": {
+        "source": "/mnt/sata_ssd/Bora-benchmark/raw/beetle/patient170_wsi1_image.tif",
+        "unit": 3,
+        "rationals": [
+          [
+            10138237,
+            512
+          ],
+          [
+            10138237,
+            512
+          ]
+        ],
+        "status": "embedded TIFF axis spacing"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "3": 2
+      },
+      "class_names": {
+        "1": "other",
+        "2": "invasive epithelium"
+      },
+      "palette": [
+        [
+          220,
+          180,
+          55
+        ],
+        [
+          220,
+          45,
+          65
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "6dad6340074241cf30d5cb9da4760ea7e2809a0c720569f77a34f677f26519b1",
+      "coarse_sha256": "e297a6042acb37a8382af39e9f62f694f421eff5ad5b79d2501f80ff6d39d75b",
+      "reference_native_sha256": "be87ca3b7beb2a6612007b22397d6c08c71b4b3f2ccd60d71e6634d626fdd4e4"
+    },
+    {
+      "case": "beetle_03",
+      "dataset": "beetle",
+      "group": "patient196",
+      "source": {
+        "dataset": "beetle",
+        "id": "patient196_wsi1--x3869_y7169_w4096",
+        "group_id": "patient196",
+        "patient_id": "patient196",
+        "source_subset": "development",
+        "source_slide": "patient196_wsi1",
+        "image": "prepared/beetle/patient196_wsi1--x3869_y7169_w4096_image.png",
+        "mask": "prepared/beetle/patient196_wsi1--x3869_y7169_w4096_mask.png",
+        "width": 4096,
+        "height": 4096,
+        "source_wsi_width": 7967,
+        "source_wsi_height": 39587,
+        "crop_x": 3869,
+        "crop_y": 7169,
+        "selection": "maximum internal border in downsampled source mask",
+        "downsampled_border_pixels": 233,
+        "native_internal_border_pixels": 769,
+        "raw_labels": [
+          0,
+          3,
+          4
+        ],
+        "ignore_labels": [
+          0
+        ],
+        "label_names": {
+          "1": "other",
+          "2": "non-invasive epithelium",
+          "3": "invasive epithelium",
+          "4": "necrosis"
+        },
+        "image_sha256": "9c28590f3ff87d9800ea23309dbc3cc6431ca30166cd26c8e918120cd05fae97",
+        "mask_sha256": "b6b68ecf1df5a4341c9ecb12dd06f618c113a6e81608b99c89c44122695ee1aa",
+        "source_record": "https://doi.org/10.5281/zenodo.16812932",
+        "split": "development",
+        "group_level": "patient",
+        "source_status": "native_wsi_window_mask_pair_verified"
+      },
+      "native_crop_xywh": [
+        2829,
+        2829,
+        1267,
+        1267
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.5050273898448461,
+        0.5050273898448461
+      ],
+      "working_mpp_xy": [
+        0.49989820541673435,
+        0.49989820541673435
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        1267,
+        1267
+      ],
+      "fov_um_xy": [
+        639.86970293342,
+        639.86970293342
+      ],
+      "resolution": {
+        "source": "/mnt/sata_ssd/Bora-benchmark/raw/beetle/patient196_wsi1_image.tif",
+        "unit": 3,
+        "rationals": [
+          [
+            633629,
+            32
+          ],
+          [
+            633629,
+            32
+          ]
+        ],
+        "status": "embedded TIFF axis spacing"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "3": 1,
+        "4": 2
+      },
+      "class_names": {
+        "1": "invasive epithelium",
+        "2": "necrosis"
+      },
+      "palette": [
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          115,
+          120,
+          135
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "478992893be05089a73939ffdcb42162dd1337b4535236ffb674e03b680db761",
+      "coarse_sha256": "88919fe6d1639e5ccecf8c91833520e1f3151eb798d439df604f3ced635d63dd",
+      "reference_native_sha256": "923080fadf1e55c715cbfcb10a9454fe19bac8a72fb79ec6f3f06fd951d952b3"
+    },
+    {
+      "case": "beetle_04",
+      "dataset": "beetle",
+      "group": "patient216",
+      "source": {
+        "dataset": "beetle",
+        "id": "patient216_wsi1--x0_y4097_w4096",
+        "group_id": "patient216",
+        "patient_id": "patient216",
+        "source_subset": "development",
+        "source_slide": "patient216_wsi1",
+        "image": "prepared/beetle/patient216_wsi1--x0_y4097_w4096_image.png",
+        "mask": "prepared/beetle/patient216_wsi1--x0_y4097_w4096_mask.png",
+        "width": 4096,
+        "height": 4096,
+        "source_wsi_width": 15935,
+        "source_wsi_height": 26862,
+        "crop_x": 0,
+        "crop_y": 4097,
+        "selection": "maximum internal border in downsampled source mask",
+        "downsampled_border_pixels": 61,
+        "native_internal_border_pixels": 511,
+        "raw_labels": [
+          0,
+          1,
+          3
+        ],
+        "ignore_labels": [
+          0
+        ],
+        "label_names": {
+          "1": "other",
+          "2": "non-invasive epithelium",
+          "3": "invasive epithelium",
+          "4": "necrosis"
+        },
+        "image_sha256": "ddf12389e59e301bfeed16bd3f11a6012e048c06d21c01bf59958c8a68ce1cdf",
+        "mask_sha256": "e6245fbb1c05433318217c91290f45a9b2a942a539b71ac158f9a15495a1b8ea",
+        "source_record": "https://doi.org/10.5281/zenodo.16812932",
+        "split": "development",
+        "group_level": "patient",
+        "source_status": "native_wsi_window_mask_pair_verified"
+      },
+      "native_crop_xywh": [
+        1899,
+        2829,
+        1267,
+        1267
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.5050115491801355,
+        0.5050115491801355
+      ],
+      "working_mpp_xy": [
+        0.4998825256337748,
+        0.4998825256337748
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        1267,
+        1267
+      ],
+      "fov_um_xy": [
+        639.8496328112317,
+        639.8496328112317
+      ],
+      "resolution": {
+        "source": "/mnt/sata_ssd/Bora-benchmark/raw/beetle/patient216_wsi1_image.tif",
+        "unit": 3,
+        "rationals": [
+          [
+            5069191,
+            256
+          ],
+          [
+            5069191,
+            256
+          ]
+        ],
+        "status": "embedded TIFF axis spacing"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "3": 2
+      },
+      "class_names": {
+        "1": "other",
+        "2": "invasive epithelium"
+      },
+      "palette": [
+        [
+          220,
+          180,
+          55
+        ],
+        [
+          220,
+          45,
+          65
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "ec7dd53c0ee3a5f5f628f2ad37bf7a7345c6beee4db80c1b8a4d923efbdc0bfc",
+      "coarse_sha256": "dac13a6487232a13978f10026dfb556af9578b625dc443e35ec7c2304f7dacb3",
+      "reference_native_sha256": "32ca6a0a2fabe974cb2c602f245738ff60b2536d12777bf59250a6de2570f3a2"
+    },
+    {
+      "case": "beetle_05",
+      "dataset": "beetle",
+      "group": "patient188",
+      "source": {
+        "dataset": "beetle",
+        "id": "patient188_wsi1--x0_y4096_w4096",
+        "group_id": "patient188",
+        "patient_id": "patient188",
+        "source_subset": "development",
+        "source_slide": "patient188_wsi1",
+        "image": "prepared/beetle/patient188_wsi1--x0_y4096_w4096_image.png",
+        "mask": "prepared/beetle/patient188_wsi1--x0_y4096_w4096_mask.png",
+        "width": 4096,
+        "height": 4096,
+        "source_wsi_width": 6971,
+        "source_wsi_height": 22056,
+        "crop_x": 0,
+        "crop_y": 4096,
+        "selection": "maximum internal border in downsampled source mask",
+        "downsampled_border_pixels": 774,
+        "native_internal_border_pixels": 3098,
+        "raw_labels": [
+          0,
+          1,
+          3
+        ],
+        "ignore_labels": [
+          0
+        ],
+        "label_names": {
+          "1": "other",
+          "2": "non-invasive epithelium",
+          "3": "invasive epithelium",
+          "4": "necrosis"
+        },
+        "image_sha256": "5c3f55b6d7b89bc6e67778b7cc6fc5bac2ae53b2e345dd60e06497997a0a1303",
+        "mask_sha256": "bd84124dd4d575963ed21e444bb0661bd528a97c5b1a26c202d68efe213809d5",
+        "source_record": "https://doi.org/10.5281/zenodo.16812932",
+        "split": "development",
+        "group_level": "patient",
+        "source_status": "native_wsi_window_mask_pair_verified"
+      },
+      "native_crop_xywh": [
+        2532,
+        1899,
+        1267,
+        1267
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.5050319728640008,
+        0.5050319728640008
+      ],
+      "working_mpp_xy": [
+        0.4999027418896008,
+        0.4999027418896008
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        1267,
+        1267
+      ],
+      "fov_um_xy": [
+        639.8755096186891,
+        639.8755096186891
+      ],
+      "resolution": {
+        "source": "/mnt/sata_ssd/Bora-benchmark/raw/beetle/patient188_wsi1_image.tif",
+        "unit": 3,
+        "rationals": [
+          [
+            2534493,
+            128
+          ],
+          [
+            2534493,
+            128
+          ]
+        ],
+        "status": "embedded TIFF axis spacing"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "3": 2
+      },
+      "class_names": {
+        "1": "other",
+        "2": "invasive epithelium"
+      },
+      "palette": [
+        [
+          220,
+          180,
+          55
+        ],
+        [
+          220,
+          45,
+          65
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "a409bc5968608f10e4bd180add41d112bd45eea36ccd94db51cc82f0136effd7",
+      "coarse_sha256": "72236c6689203e0ea75eff95a7dec7b7a6f9c8aaa8fedded2aa0bf7c8c90d524",
+      "reference_native_sha256": "3b48a0868f98c05d9dd373f02e62ff5c65d303fd3f5add2bb5b962cf607d4a18"
+    },
+    {
+      "case": "beetle_06",
+      "dataset": "beetle",
+      "group": "patient163",
+      "source": {
+        "dataset": "beetle",
+        "id": "patient163_wsi1--x0_y14338_w4096",
+        "group_id": "patient163",
+        "patient_id": "patient163",
+        "source_subset": "development",
+        "source_slide": "patient163_wsi1",
+        "image": "prepared/beetle/patient163_wsi1--x0_y14338_w4096_image.png",
+        "mask": "prepared/beetle/patient163_wsi1--x0_y14338_w4096_mask.png",
+        "width": 4096,
+        "height": 4096,
+        "source_wsi_width": 6971,
+        "source_wsi_height": 26739,
+        "crop_x": 0,
+        "crop_y": 14338,
+        "selection": "maximum internal border in downsampled source mask",
+        "downsampled_border_pixels": 276,
+        "native_internal_border_pixels": 1133,
+        "raw_labels": [
+          0,
+          1,
+          3,
+          4
+        ],
+        "ignore_labels": [
+          0
+        ],
+        "label_names": {
+          "1": "other",
+          "2": "non-invasive epithelium",
+          "3": "invasive epithelium",
+          "4": "necrosis"
+        },
+        "image_sha256": "f2ca57beb2a68b228d0e385682f8337106e30905f9ddc9419d6fcad4dcad0a7a",
+        "mask_sha256": "1f5945d56a5f75085cd309948911ec50b22b31c02b6110293927b7860bfbd7d7",
+        "source_record": "https://doi.org/10.5281/zenodo.16812932",
+        "split": "development",
+        "group_level": "patient",
+        "source_status": "native_wsi_window_mask_pair_verified"
+      },
+      "native_crop_xywh": [
+        2532,
+        2829,
+        1267,
+        1267
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.5050319728640008,
+        0.5050319728640008
+      ],
+      "working_mpp_xy": [
+        0.4999027418896008,
+        0.4999027418896008
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        1267,
+        1267
+      ],
+      "fov_um_xy": [
+        639.8755096186891,
+        639.8755096186891
+      ],
+      "resolution": {
+        "source": "/mnt/sata_ssd/Bora-benchmark/raw/beetle/patient163_wsi1_image.tif",
+        "unit": 3,
+        "rationals": [
+          [
+            2534493,
+            128
+          ],
+          [
+            2534493,
+            128
+          ]
+        ],
+        "status": "embedded TIFF axis spacing"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "3": 2,
+        "4": 3
+      },
+      "class_names": {
+        "1": "other",
+        "2": "invasive epithelium",
+        "3": "necrosis"
+      },
+      "palette": [
+        [
+          220,
+          180,
+          55
+        ],
+        [
+          220,
+          45,
+          65
+        ],
+        [
+          115,
+          120,
+          135
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "5851b3f5538915e7c4619eb9b4084eceb5064881f8cd294aa76ba8e8463349b1",
+      "coarse_sha256": "d4fab5c046a5d15a40226c74724a24364acac0384538b1f057cefa0d6c4d5a48",
+      "reference_native_sha256": "000790088e50bd20e056c08efb615de077d9bb996253cff177a5fa3d0b2db18e"
+    },
+    {
+      "case": "beetle_07",
+      "dataset": "beetle",
+      "group": "patient155",
+      "source": {
+        "dataset": "beetle",
+        "id": "patient155_wsi1--x1024_y10240_w4096",
+        "group_id": "patient155",
+        "patient_id": "patient155",
+        "source_subset": "development",
+        "source_slide": "patient155_wsi1",
+        "image": "prepared/beetle/patient155_wsi1--x1024_y10240_w4096_image.png",
+        "mask": "prepared/beetle/patient155_wsi1--x1024_y10240_w4096_mask.png",
+        "width": 4096,
+        "height": 4096,
+        "source_wsi_width": 9959,
+        "source_wsi_height": 24585,
+        "crop_x": 1024,
+        "crop_y": 10240,
+        "selection": "maximum internal border in downsampled source mask",
+        "downsampled_border_pixels": 124,
+        "native_internal_border_pixels": 466,
+        "raw_labels": [
+          0,
+          1,
+          3
+        ],
+        "ignore_labels": [
+          0
+        ],
+        "label_names": {
+          "1": "other",
+          "2": "non-invasive epithelium",
+          "3": "invasive epithelium",
+          "4": "necrosis"
+        },
+        "image_sha256": "cb1c5f37d616cdff9178cbff433a295d3826596adee4fd919580772a0f2c445d",
+        "mask_sha256": "5bb9add1f18d66006bebcf09f2e8cfbbdb83477550ab8a5dafbd69c5e6542c64",
+        "source_record": "https://doi.org/10.5281/zenodo.16812932",
+        "split": "development",
+        "group_level": "patient",
+        "source_status": "native_wsi_window_mask_pair_verified"
+      },
+      "native_crop_xywh": [
+        2532,
+        2829,
+        1267,
+        1267
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.5050210634224587,
+        0.5050210634224587
+      ],
+      "working_mpp_xy": [
+        0.49989194324707437,
+        0.49989194324707437
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        1267,
+        1267
+      ],
+      "fov_um_xy": [
+        639.8616873562552,
+        639.8616873562552
+      ],
+      "resolution": {
+        "source": "/mnt/sata_ssd/Bora-benchmark/raw/beetle/patient155_wsi1_image.tif",
+        "unit": 3,
+        "rationals": [
+          [
+            10138191,
+            512
+          ],
+          [
+            10138191,
+            512
+          ]
+        ],
+        "status": "embedded TIFF axis spacing"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "3": 2
+      },
+      "class_names": {
+        "1": "other",
+        "2": "invasive epithelium"
+      },
+      "palette": [
+        [
+          220,
+          180,
+          55
+        ],
+        [
+          220,
+          45,
+          65
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "3392b224db16046ef8b8b00e7d594d7826a722666a455890ec7092af86ea09e0",
+      "coarse_sha256": "9d65b1e5e2e0d74a1de8d6be36670182d0026e499dd1514676601182f6ef7c1d",
+      "reference_native_sha256": "004665a83a15338e897d834d2d4bdff97e74f56a39937f07e52a645142403331"
+    },
+    {
+      "case": "beetle_08",
+      "dataset": "beetle",
+      "group": "patient175",
+      "source": {
+        "dataset": "beetle",
+        "id": "patient175_wsi1--x0_y12289_w4096",
+        "group_id": "patient175",
+        "patient_id": "patient175",
+        "source_subset": "development",
+        "source_slide": "patient175_wsi1",
+        "image": "prepared/beetle/patient175_wsi1--x0_y12289_w4096_image.png",
+        "mask": "prepared/beetle/patient175_wsi1--x0_y12289_w4096_mask.png",
+        "width": 4096,
+        "height": 4096,
+        "source_wsi_width": 8963,
+        "source_wsi_height": 26650,
+        "crop_x": 0,
+        "crop_y": 12289,
+        "selection": "maximum internal border in downsampled source mask",
+        "downsampled_border_pixels": 131,
+        "native_internal_border_pixels": 527,
+        "raw_labels": [
+          0,
+          1,
+          3
+        ],
+        "ignore_labels": [
+          0
+        ],
+        "label_names": {
+          "1": "other",
+          "2": "non-invasive epithelium",
+          "3": "invasive epithelium",
+          "4": "necrosis"
+        },
+        "image_sha256": "f153d7e34c56d6bd6a830d11de35039967bb5c8cbceca7dda9f37ae67ea53fee",
+        "mask_sha256": "5ab50c5a27ac3160ff6e03e090b6da86597566a303ba4500c66463b4b364b82c",
+        "source_record": "https://doi.org/10.5281/zenodo.16812932",
+        "split": "development",
+        "group_level": "patient",
+        "source_status": "native_wsi_window_mask_pair_verified"
+      },
+      "native_crop_xywh": [
+        2532,
+        2829,
+        1267,
+        1267
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.5050239028207755,
+        0.5050239028207755
+      ],
+      "working_mpp_xy": [
+        0.49989475380775195,
+        0.49989475380775195
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        1267,
+        1267
+      ],
+      "fov_um_xy": [
+        639.8652848739225,
+        639.8652848739225
+      ],
+      "resolution": {
+        "source": "/mnt/sata_ssd/Bora-benchmark/raw/beetle/patient175_wsi1_image.tif",
+        "unit": 3,
+        "rationals": [
+          [
+            5069067,
+            256
+          ],
+          [
+            5069067,
+            256
+          ]
+        ],
+        "status": "embedded TIFF axis spacing"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "3": 2
+      },
+      "class_names": {
+        "1": "other",
+        "2": "invasive epithelium"
+      },
+      "palette": [
+        [
+          220,
+          180,
+          55
+        ],
+        [
+          220,
+          45,
+          65
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "e32578e6f3ccc2e6602d98566aa69ec9f5c10174f80a10943cbb8f98f07cb674",
+      "coarse_sha256": "87e949340f941011e03de63e944cf0bd7c54507c2c4068620ba4842bebe30202",
+      "reference_native_sha256": "b04d411231aca6cab99f3e2d947095b04fdfe0a4a3aa71e62bcb39a25835abd4"
+    },
+    {
+      "case": "beetle_09",
+      "dataset": "beetle",
+      "group": "patient187",
+      "source": {
+        "dataset": "beetle",
+        "id": "patient187_wsi1--x5123_y14337_w4096",
+        "group_id": "patient187",
+        "patient_id": "patient187",
+        "source_subset": "development",
+        "source_slide": "patient187_wsi1",
+        "image": "prepared/beetle/patient187_wsi1--x5123_y14337_w4096_image.png",
+        "mask": "prepared/beetle/patient187_wsi1--x5123_y14337_w4096_mask.png",
+        "width": 4096,
+        "height": 4096,
+        "source_wsi_width": 11951,
+        "source_wsi_height": 26322,
+        "crop_x": 5123,
+        "crop_y": 14337,
+        "selection": "maximum internal border in downsampled source mask",
+        "downsampled_border_pixels": 5171,
+        "native_internal_border_pixels": 45021,
+        "raw_labels": [
+          0,
+          1,
+          3
+        ],
+        "ignore_labels": [
+          0
+        ],
+        "label_names": {
+          "1": "other",
+          "2": "non-invasive epithelium",
+          "3": "invasive epithelium",
+          "4": "necrosis"
+        },
+        "image_sha256": "cceebd1838121ed656ef79318f0abbbf56d7f2c62ce4f9114171c5acf4b915f5",
+        "mask_sha256": "1611a9d712741a5b10eb46ef1c0aa60ff85c903e1876a4a4dba662e6a0538077",
+        "source_record": "https://doi.org/10.5281/zenodo.16812932",
+        "split": "development",
+        "group_level": "patient",
+        "source_status": "native_wsi_window_mask_pair_verified"
+      },
+      "native_crop_xywh": [
+        1899,
+        1899,
+        1267,
+        1267
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.5050168292912918,
+        0.5050168292912918
+      ],
+      "working_mpp_xy": [
+        0.4998877521188021,
+        0.4998877521188021
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        1267,
+        1267
+      ],
+      "fov_um_xy": [
+        639.8563227120667,
+        639.8563227120667
+      ],
+      "resolution": {
+        "source": "/mnt/sata_ssd/Bora-benchmark/raw/beetle/patient187_wsi1_image.tif",
+        "unit": 3,
+        "rationals": [
+          [
+            2534569,
+            128
+          ],
+          [
+            2534569,
+            128
+          ]
+        ],
+        "status": "embedded TIFF axis spacing"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "3": 2
+      },
+      "class_names": {
+        "1": "other",
+        "2": "invasive epithelium"
+      },
+      "palette": [
+        [
+          220,
+          180,
+          55
+        ],
+        [
+          220,
+          45,
+          65
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "ffa75755aafcb08aac389c18f405bcea95d573b3b532584bc8d85e6fea1b7dbc",
+      "coarse_sha256": "848a4e0fb06ed2aa1d7f901575d5db04c5516f5be3038836b9c2a18791d7b9d2",
+      "reference_native_sha256": "953c18a0adb841eddbc30c7c9f9f2fe30a28f8a678525075fa867179205332a1"
+    },
+    {
+      "case": "beetle_10",
+      "dataset": "beetle",
+      "group": "patient172",
+      "source": {
+        "dataset": "beetle",
+        "id": "patient172_wsi1--x11269_y6144_w4096",
+        "group_id": "patient172",
+        "patient_id": "patient172",
+        "source_subset": "development",
+        "source_slide": "patient172_wsi1",
+        "image": "prepared/beetle/patient172_wsi1--x11269_y6144_w4096_image.png",
+        "mask": "prepared/beetle/patient172_wsi1--x11269_y6144_w4096_mask.png",
+        "width": 4096,
+        "height": 4096,
+        "source_wsi_width": 15935,
+        "source_wsi_height": 11944,
+        "crop_x": 11269,
+        "crop_y": 6144,
+        "selection": "maximum internal border in downsampled source mask",
+        "downsampled_border_pixels": 90,
+        "native_internal_border_pixels": 728,
+        "raw_labels": [
+          0,
+          1,
+          3,
+          4
+        ],
+        "ignore_labels": [
+          0
+        ],
+        "label_names": {
+          "1": "other",
+          "2": "non-invasive epithelium",
+          "3": "invasive epithelium",
+          "4": "necrosis"
+        },
+        "image_sha256": "f844fd888df280b4bcc30c33953025fbd00fed8d2a5dea3999a7bc6c42fc0cbb",
+        "mask_sha256": "3bcbea3a6e6df2b48ef5ed6d925030dc1ffd96cea7dede12c97aea01a10a9915",
+        "source_record": "https://doi.org/10.5281/zenodo.16812932",
+        "split": "development",
+        "group_level": "patient",
+        "source_status": "native_wsi_window_mask_pair_verified"
+      },
+      "native_crop_xywh": [
+        1899,
+        2532,
+        1267,
+        1267
+      ],
+      "source_region_type": "native ROI cropped from WSI",
+      "native_mpp_xy": [
+        0.5050115491801355,
+        0.5050115491801355
+      ],
+      "working_mpp_xy": [
+        0.4998825256337748,
+        0.4998825256337748
+      ],
+      "target_mpp": 0.5,
+      "working_shape_yx": [
+        1280,
+        1280
+      ],
+      "native_shape_yx": [
+        1267,
+        1267
+      ],
+      "fov_um_xy": [
+        639.8496328112317,
+        639.8496328112317
+      ],
+      "resolution": {
+        "source": "/mnt/sata_ssd/Bora-benchmark/raw/beetle/patient172_wsi1_image.tif",
+        "unit": 3,
+        "rationals": [
+          [
+            5069191,
+            256
+          ],
+          [
+            5069191,
+            256
+          ]
+        ],
+        "status": "embedded TIFF axis spacing"
+      },
+      "optical_resolution_um": null,
+      "objective_magnification": null,
+      "raw_to_compact": {
+        "1": 1,
+        "3": 2
+      },
+      "class_names": {
+        "1": "other",
+        "2": "invasive epithelium"
+      },
+      "palette": [
+        [
+          220,
+          180,
+          55
+        ],
+        [
+          220,
+          45,
+          65
+        ]
+      ],
+      "raw_ignore_codes": [
+        0
+      ],
+      "coarse_reference_derived": true,
+      "coarse_tile_px": 90,
+      "coarse_tile_um": 45,
+      "original_sha256": "9c2a3d51d8819b0327ebb9bb234896aa5380451cbf538424f879556ad5a772f4",
+      "coarse_sha256": "6deb20d8e5d31fc318a48fc88e6416287e91fa3ca732466ba5a6766ff9cc21ac",
+      "reference_native_sha256": "c908e516f55cfce7dbc5511ca05972ad95b2508ead79b05180f9670d7d40e94f"
+    }
+  ],
+  "exclusions": [
+    {
+      "dataset": "tiger",
+      "id": "tissue-cells--TC_S01_P000130_C0001_B104_[123656, 58459, 124736, 59579]",
+      "group": "TC_S01_P000130",
+      "reason": "No field >=896 working pixels with at least two coarse training classes"
+    },
+    {
+      "dataset": "tiger",
+      "id": "tissue-cells--207B_[19611, 15993, 20819, 17237]",
+      "group": "207",
+      "reason": "No field >=896 working pixels with at least two coarse training classes"
+    },
+    {
+      "dataset": "tiger",
+      "id": "tissue-cells--TC_S01_P000010_C0001_B204_[41471, 84804, 42754, 86004]",
+      "group": "TC_S01_P000010",
+      "reason": "No field >=896 working pixels with at least two coarse training classes"
+    },
+    {
+      "dataset": "tiger",
+      "id": "tissue-cells--196S_[7964, 15811, 9098, 16894]",
+      "group": "196",
+      "reason": "No field >=896 working pixels with at least two coarse training classes"
+    },
+    {
+      "dataset": "camelyon16-subset",
+      "id": "tumor_082--native-example",
+      "group": "tumor_082",
+      "reason": "No field >=896 working pixels with at least two coarse training classes"
+    }
+  ],
+  "methods": [
+    4,
+    5,
+    8,
+    9,
+    10,
+    15,
+    19
+  ],
+  "field_selection": "maximum annotated-class entropy among deterministic overlapping windows; no algorithm-score selection",
+  "max_working_side": 1280,
+  "min_working_side": 896,
+  "target_mpp": 0.5,
+  "coarse_tile_um": 45,
+  "source_case114_excluded": true,
+  "tiger_bcss_overlap_avoidance": "TIGER uses non-TCGA only; BCSS uses TCGA cases",
+  "exclusions_by_dataset": {
+    "sicapv2": "JPEG mask semantics unreconciled",
+    "cocahis-vista": "foreground semantics and pixel spacing unreconciled",
+    "wsss4luad": "distributed patch pixel spacing unverified",
+    "rings": "pixel spacing unverified"
+  },
+  "model_selection": "per-image coarse-tile labels only; fixed presets; fine references unavailable to prediction module",
+  "annotation_caveat": "CAMELYON tumor is expert-derived; its non-tumor tissue is automatically detected, not expert stroma",
+  "implementation_sha256": "5b496cc5195099816b5e8c0a2527ce5b43c784543ddffcd9dadaa2dc8a7cd6d4"
+}

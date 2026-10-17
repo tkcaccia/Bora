@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-16",
+  "selection_source": "Direct user review of the complete multi-image gallery",
+  "retained_methods": [5, 8, 9, 10, 15, 19],
+  "rejected_methods": [4],
+  "rejection_reason": "User requested: Reject #4",
+  "active_combination": [9, 19],
+  "active_weights": [0.5, 0.5],
+  "active_run": "virchow2-full-tissue-2026-10-16",
+  "analysis_domain": "All RGB-detected tissue in the same 49 ROIs; background removed after Bora",
+  "quality_domain": "Original native reference > 0; unannotated tissue unscored; no intersection with predicted tissue",
+  "historical_three_way_trial": "virchow2-ensemble-2026-10-16; archived and excluded from the active selection",
+  "scope": "Same 49 ROIs; qualitative method selection and exploratory follow-up, not an independent held-out study"
+}

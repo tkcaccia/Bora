@@ -1,0 +1,23 @@
+{
+  "cases": 149,
+  "cohorts": {
+    "previously_inspected": 49,
+    "new_extension": 100
+  },
+  "conversions": 5,
+  "strategies": 8,
+  "native_masks": 5960,
+  "unchanged_retained_native_masks": 1715,
+  "unchanged_retained_rgb_inputs": 245,
+  "consensus_revision": 2,
+  "new_groups_disjoint_from_previous": true,
+  "all_detected_tissue_assigned": true,
+  "no_final_background_labels": true,
+  "original_quality_support_preserved": true,
+  "all_reference_classes_scored": true,
+  "exact_difference_maps": true,
+  "all_frozen_hashes_verified": true,
+  "predictor_source_hashes_verified": true,
+  "verified_visuals": 30994,
+  "all_checks_passed": true
+}
