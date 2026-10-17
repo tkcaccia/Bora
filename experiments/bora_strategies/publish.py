@@ -9,7 +9,7 @@ import tifffile
 from experiments.virchow2_inverse.common import digest,save_json
 from experiments.virchow2_inverse.finalize import font
 from experiments.virchow2_multi.publish import rgba,overlay,preview,tile
-from experiments.virchow2_smoothing.publish import editable_native
+from experiments.virchow2_smoothing.publish import editable_native,save_palette
 from .registry import STRATEGIES
 
 
@@ -23,6 +23,7 @@ def render(root,source,originals,row):
     Image.fromarray(layer).save(out/'editable.mask.png',compress_level=3)
     row['diagnostic']=dict(current_editable_tissue_percent=float(100*band[support].mean()),current_fixed_tissue_percent=float(100*(~band)[support].mean()))
     expert=Image.open(src/'thumbs/expert.jpg')
+    thumb=Image.fromarray(rgb);thumb.thumbnail((320,320),Image.Resampling.LANCZOS);thumb_rgb=np.array(thumb)
     for conversion,record in row['conversions'].items():
         folder=out/conversion;baseline=tifffile.imread(folder/'B01/bora.native.tif')
         sheet=Image.new('RGB',(5*220,5*265+40),'white');draw=ImageDraw.Draw(sheet)
@@ -31,10 +32,11 @@ def render(root,source,originals,row):
         for i,(image,title) in enumerate([(rgb,'Original H&E'),(expert,'Original annotation'),(overlay(rgb,native_coarse,palette),'Completed tile mask'),(conversion_rgb,'Actual converted RGB'),(np.array(Image.open(out/'editable.mask.png').convert('RGB')),'B01 editable band')]):
             tile(sheet,image,i*220,40,title,size=220)
         for i,(key,(title,_)) in enumerate(STRATEGIES.items()):
-            target=folder/key;mask=tifffile.imread(target/'bora.native.tif');display=overlay(rgb,mask,palette)
-            Image.fromarray(rgba(mask,palette)).save(target/'mask.png',compress_level=3);preview(display,target/'overlay.jpg',size=320)
-            different=mask!=baseline;diff=np.zeros((*mask.shape,4),np.uint8);diff[different]=[245,30,180,255]
-            Image.fromarray(diff).save(target/'difference.mask.png',compress_level=3)
+            target=folder/key;mask=tifffile.imread(target/'bora.native.tif')
+            small=cv2.resize(mask,(thumb.width,thumb.height),interpolation=cv2.INTER_NEAREST);display=overlay(thumb_rgb,small,palette)
+            save_palette(mask,palette,target/'mask.png');preview(display,target/'overlay.jpg',size=320)
+            different=mask!=baseline
+            save_palette(different,[[245,30,180]],target/'difference.mask.png',binary=True)
             outside=support&~band;values=record['strategies'][key]
             values['changed_outside_current_band_percent']=float(100*np.mean(mask[outside]!=native_coarse[outside])) if outside.any() else 0.
             score=values['score'];tile(sheet,display,(i%5)*220,305+(i//5)*265,key+' '+title[:21],f"IoU {score['macro_iou']:.4f}; delta {values['delta_vs_current']:+.4f}",size=220)

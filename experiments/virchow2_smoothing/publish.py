@@ -1,5 +1,7 @@
 """All native masks, explicit difference maps, and synchronized comparisons."""
 import argparse,json
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
 from pathlib import Path
 import cv2
 import numpy as np
@@ -9,6 +11,13 @@ from experiments.virchow2_inverse.common import digest,save_json
 from experiments.virchow2_multi.publish import rgba,overlay,preview,tile
 from experiments.virchow2_inverse.finalize import font
 from .run import PRIMARY,METHODS,VARIANTS
+
+
+def save_palette(mask,colours,path,binary=False):
+    """Lossless indexed PNG; class 0 is transparent in browser overlays."""
+    palette=np.zeros((256,3),np.uint8);palette[1:len(colours)+1]=np.asarray(colours,np.uint8)
+    im=Image.fromarray(np.asarray(mask,np.uint8));im.putpalette(palette.ravel().tolist())
+    im.save(path,transparency=0,compress_level=1,bits=1 if binary else (4 if mask.max()<16 else 8))
 
 
 def editable_native(coarse,native_shape):
@@ -29,6 +38,7 @@ def render(root,source,originals,row):
     Image.fromarray(band_rgba).save(out/'editable.mask.png',compress_level=3)
     full=cv2.resize(coarse,(rgb.shape[1],rgb.shape[0]),interpolation=cv2.INTER_NEAREST)
     native_coarse=full.copy();native_coarse[~tissue]=0
+    thumb=Image.fromarray(rgb);thumb.thumbnail((340,340),Image.Resampling.LANCZOS);thumb_rgb=np.array(thumb)
     row['diagnostic']=dict(editable_tissue_percent=float(100*band[tissue].mean()),fixed_tissue_percent=float(100*(~band)[tissue].mean()),
         original_tile_pixels=int(coarse.size),kernel9_native_um_xy=[x*18 for x in row['sample']['working_mpp_xy']])
     for m in METHODS:
@@ -39,17 +49,19 @@ def render(root,source,originals,row):
             (overlay(rgb,full,palette),'Completed tile input'),(np.array(rinput),'Converted RGB'),(np.array(Image.open(out/'editable.mask.png').convert('RGB')),'Editable band')]
         for i,(image,title) in enumerate(context):tile(sheet,image,i*240,42,title,size=240)
         for i,(v,(title,_)) in enumerate(VARIANTS.items()):
-            folder=out/m/v;mask=tifffile.imread(folder/'bora.native.tif');display=overlay(rgb,mask,palette)
-            Image.fromarray(rgba(mask,palette)).save(folder/'mask.png',compress_level=3)
+            folder=out/m/v;mask=tifffile.imread(folder/'bora.native.tif')
+            small=cv2.resize(mask,(thumb.width,thumb.height),interpolation=cv2.INTER_NEAREST);display=overlay(thumb_rgb,small,palette)
+            save_palette(mask,palette,folder/'mask.png')
             preview(display,folder/'overlay.jpg',size=340)
-            difference=mask!=baseline;diff=np.zeros((*mask.shape,4),np.uint8);diff[difference]=[245,30,180,255]
-            Image.fromarray(diff).save(folder/'difference.mask.png',compress_level=3)
+            difference=mask!=baseline
+            save_palette(difference,[[245,30,180]],folder/'difference.mask.png',binary=True)
             values=row['methods'][m][v];values['changed_tissue_percent_vs_current']=float(100*difference[tissue].mean())
             values['changed_tissue_percent_vs_tiles']=float(100*(mask[tissue]!=native_coarse[tissue]).mean())
             tile(sheet,display,i*240,327,title,f"IoU {values['score']['macro_iou']:.4f}; delta {values['delta_vs_current']:+.4f}",size=240)
         sheet.save(out/m/'contact.jpg',quality=91)
     save_json(out/'scores.json',row)
     print(json.dumps(dict(rendered=case)),flush=True)
+    return row
 
 
 def report(root,results):
@@ -91,7 +103,9 @@ def report(root,results):
 def main():
     p=argparse.ArgumentParser();p.add_argument('--source',type=Path,required=True);p.add_argument('--root',type=Path,required=True);a=p.parse_args()
     results=json.loads((a.root/'results.json').read_text());originals=a.source.parent/results['protocol']['original_folder']
-    for row in results['cases']:render(a.root,a.source,originals,row)
+    with ProcessPoolExecutor(max_workers=2,mp_context=get_context('spawn')) as pool:
+        futures=[pool.submit(render,a.root,a.source,originals,row) for row in results['cases']]
+        results['cases']=[future.result() for future in futures]
     save_json(a.root/'results.json',results);report(a.root,results)
     template=Path(__file__).with_name('gallery.html').read_text();(a.root/'gallery.html').write_text(template.replace('__DATA__',json.dumps(results,allow_nan=False)))
     blocks=[]

@@ -31,8 +31,8 @@ def main():
             for v in VARIANTS:
                 folder=out/m/v;pred=tifffile.imread(folder/'bora.native.tif');assert pred.shape==truth.shape
                 assert np.all(pred[support]>0) and np.all(pred[~support]==0)
-                assert np.array_equal(np.array(Image.open(folder/'mask.png'))[...,3]>0,support)
-                diff=np.array(Image.open(folder/'difference.mask.png'))[...,3]>0;assert np.array_equal(diff,pred!=legacy)
+                assert np.array_equal(np.array(Image.open(folder/'mask.png').convert('RGBA'))[...,3]>0,support)
+                diff=np.array(Image.open(folder/'difference.mask.png').convert('RGBA'))[...,3]>0;assert np.array_equal(diff,pred!=legacy)
                 s=row['methods'][m][v]['score'];assert s['valid_pixels']==int(valid.sum())
                 assert set(s['per_class'])==set(map(str,np.unique(truth[valid])))
                 assert record['diagnostics'][m][v]['changed_native_pixels_vs_current']==int(diff.sum())
