@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from experiments.bora_cycles.metrics import RegionEvaluator, discovery_score
-from experiments.bora_cycles.diagnostics import white_regions, novelty
+from experiments.bora_cycles.diagnostics import white_regions, novelty, rare_colors
 
 
 def test_small_regions_absent_from_coarse_are_not_omitted():
@@ -55,6 +55,19 @@ def test_novel_colour_has_no_biological_class_assigned():
     assert detail["fine_reference_used"] is False
     assert "unresolved" in detail["identity"]
     assert discovery_score(regions, coarse)["semantic_identity"].startswith("unknown")
+
+
+def test_rarity_detects_minority_colours_even_when_all_pixels_are_in_training_domain():
+    rgb = np.full((64, 64, 3), [200, 30, 30], np.uint8)
+    rgb[30:32, 30:32] = [20, 40, 230]
+    support = np.ones((64, 64), bool)
+    coarse = np.ones((64, 64), np.uint8)
+    _, unseen, _ = novelty(rgb, coarse, support, [1., 1.])
+    _, rare, detail = rare_colors(rgb, support, [1., 1.])
+    assert unseen[30, 30] == 0
+    assert rare[30, 30] > 0
+    assert detail["coarse_labels_used"] is False
+    assert detail["proposed_pixels"] == 4
 
 
 def test_cpp_active_set_matches_independent_scipy_solver():

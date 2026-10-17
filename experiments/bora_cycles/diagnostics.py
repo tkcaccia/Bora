@@ -51,6 +51,38 @@ def novelty(rgb, coarse, support, mpp_xy):
         identity="unresolved colour novelty; no biological names inferred")
 
 
+def rare_colors(rgb, support, mpp_xy):
+    """Rare observed colours, including minority colours in known coarse tiles.
+
+    This complements unseen-colour distance. The latter cannot flag a colour
+    merely for being rare if that colour was present in the training domain.
+    No annotation, coarse label or predicted semantic class enters this rule.
+    """
+    x = np.asarray(rgb, np.float32)/255
+    support = np.asarray(support, bool)
+    if not support.any():
+        raise ValueError("No tissue for colour rarity estimation")
+    bins = 32
+    cell = np.minimum((x*bins).astype(int), bins-1)
+    index = (cell[..., 0]*bins+cell[..., 1])*bins+cell[..., 2]
+    count = np.bincount(index[support], minlength=bins**3).reshape((bins,)*3)
+    density = ndi.gaussian_filter(count.astype(float), .7, mode="nearest")
+    density += max(density.sum(), 1)*1e-9
+    density /= density.sum()
+    score = -np.log(density.ravel()[index])
+    threshold = float(np.quantile(score[support], .995))
+    selected = support & (score > threshold)
+    regions, n = ndi.label(selected, np.ones((3, 3)))
+    areas = np.bincount(regions.ravel())[1:]*float(np.prod(mpp_xy))
+    return score.astype(np.float32), regions.astype(np.int32), dict(
+        rule="upper 0.5% of observed tissue negative log colour density",
+        quantization_bins=bins, density_smoothing_bins=.7,
+        rarity_threshold=threshold, proposed_regions=n,
+        proposed_pixels=int(selected.sum()), area_um2=areas.tolist(),
+        fine_reference_used=False, coarse_labels_used=False,
+        identity="rare-colour region candidates, not established new tissue classes")
+
+
 def mask_diagnostics(labels, support, white, exterior, mpp_xy):
     positive = labels > 0
     radius = max(1, round(8/np.sqrt(np.prod(mpp_xy))))
