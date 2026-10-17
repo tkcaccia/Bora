@@ -11,6 +11,7 @@ from threadpoolctl import threadpool_limits
 from experiments.virchow2_inverse.common import digest,save_json
 from .prepare import verify
 from .context import Context,resize
+from .methods import run
 from .registry import STRATEGIES,PARAMETERS,CONVERSIONS,REJECTED_STRATEGIES,REJECTED_CONVERSIONS,CONSENSUS
 
 
