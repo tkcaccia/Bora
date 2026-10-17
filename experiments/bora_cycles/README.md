@@ -1,12 +1,12 @@
 # Twenty review-gated Bora improvement cycles
 
-Current verified status: **four of twenty cycles complete**. Cycle four has
-149 actual all-method overview reviews, four full-run native crop reviews and
-a signed five-survivor selection. No new child improves the primary accuracy
-leader; the five survivors remain F01, C17, C01, D08 and C15. See
-[CYCLE_FOUR_REVIEW.md](CYCLE_FOUR_REVIEW.md). Earlier checkpoints below describe
-their historical stages. Cycle five is implemented and awaiting execution;
-it has not completed the full-run/review/selection gates.
+Current verified status: **six of twenty cycles complete**. Cycle six has
+149 actual all-method overview reviews, six full-run native crop reviews,
+3,278 audited masks and a signed five-survivor selection: **J01, H02, C17,
+J07 and H10**. J01 improves H02 by 0.27685 IoU percentage points at approximately
+0.19 seconds per ROI, with important documented regressions. See
+[CYCLE_SIX_REVIEW.md](CYCLE_SIX_REVIEW.md). Earlier checkpoints below describe
+their historical stages. No seventh-cycle model has been implemented yet.
 
 The user now requests a runtime penalty above one second per image. From
 cycle5 the primary selection utility is the image-average of
@@ -192,8 +192,15 @@ outcomes and analytic-gradient tests. Implementation and passing tests do not
 complete a cycle; all149 execution, scoring and actual visual review remain
 required before selection.
 
-Cycle five now implements fifteen distinct children of F01/C17/C01/D08/C15,
-under the new one-second runtime utility. [CYCLE_FIVE.md](CYCLE_FIVE.md)
-describes the mathematical changes and risks. Implementation is not a
-completed cycle: focused tests, an exact-parent eight-case pilot, full149-case
-execution, actual visual review and a signed selection are still required.
+Cycle five completed all execution, audit, visual-review and selection gates
+under the new one-second runtime utility. H02/C17/H10/H04/C01 survived; the
+slow F01 raw-accuracy leader was rejected. [CYCLE_FIVE.md](CYCLE_FIVE.md) and
+[CYCLE_FIVE_REVIEW.md](CYCLE_FIVE_REVIEW.md) document the changes and outcomes.
+
+Cycle six tested fifteen distinct children of those five. All 209 focused
+checks passed locally and on Chiamaka, followed by the frozen eight-case pilot
+and all 149 ROIs. The complete signed selection and reasons are in
+CYCLE_SIX_SELECTION.json. Original H&E edge conductance improves appearance
+fields; Gaussian-integrated hinge risk improves the fast discriminant branch.
+Background deletion and nonlinear colour-vote artifacts remain documented
+failures. Fourteen cycles and the final all-conversion comparison remain.

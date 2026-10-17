@@ -1,7 +1,7 @@
 # Cycle six: fifteen distinct interventions
 
-Five cycles are complete. The signed parents are H02, C17, H10, H04 and C01.
-The next roster contains these five unchanged models and the fifteen children
+Six cycles are complete. Parents entering this cycle were H02, C17, H10, H04 and C01.
+The evaluated roster contains these five unchanged models and the fifteen children
 below. All 149 frozen ROIs, coarse labels, class IDs, physical spacings and
 the equal #9+#19 RGB conversion remain unchanged. The primary utility remains
 the mean of IoU minus 0.05 times each image's excess seconds above one second.
@@ -93,7 +93,7 @@ solutions agree with independent SLSQP references. Both C++ kernels produce
 identical one/two-thread outputs. The small local timing workload shows no
 threading benefit; larger and Chiamaka workloads must be measured rather
 than assuming speedup. No benchmark prediction or accuracy gain is asserted
-by these numerical tests. Five of twenty cycles remain complete.
+by these numerical tests. Numerical tests alone did not complete the cycle; full review is documented below.
 
 ## Engineering pilot and full execution
 
@@ -121,9 +121,17 @@ Serial Chiamaka synthetic kernel profiles give one/two-thread medians of
 0.02223/0.01165 seconds for 2,048 dominance quadratics (1.908x), with exact
 thread-output parity. This is kernel evidence, not whole-mask acceleration.
 
-The same frozen implementation is now running all 149 ROIs, with no model
-change after pilot scoring or visual review. Three low-priority image
-processes each use two numerical/OpenMP threads. Main PID898917 and dependent
-read-only audit PID903248 are recorded in the run checkpoint; their actual
-processes and terminal artifacts must be revalidated before continuation.
-No cycle-six survivor selection exists yet. Five of twenty cycles are complete.
+The same frozen implementation completed all 149 ROIs without model changes after
+pilot scoring or review. All3,278 masks succeed. Both native audits pass and
+all 745 unchanged-parent comparisons are exact; all 176 pilot masks match the
+full-run arrays. All149 overview sheets and six targeted native label sheets
+were actually inspected.
+
+The signed five are J01, H02, C17, J07 and H10. All cycle-six candidates remain
+below one second on every measured ROI. J01 improves H02 by 0.27685 IoU percentage
+points; J07 improves H10 by 0.10996 points. Both have documented regressions.
+J03 adds positive-support deletion and is rejected. CYCLE_SIX_REVIEW.md contains
+benefits and rejection reasons for every candidate.
+
+Six of twenty cycles are complete. MainPID 898917 and posthocPID 903248 are terminal;
+do not relaunch them. The goal remains active.

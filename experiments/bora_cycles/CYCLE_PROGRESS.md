@@ -1,6 +1,6 @@
 # Accuracy, speed and the new one-second penalty
 
-Five of twenty cycles are complete on all 149 repeatedly reused development
+Six of twenty cycles are complete on all 149 repeatedly reused development
 ROIs. The user now requests penalizing algorithms that take longer than one
 second per image. The explicit working policy is:
 
@@ -28,6 +28,7 @@ cycle 5; the runtime-adjusted candidate leader must survive instead.
 | 3 | F01 integrates uncertainty in local prototype estimates, avoiding certainty from sparse local support | F01: 0.679529 | 1.7402 |
 | 4 | Fifteen new hypotheses tested; none exceeds F01 | F01: 0.679529 | 1.9140 |
 | 5 | H02 solves a screened spatial appearance field; H10 integrates Gaussian colour noise in a discriminant objective | F01: 0.679529 (rejected for runtime) | 1.6544 |
+| 6 | J01 uses original H&E conductance; J07 integrates squared-hinge Gaussian risk | J01: 0.674658 | 0.1932 |
 
 The cycle 2 raw gain is 0.000608, or 0.061 IoU percentage points. Cycle 3 adds
 0.007132, or 0.713 points. The total raw gain from cycle 1's leader is 0.774
@@ -110,7 +111,29 @@ on the small workload. This is kernel evidence, not whole-algorithm acceleration
 
 `runtime_report.py` derives `RUNTIME_PENALTY_HISTORY.json` and `runtime_history.html`
 from signed completed-cycle evidence. The selected-five viewer shows the
-penalty and orders its five methods by adjusted utility. Five of twenty cycles
-are complete. The next fifteen innovations and all later selections must
-respect the one-second preference; they have not been implemented or evaluated
-by the cycle-five selection.
+penalty and orders its five methods by adjusted utility. Six of twenty cycles
+are complete. All later selections must respect the one-second preference.
+
+## Cycle 6: measurable gains below one second
+
+J01 changes appearance-field conductance using original H&E optical-density
+edges, limiting inappropriate class-colour borrowing. It improves H02 from
+0.671889 to 0.674658 mean IoU (**0.27685 percentage points**), with 90 wins,
+57 losses and two ties. Mean time is 0.1932 versus 0.1923 seconds in the same run;
+every image is below one second. This is a 0.2869-point gain over cycle 1's C18
+leader. Native BCSS45 improves vessel recognition, but native BCSS53 loses
+part of a tumour band and small-region recall falls. H02 therefore survives too.
+
+J07 replaces H10's expected exponential loss with an analytically integrated
+squared hinge, improving mean IoU from 0.667425 to 0.668524 (**0.10996 points**)
+at 0.0753 versus 0.0613 seconds. It corrects a false fat island in native BCSS87,
+but loses more stroma in native TIGER23 and has 25 unsuccessful finite optimizer
+terminations. H10 remains the fastest survivor. The RGB conversion is unchanged.
+
+The signed five are **J01, H02, C17, J07 and H10**. All149 overviews and six
+native crops were actually inspected. J03 is rejected for extra annotated-fat
+deletion without general cleft recovery; J15 for false rings despite higher
+small-region recall. All3,278 masks and745 unchanged-parent comparisons pass
+the native audits. See CYCLE_SIX_REVIEW.md for every decision. These remain
+development results, with 14 cycles and the final full-conversion comparison
+still outstanding.
