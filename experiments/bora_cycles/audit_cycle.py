@@ -115,7 +115,7 @@ def audit(source, root, previous=None, executed_code=None):
                 raise ValueError("Native geometry changed: "+case+"/"+method)
             if not set(np.unique(mask)) <= allowed or np.any(mask[~support] != 0):
                 raise ValueError("Class IDs/background clipping violated: "+case+"/"+method)
-            if method not in ("C20", "D12", "F03", "G03", "H03") and np.any(mask[support] == 0):
+            if method not in ("C20", "D12", "F03", "G03", "H03", "J03") and np.any(mask[support] == 0):
                 raise ValueError("Unexpected unassigned tissue: "+case+"/"+method)
             with Image.open(out/method/"mask.png") as display:
                 if display.mode != "P" or not np.array_equal(np.asarray(display), mask):
@@ -141,7 +141,7 @@ def audit(source, root, previous=None, executed_code=None):
                 if not detail["unchanged_survivor_native_parity"] or not np.array_equal(mask, tifffile.imread(old)):
                     raise ValueError("Unchanged survivor prediction differs: "+case+"/"+method)
                 counts["unchanged_survivor_comparisons"] += 1
-        for child_id, parent_id in (("F03", "D10"), ("G03", "F01"), ("H03", "F01")):
+        for child_id, parent_id in (("F03", "D10"), ("G03", "F01"), ("H03", "F01"), ("J03", "H02")):
             if child_id not in mask_paths or parent_id not in mask_paths:
                 continue
             removed = glass_changes(tifffile.imread(mask_paths[parent_id]),

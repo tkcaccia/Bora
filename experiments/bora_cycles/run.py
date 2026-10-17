@@ -25,7 +25,8 @@ from .methods import predict
 from .registry import (candidates, roster, CHILDREN_TWO, CYCLE_TWO_SURVIVORS,
                        CHILDREN_THREE, CYCLE_THREE_SURVIVORS,
                        CHILDREN_FOUR, CYCLE_FOUR_SURVIVORS,
-                       CHILDREN_FIVE, CYCLE_FIVE_SURVIVORS)
+                       CHILDREN_FIVE, CYCLE_FIVE_SURVIVORS,
+                       CHILDREN_SIX, CYCLE_SIX_SURVIVORS)
 from .diagnostics import novelty, white_regions, mask_diagnostics
 from .runtime_policy import active_policy, runtime_ranking
 
@@ -124,7 +125,7 @@ def freeze_case(args):
                         raise RuntimeError("Non-deterministic candidate")
                     previous = native
                 assert native.shape == tuple(sample["native_shape_yx"])
-                if key not in ("C20", "D12", "F03", "G03", "H03"):
+                if key not in ("C20", "D12", "F03", "G03", "H03", "J03"):
                     assert np.all(native[native_support] > 0)
                 assert np.all(native[~native_support] == 0)
                 assert set(np.unique(native)) <= set(np.unique(coarse)) | {0}
@@ -361,7 +362,7 @@ def main():
     parser.add_argument("--keys", nargs="+")
     parser.add_argument("--workers", type=int, choices=(1, 2, 3), default=3)
     parser.add_argument("--repeats", type=int, default=1)
-    parser.add_argument("--cycle", type=int, choices=(1, 2, 3, 4, 5), default=1)
+    parser.add_argument("--cycle", type=int, choices=(1, 2, 3, 4, 5, 6), default=1)
     parser.add_argument("--previous", type=Path)
     parser.add_argument("--metric-backend", choices=("numpy", "cpp"), default="cpp")
     args = parser.parse_args()
@@ -381,7 +382,8 @@ def main():
         survivors, children = {2: (CYCLE_TWO_SURVIVORS, CHILDREN_TWO),
                                3: (CYCLE_THREE_SURVIVORS, CHILDREN_THREE),
                                4: (CYCLE_FOUR_SURVIVORS, CHILDREN_FOUR),
-                               5: (CYCLE_FIVE_SURVIVORS, CHILDREN_FIVE)}[args.cycle]
+                               5: (CYCLE_FIVE_SURVIVORS, CHILDREN_FIVE),
+                               6: (CYCLE_SIX_SURVIVORS, CHILDREN_SIX)}[args.cycle]
         if previous["cycle"] != args.cycle-1 or selection["survivors"] != list(survivors):
             parser.error("Implemented children do not match the actual reviewed survivors")
         if digest(args.previous/"VISUAL_REVIEW.json") != selection["review_sha256"]:

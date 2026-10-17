@@ -415,10 +415,95 @@ CYCLE_FIVE.update({item["id"]: Candidate(item["title"], item["intervention"],
     for item in CHILDREN_FIVE})
 
 
+CYCLE_SIX_SURVIVORS = ("H02", "C17", "H10", "H04", "C01")
+CHILDREN_SIX = [
+    dict(id="J01", parent="H02", title="H&E edge-conducted appearance",
+         intervention="optical-density-conductance-appearance-field",
+         equation_or_rule="On the parent's 8um grid, weight each physical appearance-field edge by 0.02+exp(-squared H&E optical-density contrast/(2*0.1^2)); retain the 16um screened field and original shared RGB covariance.",
+         failure_hypothesis="Stain and microscopic cell edges can prevent legitimate borrowing of class appearance across the field.",
+         difference_from_parent="Change the field's observation-independent conductance using aligned H&E rather than diffuse appearances equally across every neighbouring location."),
+    dict(id="J02", parent="H02", title="Joint shared colour-drift field",
+         intervention="joint-two-way-class-intercept-spatial-nuisance-system",
+         equation_or_rule="Jointly fit one constant RGB mean per original class and one shared 8um spatial RGB drift field by a single screened sparse block normal system, with 0.015 anchors and 16um physical regularity.",
+         failure_hypothesis="A common drift cannot represent genuinely independent local changes in different tissue classes.",
+         difference_from_parent="Constrain the generative structure across classes and estimate class means jointly with drift; independent class appearance surfaces are removed."),
+    dict(id="J03", parent="H02", title="Harmonic exterior-glass access",
+         intervention="he-dirichlet-glass-committor-background-state",
+         equation_or_rule="On a 4um H&E grid solve the harmonic probability of reaching exterior bright seeds before stained tissue seeds, using OD edge conductance; remove only bright analysis pixels with glass probability above0.95.",
+         failure_hypothesis="Border adipose can act as a false glass seed; absent two-sided seed evidence must yield no extra deletion.",
+         difference_from_parent="Retain exactly the parent's nonzero tissue labels and add an exterior-access random-walk state, rather than deleting every white component or using its shape or ring classes."),
+    dict(id="J04", parent="C17", title="Integrated palette dominance",
+         intervention="simplex-posterior-dominant-class-importance-integral",
+         equation_or_rule="Integrate dominant-class probability under exp(-(RGB residual squared+0.012 prior deviation squared)/(2*0.025^2)) using cyclically symmetrized128-point fixed-seed scrambled Sobol Dirichlet0.3 importance quadrature per class.",
+         failure_hypothesis="Finite importance quadrature can miss narrow or high-dimensional posterior modes and distort class dominance.",
+         difference_from_parent="Use posterior mass of each class winning the mixture, instead of selecting the largest fraction at a single constrained MAP point."),
+    dict(id="J05", parent="C17", title="Colour-graph coupled inverse",
+         intervention="occupied-colour-graph-joint-simplex-fraction-inverse",
+         equation_or_rule="Add 0.0075 sum(q*Lq) to the original palette energy on a symmetric six-neighbour occupied-colour graph, and run100 projected steps with a checked spectral step bound and explicit residual.",
+         failure_hypothesis="Different tissues can occupy neighbouring converted colours, so colour-graph coupling can erase genuine semantic interfaces.",
+         difference_from_parent="Solve a single coupled field of fractions over all occupied colours, rather than independent colour-node quadratics or smoothing spatial masks."),
+    dict(id="J06", parent="C17", title="Coarse tile log-fraction decoder",
+         intervention="identity-anchored-log-simplex-calibration-from-tile-observations",
+         equation_or_rule="Use mean log fractions of25 original known tile samples as observations, fit an identity-centred multinomial decoder with0.01 ridge, and apply the decoder to the unchanged palette posterior at every pixel.",
+         failure_hypothesis="Coarse winner contamination can teach the decoder to undo correct palette mixtures or suppress minority classes.",
+         difference_from_parent="Learn how palette fractions map to a class decision while retaining the fixed input colours and palette inverse; no endmember fitting or label-propagation ensemble is added."),
+    dict(id="J07", parent="H10", title="Gaussian-integrated hinge risk",
+         intervention="analytic-gaussian-expected-squared-hinge-discrimination",
+         equation_or_rule="For every own/rival contrast, minimize E[max(0,1+delta dot noisy tile mean)^2] with Gaussian covariance I/25 in whitened RGB and0.0025 coefficient ridge; evaluate the expectation and gradient analytically.",
+         failure_hypothesis="The lower-growth hinge risk may underfit genuinely difficult original tile observations while retaining the Gaussian noise approximation.",
+         difference_from_parent="Change the statistical risk from exponential penalties to the analytic truncated-normal squared hinge, preserving the same original tile evidence and uncertainty scale."),
+    dict(id="J08", parent="H10", title="Noise-deconvolved class scatter",
+         intervention="measurement-error-subtracted-latent-class-quadratic-density",
+         equation_or_rule="Subtract I/25 from within-class covariance of whitened tile means, project to PSD, shrink by n/(n+5) toward pooled latent scatter, add pixel noise I, and classify with class-specific normalized Gaussian quadratic scores.",
+         failure_hypothesis="Sparse coarse tiles may not identify class scatter, and the assumed mean measurement error can remove real biological variance.",
+         difference_from_parent="Replace a global log-linear discriminant with a generative quadratic geometry whose between-tile biological scatter is separated from within-tile nuisance noise."),
+    dict(id="J09", parent="H10", title="Additive nonlinear colour risk",
+         intervention="gaussian-cubature-generalized-additive-colour-discrimination",
+         equation_or_rule="Fit linear plus four softplus knots per whitened RGB coordinate by27-point Gaussian-Hermite exponential-risk cubature and0.0025 ridge, optimizing a monotone log of the positive convex objective for numerical stability.",
+         failure_hypothesis="An additive response cannot represent genuine colour interactions; finite cubature and occupied-colour representatives are approximate.",
+         difference_from_parent="Change the discriminant function class to nonlinear additive colour responses; keep Gaussian mean-error semantics and original coarse training rather than editing the conversion."),
+    dict(id="J10", parent="H04", title="Rigid latent palette calibration",
+         intervention="proper-procrustes-joint-latent-endmember-calibration",
+         equation_or_rule="Alternate checked simplex fractions with an identity-anchored proper Procrustes rotation and translation of the canonical palette for12 steps, preserving every pairwise vertex distance exactly.",
+         failure_hypothesis="A rigid palette cannot explain nonrigid conversion distortion, and latent vertices may lie outside the display RGB cube.",
+         difference_from_parent="Constrain all endmembers to one shape-preserving transformation instead of allowing independent bounded class-colour drift."),
+    dict(id="J11", parent="H04", title="Tile-winner constrained palette",
+         intervention="latent-tile-mean-fraction-dominance-cone-supervision",
+         equation_or_rule="Fit endmembers to original tile means with latent simplex fractions constrained q[observed winner]>=q[rival], using star-order projection and finite accelerated quadratics inside12 bounded palette updates.",
+         failure_hypothesis="A winner among true pixel counts is not necessarily the largest mean converted-colour fraction; finite inner solves can retain residual error.",
+         difference_from_parent="Change the supervision from softly anchored individual pixels to explicit whole-tile winner inequalities on latent mixtures; no fine masks or hard spatial margins are used."),
+    dict(id="J12", parent="H04", title="Calibration-uncertain palette risk",
+         intervention="endmember-posterior-covariance-expected-reconstruction-risk",
+         equation_or_rule="After the parent's bounded palette fit, estimate interior endmember covariance sigma^2*(Q^T W Q+0.02 I)^-1; add three times this matrix to the prediction quadratic Hessian, giving expected RGB reconstruction risk.",
+         failure_hypothesis="An interior Gaussian approximation ignores active palette box constraints and may overmix weakly identified classes.",
+         difference_from_parent="Propagate finite calibration uncertainty into every mixture decision instead of treating learned palette vertices as exact."),
+    dict(id="J13", parent="C01", title="Shared-count Gaussian winner",
+         intervention="own-count-conditioned-all-rival-gaussian-event-integral",
+         equation_or_rule="Approximate class counts by independent Gaussians and integrate the product of all rival count CDFs conditional on one own count using21 Gaussian-Hermite points, with analytic probability and logit gradients.",
+         failure_hypothesis="Independent Gaussian counts omit multinomial anticorrelation, and finite quadrature may poorly resolve sharply concentrated count events.",
+         difference_from_parent="Couple rival comparisons through the same latent own count rather than multiply independent pairwise-normal count-difference events."),
+    dict(id="J14", parent="C01", title="Latent corrupted tile observations",
+         intervention="inferred-uniform-contamination-of-normalized-composite-winners",
+         equation_or_rule="Normalize all pairwise-normal composite winner masses across classes, mix with uniform contamination epsilon=0.49*sigmoid(eta), and jointly fit eta and class logits with a0.02 log clean-observation prior.",
+         failure_hypothesis="A global contamination fraction cannot distinguish true weak-label errors from an inadequate colour model.",
+         difference_from_parent="Introduce a fitted latent failure state for the observed tile label, rather than force every coarse winner correct or estimate a fixed class-dependent channel from palette fractions."),
+    dict(id="J15", parent="C01", title="Learned nonlinear colour votes",
+         intervention="coarse-count-supervised-eight-unit-colour-vote-network",
+         equation_or_rule="Fit linear logits plus an eight-unit learned tanh residual to the original normal-count composite likelihood, starting from the original colour discriminant and using finite60-step CPU L-BFGS with explicit parameter ridges.",
+         failure_hypothesis="Nonconvex coarse-only learning can fit spurious colour islands and may not converge within the subsecond preference.",
+         difference_from_parent="Learn a nonlinear interaction representation for pixel votes while retaining the tile-count observation rule; the RGB input and encoder outputs stay fixed."),
+]
+CYCLE_SIX = {key: CYCLE_FIVE[key] for key in CYCLE_SIX_SURVIVORS}
+CYCLE_SIX.update({item["id"]: Candidate(item["title"], item["intervention"],
+    item["equation_or_rule"], item["failure_hypothesis"], True, item["parent"])
+    for item in CHILDREN_SIX})
+
+
 def candidates(cycle=1):
-    if cycle not in (1, 2, 3, 4, 5):
+    if cycle not in (1, 2, 3, 4, 5, 6):
         raise ValueError("This cycle has no implemented, reviewed lineage")
-    return {1: CYCLE_ONE, 2: CYCLE_TWO, 3: CYCLE_THREE, 4: CYCLE_FOUR, 5: CYCLE_FIVE}[cycle]
+    return {1: CYCLE_ONE, 2: CYCLE_TWO, 3: CYCLE_THREE, 4: CYCLE_FOUR,
+            5: CYCLE_FIVE, 6: CYCLE_SIX}[cycle]
 
 
 def roster(cycle=1):

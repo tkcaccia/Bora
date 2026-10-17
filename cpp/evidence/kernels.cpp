@@ -3,11 +3,134 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <functional>
 #include <limits>
 #include <vector>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+
+// Class-specific quadratic Gaussian scores. Each row is independent, so
+// one/two-thread calculations have identical floating-point operation order.
+extern "C" int bora_gaussian_logits(const float* x, const double* means,
+        const double* precision, const double* intercept, float* output,
+        int64_t n, int dimensions, int classes, int threads) {
+    if(n<0 || dimensions<1 || classes<1 || threads<1) return 1;
+    #pragma omp parallel for num_threads(threads) schedule(static)
+    for(int64_t i=0;i<n;++i) {
+        for(int g=0;g<classes;++g) {
+            double quadratic=0;
+            for(int a=0;a<dimensions;++a) {
+                double row=0;
+                for(int b=0;b<dimensions;++b)
+                    row+=precision[(g*dimensions+a)*dimensions+b]
+                        *(x[i*dimensions+b]-means[g*dimensions+b]);
+                quadratic+=(x[i*dimensions+a]-means[g*dimensions+a])*row;
+            }
+            output[i*classes+g]=float(intercept[g]-.5*quadratic);
+        }
+    }
+    return 0;
+}
+
+// Euclidean projection on a simplex whose designated coordinate is maximal.
+// Star-order isotonic regression pools the root with violating rivals;
+// thresholding that fitted vector gives the nonnegative unit-sum projection.
+static void dominant_projection(const std::vector<double>& value, int own,
+        std::vector<double>& out, std::vector<double>& ordered) {
+    const int k=value.size(); ordered.clear();
+    for(int j=0;j<k;++j) if(j!=own) ordered.push_back(value[j]);
+    std::sort(ordered.begin(),ordered.end(),std::greater<double>());
+    double total=value[own], top=total;
+    for(int j=0;j<k-1;++j) {
+        total+=ordered[j]; top=std::max(top,total/(j+2));
+    }
+    for(int j=0;j<k;++j) out[j]=(j==own?top:std::min(value[j],top));
+    ordered=out;
+    std::sort(ordered.begin(),ordered.end(),std::greater<double>());
+    total=0; double threshold=0;
+    for(int j=0;j<k;++j) {
+        total+=ordered[j];
+        if(ordered[j]>(total-1)/(j+1)) threshold=(total-1)/(j+1);
+    }
+    for(int j=0;j<k;++j) out[j]=std::max(0.,out[j]-threshold);
+}
+
+extern "C" int bora_dominance_qp(const float* x, const float* prior,
+        const double* colors, const float* initial, const int32_t* labels,
+        float* output, double* residual, int32_t* iterations,
+        int64_t n, int k, double ridge, double tolerance, int limit, int threads) {
+    if(n<1 || k<1 || ridge<=0 || tolerance<=0 || limit<1 || threads<1) return 1;
+    for(int64_t i=0;i<n;++i) if(labels[i]<0 || labels[i]>=k) return 2;
+    std::vector<double> h(k*k,0.);
+    double lipschitz=0;
+    for(int a=0;a<k;++a) {
+        double row=0;
+        for(int b=0;b<k;++b) {
+            double value=(a==b?ridge:0.);
+            for(int d=0;d<3;++d) value+=colors[3*a+d]*colors[3*b+d];
+            h[a*k+b]=value; row+=std::abs(value);
+        }
+        lipschitz=std::max(lipschitz,row);
+    }
+    #pragma omp parallel for num_threads(threads) schedule(static)
+    for(int64_t i=0;i<n;++i) {
+        std::vector<double> b(k),q(k),z(k),next(k),gradient(k),query(k),projected(k),ordered;
+        ordered.reserve(k);
+        for(int a=0;a<k;++a) {
+            b[a]=ridge*prior[i*k+a];
+            for(int d=0;d<3;++d) b[a]+=colors[3*a+d]*x[3*i+d];
+            z[a]=initial[i*k+a];
+        }
+        dominant_projection(z,labels[i],q,ordered); z=q;
+        auto energy=[&](const std::vector<double>& value) {
+            double sum=0;
+            for(int a=0;a<k;++a) {
+                sum-=b[a]*value[a];
+                for(int b0=0;b0<k;++b0) sum+=.5*value[a]*h[a*k+b0]*value[b0];
+            }
+            return sum;
+        };
+        auto grad=[&](const std::vector<double>& value) {
+            for(int a=0;a<k;++a) {
+                gradient[a]=-b[a];
+                for(int b0=0;b0<k;++b0) gradient[a]+=h[a*k+b0]*value[b0];
+            }
+        };
+        double momentum=1, value=energy(q), error=std::numeric_limits<double>::infinity();
+        int used=0;
+        for(int it=0;it<limit;++it) {
+            grad(z);
+            for(int a=0;a<k;++a) query[a]=z[a]-gradient[a]/lipschitz;
+            dominant_projection(query,labels[i],next,ordered);
+            double changed=energy(next);
+            if(changed>value+1e-13) {
+                momentum=1; grad(q);
+                for(int a=0;a<k;++a) query[a]=q[a]-gradient[a]/lipschitz;
+                dominant_projection(query,labels[i],next,ordered); changed=energy(next);
+            }
+            const double updated=(1+std::sqrt(1+4*momentum*momentum))/2;
+            for(int a=0;a<k;++a) z[a]=next[a]+(momentum-1)/updated*(next[a]-q[a]);
+            q=next; momentum=updated; value=changed; used=it+1;
+            if(it%8==0 || it==limit-1) {
+                grad(q);
+                for(int a=0;a<k;++a) query[a]=q[a]-gradient[a];
+                dominant_projection(query,labels[i],projected,ordered);
+                error=0;
+                for(int a=0;a<k;++a) error=std::max(error,std::abs(q[a]-projected[a]));
+                if(error<tolerance) break;
+            }
+        }
+        for(int a=0;a<k;++a) {output[i*k+a]=float(q[a]);q[a]=output[i*k+a];}
+        grad(q);
+        for(int a=0;a<k;++a) query[a]=q[a]-gradient[a];
+        dominant_projection(query,labels[i],projected,ordered);
+        error=0;
+        for(int a=0;a<k;++a) error=std::max(error,std::abs(q[a]-projected[a]));
+        residual[i]=error; iterations[i]=used;
+    }
+    return 0;
+}
 
 extern "C" int bora_local_mixture_logits(const float* x, const double* coefficient,
         const double* intercept, const float* mixing, float* output,

@@ -59,6 +59,55 @@ def logits(x, coefficient, intercept, threads=2):
     return out
 
 
+def gaussian_logits(x, means, precision, intercept, threads=2):
+    x = np.ascontiguousarray(x, np.float32)
+    means, precision, intercept = [np.ascontiguousarray(a, np.float64)
+                                    for a in (means, precision, intercept)]
+    k, d = means.shape
+    if (x.shape[-1] != d or precision.shape != (k, d, d) or intercept.shape != (k,)
+            or not all(np.isfinite(a).all() for a in (x, means, precision, intercept))):
+        raise ValueError('Incompatible finite Gaussian model')
+    function = library().bora_gaussian_logits
+    function.argtypes = [ctypes.c_void_p]*5+[ctypes.c_int64]+[ctypes.c_int]*3
+    function.restype = ctypes.c_int
+    output = np.empty((*x.shape[:-1], k), np.float32)
+    status = function(x.ctypes.data, means.ctypes.data, precision.ctypes.data,
+        intercept.ctypes.data, output.ctypes.data, int(np.prod(x.shape[:-1])), d, k, threads)
+    if status or not np.isfinite(output).all():
+        raise RuntimeError('C++ Gaussian scoring failed')
+    return output
+
+
+def dominance_qp(x, prior, colors, labels, initial=None, tolerance=1e-7,
+                 iterations=400, threads=2):
+    x, prior = [np.ascontiguousarray(a, np.float32) for a in (x, prior)]
+    colors = np.ascontiguousarray(colors, np.float64)
+    labels = np.ascontiguousarray(labels, np.int32)
+    initial = np.ascontiguousarray(prior if initial is None else initial, np.float32)
+    if (x.ndim != 2 or x.shape[1] != 3 or prior.ndim != 2 or len(x) != len(prior)
+            or colors.shape != (prior.shape[1], 3) or labels.shape != (len(x),)
+            or initial.shape != prior.shape or np.any(labels < 0)
+            or np.any(labels >= prior.shape[1])
+            or not all(np.isfinite(a).all() for a in (x, prior, colors, initial))):
+        raise ValueError('Incompatible dominance quadratic')
+    function = library().bora_dominance_qp
+    function.argtypes = [ctypes.c_void_p]*8+[ctypes.c_int64, ctypes.c_int,
+        ctypes.c_double, ctypes.c_double, ctypes.c_int, ctypes.c_int]
+    function.restype = ctypes.c_int
+    output = np.empty_like(prior)
+    residual = np.empty(len(x), np.float64)
+    used = np.empty(len(x), np.int32)
+    status = function(x.ctypes.data, prior.ctypes.data, colors.ctypes.data,
+        initial.ctypes.data, labels.ctypes.data, output.ctypes.data, residual.ctypes.data,
+        used.ctypes.data, len(x), prior.shape[1], .012, tolerance, iterations, threads)
+    if status or not np.isfinite(output).all() or not np.isfinite(residual).all():
+        raise RuntimeError('C++ dominance quadratic failed')
+    return output, dict(max_projected_gradient_residual=float(residual.max()),
+        unconverged_bags=int((residual > 1e-6).sum()), max_iterations=int(used.max()),
+        mean_iterations=float(used.mean()), threads=threads,
+        converged=bool(np.all(residual <= 1e-6)))
+
+
 def local_mixture_logits(x, coefficient, intercept, mixing, threads=2):
     x = np.ascontiguousarray(x, np.float32)
     coefficient = np.ascontiguousarray(coefficient, np.float64)
