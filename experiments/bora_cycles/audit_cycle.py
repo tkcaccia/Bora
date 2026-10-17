@@ -54,7 +54,8 @@ def audit(source, root, previous=None, executed_code=None):
     rows = {r["case"]: r for r in result["cases"]}
     if len(rows) != len(result["cases"]) or set(rows) != set(cases):
         raise ValueError("Scored scope differs from prediction scope")
-    if aggregate(result["cases"], methods) != result["ranking"]:
+    from .runtime_policy import active_policy
+    if aggregate(result["cases"], methods, active_policy(protocol)) != result["ranking"]:
         raise ValueError("Saved aggregate differs from per-case scores")
     visual = load(root/"VISUAL_MANIFEST.json")["contact_sha256"]
     if set(visual) != set(cases):

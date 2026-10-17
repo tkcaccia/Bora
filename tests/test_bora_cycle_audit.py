@@ -99,6 +99,26 @@ def test_aggregate_tamper_is_rejected(evidence):
         audit(source, root)
 
 
+def test_new_runtime_aggregate_is_verified_from_its_frozen_policy(evidence):
+    from experiments.bora_cycles.runtime_policy import DEFAULT_POLICY, active_policy
+    source, root = evidence
+    protocol = json.loads((root/'PROTOCOL.json').read_text())
+    protocol.update(cycle=5,study_protocol=dict(runtime_penalty=DEFAULT_POLICY))
+    write(root/'PROTOCOL.json',protocol)
+    freeze = json.loads((root/'ALL_PREDICTIONS_FROZEN.json').read_text())
+    freeze['protocol_sha256'] = digest(root/'PROTOCOL.json')
+    write(root/'ALL_PREDICTIONS_FROZEN.json',freeze)
+    result = json.loads((root/'RESULTS.json').read_text())
+    result['protocol'] = protocol
+    result['ranking'] = aggregate(result['cases'],protocol['methods'],active_policy(protocol))
+    write(root/'RESULTS.json',result)
+    assert audit(source,root)['native_masks'] == 1
+    result['ranking'][0]['runtime_adjusted_score'] -= .1
+    write(root/'RESULTS.json',result)
+    with pytest.raises(ValueError,match='Saved aggregate differs'):
+        audit(source,root)
+
+
 def test_glass_only_intervention_cannot_relabel_nonzero_tissue():
     parent = np.array([[1, 2, 0], [2, 1, 2]], np.uint8)
     child = parent.copy();child[0, 0] = child[1, 2] = 0

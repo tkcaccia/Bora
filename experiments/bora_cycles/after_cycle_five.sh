@@ -63,7 +63,7 @@ for name in [f'CPP_MIXTURE_PROFILE_{tag}.json', f'CPP_MIXTURE_PROFILE_LARGE_{tag
 a = json.loads((r/'INTEGRITY_AUDIT.json').read_text())
 record = dict(cases=a['cases'], audited_native_masks=a['native_masks'],
     unchanged_survivor_comparisons=a['unchanged_survivor_comparisons'], failed_methods=a['failed_methods'],
-    posthoc_test_cases_passed=8, visual_review_still_required=True, completed_cycles=4,
+    posthoc_test_cases_passed=9, visual_review_still_required=True, completed_cycles=4,
     complete_goal=False, predictions_modified=False, scores_modified=False,
     artifact_sha256={name:hashlib.sha256((r/name).read_bytes()).hexdigest() for name in names})
 (r/'POSTHOC_COMPLETE.json').write_text(json.dumps(record, indent=2))

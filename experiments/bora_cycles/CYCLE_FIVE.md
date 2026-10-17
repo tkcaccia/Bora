@@ -102,3 +102,12 @@ After execution, audit native masks and unchanged parents, measure missed
 small regions and inspect every all-method overview plus targeted native
 crops. Only then select five and open the selected-five viewer. Four of twenty
 cycles are complete at this proposal stage; no cycle-five gain is asserted.
+
+The frozen ef9222b implementation passed172 local and172 Chiamaka checks.
+All176 pilot predictions succeeded. The first read-only audit identified an
+auditor compatibility error: it recomputed raw-IoU aggregation while the
+pilot correctly saved the frozen runtime-adjusted aggregation. The auditor
+now recomputes using the policy inside each result's protocol, with a new
+tamper-rejection regression test. No model, prediction or score is changed.
+The corrected auditor runs from a separate posthoc source snapshot; the
+executed model snapshot remains immutable for the full-run parity check.
