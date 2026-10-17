@@ -37,7 +37,7 @@ def summarize(cases,conversions):
     return ranking
 
 
-def score_case(case,root,source,protocol,prior):
+def score_case(case,root,source,protocol,prior,reuse_root=None):
     originals=source.parent/protocol['original_folder']
     previous={case:prior}
     csvrows=[]
@@ -50,13 +50,25 @@ def score_case(case,root,source,protocol,prior):
         conversions={}
         for conversion in protocol['conversions']:
             folder=out/conversion;f=json.loads((folder/'FROZEN.json').read_text());scorepath=folder/'scores.json'
+            reusable={}
+            if reuse_root is not None:
+                oldfolder=reuse_root/'cases'/case/conversion;oldpath=oldfolder/'scores.json'
+                if oldpath.exists():
+                    old=json.loads(oldpath.read_text());oldmanifest=json.loads((oldfolder/'FROZEN.json').read_text())
+                    assert old['prediction_manifest_sha256']==digest(oldfolder/'FROZEN.json')
+                    assert oldmanifest['native_mpp_xy']==f['native_mpp_xy']
+                    for key in STRATEGIES:
+                        if key!='B17':
+                            name=key+'/bora.native.tif'
+                            assert oldmanifest['files_sha256'][name]==f['files_sha256'][name]
+                            reusable[key]=old['strategies'][key]['score']
             if scorepath.exists():
                 record=json.loads(scorepath.read_text())
                 if record['prediction_manifest_sha256']!=digest(folder/'FROZEN.json'):raise ValueError('Score cache mismatch')
             else:
                 methods={};baseline=previous[case]['methods'][conversion]['after'];current=tifffile.imread(folder/'B01/bora.native.tif')
                 for key in STRATEGIES:
-                    pred=tifffile.imread(folder/key/'bora.native.tif');s=evaluator.score(pred)
+                    pred=tifffile.imread(folder/key/'bora.native.tif');s=reusable[key] if key in reusable else evaluator.score(pred)
                     if key=='B01' and (abs(s['macro_iou']-baseline['macro_iou'])>1e-14 or abs(s['macro_dice']-baseline['macro_dice'])>1e-14):raise ValueError('Current score mismatch')
                     methods[key]=dict(score=s,delta_vs_current=s['macro_iou']-baseline['macro_iou'],seconds=f['records'][key]['seconds'],
                         changed_tissue_percent_vs_current=float(100*np.mean(pred[tissue]!=current[tissue])),changed_tissue_percent_vs_tiles=float(100*np.mean(pred[tissue]!=coarse[tissue])),
@@ -75,9 +87,14 @@ def score_case(case,root,source,protocol,prior):
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--workers',type=int,choices=(1,2,3),default=3);p.add_argument('--source',type=Path,required=True);p.add_argument('--root',type=Path,required=True);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--workers',type=int,choices=(1,2,3),default=3);p.add_argument('--source',type=Path,required=True);p.add_argument('--root',type=Path,required=True);p.add_argument('--reuse-scores',type=Path);a=p.parse_args()
     protocol=json.loads((a.root/'PROTOCOL.json').read_text());frozen=json.loads((a.root/'ALL_PREDICTIONS_FROZEN.json').read_text())
     if digest(a.root/'PROTOCOL.json')!=frozen['protocol_sha256'] or digest(a.source/'ALL_PREDICTIONS_FROZEN.json')!=protocol['source_frozen_sha256']:raise ValueError('Protocol changed')
+    if a.reuse_scores is not None:
+        oldprotocol=json.loads((a.reuse_scores/'PROTOCOL.json').read_text())
+        assert oldprotocol['source_plan_sha256']==protocol['source_plan_sha256']
+        assert oldprotocol['source_frozen_sha256']==protocol['source_frozen_sha256']
+        assert digest(a.reuse_scores/'runtime_sources/experiments/virchow2_multi/score.py')==digest(Path(__file__).parents[1]/'virchow2_multi/score.py')
     for pair,sha in frozen['conversion_manifest_sha256'].items():
         folder=a.root/'cases'/pair
         if digest(folder/'FROZEN.json')!=sha:raise ValueError('Prediction manifest changed')
@@ -85,7 +102,7 @@ def main():
     originals=a.source.parent/protocol['original_folder'];previous={r['case']:r for r in json.loads((a.source/'results.json').read_text())['cases']}
     cases=[];csvrows=[]
     with ProcessPoolExecutor(max_workers=a.workers,mp_context=get_context('spawn')) as pool:
-        futures=[pool.submit(score_case,case,a.root,a.source,protocol,previous[case]) for case in protocol['cases']]
+        futures=[pool.submit(score_case,case,a.root,a.source,protocol,previous[case],a.reuse_scores) for case in protocol['cases']]
         for future in futures:
             row,records=future.result();cases.append(row);csvrows.extend(records)
     results=dict(cases=cases,protocol=protocol,ranking=summarize(cases,protocol['conversions']),
@@ -96,7 +113,9 @@ def main():
     with (a.root/'scores.csv').open('w',newline='') as f:
         w=csv.DictWriter(f,fieldnames=list(csvrows[0]));w.writeheader();w.writerows(csvrows)
     save_json(a.root/'SCORING_AUDIT.json',dict(all_predictions_verified_before_fine_reference_read=True,native_scores=len(csvrows),
-        original_quality_support_unchanged=True,current_baseline_reproduced=True,unannotated_tissue_unscored=True))
+        original_quality_support_unchanged=True,current_baseline_reproduced=True,unannotated_tissue_unscored=True,
+        unchanged_scores_reused_from=a.reuse_scores.name if a.reuse_scores else None,
+        reused_scores_guarded_by_identical_native_hashes_and_evaluator_source=True if a.reuse_scores else False))
 
 
 if __name__=='__main__':main()

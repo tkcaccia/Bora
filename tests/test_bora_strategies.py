@@ -63,3 +63,12 @@ def test_correlated_conversions_do_not_inflate_case_bootstrap():
     for a,b in zip(single,duplicate):
         assert a['strategy']==b['strategy']
         assert a['paired_delta_bootstrap95']==b['paired_delta_bootstrap95']
+
+
+def test_nonlocal_upsampling_keeps_the_actual_sample_pixel_centres():
+    from experiments.bora_strategies.fields import expand_regular_samples
+    yy,xx=np.indices((17,21),dtype=np.float32);field=np.stack([yy+2*xx,3*yy-xx],axis=-1)
+    sampled=field[::4,::4]
+    recovered=expand_regular_samples(sampled,field.shape[:2],4)
+    assert np.allclose(recovered,field)
+    assert np.array_equal(recovered[::4,::4],sampled)

@@ -111,6 +111,13 @@ def descriptor(c):
     return np.concatenate(channels,-1).astype(np.float32)
 
 
+def expand_regular_samples(values,shape,step):
+    """Sample [::step] maps at their true index-0 origin, not resize centres."""
+    yy,xx=np.indices(shape,dtype=np.float32);coordinates=[yy/step,xx/step]
+    return np.stack([ndi.map_coordinates(values[...,i],coordinates,order=1,mode='nearest')
+                     for i in range(values.shape[-1])],axis=-1)
+
+
 def nonlocal_vote(c):
     values=descriptor(c);step=max(1,round(P['patch_stride_um']/c.um));sample=values[::step,::step];labels=c.core[::step,::step]
     rng=np.random.default_rng(P['random_seed']);data=[];truth=[]
@@ -123,8 +130,7 @@ def nonlocal_vote(c):
     if dist.ndim==1:dist=dist[:,None];near=near[:,None]
     weights=1/np.maximum(dist,.05);p=np.stack([(weights*(truth[near]==i)).sum(-1) for i in range(c.k)],-1);p/=p.sum(-1,keepdims=True)
     p=p.reshape(*sample.shape[:2],c.k).astype(np.float32)
-    p=cv2.resize(p,tuple(c.shape[::-1]),interpolation=cv2.INTER_LINEAR)
-    if p.ndim==2:p=p[...,None]
+    p=expand_regular_samples(p,c.shape,step)
     return c.fix(p.argmax(-1))
 
 
