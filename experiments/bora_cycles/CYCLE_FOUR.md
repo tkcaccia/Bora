@@ -141,3 +141,27 @@ The user now requests a viewer at the end of every completed cycle. Selection
 updates only the gallery's report status and writes VIEWER_READY.json; masks,
 scores and actually reviewed contact sheets stay unchanged. Open each viewer
 for inspection while continuing the full twenty-cycle objective.
+
+## Chiamaka validation and full execution
+
+The immutable 03c77ad snapshot passed 132 focused tests on Chiamaka. Its expanded
+eight-case pilot includes TIGER07/09/14 and BCSS06 from the local failures,
+plus the original four-dataset cases. All 176 predictions and display rasters
+passed integrity checks; all forty unchanged-parent native masks match cycle
+three exactly. All eight all-method sheets were actually inspected and saved
+with concrete observations. G06 reached its forty-iteration budget on TIGER07
+with projected-gradient residual 2.0494e-6; seven other pilot cases met its
+stopping tolerance. This status remains visible rather than implying exact
+optimization. No candidates were removed using pilot scores.
+
+The full 149-case run has started on Chiamaka in a fresh `cycle-04` folder.
+Its local mirror is named `cycle-04-chiamaka` to preserve the failed Mac full
+attempt. The executed model snapshot remains unchanged. Posthoc auditing has
+a separate source snapshot and explicitly selects the host's profile files.
+
+Chiamaka's synthetic count-kernel medians at 2048 bags are 0.01856 s with one
+C++ thread and 0.01073 s with two (1.730x); the two thread outputs are exact.
+At 64 bags the ratio is 1.011x, effectively no useful threading gain. These
+kernel measurements include wrapper allocation, not whole-mask execution;
+CPU affinity and machine exclusivity were not controlled. The historical Mac
+profiles remain separately labelled.

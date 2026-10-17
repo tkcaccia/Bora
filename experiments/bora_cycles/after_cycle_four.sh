@@ -9,6 +9,8 @@ task_results="$5"
 task_previous="$6"
 task_executed_code="$7"
 task_profile_root="$8"
+task_profile_tag="${9:-LOCAL}"
+case "$task_profile_tag" in LOCAL|CHIAMAKA) ;; *) exit 2 ;; esac
 while kill -0 "$task_pid" 2>/dev/null; do
   task_command="$(ps -p "$task_pid" -o args= || true)"
   task_stat="$(ps -p "$task_pid" -o stat= || true)"
@@ -42,12 +44,13 @@ nice -n 12 "$task_python" -u -m experiments.bora_cycles.small_region_atlas \
   --source "$task_inputs" --root "$task_results" --output "$task_results/SMALL_REGION_ATLAS.json"
 nice -n 12 "$task_python" -m experiments.bora_cycles.publish_diagnostics \
   --source "$task_inputs" --root "$task_results" --reuse "$task_previous"
-"$task_python" - "$task_results" "$task_profile_root" <<'PY'
+"$task_python" - "$task_results" "$task_profile_root" "$task_profile_tag" <<'PY'
 import hashlib, json, shutil, sys
 from pathlib import Path
-r, profiles = map(Path, sys.argv[1:])
+r, profiles = map(Path, sys.argv[1:3])
+tag = sys.argv[3]
 names = ['INTEGRITY_AUDIT.json', 'SMALL_REGION_ATLAS.json', 'DIAGNOSTICS_REUSE.json']
-for name in ['CPP_COUNT_PROFILE_LOCAL.json', 'CPP_COUNT_PROFILE_LARGE_LOCAL.json']:
+for name in [f'CPP_COUNT_PROFILE_{tag}.json', f'CPP_COUNT_PROFILE_LARGE_{tag}.json']:
     source = profiles/name
     data = json.loads(source.read_text())
     assert data['cpp_thread_outputs_exact']
