@@ -6,7 +6,7 @@ Current verified status: **six of twenty cycles complete**. Cycle six has
 J07 and H10**. J01 improves H02 by 0.27685 IoU percentage points at approximately
 0.19 seconds per ROI, with important documented regressions. See
 [CYCLE_SIX_REVIEW.md](CYCLE_SIX_REVIEW.md). Earlier checkpoints below describe
-their historical stages. Cycle seven now has fifteen implemented hypotheses; independent preflight and a frozen pilot are required before its full run.
+their historical stages. Cycle seven passed numerical checks and its reviewed pilot. Its full 149-ROI run is active; full review and selection are still pending.
 
 The user now requests a runtime penalty above one second per image. From
 cycle5 the primary selection utility is the image-average of

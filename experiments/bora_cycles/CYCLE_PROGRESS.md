@@ -137,3 +137,12 @@ small-region recall. All3,278 masks and745 unchanged-parent comparisons pass
 the native audits. See CYCLE_SIX_REVIEW.md for every decision. These remain
 development results, with 14 cycles and the final full-conversion comparison
 still outstanding.
+
+## Cycle 7 in progress
+
+Fifteen K-series interventions retain the signed J01/H02/C17/J07/H10 lineage.
+All 241 checks pass locally and remotely (205 in the frozen launcher plus 36
+supplemental J-series checks). The eight-case pilot has 176 successful masks,
+both audits confirm 40 exact parents, and all eight overviews plus three native
+crops were actually viewed. The unchanged model is running all 149 ROIs.
+No cycle-seven survivors or full-benchmark gain are claimed yet.

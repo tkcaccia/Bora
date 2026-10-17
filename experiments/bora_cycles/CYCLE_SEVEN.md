@@ -214,3 +214,38 @@ before fine-reference scoring. Perform native audits and missed-region analysis,
 actually inspect all149 all-method contact sheets, then sign five survivors
 with benefit/rejection reasons for every candidate. Deliver only selected.html.
 Do not design cycle-eight children before that signed selection.
+
+## Engineering pilot and full launch
+
+All 241 focused checks pass locally and on Chiamaka. The frozen launcher ran
+205 checks and omitted the 36 J-series checks; those 36 passed separately on
+the exact snapshot before the full run. The repository wrapper is corrected.
+No frozen model source or prediction was changed. The executing model commit
+is 1ad219254115963a2b9efd2396d942732fd89bfb.
+
+All 176 pilot masks succeed. Both audits pass 176 exact display rasters and
+40 unchanged-parent comparisons. All eight all-method overview sheets and
+three native label sheets were actually inspected, with hash-pinned notes.
+Native BCSS45 shows K01 reintroducing H02's false fat stripe in a vessel.
+K02 largely preserves J01's correction; C17/K07/K08/K09 preserve the vessel
+class more consistently. Native BCSS26 exposes fat and border-class errors.
+Every displayed method still truncates the native TIGER23 stromal wedge.
+Shared white-support errors remain; this cycle has no new glass-exclusion rule.
+
+K02 has a small pilot gain, not an established full-benchmark improvement.
+K04 exceeds one second on three pilot images and receives the frozen penalty.
+All K04 field fits are finite but unconverged at the specified budget. K07
+flags unfinished gaps on seven cases, K10 unsuccessful termination on six,
+K13 on three, and K15 its proximal residual on all eight. These are evaluated
+finite-budget masks, not asserted fitted optima.
+
+Serial large Chiamaka Chebyshev-kernel medians are 1.58275 seconds on one thread
+and 0.799729 on two, ratio 1.979, with exact outputs. 29,564/32,768 synthetic
+nodes miss the 1e-7 gap tolerance at 600 iterations; maximum gap is 1.393e-5.
+These measurements are kernel-only, not whole-image speed claims.
+
+The same frozen model is running all 149 ROIs, main PID 1090822, with read-only
+posthoc PID 1093871 queued. Revalidate actual commands and artifacts; never
+restart from a stale checkpoint or an observation timeout. Six of twenty
+cycles remain complete. Full execution, scoring, actual all-image visual review
+and signed selection remain required before cycle eight may be implemented.

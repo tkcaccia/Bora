@@ -16,7 +16,8 @@ g++ -O3 -std=c++17 -shared -fPIC -fopenmp cpp/evidence/kernels.cpp -o cpp/eviden
 nice -n 12 "$task_python" -m pytest -q \
   tests/test_bora_cycle_foundation.py tests/test_bora_cycle_candidates.py \
   tests/test_bora_cycle_two.py tests/test_bora_cycle_three.py \
-  tests/test_bora_cycle_four.py tests/test_bora_cycle_five.py tests/test_bora_cycle_seven.py \
+  tests/test_bora_cycle_four.py tests/test_bora_cycle_five.py \
+  tests/test_bora_cycle_six.py tests/test_bora_cycle_seven.py \
   tests/test_bora_cycle_review.py tests/test_bora_cycle_publish.py \
   tests/test_bora_cycle_audit.py tests/test_bora_small_region_atlas.py tests/test_bora_runtime_policy.py
 nice -n 12 "$task_python" -m experiments.bora_cycles.profile_seven \

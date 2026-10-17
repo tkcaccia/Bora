@@ -1,0 +1,86 @@
+{
+  "cycle": 7,
+  "completed_cycles": 6,
+  "status": "Full149 run active after audited and actually reviewed engineering pilot.",
+  "model_commit": "1ad219254115963a2b9efd2396d942732fd89bfb",
+  "model_snapshot": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-cycles-2026-10-17/cycle-07-code-v1",
+  "archive_sha256": "c30f16937f3946459ec8fec7be3f45afe9da4d86181e4dea3967258ebc9a0319",
+  "parents": [
+    "J01",
+    "H02",
+    "C17",
+    "J07",
+    "H10"
+  ],
+  "new_children": [
+    "K01",
+    "K02",
+    "K03",
+    "K04",
+    "K05",
+    "K06",
+    "K07",
+    "K08",
+    "K09",
+    "K10",
+    "K11",
+    "K12",
+    "K13",
+    "K14",
+    "K15"
+  ],
+  "local_focused_tests_passed": 241,
+  "chiamaka_focused_tests_passed": 241,
+  "remote_test_invocations": [
+    {
+      "checks": 205,
+      "log": "cycle-07-preflight-v1.log"
+    },
+    {
+      "checks": 36,
+      "log": "cycle-07-supplemental-retained-parent-tests.log"
+    }
+  ],
+  "launcher_notice": "The frozen preflight wrapper ran205 distinct tests, omitting the36 J-series checks. All36 supplemental checks passed on that exact snapshot before the full run. The repository wrapper is corrected; frozen prediction source is untouched.",
+  "pilot_pid": 1081740,
+  "pilot_process_terminal": true,
+  "pilot_remote_result": "/mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-07-pilot-v1",
+  "pilot_successful_masks": 176,
+  "pilot_unchanged_parent_comparisons": 40,
+  "pilot_actual_overviews": 8,
+  "pilot_actual_native_crops": 3,
+  "pilot_ready_sha256": "5ee768ed80ef1dcbb82221ed8db6b1879a476d2e30cd02655bc52d0430a01764",
+  "full_run_launched": true,
+  "full_pid": 1090822,
+  "posthoc_pid": 1093871,
+  "full_remote_result": "/mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-07",
+  "full_local_result": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-07-chiamaka",
+  "full_actual_overviews": 0,
+  "full_actual_native_crops": 0,
+  "last_verified_status": {
+    "verified_at_utc": "2026-10-17T21:32:54.552084+00:00",
+    "main": {
+      "command": "1090822 SNsl       03:20 /mnt/sata_ssd/Bora-benchmark/experiments/virchow2-inverse-2026-10-16/.venv/bin/python -u -m experiments.bora_cycles.run --cycle 7 --previous /mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-06 --source /mnt/sata_ssd/Bora-benchmark/results/virchow2-expanded-inputs-2026-10-17 --root /mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-07 --workers 3 --repeats 1 --metric-backend cpp",
+      "live": true
+    },
+    "posthoc": {
+      "command": "1093871 Ss         02:56 bash /mnt/sata_ssd/Bora-benchmark/experiments/bora-cycles-2026-10-17/cycle-07-code-v1/experiments/bora_cycles/after_cycle_seven.sh 1090822 /mnt/sata_ssd/Bora-benchmark/experiments/bora-cycles-2026-10-17/cycle-07-code-v1 /mnt/sata_ssd/Bora-benchmark/experiments/virchow2-inverse-2026-10-16/.venv/bin/python /mnt/sata_ssd/Bora-benchmark/results/virchow2-expanded-inputs-2026-10-17 /mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-07 /mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-06 /mnt/sata_ssd/Bora-benchmark/experiments/bora-cycles-2026-10-17/cycle-07-code-v1 /mnt/sata_ssd/Bora-benchmark/experiments/bora-cycles-2026-10-17/cycle-07-profiles-v1 CHIAMAKA",
+      "live": true
+    },
+    "predicted_cases": 104,
+    "scored_cases": 0,
+    "contacts": 0,
+    "posthoc_complete": false,
+    "failed_methods": {},
+    "stage": null
+  },
+  "main_log": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-cycles-2026-10-17/cycle-07-v1.log",
+  "posthoc_log": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-cycles-2026-10-17/cycle-07-posthoc-v1.log",
+  "next_action": "Revalidate exact main/posthoc PIDs; after terminal artifacts mirror excluding VISUAL_REVIEW.json and diagnostics-v2, audit, actually review all149 contacts and native crops, select5 and open selected.html. No cycle8 implementation before selection.",
+  "predictions_frozen_before_scoring": true,
+  "complete_goal": false,
+  "selection_created": false,
+  "kernel_evidence": "Large serial Chiamaka medians1.58275/.799729 seconds,1.979x, exact thread outputs.29564/32768 synthetic nodes miss1e-7 gap; max1.393e-5. Kernel-only evidence.",
+  "numerical_notice": "Pilot K04 fits unconverged;K07 gaps flagged7/8;K10 optimizer false6/8;K13 false3/8;K15 proximal flags8/8. Finite masks, not asserted optima.",
+  "checkpoint_utc": "2026-10-17T21:32:54.552084+00:00"
+}
