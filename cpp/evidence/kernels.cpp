@@ -120,6 +120,160 @@ extern "C" int bora_simplex_qp(const float* rgb,const float* prior,
     return 0;
 }
 
+// General strictly convex simplex quadratic. New exports leave the original
+// cycle-one numerical path unchanged. h_stride is either zero (shared H) or
+// k*k (one observation-dependent Hessian per row).
+static void quadratic_face(const double* h,const double* b,const float* prior,
+    float* output,double& violation,int& used,int k,double tolerance,int max_iter) {
+    std::vector<double> p(k,0),z(k,0);
+    std::vector<int> active;
+    int first=0;
+    for(int c=1;c<k;++c) if(prior[c]>prior[first]) first=c;
+    active.push_back(first);p[first]=1.;violation=INFINITY;used=0;
+    for(;used<max_iter;++used) {
+        int s=static_cast<int>(active.size()),m=s+1;
+        std::vector<double> a(m*m,0),rhs(m,0),answer;
+        for(int i=0;i<s;++i) {
+            rhs[i]=b[active[i]];
+            for(int j=0;j<s;++j) a[i*m+j]=h[active[i]*k+active[j]];
+            a[i*m+s]=1;a[s*m+i]=1;
+        }
+        rhs[s]=1;
+        if(!solve(a,rhs,answer,m)) break;
+        std::fill(z.begin(),z.end(),0.);
+        for(int i=0;i<s;++i) z[active[i]]=answer[i];
+        double alpha=1.;
+        for(int c:active) if(z[c]<0.)
+            alpha=std::min(alpha,p[c]/std::max(p[c]-z[c],1e-30));
+        for(int c=0;c<k;++c) p[c]+=alpha*(z[c]-p[c]);
+        if(alpha<1.-1e-12) {
+            active.erase(std::remove_if(active.begin(),active.end(),
+                [&](int c){if(p[c]<1e-11){p[c]=0.;return true;}return false;}),active.end());
+            continue;
+        }
+        int entering=-1;double smallest=0.;violation=0.;
+        for(int c=0;c<k;++c) {
+            double gradient=-b[c]+answer[s];
+            for(int j=0;j<k;++j) gradient+=h[c*k+j]*p[j];
+            bool present=std::find(active.begin(),active.end(),c)!=active.end();
+            if(present) violation=std::max(violation,std::abs(gradient));
+            else if(gradient<smallest){smallest=gradient;entering=c;}
+        }
+        violation=std::max(violation,-smallest);
+        if(violation<=tolerance){++used;break;}
+        if(entering<0) break;
+        active.push_back(entering);
+    }
+    double mass=0.;
+    for(double& value:p){value=std::max(0.,value);mass+=value;}
+    for(int c=0;c<k;++c) output[c]=static_cast<float>(p[c]/mass);
+}
+
+extern "C" int bora_quadratic_simplex(const double* h,const double* b,
+    const float* prior,float* out,double* residual,int* iterations,
+    int64_t n,int k,int h_stride,double tolerance,int max_iter,int threads) {
+    if(n<1||k<1||(h_stride!=0&&h_stride!=k*k)||tolerance<=0||threads<1) return -1;
+    #pragma omp parallel for num_threads(threads) schedule(static)
+    for(int64_t row=0;row<n;++row)
+        quadratic_face(h+row*h_stride,b+row*k,prior+row*k,out+row*k,
+            residual[row],iterations[row],k,tolerance,max_iter);
+    return 0;
+}
+
+// Exact minimization over the union of every one- and two-class face.
+extern "C" int bora_pair_palette(const float* rgb,const float* prior,
+    const double* colors,float* out,int64_t n,int k,double ridge,int threads) {
+    if(n<1||k<1||ridge<=0||threads<1) return -1;
+    #pragma omp parallel for num_threads(threads) schedule(static)
+    for(int64_t row=0;row<n;++row) {
+        double best=INFINITY,best_t=1.;int ai=0,bi=0;
+        for(int a=0;a<k;++a) for(int b=a;b<k;++b) {
+            double dot=0.,norm=0.;
+            for(int j=0;j<3;++j) {
+                double d=colors[a*3+j]-colors[b*3+j];
+                dot+=d*(rgb[row*3+j]-colors[b*3+j]);norm+=d*d;
+            }
+            double t=a==b?1.:(dot+ridge*(1.+prior[row*k+a]-prior[row*k+b]))/(norm+2.*ridge);
+            t=std::max(0.,std::min(1.,t));double cost=0.;
+            for(int j=0;j<3;++j) {
+                double d=t*colors[a*3+j]+(1.-t)*colors[b*3+j]-rgb[row*3+j];cost+=d*d;
+            }
+            for(int c=0;c<k;++c) {
+                double q=c==a?t:(c==b?1.-t:0.);
+                double d=q-prior[row*k+c];cost+=ridge*d*d;
+            }
+            if(cost<best){best=cost;best_t=t;ai=a;bi=b;}
+        }
+        for(int c=0;c<k;++c) out[row*k+c]=0.f;
+        out[row*k+ai]=static_cast<float>(best_t);
+        if(ai!=bi) out[row*k+bi]=static_cast<float>(1.-best_t);
+    }
+    return 0;
+}
+
+static double entropy_objective(const std::vector<double>& p,const float* x,
+    const float* prior,const double* colors,int k,double ridge) {
+    double value=0.;
+    for(int j=0;j<3;++j) {
+        double d=-x[j];for(int c=0;c<k;++c)d+=p[c]*colors[3*c+j];value+=.5*d*d;
+    }
+    for(int c=0;c<k;++c)
+        value+=ridge*p[c]*std::log(std::max(p[c],1e-300)/std::max(double(prior[c]),1e-12));
+    return value;
+}
+
+extern "C" int bora_entropy_palette(const float* rgb,const float* prior,
+    const double* colors,float* out,double* residual,int* iterations,
+    int64_t n,int k,double ridge,double tolerance,int max_iter,int threads) {
+    if(n<1||k<1||ridge<=0||threads<1) return -1;
+    #pragma omp parallel for num_threads(threads) schedule(static)
+    for(int64_t row=0;row<n;++row) {
+        const float *x=rgb+3*row,*pi=prior+k*row;
+        std::vector<double> p(k),candidate(k),g(k);double mass=0.;
+        for(int c=0;c<k;++c){p[c]=std::max(double(pi[c]),1e-8);mass+=p[c];}
+        for(double& v:p)v/=mass;
+        int used=0;double violation=INFINITY;
+        for(;used<max_iter;++used) {
+            double error[3]={-x[0],-x[1],-x[2]};
+            for(int c=0;c<k;++c) for(int j=0;j<3;++j)error[j]+=p[c]*colors[c*3+j];
+            double mean_g=0.;
+            for(int c=0;c<k;++c) {
+                g[c]=ridge*(std::log(p[c]/std::max(double(pi[c]),1e-12))+1.);
+                for(int j=0;j<3;++j)g[c]+=colors[3*c+j]*error[j];mean_g+=g[c]/k;
+            }
+            violation=0.;for(int c=0;c<k;++c)violation=std::max(violation,std::abs(g[c]-mean_g));
+            if(violation<tolerance)break;
+            int m=k+1;std::vector<double> a(m*m,0.),rhs(m,0.),answer;
+            for(int c=0;c<k;++c) {
+                rhs[c]=-g[c];a[c*m+k]=1.;a[k*m+c]=1.;
+                for(int d=0;d<k;++d) {
+                    for(int j=0;j<3;++j)a[c*m+d]+=colors[3*c+j]*colors[3*d+j];
+                    if(c==d)a[c*m+d]+=ridge/p[c];
+                }
+            }
+            if(!solve(a,rhs,answer,m))break;
+            double alpha=1.,descent=0.;
+            for(int c=0;c<k;++c) {
+                if(answer[c]<0.)alpha=std::min(alpha,-.99*p[c]/answer[c]);
+                descent+=g[c]*answer[c];
+            }
+            double before=entropy_objective(p,x,pi,colors,k,ridge);
+            bool accepted=false;
+            for(int backtrack=0;backtrack<35;++backtrack) {
+                for(int c=0;c<k;++c)candidate[c]=p[c]+alpha*answer[c];
+                double after=entropy_objective(candidate,x,pi,colors,k,ridge);
+                if(after<=before+1e-4*alpha*descent+1e-14){accepted=true;break;}
+                alpha*=.5;
+            }
+            if(!accepted)break;
+            p.swap(candidate);
+        }
+        for(int c=0;c<k;++c)out[row*k+c]=static_cast<float>(p[c]);
+        residual[row]=violation;iterations[row]=used;
+    }
+    return 0;
+}
+
 // Axial semi-Markov Viterbi. Exact short-run costs and a linear long-run tail
 // allow arbitrarily long regions; there is no hard maximum tissue width.
 extern "C" int bora_semimarkov(const float* unary, uint16_t* labels,

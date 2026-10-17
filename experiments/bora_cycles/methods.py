@@ -714,6 +714,9 @@ PALETTE_IMPLEMENTED = {
 
 
 def predict(key, rgb, coarse, support, mpp_xy, palette, he=None):
+    if key.startswith("D"):
+        from .cycle_two import predict as predict_child
+        return predict_child(key, rgb, coarse, support, mpp_xy, palette, he)
     if key not in CYCLE_ONE or not CYCLE_ONE[key].implemented:
         raise ValueError(f"Candidate is not implemented: {key}")
     c = Evidence(rgb, coarse, support, mpp_xy, target_um=.5 if key == "C19" else 1.)

@@ -82,10 +82,21 @@ cycle or select survivors. The pilot.sh script checks one case from each of
 the four dataset groups. Changed source/protocol requires a fresh output
 folder; executed source and compiled library hashes are archived.
 
-The current runner implements cycle one. Following-cycle code must be written
-from actual visual findings and measurements, then frozen with the five
-survivor IDs and fifteen child lineages. An automatic parameter schedule does
-not constitute twenty innovation cycles.
+The runner implements cycles one and two. Cycle one has 149 actual contact
+sheet reviews, additional native crop reviews, and a signed five-survivor
+selection. Cycle two retains C18/C17/C01/C03/C15 unchanged and implements
+fifteen distinct children. Its mathematical changes and risks are described
+in [CYCLE_TWO.md](CYCLE_TWO.md), with equations in registry.py. Later cycles
+must be written from actual visual findings and measurements, then frozen
+with five survivor IDs and fifteen child lineages. An automatic parameter
+schedule does not constitute twenty innovation cycles.
+
+Cycle two requires `--cycle 2 --previous /path/to/cycle-01`. Its runner checks
+the previous 149 hashed reviews and signed selection, then verifies each
+unchanged survivor's native mask against cycle one. The cycle_two.sh script
+supports explicit `pilot` and `full` scopes. Compiled scoring is the default,
+following exact cycle-one parity on all 3278 masks. New numerical/model tests
+are in tests/test_bora_cycle_two.py.
 
 ## Review and selection
 

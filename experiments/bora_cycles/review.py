@@ -30,6 +30,24 @@ def record_review(root, case, sheet_sha256, observation, observed_methods):
     save(root/"VISUAL_REVIEW.json", record)
 
 
+def record_batch(root, notes, journal):
+    """Store explicit, actually observed notes outside a result rsync target.
+
+    This never generates observations or fills unviewed cases. It mirrors the
+    signed sheet records so subsequent result synchronization cannot erase work.
+    """
+    root, journal = Path(root), Path(journal)
+    protocol = json.loads((root/"PROTOCOL.json").read_text())
+    manifest = json.loads((root/"VISUAL_MANIFEST.json").read_text())["contact_sha256"]
+    previous = json.loads(journal.read_text()) if journal.exists() else dict(reviewed={})
+    for case, observation in notes.items():
+        record_review(root, case, manifest[case], observation, protocol["methods"])
+        entry = json.loads((root/"VISUAL_REVIEW.json").read_text())["reviewed"][case]
+        previous["reviewed"][case] = entry
+    journal.parent.mkdir(parents=True, exist_ok=True)
+    save(journal, previous)
+
+
 def require_review(root):
     root = Path(root)
     protocol = json.loads((root/"PROTOCOL.json").read_text())

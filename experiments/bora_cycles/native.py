@@ -31,6 +31,15 @@ def library():
         _LIB.bora_white_diversity.argtypes = [
             ptr, ptr, ptr, ptr, ctypes.c_int, ctypes.c_int,
             ctypes.c_int64, ctypes.c_int, ctypes.c_int]
+        _LIB.bora_quadratic_simplex.argtypes = [
+            ptr, ptr, ptr, ptr, ptr, ptr, ctypes.c_int64, ctypes.c_int,
+            ctypes.c_int, ctypes.c_double, ctypes.c_int, ctypes.c_int]
+        _LIB.bora_pair_palette.argtypes = [
+            ptr, ptr, ptr, ptr, ctypes.c_int64, ctypes.c_int,
+            ctypes.c_double, ctypes.c_int]
+        _LIB.bora_entropy_palette.argtypes = [
+            ptr, ptr, ptr, ptr, ptr, ptr, ctypes.c_int64, ctypes.c_int,
+            ctypes.c_double, ctypes.c_double, ctypes.c_int, ctypes.c_int]
     return _LIB
 
 
@@ -142,3 +151,58 @@ def white_diversity(labels, points, offsets, threads=2):
     if status:
         raise RuntimeError("White diversity kernel rejected input")
     return result.astype(bool)
+
+
+def quadratic_simplex(hessian, linear, prior, tolerance=1e-8, threads=2):
+    prior = np.ascontiguousarray(prior, np.float32)
+    linear = np.ascontiguousarray(linear, np.float64)
+    hessian = np.ascontiguousarray(hessian, np.float64)
+    k, n = prior.shape[-1], int(np.prod(prior.shape[:-1]))
+    if linear.shape != prior.shape or hessian.shape not in ((k, k), (*prior.shape[:-1], k, k)):
+        raise ValueError("Incompatible general simplex quadratic")
+    if not all(np.isfinite(a).all() for a in (prior, linear, hessian)):
+        raise ValueError("Nonfinite simplex quadratic")
+    out = np.empty_like(prior)
+    residual = np.empty(prior.shape[:-1], np.float64)
+    iterations = np.empty(prior.shape[:-1], np.int32)
+    stride = 0 if hessian.ndim == 2 else k*k
+    result = library().bora_quadratic_simplex(
+        hessian.ctypes.data, linear.ctypes.data, prior.ctypes.data,
+        out.ctypes.data, residual.ctypes.data, iterations.ctypes.data,
+        n, k, stride, tolerance, max(100, 8*k*k), threads)
+    if result or not np.isfinite(out).all() or residual.max() > 5*tolerance:
+        raise RuntimeError(f"General simplex QP failed: {residual.max()}")
+    return out, dict(max_kkt_residual=float(residual.max()),
+                     mean_iterations=float(iterations.mean()), threads=threads)
+
+
+def pair_palette(rgb, prior, colors, ridge=.012, threads=2):
+    rgb, prior = (np.ascontiguousarray(a, np.float32) for a in (rgb, prior))
+    colors = np.ascontiguousarray(colors, np.float64)
+    if rgb.shape[:-1] != prior.shape[:-1] or colors.shape != (prior.shape[-1], 3):
+        raise ValueError("Incompatible pair palette geometry")
+    out = np.empty_like(prior)
+    status = library().bora_pair_palette(
+        rgb.ctypes.data, prior.ctypes.data, colors.ctypes.data, out.ctypes.data,
+        int(np.prod(prior.shape[:-1])), len(colors), ridge, threads)
+    if status or not np.isfinite(out).all():
+        raise RuntimeError("Pair palette solver failed")
+    return out, dict(exact_faces=len(colors)*(len(colors)+1)//2, threads=threads)
+
+
+def entropy_palette(rgb, prior, colors, ridge=.012, threads=2):
+    rgb, prior = (np.ascontiguousarray(a, np.float32) for a in (rgb, prior))
+    colors = np.ascontiguousarray(colors, np.float64)
+    if rgb.shape[:-1] != prior.shape[:-1] or colors.shape != (prior.shape[-1], 3):
+        raise ValueError("Incompatible relative-entropy palette geometry")
+    out = np.empty_like(prior)
+    residual = np.empty(prior.shape[:-1], np.float64)
+    iterations = np.empty(prior.shape[:-1], np.int32)
+    status = library().bora_entropy_palette(
+        rgb.ctypes.data, prior.ctypes.data, colors.ctypes.data, out.ctypes.data,
+        residual.ctypes.data, iterations.ctypes.data, int(np.prod(prior.shape[:-1])),
+        len(colors), ridge, 1e-6, 80, threads)
+    if status or not np.isfinite(out).all() or residual.max() > 1e-4:
+        raise RuntimeError(f"Entropy palette solver failed: {residual.max()}")
+    return out, dict(max_stationarity_residual=float(residual.max()),
+                     mean_iterations=float(iterations.mean()), threads=threads)

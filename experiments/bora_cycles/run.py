@@ -21,7 +21,7 @@ import tifffile
 from threadpoolctl import threadpool_limits
 from bora.evidence import predict_evidence, resize
 from .methods import predict
-from .registry import CYCLE_ONE, roster
+from .registry import candidates, roster, CHILDREN_TWO, CYCLE_TWO_SURVIVORS
 from .diagnostics import novelty, white_regions, mask_diagnostics
 
 
@@ -44,7 +44,8 @@ def verify(path, files):
 
 def source_record():
     repo = Path(__file__).resolve().parents[2]
-    files = list(Path(__file__).parent.glob("*.py")) + [
+    folder = Path(__file__).parent
+    files = list(folder.glob("*.py"))+list(folder.glob("*.sh"))+list(folder.glob("*.md")) + [
         Path(__file__).with_name("protocol.json"),
         repo/"src/bora/evidence.py", repo/"cpp/evidence/kernels.cpp",
         repo/"cpp/evidence/libbora_evidence.so"]
@@ -69,6 +70,7 @@ def freeze_case(args):
     coarse = tifffile.imread(src/"coarse.tif")
     support = tifffile.imread(src/"tissue.working.tif") > 0
     native_support = tifffile.imread(src/"tissue.native.tif") > 0
+    lineage = json.loads((root/"PROTOCOL.json").read_text()).get("lineage")
     records, files = {}, {}
     with threadpool_limits(limits=2):
         for key in keys:
@@ -95,10 +97,16 @@ def freeze_case(args):
                         raise RuntimeError("Non-deterministic candidate")
                     previous = native
                 assert native.shape == tuple(sample["native_shape_yx"])
-                if key != "C20":
+                if key not in ("C20", "D12"):
                     assert np.all(native[native_support] > 0)
                 assert np.all(native[~native_support] == 0)
                 assert set(np.unique(native)) <= set(np.unique(coarse)) | {0}
+                if lineage and key in lineage["unchanged_survivors"]:
+                    old_path = Path(lineage["previous"])/"cases"/sample["case"]/key/"native.tif"
+                    if not np.array_equal(native, tifffile.imread(old_path)):
+                        raise RuntimeError("An unchanged survivor changed its prediction")
+                    details["unchanged_survivor_native_parity"] = True
+                    details["previous_prediction_sha256"] = digest(old_path)
                 tifffile.imwrite(target/"native.tif", native, compression="deflate")
                 files[key+"/native.tif"] = digest(target/"native.tif")
                 records[key] = dict(
@@ -130,7 +138,7 @@ def freeze_case(args):
 
 def score_case(args):
     from .metrics import RegionEvaluator, discovery_score
-    source, root, sample, keys, manifests = args
+    source, root, sample, keys, manifests, metric_backend = args
     cv2.setNumThreads(2)
     src, out = Path(source)/"cases"/sample["case"], Path(root)/"cases"/sample["case"]
     assert digest(out/"PREDICTIONS.json") == manifests[sample["case"]]
@@ -149,9 +157,9 @@ def score_case(args):
             entry = dict(record["methods"][key])
             if entry["status"] == "ok":
                 mask = tifffile.imread(out/key/"native.tif")
-                entry["score"] = evaluator.score(mask)
+                entry["score"] = evaluator.score(mask, backend=metric_backend)
                 entry["background"] = mask_diagnostics(
-                    mask, support, white, exterior, sample["native_mpp_xy"])
+                    mask, support, white, exterior, sample["native_mpp_xy"], backend=metric_backend)
             row["methods"][key] = entry
     regions = np.load(out/"NOVELTY.npz")["regions"]
     native_regions = resize(regions, truth.shape, True)
@@ -291,12 +299,34 @@ def main():
     parser.add_argument("--keys", nargs="+")
     parser.add_argument("--workers", type=int, choices=(1, 2, 3), default=3)
     parser.add_argument("--repeats", type=int, default=1)
+    parser.add_argument("--cycle", type=int, choices=(1, 2), default=1)
+    parser.add_argument("--previous", type=Path)
+    parser.add_argument("--metric-backend", choices=("numpy", "cpp"), default="cpp")
     args = parser.parse_args()
     if args.repeats < 1:
         parser.error("At least one timed prediction required")
     plan = json.loads((args.source/"PLAN.json").read_text())
-    keys = args.keys or ["B21", "B22"]+list(CYCLE_ONE)
-    available = {key for key, value in CYCLE_ONE.items() if value.implemented} | {"B21", "B22"}
+    active = candidates(args.cycle)
+    lineage = None
+    if args.cycle == 2:
+        # A completed previous inference job is insufficient: actual all-case
+        # visual review and a signed five-survivor selection are mandatory.
+        from .review import require_review, validate_children
+        if args.previous is None:
+            parser.error("Cycle two requires the reviewed previous result")
+        previous = require_review(args.previous)
+        selection = json.loads((args.previous/"SELECTION.json").read_text())
+        if previous["cycle"] != 1 or selection["survivors"] != list(CYCLE_TWO_SURVIVORS):
+            parser.error("Implemented children do not match the actual reviewed survivors")
+        if digest(args.previous/"VISUAL_REVIEW.json") != selection["review_sha256"]:
+            parser.error("Previous visual review changed after selection")
+        if digest(args.previous/"RESULTS.json") != selection["results_sha256"]:
+            parser.error("Previous scored evidence changed after selection")
+        validate_children(selection, CHILDREN_TWO)
+        lineage = dict(previous=str(args.previous), selection_sha256=digest(args.previous/"SELECTION.json"),
+                       unchanged_survivors=list(CYCLE_TWO_SURVIVORS), children=CHILDREN_TWO)
+    keys = args.keys or ["B21", "B22"]+list(active)
+    available = {key for key, value in active.items() if value.implemented} | {"B21", "B22"}
     if set(keys)-available:
         parser.error("Requested candidate is not implemented: "+str(set(keys)-available))
     samples = plan["samples"]
@@ -306,16 +336,16 @@ def main():
         samples = [sample for sample in samples if sample["case"] in args.cases]
         if set(args.cases) != {s["case"] for s in samples}:
             parser.error("Unknown case")
-    if not args.pilot and (len(samples) != 149 or set(keys)-{"B21", "B22"} != set(CYCLE_ONE)):
+    if not args.pilot and (len(samples) != 149 or set(keys)-{"B21", "B22"} != set(active)):
         parser.error("Full cycle requires all 149 cases and all 20 candidates")
     if not samples or len(set(keys)) != len(keys):
         parser.error("Empty scope or duplicate method")
     args.root.mkdir(parents=True, exist_ok=True)
     protocol = dict(
-        cycle=1, pilot=args.pilot, methods=keys, cases=[s["case"] for s in samples],
-        roster=roster(), source=str(args.source), source_hashes=source_record(),
+        cycle=args.cycle, pilot=args.pilot, methods=keys, cases=[s["case"] for s in samples],
+        roster=roster(args.cycle), lineage=lineage, source=str(args.source), source_hashes=source_record(),
         input_plan_sha256=digest(args.source/"PLAN.json"), repeats=args.repeats,
-        workers=args.workers, numerical_threads=2, primary_conversion="ensemble",
+        workers=args.workers, numerical_threads=2, primary_conversion="ensemble", metric_backend=args.metric_backend,
         study_protocol=json.loads(Path(__file__).with_name("protocol.json").read_text()),
         python=platform.python_version(), host=platform.node())
     if (args.root/"PROTOCOL.json").exists():
@@ -347,7 +377,7 @@ def main():
         verify(out, json.loads((out/"PREDICTIONS.json").read_text())["files_sha256"])
     with ProcessPoolExecutor(max_workers=args.workers, mp_context=get_context("spawn")) as pool:
         rows = list(pool.map(score_case, [
-            (args.source, args.root, sample, keys, frozen["manifests"]) for sample in samples]))
+            (args.source, args.root, sample, keys, frozen["manifests"], args.metric_backend) for sample in samples]))
     result = dict(protocol=protocol, cases=rows, ranking=aggregate(rows, keys))
     save(args.root/"RESULTS.json", result)
     publish(args.source, args.root, result)
