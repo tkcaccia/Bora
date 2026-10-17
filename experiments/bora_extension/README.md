@@ -4,7 +4,8 @@ The user requested continuing the 20-cycle study and adding images alongside
 the current 149. **200 additional image/coarse/reference triples are prepared
 and pass a native-source/overlap audit.** This is input preparation, not
 completed encoder inference, Bora prediction, expanded scores or a completed
-cycle.
+cycle. Cycle seven is now signed after all149 actual overview inspections and
+eight native label crops; seven of twenty cycles are complete.
 
 | Dataset | Existing | Added | Planned total | Added representation |
 | --- | ---: | ---: | ---: | --- |
@@ -117,3 +118,31 @@ Local result copies use the same folder names under
 Eight focused extension checks pass locally and on Chiamaka: zero-label
 semantics, null calibration, OCELOT resized axes, source overlap and archive
 path safety. They do not replace the executed200-image native-source audit.
+
+## Feature extraction stage
+
+`features.py` reuses the pinned released Virchow2 checkpoint and original
+encoder/normalization/token-stitching implementation. Every full working RGB
+field is encoded at the base scale and factors2/4; neither fine annotations nor
+tissue support gate the encoder. No Bora execution occurs in this stage.
+Multiclass selected dimensions match the unchanged conversion's balanced mRMR
+selector exactly. A single observed coarse class has no discriminative
+statistic: it uses variance-only cache dimensions, explicitly marked as such;
+its downstream class-probability RGB must be constant, with no reference-derived
+extra classes.
+
+Small fields are reflect-padded at the right/bottom to the224px minimum window
+before the existing14px patch padding. Original pixels are never resized for
+this padding, and original token coordinates remain unchanged. Actual
+resampling axes are recorded separately at each scale. Unknown MPP, window
+field size and patch field size remain null for WSSS/RINGS; those runs are
+exploratory native-pixel inference, not calibrated model sampling.
+
+Each case has full coverage checks, source/cache hashes and a final
+`FEATURES_FROZEN.json`; verified resumes do not re-encode. The job retains20GiB
+free disk, uses two CPU threads and the existing GPU batch4/memory-fraction0.4
+configuration at nice12. Five additional CPU checks cover null/actual-axis
+calibration, exact unchanged feature selection, single-class degeneracy, full
+field coverage without reading a poison reference file, and tampered-cache
+rejection. Check execution records for actual pilot/full completion; source
+availability alone is not evidence that inference finished.
