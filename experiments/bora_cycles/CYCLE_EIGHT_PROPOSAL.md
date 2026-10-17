@@ -11,7 +11,7 @@ or forbidden boundary margins.
 | --- | --- | --- |
 | J01 | L01 nonlocal H&E appearance graph; L02 predictive variance from the screened system; L03 wide exterior-white routes | Similar stain can join unrelated tissue; uncertainty is approximate; border fat can resemble glass |
 | K05 | L04 box-constrained bending; L05 radial Huber observations; L06 spatial first/second moments | Iterative solves can be slow; minority appearances may be downweighted; covariance can be weakly identified |
-| C17 | L07 convex Hellinger observation; L08 radial Student-type errors; L09 sparse mixture energy | Dark channels can dominate; heavy-tailed and sparse objectives have only local nonconvex solutions |
+| C17 | L07 convex Hellinger observation; L08 radial Student-type errors; L09 minimum-entropy mixture energy | Dark channels can dominate; heavy-tailed and entropy objectives have only local nonconvex solutions |
 | J07 | L10 joint maximum-rival hinge; L11 per-tile Gaussian uncertainty; L12 noise-integrated kernel mean distance | Weak winner labels and correlated samples still limit identifiability |
 | K13 | L13 upper-quarter tile CVaR; L14 row/column cluster noise; L15 average per-tile log risk | Incorrect coarse tiles can dominate a protected tail; limited blocks do not identify the full correlation law |
 
@@ -44,3 +44,10 @@ use separate folders. No full cycle is complete until all349 all-method
 contact sheets and useful native crops are actually inspected, all20 methods
 have explicit tradeoffs, five are signed, and their selected-only viewer is
 opened. Repeated selection makes this development, not independent validation.
+
+Preflight amendment, before any pilot mask or fine-reference result inspection:
+the original L09 penalty -0.004 sum(q²) was dominated by the0.012 quadratic
+Hessian floor and was therefore still convex. Its nonconvex description was
+incorrect. L09 now uses concave smoothed Shannon entropy, with an explicit
+tangent-majorization inequality test. The first engineering pilot remains
+archived; its implementation is not a separate candidate or completed cycle.

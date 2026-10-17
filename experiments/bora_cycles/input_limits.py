@@ -13,9 +13,10 @@ import numpy as np
 import tifffile
 
 from .run import digest, save
+from experiments.bora_extension.task_adapter import geometry, report_units
 
 
-def summarize(truth, support, coarse, class_names, mpp_xy):
+def summarize(truth, support, coarse, class_names, mpp_xy, *, sample=None):
     truth, support, coarse = np.asarray(truth), np.asarray(support, bool), np.asarray(coarse)
     if truth.shape != support.shape:
         raise ValueError('Native reference/support geometry mismatch')
@@ -28,10 +29,12 @@ def summarize(truth, support, coarse, class_names, mpp_xy):
         take = truth == label
         n, inside = int(take.sum()), int(np.count_nonzero(take & support))
         allowed = int(label) in available
+        valid_negative = (sample is not None and sample['dataset'] == 'rings-tumor'
+            and str(sample.get('raw_to_compact', {}).get('0')) == str(int(label)))
         classes[str(int(label))] = dict(name=class_names.get(str(int(label)), str(int(label))),
             truth_pixels=n, supported_truth_pixels=inside, deleted_positive_pixels=n-inside,
             class_available_in_coarse=allowed,
-            optimistic_iou_upper_bound=inside/n if allowed else 0.)
+            optimistic_iou_upper_bound=1. if valid_negative else inside/n if allowed else 0.)
     if not classes:
         raise ValueError('No positive reference pixels')
     deleted = sum(v['deleted_positive_pixels'] for v in classes.values())
@@ -69,9 +72,12 @@ def audit_inputs(source, root):
         truth = tifffile.imread(src/'reference.native.tif')
         support = tifffile.imread(src/'tissue.native.tif') > 0
         coarse = tifffile.imread(src/'coarse.tif')
+        coordinates = geometry(sample, native=True)
+        report = summarize(truth,support,coarse,sample['class_names'],coordinates['algorithm_spacing_xy'],
+            sample=sample if protocol.get('benchmark_scope') else None)
         cases.append(dict(case=case,dataset=sample['dataset'],source_region_type=sample['source_region_type'],
             native_mpp_xy=sample['native_mpp_xy'],input_sha256=hashes,
-            **summarize(truth,support,coarse,sample['class_names'],sample['native_mpp_xy'])))
+            coordinate_units=coordinates['units'], **report_units(report, coordinates['units'])))
     datasets = {}
     for dataset in sorted({c['dataset'] for c in cases}):
         rows = [c for c in cases if c['dataset'] == dataset]
@@ -85,7 +91,7 @@ def audit_inputs(source, root):
         prediction_freeze_sha256=digest(root/'ALL_PREDICTIONS_FROZEN.json'),
         mean_optimistic_macro_iou_upper_bound=float(np.mean([c['optimistic_macro_iou_upper_bound'] for c in cases])),
         reporting_only=True,predictions_modified=False,scores_modified=False,
-        interpretation='Positive reference pixels outside support and classes absent from coarse remain errors. '
+        interpretation='Positive reference pixels outside support and classes absent from coarse remain errors, except valid RINGS outside-tumor negatives can be represented by removed background0. '
         'Reference zero is unscored. The bound assumes perfect supported classification and ignores extra '
         'false positives forced by missing class IDs; it can be unattainable. It is not a normalized quality score.')
 

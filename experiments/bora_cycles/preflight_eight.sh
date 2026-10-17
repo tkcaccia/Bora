@@ -19,7 +19,8 @@ nice -n 12 "$task_python" -m pytest -q \
   tests/test_bora_cycle_eight.py tests/test_bora_cycle_review.py tests/test_bora_cycle_publish.py \
   tests/test_bora_cycle_audit.py tests/test_bora_runtime_policy.py \
   tests/test_bora_expanded_scope_metrics.py tests/test_bora_extension_task_adapter.py \
-  tests/test_bora_extension_conversions.py
+  tests/test_bora_extension_conversions.py tests/test_bora_small_region_atlas.py \
+  tests/test_bora_input_limits.py
 exec nice -n 12 "$task_python" -m experiments.bora_cycles.run \
   --cycle 8 --source "$task_inputs" --previous "$task_previous" --root "$task_pilot" \
   --pilot --workers 3 --metric-backend cpp --cases \

@@ -89,3 +89,27 @@ def test_aggregate_does_not_mix_physical_and_pixel_areas_or_change_penalty():
     assert rank["strata"]["historical149"]["mean_iou"] == .6
     assert rank["strata"]["additional200"]["mean_iou"] == .8
     assert rank["strata"]["single_reference_class"]["mean_iou"] is None
+
+
+def test_pixel_small_atlas_matches_rings_scoring_after_background_removal():
+    from experiments.bora_cycles.small_region_atlas import components
+    sample = dict(dataset='rings-tumor', native_mpp_xy=None, pixel_only=True,
+        physical_metrics_allowed=False, raw_to_compact={'0': 1, '1': 2})
+    truth = np.array([[1, 1, 0, 2, 2]], np.uint8)
+    mask = np.array([[0, 0, 0, 0, 2]], np.uint8)
+    support = np.array([[0, 0, 0, 1, 1]], bool)
+    score, _ = native_score(sample, truth, mask)
+    atlas = components(truth, support, truth, dict(M=mask), [1., 1.], dict(M=score), sample=sample)
+    assert atlas['coordinate_units'] == 'pixels'
+    assert all('area_px2' in c and 'area_um2' not in c for c in atlas['components'])
+    negative = next(c for c in atlas['components'] if c['label'] == 1)
+    assert negative['correct_pixels_by_method'] == [2]
+    assert not negative['common_support_cannot_reach_50pct']
+
+
+def test_rings_input_bound_cannot_rule_out_correct_removed_negative():
+    from experiments.bora_cycles.input_limits import summarize
+    sample = dict(dataset='rings-tumor', raw_to_compact={'0': 1, '1': 2})
+    truth = np.array([[1, 2]], np.uint8)
+    bound = summarize(truth, np.array([[0, 1]], bool), np.array([[2]], np.uint8), {}, [1, 1], sample=sample)
+    assert bound['optimistic_macro_iou_upper_bound'] == 1

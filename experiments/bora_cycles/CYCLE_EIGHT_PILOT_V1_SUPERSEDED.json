@@ -1,0 +1,16 @@
+{
+  "stage": "engineering pilot complete, superseded before mask or fine-reference result inspection",
+  "cases": 16,
+  "methods_per_case": 22,
+  "failures": [],
+  "historical_parent_parity_comparisons": 30,
+  "source_commit": "5b0bf93",
+  "root": "/mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-08-pilot",
+  "completed_cycles": 7,
+  "cycle_completed": false,
+  "actual_mask_reviews_created": false,
+  "reason": "L09 quadratic penalty remained convex despite its nonconvex description; replaced prospectively by concave entropy before outcome inspection; no parameter fitting to reference scores",
+  "protocol_sha256": "6bfda8118e96a838f26250ada993755b8bd3967d70aaf6691f670be369562de8",
+  "local_preflight_checks": 283,
+  "remote_preflight_checks": 283
+}

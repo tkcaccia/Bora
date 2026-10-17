@@ -18,6 +18,7 @@ from bora.evidence import resize
 from .diagnostics import rare_colors
 from .metrics import RegionEvaluator
 from .run import digest, save, palette_image, verify
+from experiments.bora_extension.task_adapter import geometry, report_units
 
 
 def proposal_metrics(selected, truth, coarse_ids, mpp_xy):
@@ -66,7 +67,11 @@ def publish(source, root):
         Image.fromarray(he).save(preview/"original-he.jpg", quality=90)
         native_coarse = resize(coarse, he.shape[:2], True)
         palette_image(native_coarse, samples[case]["palette"]).save(preview/"coarse.jpg", quality=90)
-        rarity, rare_regions, detail = rare_colors(rgb, support, samples[case]["working_mpp_xy"])
+        coordinates = geometry(samples[case])
+        native_coordinates = geometry(samples[case], native=True)
+        rarity, rare_regions, detail = rare_colors(rgb, support, coordinates["algorithm_spacing_xy"])
+        detail = report_units(detail, coordinates["units"])
+        detail['coordinate_geometry'] = coordinates
         novelty_regions = np.load(root/"cases"/case/"NOVELTY.npz")["regions"]
         combined = (rare_regions > 0) | (novelty_regions > 0)
         regions, count = ndi.label(combined, np.ones((3, 3)))
@@ -84,7 +89,8 @@ def publish(source, root):
         if digest(src/"reference.native.tif") != samples[case]["reference_native_sha256"]:
             raise RuntimeError("Reference changed")
         score = proposal_metrics(native_combined, truth, set(np.unique(coarse))-{0},
-                                 samples[case]["native_mpp_xy"])
+                                 native_coordinates["algorithm_spacing_xy"])
+        score['small_component_area_units'] = 'um2' if native_coordinates['units'] == 'micrometres' else 'px2'
         detail.update(combined_regions=count, score=score)
         save(out/"DETAILS.json", detail)
         scores.append(dict(case=case, **score))

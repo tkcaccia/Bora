@@ -130,6 +130,17 @@ def test_majorized_palette_has_feasible_monotone_original_energy(mode):
     assert report['max_kkt_residual'] < 5e-8 and report['nonconvex_local_solution']
 
 
+def test_entropy_penalty_is_concave_and_its_tangent_is_a_global_majorizer():
+    rng = np.random.default_rng(155)
+    old, new = rng.dirichlet(np.ones(5), size=(2, 11))
+    entropy = lambda q: -.002*np.sum((q+1e-5)*np.log(q+1e-5), -1)
+    gradient = -.002*(np.log(old+1e-5)+1)
+    assert np.all(entropy(new) <= entropy(old)+np.sum(gradient*(new-old), -1)+1e-12)
+    # Unlike the superseded quadratic, this can defeat the0.012 ridge near
+    # a simplex boundary, so the original objective is genuinely nonconvex.
+    assert .012-.002/(1e-6+1e-5) < 0
+
+
 @pytest.mark.parametrize('kind', ['joint', 'heteroscedastic', 'cvar', 'mean-log'])
 def test_risk_gradients_against_independent_finite_differences(kind):
     rng = np.random.default_rng(154)

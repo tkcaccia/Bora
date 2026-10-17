@@ -14,9 +14,11 @@ import tifffile
 from bora.evidence import resize
 from .metrics import RegionEvaluator
 from .run import digest, verify
+from experiments.bora_extension.task_adapter import geometry, report_units, scoring_prediction
 
 
-def components(truth, support, native_coarse, masks, mpp_xy, saved_scores=None):
+def components(truth, support, native_coarse, masks, mpp_xy, saved_scores=None, *, sample=None):
+    units = "micrometres" if sample is None else geometry(sample, native=True)["units"]
     evaluator = RegionEvaluator(truth, mpp_xy)
     cc = evaluator.components
     n = len(evaluator.area_pixels)
@@ -30,12 +32,14 @@ def components(truth, support, native_coarse, masks, mpp_xy, saved_scores=None):
     methods = list(masks)
     for method in methods:
         prediction = np.asarray(masks[method])
+        if sample is not None:
+            prediction, _ = scoring_prediction(sample, prediction, zero_is_removed_background=True)
         if prediction.shape != truth.shape:
             raise ValueError("Native geometry mismatch")
         count = np.bincount(cc.ravel(), weights=(prediction == truth).ravel(), minlength=n)
         counts = count[small].astype(np.int64)
         if saved_scores is not None:
-            score = saved_scores[method]["regions"]["small_le_400_um2"]
+            score = saved_scores[method]["regions"]["small_le_400_um2" if units == "micrometres" else "small_le_400_px2"]
             recall = float(np.mean(counts/evaluator.area_pixels[small] >= .5)) if len(small) else None
             if (score["components"] != len(small) or score["completely_missed"] != int((counts == 0).sum())
                     or score["recall_at_50pct"] != recall):
@@ -48,19 +52,22 @@ def components(truth, support, native_coarse, masks, mpp_xy, saved_scores=None):
         pixels = int(evaluator.area_pixels[i])
         label = int(evaluator.component_classes[i])
         count = correct[j]
+        outside_negative = (sample is not None and sample["dataset"] == "rings-tumor"
+            and str(sample.get("raw_to_compact", {}).get("0")) == str(label))
         rows.append(dict(component=int(i), label=label, pixels=pixels,
             area_um2=float(evaluator.area_um2[i]),
             native_bbox_xywh=[xs.start, ys.start, xs.stop-xs.start, ys.stop-ys.start],
             class_absent_from_original_coarse=label not in known_ids,
             common_support_pixels=int(support_count[i]),
-            common_support_cannot_reach_50pct=bool(support_count[i]/pixels < .5),
+            common_support_cannot_reach_50pct=bool(support_count[i]/pixels < .5 and not outside_negative),
+            valid_background_negative_can_be_recovered_by_zero=outside_negative,
             original_coarse_correct_pixels=int(tile_correct[i]),
             correct_pixels_by_method=count.tolist(),
             all_methods_completely_miss=bool(np.all(count == 0)),
             no_method_reaches_50pct=bool(np.all(count/pixels < .5)),
             original_coarse_reaches_50pct=bool(tile_correct[i]/pixels >= .5)))
-    return dict(method_order=methods, components=rows,
-        independent_numpy_small_region_metric_parity=saved_scores is not None)
+    return report_units(dict(method_order=methods, components=rows, coordinate_units=units,
+        independent_numpy_small_region_metric_parity=saved_scores is not None), units)
 
 
 def export(source, root, output):
@@ -100,8 +107,10 @@ def export(source, root, output):
             def __getitem__(self, key):
                 return tifffile.imread(super().__getitem__(key))
         masks = Masks({key: out/key/"native.tif" for key in methods})
-        data = components(truth, support, coarse, masks, sample["native_mpp_xy"],
-                          {key: row["methods"][key]["score"] for key in methods})
+        coordinates = geometry(sample, native=True)
+        data = components(truth, support, coarse, masks, coordinates["algorithm_spacing_xy"],
+                          {key: row["methods"][key]["score"] for key in methods},
+                          sample=sample if protocol.get("benchmark_scope") else None)
         for item in data["components"]:
             total["small_components"] += 1
             total["absent_coarse_class"] += item["class_absent_from_original_coarse"]
@@ -116,7 +125,7 @@ def export(source, root, output):
     record = dict(cycle=protocol["cycle"], pilot=protocol["pilot"], cases=len(rows), totals=total,
         rows=rows, protocol_sha256=digest(root/"PROTOCOL.json"),
         results_sha256=digest(root/"RESULTS.json"), atlas_source_sha256=digest(Path(__file__)),
-        score_policy="Original reference-positive pixels; 8-connected per-class components; native physical area <=400 um2.",
+        score_policy="Original reference-positive pixels; 8-connected per-class components; <=400 um2 if calibrated, <=400 px2 if unknown. Per-case coordinate units are explicit; RINGS zero follows its valid negative task.",
         interpretation="Constraint flags can overlap. Coarse-class absence and common-support upper bounds are structural facts, not complete causal attribution. All methods includes the two controls. No semantic identity is inferred for annotation zero.",
         visual_reviews_created=False, predictions_modified=False, scores_modified=False)
     output.parent.mkdir(parents=True, exist_ok=True)

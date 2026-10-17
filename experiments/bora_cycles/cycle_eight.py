@@ -252,7 +252,7 @@ def palette_energy(q, x, prior, colors, mode):
     if mode == 'student':
         data = .00125*np.log1p(error2/.0025)
     else:
-        data = .5*error2-.004*np.sum(q*q, -1)
+        data = .5*error2-.002*np.sum((q+1e-5)*np.log(q+1e-5), -1)
     return float(np.sum(data)+.006*np.sum((q-prior)**2))
 
 
@@ -268,7 +268,7 @@ def majorized_inverse(x, prior, colors, mode, iterations=12):
             linear = weight[:, None]*(x@colors.T)+.012*prior
         else:
             hessian = h+.012*np.eye(len(colors))
-            linear = x@colors.T+.012*prior+.008*q
+            linear = x@colors.T+.012*prior+.002*(np.log(q+1e-5)+1)
         changed, report = native.quadratic_simplex(hessian, linear, q)
         maximum_kkt = max(maximum_kkt, report['max_kkt_residual'])
         difference = float(np.max(np.abs(changed-q)))
