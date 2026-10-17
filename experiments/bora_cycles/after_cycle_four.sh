@@ -24,6 +24,7 @@ export PYTHONPATH=src:.
 export OMP_NUM_THREADS=2
 export OPENBLAS_NUM_THREADS=2
 export MKL_NUM_THREADS=2
+export VECLIB_MAXIMUM_THREADS=2
 "$task_python" - "$task_results" <<'PY'
 import json, sys
 from pathlib import Path
@@ -59,7 +60,7 @@ for name in ['CPP_COUNT_PROFILE_LOCAL.json', 'CPP_COUNT_PROFILE_LARGE_LOCAL.json
 a = json.loads((r/'INTEGRITY_AUDIT.json').read_text())
 record = dict(cases=a['cases'], audited_native_masks=a['native_masks'],
     unchanged_survivor_comparisons=a['unchanged_survivor_comparisons'], failed_methods=a['failed_methods'],
-    posthoc_test_cases_passed=7, visual_review_still_required=True, completed_cycles=3,
+    posthoc_test_cases_passed=8, visual_review_still_required=True, completed_cycles=3,
     complete_goal=False, predictions_modified=False, scores_modified=False,
     artifact_sha256={name:hashlib.sha256((r/name).read_bytes()).hexdigest() for name in names})
 (r/'POSTHOC_COMPLETE.json').write_text(json.dumps(record, indent=2))

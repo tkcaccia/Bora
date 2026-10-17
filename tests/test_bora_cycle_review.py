@@ -1,7 +1,8 @@
 import json
 import pytest
 from experiments.bora_cycles.run import digest, save
-from experiments.bora_cycles.review import record_review, require_review, validate_children
+from experiments.bora_cycles.review import (record_review, require_review, validate_children,
+                                          publish_selection_status)
 
 
 def fixture(root, pilot):
@@ -51,3 +52,34 @@ def test_each_of_five_parents_needs_three_real_interventions():
     children[0]["parameter_sweep"] = True
     with pytest.raises(ValueError, match="parameter"):
         validate_children(dict(survivors=parents), children)
+
+
+def report_fixture(root):
+    fixture(root, True)
+    save(root/"RESULTS.json", dict(cases=[]))
+    selection = dict(cycle=3, survivors=["F01", "C17", "C01", "D08", "C15"],
+        results_sha256=digest(root/"RESULTS.json"), review_sha256=digest(root/"VISUAL_REVIEW.json"),
+        protocol_sha256=digest(root/"PROTOCOL.json"))
+    save(root/"SELECTION.json", selection)
+    (root/"gallery.html").write_text('<title>Bora</title><h1>Results</h1>CYCLE AWAITING VISUAL REVIEW')
+
+
+def test_completed_viewer_status_uses_signed_selection_and_is_idempotent(tmp_path):
+    report_fixture(tmp_path)
+    contact = digest(tmp_path/"cases/example/contact.jpg")
+    first = publish_selection_status(tmp_path)
+    second = publish_selection_status(tmp_path)
+    assert first == second
+    html = (tmp_path/"gallery.html").read_text()
+    assert '3/20 CYCLES COMPLETE' in html
+    assert 'Selected: F01, C17, C01, D08, C15' in html
+    assert 'CYCLE AWAITING VISUAL REVIEW' not in html
+    assert html.count('id="cycle-selection"') == 1
+    assert digest(tmp_path/"cases/example/contact.jpg") == contact
+
+
+def test_completed_viewer_refuses_changed_scored_evidence(tmp_path):
+    report_fixture(tmp_path)
+    save(tmp_path/"RESULTS.json", dict(cases=["changed"]))
+    with pytest.raises(ValueError, match="changed signed"):
+        publish_selection_status(tmp_path)

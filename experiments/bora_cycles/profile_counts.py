@@ -87,6 +87,8 @@ def main():
         kernel_source_sha256=sha(repo/"cpp/evidence/kernels.cpp"),
         library_sha256=sha(repo/"cpp/evidence/libbora_evidence.so"),
         caveat="No CPU affinity, machine exclusivity or end-to-end scaling measurement.")
+    from .run import environment_record
+    result["environment"] = environment_record()
     args.output.write_text(json.dumps(result, indent=2))
     print(json.dumps(result))
 

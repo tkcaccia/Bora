@@ -5,8 +5,10 @@ Never fabricate reviews from numerical scores or mark unviewed sheets viewed.
 import argparse
 from collections import Counter
 from datetime import datetime, timezone
+from html import escape
 import json
 from pathlib import Path
+import re
 from .run import digest, save
 
 
@@ -71,6 +73,40 @@ def require_review(root):
     return protocol
 
 
+def publish_selection_status(root):
+    """Refresh report-only status from signed evidence; never rescore masks."""
+    root = Path(root)
+    selection = json.loads((root/"SELECTION.json").read_text())
+    for name, field in (("RESULTS.json", "results_sha256"),
+                        ("VISUAL_REVIEW.json", "review_sha256"),
+                        ("PROTOCOL.json", "protocol_sha256")):
+        if digest(root/name) != selection[field]:
+            raise ValueError("Cannot publish changed signed cycle evidence")
+    gallery = root/"gallery.html"
+    if not gallery.exists():
+        return None
+    cycle = selection["cycle"]
+    html = gallery.read_text()
+    html = html.replace("CYCLE AWAITING VISUAL REVIEW",
+                        f"CYCLE {cycle} REVIEWED AND SELECTED — {cycle}/20 CYCLES COMPLETE")
+    html = re.sub(r"<title>.*?</title>", f"<title>Bora cycle {cycle}: all results</title>", html, count=1)
+    info = ('<p id="cycle-selection">Selected: '
+            +escape(", ".join(selection["survivors"]))
+            +'. All twenty candidates and both controls remain visible. '
+            +'<a href="SELECTION.json">All selection and rejection reasons</a>.</p>')
+    if 'id="cycle-selection"' in html:
+        html = re.sub(r'<p id="cycle-selection">.*?</p>', info, html, count=1)
+    else:
+        html = html.replace("</h1>", "</h1>"+info, 1)
+    gallery.write_text(html)
+    record = dict(cycle=cycle, gallery="gallery.html", gallery_sha256=digest(gallery),
+        selection_sha256=digest(root/"SELECTION.json"),
+        requested_delivery="Open this cycle viewer for user inspection after each completed cycle",
+        predictions_modified=False, scores_modified=False, contact_sheets_modified=False)
+    save(root/"VIEWER_READY.json", record)
+    return record
+
+
 def select(root, survivors, tradeoffs):
     root = Path(root)
     protocol = require_review(root)
@@ -101,6 +137,7 @@ def select(root, survivors, tradeoffs):
     save(root/"STAGE.json", dict(state="cycle_reviewed_and_selected",
                                 cycle=protocol["cycle"], completed_cycles=protocol["cycle"],
                                 complete_goal=False))
+    publish_selection_status(root)
     return completed
 
 

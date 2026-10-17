@@ -5,6 +5,7 @@ Selection and cycle advancement are separate review-gated operations.
 """
 import argparse
 import hashlib
+from importlib import metadata
 import json
 import os
 import platform
@@ -18,7 +19,7 @@ import cv2
 import numpy as np
 from PIL import Image, ImageDraw
 import tifffile
-from threadpoolctl import threadpool_limits
+from threadpoolctl import threadpool_info, threadpool_limits
 from bora.evidence import predict_evidence, resize
 from .methods import predict
 from .registry import (candidates, roster, CHILDREN_TWO, CYCLE_TWO_SURVIVORS,
@@ -52,6 +53,28 @@ def source_record():
         repo/"src/bora/evidence.py", repo/"cpp/evidence/kernels.cpp",
         repo/"cpp/evidence/libbora_evidence.so"]
     return {str(p.relative_to(repo)): digest(p) for p in files}
+
+
+def environment_record():
+    """Distinguish identical package versions built against different BLAS."""
+    from . import native
+    packages = {}
+    for name in ("numpy", "scipy", "opencv-python", "opencv-python-headless",
+                 "Pillow", "tifffile", "threadpoolctl"):
+        try:
+            packages[name] = metadata.version(name)
+        except metadata.PackageNotFoundError:
+            packages[name] = None
+    cpp_openmp = bool(native.library().bora_evidence_openmp())
+    pools = threadpool_info()
+    libraries = {entry["filepath"]: digest(entry["filepath"])
+                 for entry in pools if entry.get("filepath") and Path(entry["filepath"]).is_file()}
+    return dict(packages=packages, numpy_build=getattr(np.__config__, "CONFIG", None),
+        threadpools=pools, loaded_numerical_library_sha256=libraries,
+        opencv_version=cv2.__version__,
+        opencv_build_sha256=hashlib.sha256(cv2.getBuildInformation().encode()).hexdigest(),
+        cpp_openmp_available=cpp_openmp,
+        note="Requested numerical thread limits do not prove that every vendor runtime honors them; loaded library identity is explicit.")
 
 
 def freeze_case(args):
@@ -376,7 +399,7 @@ def main():
         input_plan_sha256=digest(args.source/"PLAN.json"), repeats=args.repeats,
         workers=args.workers, numerical_threads=2, primary_conversion="ensemble", metric_backend=args.metric_backend,
         study_protocol=json.loads(Path(__file__).with_name("protocol.json").read_text()),
-        python=platform.python_version(), host=platform.node())
+        python=platform.python_version(), host=platform.node(), environment=environment_record())
     if (args.root/"PROTOCOL.json").exists():
         if json.loads((args.root/"PROTOCOL.json").read_text()) != protocol:
             raise RuntimeError("Changed source/protocol requires a fresh output folder")

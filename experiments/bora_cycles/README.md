@@ -121,8 +121,11 @@ requires a written benefit/limitation or rejection reason. The validate_children
 function enforces five parents with three distinct interventions each. All
 numerical and visual evidence remains available, including failures.
 
-Only after all twenty cycles are complete should the final all-conversion
-benchmark, complete history and final viewer be presented as a finished study.
+At the user's updated request, open the viewer after every completed cycle
+for inspection. Selection refreshes its report-only completion status and
+records VIEWER_READY.json. Only after all twenty cycles are complete should
+the final all-conversion benchmark and complete history be presented as a
+finished study.
 
 Report export uses the same process limit as inference, retaining only small
 contact thumbnails in memory instead of every native RGB mask. Indexed PNG

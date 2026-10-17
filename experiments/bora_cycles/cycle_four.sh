@@ -12,6 +12,7 @@ export PYTHONPATH=src:.
 export OMP_NUM_THREADS=2
 export OPENBLAS_NUM_THREADS=2
 export MKL_NUM_THREADS=2
+export VECLIB_MAXIMUM_THREADS=2
 case "$task_scope" in
   pilot) set -- --pilot --cases tiger_32 bcss_17 beetle_01 camelyon16-subset_01 ;;
   full) set -- ;;

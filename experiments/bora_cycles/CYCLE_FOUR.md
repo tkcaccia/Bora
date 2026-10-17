@@ -114,3 +114,30 @@ for the larger workload. Numerical errors are below 5e-15 for that workload,
 and the two C++ thread outputs are exactly equal. These synthetic ratios are
 not end-to-end Bora speedups; CPU affinity and machine exclusivity were not
 controlled. The script and both complete timing records are retained.
+
+## Failed local full attempt and return to Chiamaka
+
+The local full attempt stopped before the all-prediction freeze: 21 completed
+case records, seven exact-parent parity failures, and a worker SIGSEGV in the
+system Accelerate BLAS `DOUBLE_matmul` path. No full-cycle scores or reviews
+were produced. Its folder, log, crash report and terminal-failure manifest
+remain preserved. The four-case pilot did not expose either failure, which
+shows why its scope must not be overstated.
+
+An isolated OpenBLAS build avoids the observed BCSS06 matrix crash in targeted
+checks. Matching the saved Chiamaka NumPy2.2.6/SciPy1.15.3 versions still leaves
+small native-mask differences on several TIGER parents; disabling OpenCV
+optimizations also leaves those differences. Their precise cross-platform
+cause is not established. Exact mask checks were not relaxed or bypassed.
+
+Chiamaka is reachable again. Subsequent full execution will use its existing
+runtime and the same unchanged-parent checks, after the new code passes its
+tests and engineering pilot there. Protocols now record package versions,
+NumPy BLAS build, loaded numerical-library hashes and OpenCV build identity,
+so identical version labels cannot conceal different numerical runtimes.
+This is engineering provenance, not another algorithmic intervention.
+
+The user now requests a viewer at the end of every completed cycle. Selection
+updates only the gallery's report status and writes VIEWER_READY.json; masks,
+scores and actually reviewed contact sheets stay unchanged. Open each viewer
+for inspection while continuing the full twenty-cycle objective.

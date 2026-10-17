@@ -1,0 +1,64 @@
+{
+  "status": "terminal_failure_before_full_prediction_freeze",
+  "cycle": 4,
+  "completed_prediction_cases": 21,
+  "required_cases": 149,
+  "main_pid": 3922,
+  "worker_pid": 3961,
+  "full_session_exit_code": 1,
+  "posthoc_session_exit_code": 1,
+  "worker_exception": "EXC_BAD_ACCESS / SIGSEGV, macOS crash report, DOUBLE_matmul -> Accelerate libBLAS.dylib",
+  "crash_report_sha256": "13544c66c789fc588741aaa687dd5e2d5979aa5fb8bf83f7b3f789a5a315d1f4",
+  "main_exception": "concurrent.futures.process.BrokenProcessPool",
+  "unchanged_survivor_parity_failures": [
+    {
+      "case": "tiger_07",
+      "method": "F01",
+      "exception": "RuntimeError('An unchanged survivor changed its prediction')"
+    },
+    {
+      "case": "tiger_07",
+      "method": "C01",
+      "exception": "RuntimeError('An unchanged survivor changed its prediction')"
+    },
+    {
+      "case": "tiger_07",
+      "method": "C15",
+      "exception": "RuntimeError('An unchanged survivor changed its prediction')"
+    },
+    {
+      "case": "tiger_09",
+      "method": "C01",
+      "exception": "RuntimeError('An unchanged survivor changed its prediction')"
+    },
+    {
+      "case": "tiger_14",
+      "method": "F01",
+      "exception": "RuntimeError('An unchanged survivor changed its prediction')"
+    },
+    {
+      "case": "tiger_14",
+      "method": "C01",
+      "exception": "RuntimeError('An unchanged survivor changed its prediction')"
+    },
+    {
+      "case": "tiger_14",
+      "method": "C15",
+      "exception": "RuntimeError('An unchanged survivor changed its prediction')"
+    }
+  ],
+  "all_predictions_frozen": false,
+  "scoring_started": false,
+  "rendering_started": false,
+  "completed_cycle": false,
+  "completed_cycles": 3,
+  "source_commit": "86264eb",
+  "environment": {
+    "numpy": "2.4.2, Apple Accelerate build",
+    "scipy": "1.17.1",
+    "opencv": "4.13.0.92",
+    "python": "3.12.4"
+  },
+  "recovery": "Preserve failed root and source. New isolated OpenBLAS environment; align numerical library versions with saved Chiamaka ENVIRONMENT.json and verify old-parent native parity before new full run. No gate relaxed, no candidate selected.",
+  "created_at_utc": "2026-10-17T17:02:24.617098+00:00"
+}

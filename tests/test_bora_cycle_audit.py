@@ -6,7 +6,7 @@ import pytest
 import tifffile
 
 from experiments.bora_cycles.audit_cycle import audit, glass_changes
-from experiments.bora_cycles.run import aggregate, digest, palette_bytes
+from experiments.bora_cycles.run import aggregate, digest, palette_bytes, environment_record
 
 
 def write(path, data):
@@ -106,3 +106,14 @@ def test_glass_only_intervention_cannot_relabel_nonzero_tissue():
     child[1, 1] = 2
     with pytest.raises(ValueError, match="nonzero tissue"):
         glass_changes(parent, child)
+
+
+def test_environment_fingerprint_includes_build_and_loaded_library_identity():
+    record = environment_record()
+    assert record["packages"]["numpy"] == np.__version__
+    assert record["numpy_build"] is not None
+    assert len(record["opencv_build_sha256"]) == 64
+    assert isinstance(record["threadpools"], list)
+    for path, sha in record["loaded_numerical_library_sha256"].items():
+        assert sha == digest(path)
+    json.dumps(record, allow_nan=False)
