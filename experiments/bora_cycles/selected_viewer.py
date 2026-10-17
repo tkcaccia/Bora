@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from .run import digest, save
+from .runtime_policy import DEFAULT_POLICY, active_policy, adjusted_score, runtime_ranking
 
 
 STYLE = """*{box-sizing:border-box}body{margin:0;font:15px system-ui;color:#183040;background:#eef2f4}
@@ -59,6 +60,7 @@ def summary(entry):
     small = score["regions"]["small_le_400_um2"]
     return dict(iou=score["macro_iou"], dice=score["macro_dice"],
                 seconds=entry["median_seconds"], small_recall=small["recall_at_50pct"],
+                runtime_adjusted_score=adjusted_score(score["macro_iou"], entry["median_seconds"]),
                 completely_missed_small=small["completely_missed"],
                 annotated_unassigned_pixels=score["annotated_unassigned_pixels"])
 
@@ -92,10 +94,11 @@ def publish_selected(root):
     protocol = result["protocol"]
     if protocol != json.loads((root/"PROTOCOL.json").read_text()):
         raise ValueError("Result protocol differs from signed protocol")
-    ranks = [row for row in result["ranking"] if row["method"] in selected]
+    policy = active_policy(protocol) or DEFAULT_POLICY
+    ranks = [row for row in runtime_ranking(result, policy) if row["method"] in selected]
     if len(ranks) != 5 or any(not row["complete"] for row in ranks):
         raise ValueError("Selected methods need complete scores")
-    # Accuracy order is stable across every case; selection also values distinct mechanisms.
+    # Use the same aggregate runtime-adjusted order across every displayed case.
     order = [row["method"] for row in ranks]
     options, sections, records = [], [], []
     for row in result["cases"]:
@@ -114,9 +117,11 @@ def publish_selected(root):
             if entry["status"] != "ok":
                 raise ValueError("A selected case has a failed prediction")
             info = summary(entry)
+            info["runtime_adjusted_score"] = adjusted_score(info["iou"], info["seconds"], policy)
             entries[key] = info
             title = (f'<strong>{escape(key)} · {escape(protocol["roster"][key]["title"])}</strong>'
                      f'<br>IoU {number(info["iou"])} · {number(info["seconds"],3)} s'
+                     f' · adjusted {number(info["runtime_adjusted_score"])}'
                      f'<br>Small-region recall {number(info["small_recall"],3)}'
                      f' · fully missed {info["completely_missed_small"]}')
             outputs.append(panel(case, title, key+"/mask.png", ratio, True, key+"/native.tif"))
@@ -136,7 +141,11 @@ def publish_selected(root):
     table = ''.join(
         f'<tr><td>{escape(r["method"])} · {escape(protocol["roster"][r["method"]]["title"])}</td>'
         f'<td>{number(r["mean_iou"])}</td><td>{number(r["mean_dice"])}</td>'
-        f'<td>{number(r["mean_seconds"],3)}</td><td>{number(r["small_region_recall"],3)}</td>'
+        f'<td>{number(r["mean_seconds"],3)}</td>'
+        f'<td>{r["images_over_one_second"]}/{len(records)}</td>'
+        f'<td>{number(r["mean_runtime_penalty"])}</td>'
+        f'<td><strong>{number(r["runtime_adjusted_score"])}</strong></td>'
+        f'<td>{number(r["small_region_recall"],3)}</td>'
         f'<td>{r["completely_missed_small_regions"]}</td></tr>' for r in ranks)
     html = ('<!doctype html><html lang="en"><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1">'
@@ -149,18 +158,29 @@ def publish_selected(root):
             f'<h1>Cycle {selection["cycle"]}: the selected five</h1>'
             f'<p>{len(records)} benchmark ROIs · {selection["cycle"]}/20 cycles completed · '
             'fixed #9 + #19 RGB. Only the five selected algorithms are displayed.</p>'
+            '<p><strong>Runtime-adjusted ranking:</strong> average of '
+            'IoU − 0.05 × max(seconds − 1, 0), calculated per image. '
+            'Five IoU percentage points per excess second; no bonus below one second. '
+            'The adjusted score is a utility, not a segmentation accuracy.</p>'
+            '<p><a href="../runtime_history.html">Completed-cycle accuracy and runtime history</a></p>'
+            +('<p class="note">This is a posthoc runtime comparison of the historical five; '
+              'their signed selection and raw accuracy scores are unchanged. '
+              'Cycle 5 onward uses the penalty as its selection objective.</p>'
+              if active_policy(protocol) is None else '')+
             '<p class="note">All images are development data in this repeated-selection study. '
             'Scores count all positive reference pixels; reference 0 is unscored. '
             'Small regions are ≤400 µm²; recall requires ≥50% correct class coverage. '
             'Opacity affects the display only. Click a panel for its full raster.</p>'
             '<div class="scores"><table><tr><th>Selected algorithm</th><th>Mean IoU</th>'
-            '<th>Mean Dice</th><th>Mean seconds</th><th>Small recall</th><th>Small fully missed</th>'
+            '<th>Mean Dice</th><th>Mean seconds</th><th>Images &gt;1s</th>'
+            '<th>Mean penalty</th><th>Adjusted score</th><th>Small recall</th><th>Small fully missed</th>'
             f'</tr>{table}</table></div>'+''.join(sections)
             +f'<script>{SCRIPT}</script></main></html>')
     (root/"selected.html").write_text(html)
     save(root/"SELECTED_RESULTS.json", dict(cycle=selection["cycle"],methods=order,
         selection_sha256=digest(root/"SELECTION.json"), ranking=ranks,cases=records,
-        predictions_modified=False,scores_modified=False))
+        predictions_modified=False,scores_modified=False, derived_runtime_scores_added=True,
+        runtime_penalty_policy=policy, historical_selection_unchanged=True))
     return dict(selected_gallery="selected.html",selected_gallery_sha256=digest(root/"selected.html"),
                 selected_results_sha256=digest(root/"SELECTED_RESULTS.json"),
                 displayed_methods=order,displayed_cases=len(records))

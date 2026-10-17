@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 import re
 from .run import digest, save
+from .runtime_policy import active_policy, runtime_ranking
 
 
 def record_review(root, case, sheet_sha256, observation, observed_methods):
@@ -122,18 +123,29 @@ def select(root, survivors, tradeoffs):
     ranks = {row["method"]: row for row in results["ranking"]}
     if any(not ranks[key]["complete"] for key in survivors):
         raise ValueError("A survivor must have predictions and scores for every case")
-    best = max(ranks[key]["mean_iou"] for key in candidates if ranks[key]["complete"])
+    raw_best = max(ranks[key]["mean_iou"] for key in candidates if ranks[key]["complete"])
+    raw_leaders = sorted(key for key in candidates if ranks[key]["complete"]
+                         and ranks[key]["mean_iou"] == raw_best)
+    policy = active_policy(protocol)
+    if policy is not None:
+        # Recompute from frozen per-case IoU/times rather than trust a stale
+        # derived ranking. Historical protocols keep their original rule.
+        ranks = {row["method"]: row for row in runtime_ranking(results, policy)}
+    metric = "runtime_adjusted_score" if policy is not None else "mean_iou"
+    best = max(ranks[key][metric] for key in candidates if ranks[key]["complete"])
     leaders = sorted(key for key in candidates if ranks[key]["complete"]
-                     and ranks[key]["mean_iou"] == best)
+                     and ranks[key][metric] == best)
     if not set(leaders).intersection(survivors):
-        raise ValueError("The preregistered primary accuracy leader must survive")
+        raise ValueError("The preregistered primary selection leader must survive")
     completed = dict(
         cycle=protocol["cycle"], survivors=survivors,
         rejected=sorted(candidates-set(survivors)), tradeoffs=tradeoffs,
         results_sha256=digest(root/"RESULTS.json"),
         review_sha256=digest(root/"VISUAL_REVIEW.json"),
         protocol_sha256=digest(root/"PROTOCOL.json"),
-        selection_code_sha256=digest(Path(__file__)), primary_accuracy_leaders=leaders,
+        selection_code_sha256=digest(Path(__file__)), primary_accuracy_leaders=raw_leaders,
+        primary_selection_leaders=leaders, primary_selection_metric=metric,
+        runtime_penalty_policy=policy,
         no_next_cycle_implemented_by_this_selection=True,
         completed_at_utc=datetime.now(timezone.utc).isoformat())
     save(root/"SELECTION.json", completed)

@@ -26,6 +26,7 @@ from .registry import (candidates, roster, CHILDREN_TWO, CYCLE_TWO_SURVIVORS,
                        CHILDREN_THREE, CYCLE_THREE_SURVIVORS,
                        CHILDREN_FOUR, CYCLE_FOUR_SURVIVORS)
 from .diagnostics import novelty, white_regions, mask_diagnostics
+from .runtime_policy import active_policy, runtime_ranking
 
 
 def digest(path):
@@ -198,7 +199,7 @@ def score_case(args):
     return row
 
 
-def aggregate(rows, keys):
+def aggregate(rows, keys, runtime_penalty=None):
     ranking = []
     for key in keys:
         entries = [row["methods"][key] for row in rows]
@@ -226,6 +227,8 @@ def aggregate(rows, keys):
                                   r["methods"][key]["score"]["macro_iou"]
                                   for r in rows if r["dataset"] == dataset])))
                 for dataset in sorted({r["dataset"] for r in rows})}))
+    if runtime_penalty is not None:
+        return runtime_ranking(dict(cases=rows, ranking=ranking), runtime_penalty)
     return sorted(ranking, key=lambda r: (not r["complete"], -(r["mean_iou"] or 0), r["method"]))
 
 
@@ -317,9 +320,14 @@ def publish(source, root, result, workers=1):
     if not (root/"VISUAL_REVIEW.json").exists():
         save(root/"VISUAL_REVIEW.json", dict(reviewed={}, required_cases=list(manifest),
                                               automated_checks_are_not_visual_review=True))
+    penalized = active_policy(result["protocol"]) is not None
     ranking = "".join(
         f'<tr><td>{r["method"]}</td><td>{r["mean_iou"]}</td>'
-        f'<td>{r.get("mean_seconds")}</td><td>{r.get("small_region_recall")}</td></tr>'
+        f'<td>{r.get("mean_seconds")}</td>'
+        +(f'<td>{r.get("images_over_one_second")}</td>'
+          f'<td>{r.get("mean_runtime_penalty")}</td>'
+          f'<td>{r.get("runtime_adjusted_score")}</td>' if penalized else '')
+        +f'<td>{r.get("small_region_recall")}</td></tr>'
         for r in result["ranking"])
     status = "ENGINEERING PILOT — NOT A COMPLETED CYCLE" if result["protocol"]["pilot"] else "CYCLE AWAITING VISUAL REVIEW"
     html = ('<!doctype html><meta charset="utf-8"><title>Bora improvement cycles</title>'
@@ -333,7 +341,11 @@ def publish(source, root, result, workers=1):
             f'{len(keys)} implementations, including controls.</p>'
             '<p>All cases are development data in this repeated-selection study. '
             'Click any image for its full raster. Class-0 reference areas are unscored.</p>'
+            +('<p>Primary selection utility: mean over images of '
+              'IoU − 0.05 × max(seconds − 1, 0). Raw IoU is reported separately.</p>'
+              if penalized else '')+
             '<table><tr><th>Method</th><th>Mean IoU</th><th>Seconds</th>'
+            +('<th>Images &gt;1s</th><th>Mean penalty</th><th>Adjusted score</th>' if penalized else '')+
             '<th>Small-region recall</th></tr>'+ranking+'</table>'+
             "".join(sections))
     (root/"gallery.html").write_text(html)
@@ -430,7 +442,8 @@ def main():
     with ProcessPoolExecutor(max_workers=args.workers, mp_context=get_context("spawn")) as pool:
         rows = list(pool.map(score_case, [
             (args.source, args.root, sample, keys, frozen["manifests"], args.metric_backend) for sample in samples]))
-    result = dict(protocol=protocol, cases=rows, ranking=aggregate(rows, keys))
+    result = dict(protocol=protocol, cases=rows,
+                  ranking=aggregate(rows, keys, active_policy(protocol)))
     save(args.root/"RESULTS.json", result)
     publish(args.source, args.root, result, workers=args.workers)
     save(args.root/"STAGE.json", dict(

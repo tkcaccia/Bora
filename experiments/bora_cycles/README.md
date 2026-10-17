@@ -7,6 +7,12 @@ leader; the five survivors remain F01, C17, C01, D08 and C15. See
 [CYCLE_FOUR_REVIEW.md](CYCLE_FOUR_REVIEW.md). Earlier checkpoints below describe
 their historical stages; cycle five has not been implemented or executed.
 
+The user now requests a runtime penalty above one second per image. From
+cycle5 the primary selection utility is the image-average of
+`IoU - 0.05 * max(seconds - 1, 0)`. Raw IoU remains visible. The selected-five
+viewer also shows this policy as a labelled posthoc comparison for cycles1–4,
+without changing their signed selections. See [CYCLE_PROGRESS.md](CYCLE_PROGRESS.md).
+
 The requested endpoint is **twenty completed cycles**, each testing twenty
 algorithms on all 149 frozen ROIs. A pilot or a completed prediction job is not
 a completed cycle. Each cycle must be scored, rendered and actually inspected

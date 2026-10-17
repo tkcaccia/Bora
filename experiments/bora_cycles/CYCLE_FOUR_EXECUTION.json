@@ -1012,8 +1012,8 @@
     "SELECTION.json": "02b4e433fc46727ef6b3c6a039f70e9da6485f4883d3b49329e5ce0d4d7fa46f",
     "VISUAL_REVIEW.json": "e48ba9679eda95f5ef99e5c9043b6564b2f352474875f2d2dba427729d74d947",
     "NATIVE_REVIEW.json": "e0dc94199ae0681bbd5ae26c8cfe2cd8ff0fdd3431e4f85a803d07bc8469fe43",
-    "VIEWER_READY.json": "c2942ea08b310f0ab216b3b12bd455f55d21793f1cc2bef0c78efbd930ea7b3f",
-    "selected.html": "b996e550a8acda8487747b6ac4cc1161786e7fc6123f8896b5c11794867dec8b"
+    "VIEWER_READY.json": "6e72f364d0bb037bf71379fd641b04fdf4dcf368754c0b28957c86504bc669f3",
+    "selected.html": "dc8d3d1357c6eacd5ee35150aa562e6c6df24e402efd46d2fc96c07616c59b16"
   },
   "development_notice": "All149 repeated development cases, not independent validation.",
   "viewer_delivery": "Open selected.html showing only F01,C17,C01,D08,C15 across all149 cases.",
@@ -1027,5 +1027,6 @@
     "C01",
     "D08",
     "C15"
-  ]
+  ],
+  "runtime_policy_posthoc_report": "RUNTIME_PENALTY_HISTORY.json; no masks, raw scores or signed selections changed"
 }
