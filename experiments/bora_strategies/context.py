@@ -1,9 +1,8 @@
 """Shared inputs and coarse-only statistics; no reference-mask I/O."""
 import cv2
 import numpy as np
-from scipy import ndimage as ndi,sparse
+from scipy import ndimage as ndi
 from scipy.special import softmax
-from skimage.segmentation import slic
 from .registry import PARAMETERS as P
 
 
@@ -75,25 +74,6 @@ class Context:
 
     def fix(self,labels):
         labels=labels.astype(np.int32);known=self.anchors>=0;labels[known]=self.anchors[known];return labels
-
-    def region_graph(self,kind='converted'):
-        key='graph_'+kind
-        if key in self.cache:return self.cache[key]
-        image=self.rgb if kind=='converted' else self.he
-        n=min(P['region_limit'],max(64,round(np.prod(self.shape)*np.prod(self.mpp_xy)/P['region_spacing_um']**2)))
-        regions=slic(image,n_segments=n,compactness=8,sigma=1/self.um,start_label=0,channel_axis=-1,enforce_connectivity=True)
-        count=int(regions.max())+1;colour=average(self.lab,regions);u=average(self.u,regions)
-        pairs=np.concatenate([np.stack([regions[:-1].ravel(),regions[1:].ravel()],1),np.stack([regions[:,:-1].ravel(),regions[:,1:].ravel()],1)])
-        pairs=np.unique(np.sort(pairs[pairs[:,0]!=pairs[:,1]],axis=1),axis=0);a,b=pairs.T
-        d=np.mean((colour[a]-colour[b])**2,axis=1);positive=d[d>0];scale=max(float(np.median(positive)) if len(positive) else 1.,1.)
-        weights=np.exp(-d/scale)+.001
-        adj=sparse.coo_matrix((np.r_[weights,weights],(np.r_[a,b],np.r_[b,a])),shape=(count,count)).tocsr()
-        votes=np.stack([average((self.core==i).astype(np.float32),regions) for i in range(self.k)],axis=-1)
-        anchor_votes=np.stack([np.bincount(regions[self.anchors==i],minlength=count) for i in range(self.k)],axis=-1)
-        anchor=np.where(anchor_votes.sum(-1)>0,anchor_votes.argmax(-1),-1)
-        record=dict(regions=regions,n=count,u=u.astype(np.float32),colour=colour,pairs=pairs,weights=weights,adj=adj,votes=votes,anchor=anchor,
-                    areas=np.bincount(regions.ravel(),minlength=count))
-        self.cache[key]=record;return record
 
     def probabilities(self,labels):return np.eye(self.k,dtype=np.float32)[labels]
 

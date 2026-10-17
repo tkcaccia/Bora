@@ -1,0 +1,41 @@
+{
+  "rounds": [
+    {
+      "round": 1,
+      "source": "round1.json",
+      "hypotheses": "Six predeclared whole-field principles; no hard anchors or fixed margin.",
+      "finding": "No initial novel method improves mean IoU over the retained B08 comparator. E01/E02 offer faster but less accurate alternatives."
+    },
+    {
+      "round": 2,
+      "source": "round2.json",
+      "hypotheses": "Exploit known palette geometry through colour-simplex inversion; confidence-limited coarse correction; shared-covariance linear discrimination; multimodal Gaussian mixtures.",
+      "finding": "E08 increases mean IoU, E09 improves both mean IoU and speed over retained B08. Flexible mixtures reduce mean IoU."
+    },
+    {
+      "round": 3,
+      "source": "round3.json",
+      "hypotheses": "Amortize inverse on a colour lattice; globally calibrate majority constraints; quadratic ridge evidence.",
+      "finding": "E11 preserves E08 accuracy within 0.000010 mean IoU and substantially reduces runtime. E12 provides no meaningful gain over E09. E13 is faster but loses accuracy."
+    },
+    {
+      "round": 4,
+      "source": "round4.json",
+      "hypotheses": "Uncertainty-gated guided posterior regression; explicit coarse-label noise deconvolution.",
+      "finding": "E14 adds only 0.000750 mean IoU over E11 while taking about 3.7 times as long; below predeclared 0.001 improvement tolerance. E15 does not improve E11."
+    },
+    {
+      "round": 5,
+      "source": "round5.json",
+      "hypotheses": "Confidence-weighted logarithmic pooling on a Jensen-Shannon probability graph.",
+      "finding": "E16 adds only 0.000047 mean IoU over E11 and is about 4.6 times slower. Second consecutive round without a qualifying Pareto improvement."
+    }
+  ],
+  "full_benchmark_scored": false,
+  "stopping": "Predeclared practical stopping rule reached after rounds 4 and 5; this does not assert that all possible mathematical innovation is exhausted.",
+  "selected_primary": "B22 (development E11), amortized simplex correction",
+  "fast_alternative": "B21 (development E09), shared-covariance discriminant",
+  "mean_metric": "Arithmetic case mean native macro IoU on nine named ROIs, fixed equal 9+19 RGB",
+  "development_methods_tested": 16,
+  "selection_frozen_before_full_scoring": true
+}

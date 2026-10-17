@@ -48,7 +48,7 @@ def main():
     visual=json.loads((a.root/'VISUAL_MANIFEST.json').read_text())['files_sha256']
     for name,sha in visual.items():assert digest(a.root/name)==sha
     audit=dict(cases=len(results['cases']),cohorts=dict(Counter(r['cohort'] for r in results['cases'])),conversions=len(CONVERSIONS),strategies=len(STRATEGIES),native_masks=masks,
-        unchanged_retained_native_masks=parity,unchanged_retained_rgb_inputs=rgbparity,consensus_revision=2,new_groups_disjoint_from_previous=True,
+        unchanged_retained_native_masks=parity,unchanged_retained_rgb_inputs=rgbparity,consensus_revision=3,new_groups_disjoint_from_previous=True,
         all_detected_tissue_assigned=True,no_final_background_labels=True,original_quality_support_preserved=True,all_reference_classes_scored=True,
         exact_difference_maps=True,all_frozen_hashes_verified=True,predictor_source_hashes_verified=True,verified_visuals=len(visual),all_checks_passed=True)
     save_json(a.root/'AUDIT.json',audit);save_json(a.root/'COMPLETE.json',audit);print(json.dumps(audit,indent=2))

@@ -1,0 +1,1769 @@
+{
+  "cases": [
+    {
+      "case": "tiger_32",
+      "tiles": {
+        "macro_iou": 0.6382123607185434,
+        "macro_dice": 0.748101914517035,
+        "worst_class_iou": 0.24545346931909512,
+        "pixel_accuracy": 0.8186064566299526,
+        "boundary_f1_at_um": {
+          "4": 0.17922119024178268,
+          "8": 0.3100145765242842,
+          "16": 0.5143245691852192
+        },
+        "matched_boundary_hd95_um": 133.843191832831,
+        "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+        "valid_pixels": 1548269,
+        "per_class": {
+          "1": {
+            "iou": 0.24545346931909512,
+            "dice": 0.3941591964142789,
+            "truth_pixels": 279589,
+            "prediction_pixels": 120219
+          },
+          "2": {
+            "iou": 0.7745732438334605,
+            "dice": 0.8729684689263266,
+            "truth_pixels": 982627,
+            "prediction_pixels": 1132588
+          },
+          "3": {
+            "iou": 0.647884577890427,
+            "dice": 0.7863227638428775,
+            "truth_pixels": 13755,
+            "prediction_pixels": 11601
+          },
+          "4": {
+            "iou": 0.8849381518311908,
+            "dice": 0.9389572288846569,
+            "truth_pixels": 272298,
+            "prediction_pixels": 271714
+          }
+        },
+        "ignore_code": 0
+      },
+      "methods": {
+        "E14": {
+          "score": {
+            "macro_iou": 0.7368860970299855,
+            "macro_dice": 0.8316678283011725,
+            "worst_class_iou": 0.40445697015662885,
+            "pixel_accuracy": 0.847949548818713,
+            "boundary_f1_at_um": {
+              "4": 0.3119764655213935,
+              "8": 0.5940102112620882,
+              "16": 0.7890541357720168
+            },
+            "matched_boundary_hd95_um": 32.901367752724205,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 1548269,
+            "per_class": {
+              "1": {
+                "iou": 0.40445697015662885,
+                "dice": 0.5759620675477479,
+                "truth_pixels": 279589,
+                "prediction_pixels": 209280
+              },
+              "2": {
+                "iou": 0.8011661013085021,
+                "dice": 0.8896082384922468,
+                "truth_pixels": 982627,
+                "prediction_pixels": 1039879
+              },
+              "3": {
+                "iou": 0.8313260689479386,
+                "dice": 0.9078951946831831,
+                "truth_pixels": 13755,
+                "prediction_pixels": 14984
+              },
+              "4": {
+                "iou": 0.9105952477068728,
+                "dice": 0.9532058124815121,
+                "truth_pixels": 272298,
+                "prediction_pixels": 271979
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.4021732183173299,
+            0.6556195309385657,
+            0.8805662086233497
+          ],
+          "median_seconds": 0.6556195309385657,
+          "mask_sha256": "132de33925da01f36c76527e8884319284edcb3bcac904c37796c39a7c478127",
+          "details": {
+            "simplex_identifiable": true,
+            "palette_rank": 4,
+            "iterations": 0,
+            "analysis_shape_yx": [
+              608,
+              640
+            ],
+            "analysis_mpp_xy": [
+              1.0,
+              0.9991776315789473
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        },
+        "E15": {
+          "score": {
+            "macro_iou": 0.7390493570688379,
+            "macro_dice": 0.8339194466030961,
+            "worst_class_iou": 0.4139696636723042,
+            "pixel_accuracy": 0.8483932701617096,
+            "boundary_f1_at_um": {
+              "4": 0.31568931807074735,
+              "8": 0.6076127388041688,
+              "16": 0.8013819028072148
+            },
+            "matched_boundary_hd95_um": 31.468237955119125,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 1548269,
+            "per_class": {
+              "1": {
+                "iou": 0.4139696636723042,
+                "dice": 0.5855424968554971,
+                "truth_pixels": 279589,
+                "prediction_pixels": 219695
+              },
+              "2": {
+                "iou": 0.8008268271403324,
+                "dice": 0.8893990416746792,
+                "truth_pixels": 982627,
+                "prediction_pixels": 1029842
+              },
+              "3": {
+                "iou": 0.8297071396669432,
+                "dice": 0.9069288977229139,
+                "truth_pixels": 13755,
+                "prediction_pixels": 14922
+              },
+              "4": {
+                "iou": 0.9116937977957715,
+                "dice": 0.9538073501592945,
+                "truth_pixels": 272298,
+                "prediction_pixels": 271663
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.35366799775511026,
+            0.41604906134307384,
+            0.3847142765298486
+          ],
+          "median_seconds": 0.3847142765298486,
+          "mask_sha256": "4c61a15ac75a405f048bfe42401514055ac8acd521d2b824bf8bbd20a5e66e8e",
+          "details": {
+            "simplex_identifiable": true,
+            "palette_rank": 4,
+            "iterations": 0,
+            "noise_transition": [
+              [
+                0.8817936811667428,
+                0.11418924848086577,
+                0.0010199480038944498,
+                0.0029971242347555495
+              ],
+              [
+                0.05479408883504848,
+                0.9366456104888063,
+                0.002373440583955245,
+                0.006186861673583544
+              ],
+              [
+                0.0003134081314923098,
+                0.030878405343835826,
+                0.9676424080298585,
+                0.001165784108912747
+              ],
+              [
+                0.00042337319514322634,
+                0.014511210610603776,
+                0.00047211753062540134,
+                0.984593302586954
+              ]
+            ],
+            "identity_regularizer": 0.65,
+            "analysis_shape_yx": [
+              608,
+              640
+            ],
+            "analysis_mpp_xy": [
+              1.0,
+              0.9991776315789473
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        }
+      }
+    },
+    {
+      "case": "tiger_33",
+      "tiles": {
+        "macro_iou": 0.6009011644000506,
+        "macro_dice": 0.7505719846633373,
+        "worst_class_iou": 0.5844678387765542,
+        "pixel_accuracy": 0.751180899339934,
+        "boundary_f1_at_um": {
+          "4": 0.2185042786341886,
+          "8": 0.3859463551295288,
+          "16": 0.671022814577032
+        },
+        "matched_boundary_hd95_um": 50.5,
+        "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+        "valid_pixels": 1551360,
+        "per_class": {
+          "1": {
+            "iou": 0.5844678387765542,
+            "dice": 0.7377465474185335,
+            "truth_pixels": 719396,
+            "prediction_pixels": 751822
+          },
+          "2": {
+            "iou": 0.6173344900235469,
+            "dice": 0.7633974219081411,
+            "truth_pixels": 831964,
+            "prediction_pixels": 799320
+          }
+        },
+        "ignore_code": 0
+      },
+      "methods": {
+        "E14": {
+          "score": {
+            "macro_iou": 0.7678147748385518,
+            "macro_dice": 0.8685988129399975,
+            "worst_class_iou": 0.7548403540815044,
+            "pixel_accuracy": 0.8690652073019802,
+            "boundary_f1_at_um": {
+              "4": 0.5694712929199841,
+              "8": 0.8051209285334153,
+              "16": 0.9240281943812559
+            },
+            "matched_boundary_hd95_um": 22.38861317723811,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 1551360,
+            "per_class": {
+              "1": {
+                "iou": 0.7548403540815044,
+                "dice": 0.8602951856285447,
+                "truth_pixels": 719396,
+                "prediction_pixels": 733317
+              },
+              "2": {
+                "iou": 0.780789195595599,
+                "dice": 0.8769024402514504,
+                "truth_pixels": 831964,
+                "prediction_pixels": 817825
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.32118288055062294,
+            0.34169565327465534,
+            0.6370831085368991
+          ],
+          "median_seconds": 0.34169565327465534,
+          "mask_sha256": "7c93afd23899c5f077f4da8366721b612e7652671d27ea7dc6d966c66a26f9bc",
+          "details": {
+            "simplex_identifiable": true,
+            "palette_rank": 2,
+            "iterations": 0,
+            "analysis_shape_yx": [
+              606,
+              640
+            ],
+            "analysis_mpp_xy": [
+              1.0,
+              1.0
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        },
+        "E15": {
+          "score": {
+            "macro_iou": 0.7678502372587869,
+            "macro_dice": 0.8686239849188413,
+            "worst_class_iou": 0.7551419053674651,
+            "pixel_accuracy": 0.8690690748762376,
+            "boundary_f1_at_um": {
+              "4": 0.5692661195851434,
+              "8": 0.8109943430234026,
+              "16": 0.9268035296569719
+            },
+            "matched_boundary_hd95_um": 21.83861221060685,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 1551360,
+            "per_class": {
+              "1": {
+                "iou": 0.7551419053674651,
+                "dice": 0.8604909985433513,
+                "truth_pixels": 719396,
+                "prediction_pixels": 735313
+              },
+              "2": {
+                "iou": 0.7805585691501087,
+                "dice": 0.8767569712943313,
+                "truth_pixels": 831964,
+                "prediction_pixels": 815829
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.20234768092632294,
+            0.2412901446223259,
+            0.2806771267205477
+          ],
+          "median_seconds": 0.2412901446223259,
+          "mask_sha256": "55044361e94de63aa6d4e89d075b6043dd8661ffd468d53d243dd931ecc48c91",
+          "details": {
+            "simplex_identifiable": true,
+            "palette_rank": 2,
+            "iterations": 0,
+            "noise_transition": [
+              [
+                0.9184605224040507,
+                0.08153947761726732
+              ],
+              [
+                0.07413207049533463,
+                0.925867929576502
+              ]
+            ],
+            "identity_regularizer": 0.65,
+            "analysis_shape_yx": [
+              606,
+              640
+            ],
+            "analysis_mpp_xy": [
+              1.0,
+              1.0
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        }
+      }
+    },
+    {
+      "case": "tiger_36",
+      "tiles": {
+        "macro_iou": 0.6471871940940488,
+        "macro_dice": 0.7602706362753391,
+        "worst_class_iou": 0.41077201472053354,
+        "pixel_accuracy": 0.8922545835593838,
+        "boundary_f1_at_um": {
+          "4": 0.18610427954563277,
+          "8": 0.3490985806125487,
+          "16": 0.6102976886697722
+        },
+        "matched_boundary_hd95_um": 139.52239963532736,
+        "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+        "valid_pixels": 1345570,
+        "per_class": {
+          "1": {
+            "iou": 0.8836023734675641,
+            "dice": 0.9382047781569965,
+            "truth_pixels": 1134421,
+            "prediction_pixels": 1209579
+          },
+          "2": {
+            "iou": 0.41077201472053354,
+            "dice": 0.5823364943936817,
+            "truth_pixels": 211149,
+            "prediction_pixels": 135781
+          }
+        },
+        "ignore_code": 0
+      },
+      "methods": {
+        "E14": {
+          "score": {
+            "macro_iou": 0.8015452944102243,
+            "macro_dice": 0.8839375874946371,
+            "worst_class_iou": 0.6705101847035413,
+            "pixel_accuracy": 0.9406273921089204,
+            "boundary_f1_at_um": {
+              "4": 0.5580534886556636,
+              "8": 0.7780197220166297,
+              "16": 0.8523441190905054
+            },
+            "matched_boundary_hd95_um": 64.73407139984322,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 1345570,
+            "per_class": {
+              "1": {
+                "iou": 0.9325804041169072,
+                "dice": 0.9651142090960504,
+                "truth_pixels": 1134421,
+                "prediction_pixels": 1151868
+              },
+              "2": {
+                "iou": 0.6705101847035413,
+                "dice": 0.8027609658932239,
+                "truth_pixels": 211149,
+                "prediction_pixels": 193492
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.26543649192899466,
+            0.2673975573852658,
+            0.30582763254642487
+          ],
+          "median_seconds": 0.2673975573852658,
+          "mask_sha256": "778ac290a133b0e834b6b681c0107704f9b2e89380818dfbef962c8ce05c138e",
+          "details": {
+            "simplex_identifiable": true,
+            "palette_rank": 2,
+            "iterations": 0,
+            "analysis_shape_yx": [
+              563,
+              598
+            ],
+            "analysis_mpp_xy": [
+              0.9991638795986622,
+              1.0
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        },
+        "E15": {
+          "score": {
+            "macro_iou": 0.7997821328703869,
+            "macro_dice": 0.8828062999045129,
+            "worst_class_iou": 0.6684580590263782,
+            "pixel_accuracy": 0.9394219550079148,
+            "boundary_f1_at_um": {
+              "4": 0.557087461030547,
+              "8": 0.7850800308153543,
+              "16": 0.8516433492197651
+            },
+            "matched_boundary_hd95_um": 66.2872536767062,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 1345570,
+            "per_class": {
+              "1": {
+                "iou": 0.9311062067143957,
+                "dice": 0.9643241821469669,
+                "truth_pixels": 1134421,
+                "prediction_pixels": 1146704
+              },
+              "2": {
+                "iou": 0.6684580590263782,
+                "dice": 0.8012884176620588,
+                "truth_pixels": 211149,
+                "prediction_pixels": 198656
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.24950261693447828,
+            0.23638966493308544,
+            0.20786128006875515
+          ],
+          "median_seconds": 0.23638966493308544,
+          "mask_sha256": "06a075d3a5902e74c847c36dba6272733745117ce6e4045b54a9bd34b0a36400",
+          "details": {
+            "simplex_identifiable": true,
+            "palette_rank": 2,
+            "iterations": 0,
+            "noise_transition": [
+              [
+                0.9656302032332897,
+                0.034369797851968614
+              ],
+              [
+                0.07525140048659117,
+                0.9247486000379008
+              ]
+            ],
+            "identity_regularizer": 0.65,
+            "analysis_shape_yx": [
+              563,
+              598
+            ],
+            "analysis_mpp_xy": [
+              0.9991638795986622,
+              1.0
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        }
+      }
+    },
+    {
+      "case": "tiger_37",
+      "tiles": {
+        "macro_iou": 0.5871919799285282,
+        "macro_dice": 0.7191237719664114,
+        "worst_class_iou": 0.38688453601869977,
+        "pixel_accuracy": 0.8849494029467758,
+        "boundary_f1_at_um": {
+          "4": 0.1918654580781203,
+          "8": 0.3747886808295824,
+          "16": 0.6657703033800121
+        },
+        "matched_boundary_hd95_um": 146.3966358280817,
+        "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+        "valid_pixels": 1375673,
+        "per_class": {
+          "1": {
+            "iou": 0.38688453601869977,
+            "dice": 0.5579188836142351,
+            "truth_pixels": 184360,
+            "prediction_pixels": 129510
+          },
+          "2": {
+            "iou": 0.8758507603849807,
+            "dice": 0.9338171019588253,
+            "truth_pixels": 1160144,
+            "prediction_pixels": 1215923
+          },
+          "3": {
+            "iou": 0.49884064338190426,
+            "dice": 0.6656353303261737,
+            "truth_pixels": 31169,
+            "prediction_pixels": 30240
+          }
+        },
+        "ignore_code": 0
+      },
+      "methods": {
+        "E14": {
+          "score": {
+            "macro_iou": 0.6322990420592034,
+            "macro_dice": 0.7615463731997046,
+            "worst_class_iou": 0.5078614858445754,
+            "pixel_accuracy": 0.89271796422551,
+            "boundary_f1_at_um": {
+              "4": 0.27752820943258977,
+              "8": 0.5098981801773684,
+              "16": 0.6903435551002884
+            },
+            "matched_boundary_hd95_um": 66.09708765706208,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 1375673,
+            "per_class": {
+              "1": {
+                "iou": 0.5078614858445754,
+                "dice": 0.673618221053129,
+                "truth_pixels": 184360,
+                "prediction_pixels": 196562
+              },
+              "2": {
+                "iou": 0.8793572697535966,
+                "dice": 0.9358063886052805,
+                "truth_pixels": 1160144,
+                "prediction_pixels": 1138605
+              },
+              "3": {
+                "iou": 0.5096783705794384,
+                "dice": 0.6752145099407045,
+                "truth_pixels": 31169,
+                "prediction_pixels": 40506
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.5185747090727091,
+            0.4050168627873063,
+            0.38067518547177315
+          ],
+          "median_seconds": 0.4050168627873063,
+          "mask_sha256": "160b4fccedb0ec9a3c47929f743cf93194fe660e1bd470fd6f03a365f677b8cd",
+          "details": {
+            "simplex_identifiable": true,
+            "palette_rank": 3,
+            "iterations": 0,
+            "analysis_shape_yx": [
+              594,
+              579
+            ],
+            "analysis_mpp_xy": [
+              1.0,
+              1.0008417508417509
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        },
+        "E15": {
+          "score": {
+            "macro_iou": 0.6272114582063841,
+            "macro_dice": 0.7574043952093713,
+            "worst_class_iou": 0.5009179232244889,
+            "pixel_accuracy": 0.8899011611044194,
+            "boundary_f1_at_um": {
+              "4": 0.2732832724533713,
+              "8": 0.5091040619773605,
+              "16": 0.6805107129958184
+            },
+            "matched_boundary_hd95_um": 70.92601779319067,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 1375673,
+            "per_class": {
+              "1": {
+                "iou": 0.5046632608196601,
+                "dice": 0.6707989408138356,
+                "truth_pixels": 184360,
+                "prediction_pixels": 202352
+              },
+              "2": {
+                "iou": 0.8760531905750034,
+                "dice": 0.9339321453956179,
+                "truth_pixels": 1160144,
+                "prediction_pixels": 1131727
+              },
+              "3": {
+                "iou": 0.5009179232244889,
+                "dice": 0.6674820994186605,
+                "truth_pixels": 31169,
+                "prediction_pixels": 41594
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.22764434665441513,
+            0.1778645059093833,
+            0.18882529996335506
+          ],
+          "median_seconds": 0.18882529996335506,
+          "mask_sha256": "372158650b938a81db6d3dcb7f4abd6a743a93798b25d67dcf6a975280862fc9",
+          "details": {
+            "simplex_identifiable": true,
+            "palette_rank": 3,
+            "iterations": 0,
+            "noise_transition": [
+              [
+                0.9221491399332532,
+                0.07671650831828787,
+                0.0011343520488905111
+              ],
+              [
+                0.04444778398056155,
+                0.9449357898260075,
+                0.010616427406523422
+              ],
+              [
+                0.0024199455017398694,
+                0.045371057599592673,
+                0.9522089993696319
+              ]
+            ],
+            "identity_regularizer": 0.65,
+            "analysis_shape_yx": [
+              594,
+              579
+            ],
+            "analysis_mpp_xy": [
+              1.0,
+              1.0008417508417509
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        }
+      }
+    },
+    {
+      "case": "tiger_38",
+      "tiles": {
+        "macro_iou": 0.8264670622577629,
+        "macro_dice": 0.9010429195287489,
+        "worst_class_iou": 0.6816523363754634,
+        "pixel_accuracy": 0.9419883852262925,
+        "boundary_f1_at_um": {
+          "4": 0.17961129405486018,
+          "8": 0.37061773395588143,
+          "16": 0.7151749502695472
+        },
+        "matched_boundary_hd95_um": 76.76392172888777,
+        "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+        "valid_pixels": 1461759,
+        "per_class": {
+          "1": {
+            "iou": 0.8564159158573066,
+            "dice": 0.9226552180919084,
+            "truth_pixels": 525905,
+            "prediction_pixels": 520397
+          },
+          "2": {
+            "iou": 0.9413329345405188,
+            "dice": 0.969780008150242,
+            "truth_pixels": 846737,
+            "prediction_pixels": 853826
+          },
+          "3": {
+            "iou": 0.6816523363754634,
+            "dice": 0.8106935323440962,
+            "truth_pixels": 89117,
+            "prediction_pixels": 82800
+          }
+        },
+        "ignore_code": 0
+      },
+      "methods": {
+        "E14": {
+          "score": {
+            "macro_iou": 0.8709087552355642,
+            "macro_dice": 0.9280808004887583,
+            "worst_class_iou": 0.7391300036687787,
+            "pixel_accuracy": 0.9619273765374456,
+            "boundary_f1_at_um": {
+              "4": 0.3179239802409662,
+              "8": 0.5760491360330227,
+              "16": 0.8192809341184089
+            },
+            "matched_boundary_hd95_um": 88.48121165051808,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 1461759,
+            "per_class": {
+              "1": {
+                "iou": 0.9068767006512156,
+                "dice": 0.9511644883400264,
+                "truth_pixels": 525905,
+                "prediction_pixels": 534389
+              },
+              "2": {
+                "iou": 0.9667195613866986,
+                "dice": 0.9830781982003393,
+                "truth_pixels": 846737,
+                "prediction_pixels": 836358
+              },
+              "3": {
+                "iou": 0.7391300036687787,
+                "dice": 0.8499997149259092,
+                "truth_pixels": 89117,
+                "prediction_pixels": 86276
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.5597219718620181,
+            0.4214769098907709,
+            0.41146018728613853
+          ],
+          "median_seconds": 0.4214769098907709,
+          "mask_sha256": "6f0292511ddce1d346095c2575b6bbfb882eeb845ec2660f45420091f2e12837",
+          "details": {
+            "simplex_identifiable": true,
+            "palette_rank": 3,
+            "iterations": 0,
+            "analysis_shape_yx": [
+              571,
+              640
+            ],
+            "analysis_mpp_xy": [
+              1.0,
+              1.0
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        },
+        "E15": {
+          "score": {
+            "macro_iou": 0.8677140439264889,
+            "macro_dice": 0.9260566408122833,
+            "worst_class_iou": 0.7320528751602203,
+            "pixel_accuracy": 0.9610667695564044,
+            "boundary_f1_at_um": {
+              "4": 0.3206316202333004,
+              "8": 0.5710333628295597,
+              "16": 0.8125765235174419
+            },
+            "matched_boundary_hd95_um": 87.87803769391338,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 1461759,
+            "per_class": {
+              "1": {
+                "iou": 0.9045777080514695,
+                "dice": 0.9498984517433238,
+                "truth_pixels": 525905,
+                "prediction_pixels": 532705
+              },
+              "2": {
+                "iou": 0.9665115485677767,
+                "dice": 0.9829706306801945,
+                "truth_pixels": 846737,
+                "prediction_pixels": 836414
+              },
+              "3": {
+                "iou": 0.7320528751602203,
+                "dice": 0.8453008400133317,
+                "truth_pixels": 89117,
+                "prediction_pixels": 87904
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.20911061950027943,
+            0.17695612739771605,
+            0.1933289747685194
+          ],
+          "median_seconds": 0.1933289747685194,
+          "mask_sha256": "91cab92aebb8a6088c6b7a7dc957771b0bf9b62c666398ed965ec103038933ae",
+          "details": {
+            "simplex_identifiable": true,
+            "palette_rank": 3,
+            "iterations": 0,
+            "noise_transition": [
+              [
+                0.9603311516312878,
+                0.010457516311157196,
+                0.029211332144043294
+              ],
+              [
+                0.011241251602855022,
+                0.9883806016978877,
+                0.00037815026089390517
+              ],
+              [
+                0.04853604483751808,
+                0.0008851216311221024,
+                0.9505788355150391
+              ]
+            ],
+            "identity_regularizer": 0.65,
+            "analysis_shape_yx": [
+              571,
+              640
+            ],
+            "analysis_mpp_xy": [
+              1.0,
+              1.0
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        }
+      }
+    },
+    {
+      "case": "bcss_17",
+      "tiles": {
+        "macro_iou": 0.22884184389169926,
+        "macro_dice": 0.3088186660653227,
+        "worst_class_iou": 0.0,
+        "pixel_accuracy": 0.681285880091853,
+        "boundary_f1_at_um": {
+          "4": 0.10832324120480125,
+          "8": 0.19149153554684864,
+          "16": 0.30410230714552045
+        },
+        "matched_boundary_hd95_um": 65.0,
+        "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+        "valid_pixels": 6410240,
+        "per_class": {
+          "1": {
+            "iou": 0.5549728896256669,
+            "dice": 0.7138039426002689,
+            "truth_pixels": 2517420,
+            "prediction_pixels": 2852640
+          },
+          "2": {
+            "iou": 0.5328191942327826,
+            "dice": 0.69521466881092,
+            "truth_pixels": 3264043,
+            "prediction_pixels": 3232080
+          },
+          "3": {
+            "iou": 0.0,
+            "dice": 0.0,
+            "truth_pixels": 40595,
+            "prediction_pixels": 0
+          },
+          "4": {
+            "iou": 0.0,
+            "dice": 0.0,
+            "truth_pixels": 32534,
+            "prediction_pixels": 0
+          },
+          "5": {
+            "iou": 0.28525897949174617,
+            "dice": 0.4438933849807475,
+            "truth_pixels": 541900,
+            "prediction_pixels": 325520
+          },
+          "6": {
+            "iou": 0.0,
+            "dice": 0.0,
+            "truth_pixels": 13748,
+            "prediction_pixels": 0
+          }
+        },
+        "ignore_code": 0
+      },
+      "methods": {
+        "E14": {
+          "score": {
+            "macro_iou": 0.2548227082195642,
+            "macro_dice": 0.33569153188294704,
+            "worst_class_iou": 0.0,
+            "pixel_accuracy": 0.7025481105231629,
+            "boundary_f1_at_um": {
+              "4": 0.21217667962650588,
+              "8": 0.3201655760717005,
+              "16": 0.41086772247362063
+            },
+            "matched_boundary_hd95_um": 31.737200755404455,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 6410240,
+            "per_class": {
+              "1": {
+                "iou": 0.5785121689201704,
+                "dice": 0.732984110367574,
+                "truth_pixels": 2517420,
+                "prediction_pixels": 2809072
+              },
+              "2": {
+                "iou": 0.5519677834971337,
+                "dice": 0.7113134555581491,
+                "truth_pixels": 3264043,
+                "prediction_pixels": 2969552
+              },
+              "3": {
+                "iou": 0.0,
+                "dice": 0.0,
+                "truth_pixels": 40595,
+                "prediction_pixels": 0
+              },
+              "4": {
+                "iou": 0.0,
+                "dice": 0.0,
+                "truth_pixels": 32534,
+                "prediction_pixels": 0
+              },
+              "5": {
+                "iou": 0.39845629690008116,
+                "dice": 0.5698516253719591,
+                "truth_pixels": 541900,
+                "prediction_pixels": 631616
+              },
+              "6": {
+                "iou": 0.0,
+                "dice": 0.0,
+                "truth_pixels": 13748,
+                "prediction_pixels": 0
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.48001037258654833,
+            0.386184467934072,
+            0.4235075656324625
+          ],
+          "median_seconds": 0.4235075656324625,
+          "mask_sha256": "8ca655c6464ce281dda02a071e3a422718d9f3f731ae8305e68501b67fefae6f",
+          "details": {
+            "simplex_identifiable": true,
+            "palette_rank": 3,
+            "iterations": 0,
+            "analysis_shape_yx": [
+              626,
+              640
+            ],
+            "analysis_mpp_xy": [
+              1.0,
+              1.0
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        },
+        "E15": {
+          "score": {
+            "macro_iou": 0.25511780852102,
+            "macro_dice": 0.3359658106129813,
+            "worst_class_iou": 0.0,
+            "pixel_accuracy": 0.7029998876797124,
+            "boundary_f1_at_um": {
+              "4": 0.22299769859252103,
+              "8": 0.3314763012116008,
+              "16": 0.42010318663236546
+            },
+            "matched_boundary_hd95_um": 28.453196168323537,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 6410240,
+            "per_class": {
+              "1": {
+                "iou": 0.5783008077235097,
+                "dice": 0.7328144354910799,
+                "truth_pixels": 2517420,
+                "prediction_pixels": 2807456
+              },
+              "2": {
+                "iou": 0.5530614339180506,
+                "dice": 0.7122209358103649,
+                "truth_pixels": 3264043,
+                "prediction_pixels": 2971216
+              },
+              "3": {
+                "iou": 0.0,
+                "dice": 0.0,
+                "truth_pixels": 40595,
+                "prediction_pixels": 0
+              },
+              "4": {
+                "iou": 0.0,
+                "dice": 0.0,
+                "truth_pixels": 32534,
+                "prediction_pixels": 0
+              },
+              "5": {
+                "iou": 0.3993446094845597,
+                "dice": 0.5707594923764432,
+                "truth_pixels": 541900,
+                "prediction_pixels": 631568
+              },
+              "6": {
+                "iou": 0.0,
+                "dice": 0.0,
+                "truth_pixels": 13748,
+                "prediction_pixels": 0
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.25332497153431177,
+            0.21041433420032263,
+            0.2267943136394024
+          ],
+          "median_seconds": 0.2267943136394024,
+          "mask_sha256": "6489e8626af2b9336f11236fd79128a71c3368cb4d71fc24aa307cb1b4bd8662",
+          "details": {
+            "simplex_identifiable": true,
+            "palette_rank": 3,
+            "iterations": 0,
+            "noise_transition": [
+              [
+                0.8879696021990778,
+                0.10200169586264098,
+                0.010028702871210786
+              ],
+              [
+                0.09197237480713179,
+                0.872783258370034,
+                0.035244367137148076
+              ],
+              [
+                0.020012861646185875,
+                0.06268883692204497,
+                0.9172983016108861
+              ]
+            ],
+            "identity_regularizer": 0.65,
+            "analysis_shape_yx": [
+              626,
+              640
+            ],
+            "analysis_mpp_xy": [
+              1.0,
+              1.0
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        }
+      }
+    },
+    {
+      "case": "bcss_18",
+      "tiles": {
+        "macro_iou": 0.6880499882664219,
+        "macro_dice": 0.8150732558713537,
+        "worst_class_iou": 0.6705254077070311,
+        "pixel_accuracy": 0.815616475410252,
+        "boundary_f1_at_um": {
+          "4": 0.22379746152819005,
+          "8": 0.4091458304394018,
+          "16": 0.7148133928120257
+        },
+        "matched_boundary_hd95_um": 36.25,
+        "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+        "valid_pixels": 5715451,
+        "per_class": {
+          "1": {
+            "iou": 0.7055745688258128,
+            "dice": 0.8273746357646024,
+            "truth_pixels": 2981938,
+            "prediction_pixels": 3106501
+          },
+          "2": {
+            "iou": 0.6705254077070311,
+            "dice": 0.8027718759781051,
+            "truth_pixels": 2733513,
+            "prediction_pixels": 2605254
+          }
+        },
+        "ignore_code": 0
+      },
+      "methods": {
+        "E14": {
+          "score": {
+            "macro_iou": 0.8399568545778027,
+            "macro_dice": 0.9129799414601791,
+            "worst_class_iou": 0.8290711091257488,
+            "pixel_accuracy": 0.9131473614243215,
+            "boundary_f1_at_um": {
+              "4": 0.46672673578194157,
+              "8": 0.6408494203485329,
+              "16": 0.7665660368485657
+            },
+            "matched_boundary_hd95_um": 58.25,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 5715451,
+            "per_class": {
+              "1": {
+                "iou": 0.8508426000298565,
+                "dice": 0.9194110833802197,
+                "truth_pixels": 2981938,
+                "prediction_pixels": 3142800
+              },
+              "2": {
+                "iou": 0.8290711091257488,
+                "dice": 0.9065487995401387,
+                "truth_pixels": 2733513,
+                "prediction_pixels": 2568955
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.44479788187891245,
+            0.37854483630508184,
+            0.41093709226697683
+          ],
+          "median_seconds": 0.41093709226697683,
+          "mask_sha256": "591a824ba061f7a4d27a43613ffa89dc75a29dafe14f273dc2dfe753314327df",
+          "details": {
+            "simplex_identifiable": true,
+            "palette_rank": 2,
+            "iterations": 0,
+            "analysis_shape_yx": [
+              640,
+              640
+            ],
+            "analysis_mpp_xy": [
+              1.0,
+              1.0
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        },
+        "E15": {
+          "score": {
+            "macro_iou": 0.8403766489934706,
+            "macro_dice": 0.9132288033419178,
+            "worst_class_iou": 0.8296194315177055,
+            "pixel_accuracy": 0.9133860127573484,
+            "boundary_f1_at_um": {
+              "4": 0.4696248468801787,
+              "8": 0.6414811059446359,
+              "16": 0.7702371374909373
+            },
+            "matched_boundary_hd95_um": 58.087218903989545,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 5715451,
+            "per_class": {
+              "1": {
+                "iou": 0.8511338664692358,
+                "dice": 0.9195811085155584,
+                "truth_pixels": 2981938,
+                "prediction_pixels": 3138788
+              },
+              "2": {
+                "iou": 0.8296194315177055,
+                "dice": 0.9068764981682773,
+                "truth_pixels": 2733513,
+                "prediction_pixels": 2572967
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.16738539841026068,
+            0.23213751707226038,
+            0.210230958648026
+          ],
+          "median_seconds": 0.210230958648026,
+          "mask_sha256": "634b445ec1deb6038cf4f0689148d13d9f6f2c7f0f97a459b674b050542e29ea",
+          "details": {
+            "simplex_identifiable": true,
+            "palette_rank": 2,
+            "iterations": 0,
+            "noise_transition": [
+              [
+                0.938562448276345,
+                0.06143755140706567
+              ],
+              [
+                0.06694751183250361,
+                0.933052488914029
+              ]
+            ],
+            "identity_regularizer": 0.65,
+            "analysis_shape_yx": [
+              640,
+              640
+            ],
+            "analysis_mpp_xy": [
+              1.0,
+              1.0
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        }
+      }
+    },
+    {
+      "case": "bcss_19",
+      "tiles": {
+        "macro_iou": 0.3890295099777459,
+        "macro_dice": 0.5001744948635117,
+        "worst_class_iou": 0.0,
+        "pixel_accuracy": 0.7598128420215106,
+        "boundary_f1_at_um": {
+          "4": 0.13319806524359634,
+          "8": 0.24735279458772647,
+          "16": 0.40782797887239103
+        },
+        "matched_boundary_hd95_um": 170.03372820202355,
+        "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+        "valid_pixels": 3991708,
+        "per_class": {
+          "1": {
+            "iou": 0.5115844859535094,
+            "dice": 0.676885070874224,
+            "truth_pixels": 363557,
+            "prediction_pixels": 388550
+          },
+          "2": {
+            "iou": 0.45405836006896705,
+            "dice": 0.6245393892545423,
+            "truth_pixels": 562537,
+            "prediction_pixels": 370192
+          },
+          "3": {
+            "iou": 0.6707774925826557,
+            "dice": 0.8029525123010615,
+            "truth_pixels": 1749429,
+            "prediction_pixels": 2133366
+          },
+          "4": {
+            "iou": 0.5040856231347124,
+            "dice": 0.670288466801686,
+            "truth_pixels": 33476,
+            "prediction_pixels": 39600
+          },
+          "5": {
+            "iou": 0.0,
+            "dice": 0.0,
+            "truth_pixels": 6943,
+            "prediction_pixels": 0
+          },
+          "6": {
+            "iou": 0.0,
+            "dice": 0.0,
+            "truth_pixels": 887,
+            "prediction_pixels": 0
+          },
+          "7": {
+            "iou": 0.7401700455723556,
+            "dice": 0.8506870319433729,
+            "truth_pixels": 1018897,
+            "prediction_pixels": 939600
+          },
+          "8": {
+            "iou": 0.23156007250976723,
+            "dice": 0.3760434877332072,
+            "truth_pixels": 255982,
+            "prediction_pixels": 120400
+          }
+        },
+        "ignore_code": 0
+      },
+      "methods": {
+        "E14": {
+          "score": {
+            "macro_iou": 0.39809705465768586,
+            "macro_dice": 0.4941577501809278,
+            "worst_class_iou": 0.0,
+            "pixel_accuracy": 0.8010864021115773,
+            "boundary_f1_at_um": {
+              "4": 0.1975452948158054,
+              "8": 0.31293240080651086,
+              "16": 0.392751071306867
+            },
+            "matched_boundary_hd95_um": 184.17162511897297,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 3991708,
+            "per_class": {
+              "1": {
+                "iou": 0.5663664174031271,
+                "dice": 0.7231595508056203,
+                "truth_pixels": 363557,
+                "prediction_pixels": 465928
+              },
+              "2": {
+                "iou": 0.47172580448123114,
+                "dice": 0.6410512108232143,
+                "truth_pixels": 562537,
+                "prediction_pixels": 316906
+              },
+              "3": {
+                "iou": 0.7264024403642203,
+                "dice": 0.8415215634321864,
+                "truth_pixels": 1749429,
+                "prediction_pixels": 1864722
+              },
+              "4": {
+                "iou": 0.16434260725998973,
+                "dice": 0.28229252495832297,
+                "truth_pixels": 33476,
+                "prediction_pixels": 175272
+              },
+              "5": {
+                "iou": 0.0,
+                "dice": 0.0,
+                "truth_pixels": 6943,
+                "prediction_pixels": 0
+              },
+              "6": {
+                "iou": 0.0,
+                "dice": 0.0,
+                "truth_pixels": 887,
+                "prediction_pixels": 0
+              },
+              "7": {
+                "iou": 0.9130245490341561,
+                "dice": 0.9545351098553566,
+                "truth_pixels": 1018897,
+                "prediction_pixels": 971584
+              },
+              "8": {
+                "iou": 0.34291461871876233,
+                "dice": 0.5107020415727214,
+                "truth_pixels": 255982,
+                "prediction_pixels": 197296
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.9158205362036824,
+            0.8225490488111973,
+            0.797715394757688
+          ],
+          "median_seconds": 0.8225490488111973,
+          "mask_sha256": "8ba092a0d040e006785ce4a385167dcac3b0db768b6379c082c5947216061966",
+          "details": {
+            "occupied_colour_nodes": 1012,
+            "quantization_bins": 24,
+            "iterations": 18,
+            "simplex_identifiable": false,
+            "prior_regularizer": 0.012,
+            "analysis_shape_yx": [
+              640,
+              640
+            ],
+            "analysis_mpp_xy": [
+              1.0,
+              1.0
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        },
+        "E15": {
+          "score": {
+            "macro_iou": 0.39679038451289317,
+            "macro_dice": 0.49282006916779014,
+            "worst_class_iou": 0.0,
+            "pixel_accuracy": 0.7998941806364593,
+            "boundary_f1_at_um": {
+              "4": 0.20299585075257137,
+              "8": 0.3165308770633372,
+              "16": 0.4024156965398553
+            },
+            "matched_boundary_hd95_um": 189.85487868600524,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 3991708,
+            "per_class": {
+              "1": {
+                "iou": 0.567959306876201,
+                "dice": 0.724456692702988,
+                "truth_pixels": 363557,
+                "prediction_pixels": 459780
+              },
+              "2": {
+                "iou": 0.4702781684170631,
+                "dice": 0.6397131896794414,
+                "truth_pixels": 562537,
+                "prediction_pixels": 321950
+              },
+              "3": {
+                "iou": 0.7261004842245152,
+                "dice": 0.8413189045025153,
+                "truth_pixels": 1749429,
+                "prediction_pixels": 1866572
+              },
+              "4": {
+                "iou": 0.16156749994513092,
+                "dice": 0.2781887405643889,
+                "truth_pixels": 33476,
+                "prediction_pixels": 178222
+              },
+              "5": {
+                "iou": 0.0,
+                "dice": 0.0,
+                "truth_pixels": 6943,
+                "prediction_pixels": 0
+              },
+              "6": {
+                "iou": 0.0,
+                "dice": 0.0,
+                "truth_pixels": 887,
+                "prediction_pixels": 0
+              },
+              "7": {
+                "iou": 0.9094620596375178,
+                "dice": 0.9525845827072,
+                "truth_pixels": 1018897,
+                "prediction_pixels": 968832
+              },
+              "8": {
+                "iou": 0.3389555570027174,
+                "dice": 0.5062984431857875,
+                "truth_pixels": 255982,
+                "prediction_pixels": 196352
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.5500418338924646,
+            0.5244575021788478,
+            0.37810703832656145
+          ],
+          "median_seconds": 0.5244575021788478,
+          "mask_sha256": "58b3d68c9e25f856c3b22143810d374b2c5ab504cc9ea0fc83b4f649a544ba3d",
+          "details": {
+            "occupied_colour_nodes": 1012,
+            "quantization_bins": 24,
+            "iterations": 18,
+            "simplex_identifiable": false,
+            "prior_regularizer": 0.012,
+            "noise_transition": [
+              [
+                0.9490509151312334,
+                0.023752989654696605,
+                0.010442591732515117,
+                0.006302297528391818,
+                0.010143538168018693,
+                0.000307673646906448
+              ],
+              [
+                0.024945627107667217,
+                0.9200068309901707,
+                0.017381043744963465,
+                0.020676229883170166,
+                0.00966362563914689,
+                0.007326643417538017
+              ],
+              [
+                0.015098969476958811,
+                0.010191293604857364,
+                0.9085611897834629,
+                0.016742589731223733,
+                0.0258282374544075,
+                0.023577721067344466
+              ],
+              [
+                0.011214334308113806,
+                0.012722948514876205,
+                0.021253031135259635,
+                0.943202872964477,
+                0.0006270055917766499,
+                0.01097980885703048
+              ],
+              [
+                0.0008932863218464731,
+                0.013047018148144277,
+                0.027919695977459486,
+                0.001091719170101188,
+                0.944659847886022,
+                0.012388428425365063
+              ],
+              [
+                0.0014175213328149279,
+                0.013947709608802056,
+                0.02767559926332665,
+                0.006251092596687712,
+                0.03348507792267337,
+                0.9172230000370305
+              ]
+            ],
+            "identity_regularizer": 0.65,
+            "analysis_shape_yx": [
+              640,
+              640
+            ],
+            "analysis_mpp_xy": [
+              1.0,
+              1.0
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        }
+      }
+    },
+    {
+      "case": "bcss_24",
+      "tiles": {
+        "macro_iou": 0.7844990357991923,
+        "macro_dice": 0.8709243950783354,
+        "worst_class_iou": 0.5433163483319013,
+        "pixel_accuracy": 0.9362603517646829,
+        "boundary_f1_at_um": {
+          "4": 0.267711310066541,
+          "8": 0.48544913778327947,
+          "16": 0.7289946256226801
+        },
+        "matched_boundary_hd95_um": 65.25,
+        "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+        "valid_pixels": 6553472,
+        "per_class": {
+          "1": {
+            "iou": 0.9265081620110407,
+            "dice": 0.961852309043818,
+            "truth_pixels": 2645168,
+            "prediction_pixels": 2636672
+          },
+          "2": {
+            "iou": 0.8792128577137435,
+            "dice": 0.9357246084229082,
+            "truth_pixels": 3230048,
+            "prediction_pixels": 3268800
+          },
+          "3": {
+            "iou": 0.7889587751400836,
+            "dice": 0.8820312531554055,
+            "truth_pixels": 504364,
+            "prediction_pixels": 486000
+          },
+          "4": {
+            "iou": 0.5433163483319013,
+            "dice": 0.7040894096912103,
+            "truth_pixels": 173892,
+            "prediction_pixels": 162000
+          }
+        },
+        "ignore_code": 0
+      },
+      "methods": {
+        "E14": {
+          "score": {
+            "macro_iou": 0.8556365699189212,
+            "macro_dice": 0.9189267977916529,
+            "worst_class_iou": 0.6862985116149674,
+            "pixel_accuracy": 0.9544067633156897,
+            "boundary_f1_at_um": {
+              "4": 0.4089525474710716,
+              "8": 0.6538981259785398,
+              "16": 0.8648973750950586
+            },
+            "matched_boundary_hd95_um": 56.25,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 6553472,
+            "per_class": {
+              "1": {
+                "iou": 0.9355259198746415,
+                "dice": 0.9666891156231406,
+                "truth_pixels": 2645168,
+                "prediction_pixels": 2680989
+              },
+              "2": {
+                "iou": 0.9127161967744185,
+                "dice": 0.9543665686667077,
+                "truth_pixels": 3230048,
+                "prediction_pixels": 3160771
+              },
+              "3": {
+                "iou": 0.8880056514116571,
+                "dice": 0.9406811369952177,
+                "truth_pixels": 504364,
+                "prediction_pixels": 521920
+              },
+              "4": {
+                "iou": 0.6862985116149674,
+                "dice": 0.8139703698815455,
+                "truth_pixels": 173892,
+                "prediction_pixels": 189792
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.6164321787655354,
+            0.5438854685053229,
+            0.47936433646827936
+          ],
+          "median_seconds": 0.5438854685053229,
+          "mask_sha256": "08a618fb713586108c4de5b93883e91f321ae4c63aaf508276b8f94732ae5473",
+          "details": {
+            "simplex_identifiable": true,
+            "palette_rank": 4,
+            "iterations": 0,
+            "analysis_shape_yx": [
+              640,
+              640
+            ],
+            "analysis_mpp_xy": [
+              1.0,
+              1.0
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        },
+        "E15": {
+          "score": {
+            "macro_iou": 0.8558857047860057,
+            "macro_dice": 0.9190533411246029,
+            "worst_class_iou": 0.6860330931878055,
+            "pixel_accuracy": 0.9545462313717065,
+            "boundary_f1_at_um": {
+              "4": 0.407151226473166,
+              "8": 0.6529512779466994,
+              "16": 0.8696298248581342
+            },
+            "matched_boundary_hd95_um": 57.79402758851224,
+            "boundary_caveat": "Class-specific boundary F1; ignore interfaces excluded. HD95 omits missing predicted contours, so do not use HD95 alone.",
+            "valid_pixels": 6553472,
+            "per_class": {
+              "1": {
+                "iou": 0.9359569520610103,
+                "dice": 0.9669191776858417,
+                "truth_pixels": 2645168,
+                "prediction_pixels": 2677372
+              },
+              "2": {
+                "iou": 0.9129434363090942,
+                "dice": 0.9544907799998122,
+                "truth_pixels": 3230048,
+                "prediction_pixels": 3161492
+              },
+              "3": {
+                "iou": 0.8886093375861124,
+                "dice": 0.9410197438945953,
+                "truth_pixels": 504364,
+                "prediction_pixels": 521776
+              },
+              "4": {
+                "iou": 0.6860330931878055,
+                "dice": 0.8137836629181618,
+                "truth_pixels": 173892,
+                "prediction_pixels": 192832
+              }
+            },
+            "ignore_code": 0
+          },
+          "seconds": [
+            0.29885188676416874,
+            0.26253902819007635,
+            0.2722847843542695
+          ],
+          "median_seconds": 0.2722847843542695,
+          "mask_sha256": "45ebbe49c71502fc4f6745f72ef19feac551dc03744540f1a3f6f7cc5720c501",
+          "details": {
+            "simplex_identifiable": true,
+            "palette_rank": 4,
+            "iterations": 0,
+            "noise_transition": [
+              [
+                0.9807234637545399,
+                0.01862474826505446,
+                0.00028300443700394237,
+                0.0003687887297450189
+              ],
+              [
+                0.018039486767568155,
+                0.9643201818022,
+                0.009872847977429202,
+                0.0077674879697074125
+              ],
+              [
+                0.0005204308720698751,
+                0.024899675490702655,
+                0.9684979881295941,
+                0.006081911739506419
+              ],
+              [
+                0.0008126247938987501,
+                0.05329216864110715,
+                0.004151931560782596,
+                0.9417432751964935
+              ]
+            ],
+            "identity_regularizer": 0.65,
+            "analysis_shape_yx": [
+              640,
+              640
+            ],
+            "analysis_mpp_xy": [
+              1.0,
+              1.0
+            ],
+            "fixed_margin": false,
+            "hard_anchors": false
+          }
+        }
+      }
+    }
+  ],
+  "ranking": [
+    {
+      "method": "E14",
+      "title": "Uncertainty-gated guided evidence",
+      "mean_iou": 0.6842185723275004,
+      "mean_dice": 0.7706208248599975,
+      "mean_boundary_f1_8um": 0.5767715223586454,
+      "mean_seconds": 0.47689840994361377
+    },
+    {
+      "method": "E15",
+      "title": "Coarse-noise deconvolution",
+      "mean_iou": 0.6833086417938081,
+      "mean_dice": 0.7699865324105997,
+      "mean_boundary_f1_8um": 0.5806960110684577,
+      "mean_seconds": 0.27536843551529777
+    }
+  ],
+  "tile_mean_iou": 0.598931126592666,
+  "primary_metric": "arithmetic mean native per-image macro IoU, fixed ensemble conversion",
+  "source": "/mnt/sata_ssd/Bora-benchmark/results/virchow2-expanded-inputs-2026-10-17"
+}

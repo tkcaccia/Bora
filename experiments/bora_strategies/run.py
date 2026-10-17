@@ -52,7 +52,7 @@ def main():
     code={p.name:digest(p) for p in sorted(Path(__file__).parent.glob('*.py')) if p.name not in ('score.py','publish.py','audit.py')}
     protocol=dict(source_folder=a.source.name,source_plan_sha256=digest(a.source/'PLAN.json'),inputs_sha256=digest(a.source/'ALL_INPUTS_FROZEN.json'),cases=[s['case'] for s in plan['samples']],
         conversions=list(CONVERSIONS),strategies={k:dict(title=t,hypothesis=d) for k,(t,d) in STRATEGIES.items()},parameters=PARAMETERS,
-        rejected_strategies=list(REJECTED_STRATEGIES),rejected_conversions=list(REJECTED_CONVERSIONS),consensus_components=list(CONSENSUS),consensus_revision=2,
+        rejected_strategies=list(REJECTED_STRATEGIES),rejected_conversions=list(REJECTED_CONVERSIONS),consensus_components=list(CONSENSUS),consensus_revision=3,
         predictor_sources_sha256=code,compute=dict(workers=a.workers,threads_per_worker=2),baseline='same completed input tile mask with final independent RGB background clipping',
         quality='original native reference > 0, never intersected with predicted tissue; unannotated tissue unscored; removed annotated tissue penalized',
         supervision='per-image original reference-derived coarse labels; no fine-boundary access during prediction',fine_reference_read_by_predictor=False)

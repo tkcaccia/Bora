@@ -1,0 +1,35 @@
+{
+  "methods": [
+    "B02",
+    "B03",
+    "B08",
+    "B19",
+    "B21",
+    "B22"
+  ],
+  "primary_method": "B22",
+  "fast_alternative": "B21",
+  "development_mapping": {
+    "B21": "E09",
+    "B22": "E11"
+  },
+  "development_cases": [
+    "tiger_32",
+    "tiger_33",
+    "tiger_36",
+    "tiger_37",
+    "tiger_38",
+    "bcss_17",
+    "bcss_18",
+    "bcss_19",
+    "bcss_24"
+  ],
+  "development_conversion": "ensemble",
+  "selection_rule": "Report the Pareto frontier. Prefer the fastest method within 0.002 mean IoU of the highest development score. Freeze the final method and parameters before full-corpus scoring; no per-image or per-conversion method selection.",
+  "stopping_rule": "Develop in documented rounds. After initial hypotheses, pursue genuinely distinct responses to observed failure modes. Stop after two consecutive rounds produce no new accuracy/speed Pareto improvement (accuracy tolerance 0.001 mean IoU, speed tolerance 5%), or when remaining ideas need different RGB inputs/new external supervision. This is a finite exploratory search, not a claim that innovation is exhausted.",
+  "hypotheses": {
+    "B21": "Whiten converted RGB with a shared covariance estimated from all original known coarse tissue. Use equal-prior linear discriminants and continuous tile-center reliability; all tissue may change. No fixed margin, frozen interior or hard seed.",
+    "B22": "Invert the known RGB probability palette directly when affine identifiable. Otherwise solve nonnegative simplex colour reconstruction with a coarse-trained Bayesian colour prior, once per occupied 24-bin RGB lattice node. Apply bounded coarse correction only where posterior class separation is weak. No fixed margins or hard anchors; more than four dependent classes remain intrinsically ambiguous."
+  },
+  "full_benchmark_not_yet_scored": true
+}

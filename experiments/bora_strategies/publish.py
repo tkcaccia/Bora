@@ -15,7 +15,8 @@ from experiments.virchow2_smoothing.publish import save_palette
 from .registry import STRATEGIES
 
 
-def render(root,source,row):
+def render(root,source,row,strategies=None):
+    strategies=STRATEGIES if strategies is None else strategies
     cv2.setNumThreads(2);case=row['case'];out=root/'cases'/case;src=source/'cases'/case
     rgb=np.array(Image.open(src/'original.native.png').convert('RGB'));palette=row['sample']['palette'];truth=tifffile.imread(src/'reference.native.tif')
     support=tifffile.imread(src/'tissue.native.tif')>0;coarse=tifffile.imread(out/'tiles.native.tif')
@@ -29,7 +30,7 @@ def render(root,source,row):
         draw.text((12,6),case+' | RGB '+conversion+' | '+row['cohort']+' | native macro IoU',fill='#203744',font=font(17))
         converted=Image.open(src/conversion/'representation.png')
         for i,(im,title) in enumerate([(rgb,'Original H&E'),(overlay(rgb,truth,palette),'Original annotation'),(overlay(rgb,coarse,palette),'Input tiles: IoU %.4f'%row['tiles']['macro_iou']),(converted,'Actual converted RGB')]):tile(sheet,im,i*280,35,title,size=280)
-        for i,(key,(title,_)) in enumerate(STRATEGIES.items()):
+        for i,(key,(title,_)) in enumerate(strategies.items()):
             target=folder/key;mask=tifffile.imread(target/'bora.native.tif');diff=mask!=coarse
             save_palette(mask,palette,target/'mask.png');save_palette(diff,[[245,30,180]],target/'difference.mask.png',binary=True)
             view=cv2.resize(mask,tuple(shape[::-1]),interpolation=cv2.INTER_NEAREST);vd=cv2.resize(diff.astype(np.uint8),tuple(shape[::-1]),interpolation=cv2.INTER_NEAREST)>0

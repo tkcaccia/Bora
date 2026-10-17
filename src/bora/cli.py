@@ -91,11 +91,35 @@ def parser():
     b.add_argument("--block-size", type=int, default=2048)
     b.add_argument("--resume", action=argparse.BooleanOptionalAction, default=True)
     b.add_argument("--bora-arg", action="append", default=[], help="extra argument passed to bora refine; repeatable")
+    e = sub.add_parser("evidence", help="whole-field refinement of a fixed converted RGB image")
+    e.add_argument("image"); e.add_argument("mask")
+    e.add_argument("--tissue-mask", required=True, help="independent aligned tissue support; nonzero is tissue")
+    e.add_argument("--output", required=True); e.add_argument("--report")
+    e.add_argument("--method", choices=("simplex", "linear"), default="simplex")
+    e.add_argument("--palette", help="JSON array of conversion RGB colours indexed by label ID minus one")
+    e.add_argument("--mpp-x", type=float, required=True); e.add_argument("--mpp-y", type=float, required=True)
+    e.add_argument("--source-tile-size", type=int, default=90)
     return root
 
 
 def main(argv=None):
     a = parser().parse_args(argv)
+    if a.command == "evidence":
+        from PIL import Image
+        from .evidence import refine_evidence
+        rgb = np.array(Image.open(a.image).convert("RGB"))
+        coarse = read_mask(a.mask); tissue = read_mask(a.tissue_mask) > 0
+        palette = json.loads(Path(a.palette).read_text()) if a.palette else None
+        labels, report = refine_evidence(rgb, coarse, tissue, [a.mpp_x, a.mpp_y],
+            method=a.method, palette=palette, tile_size=a.source_tile_size)
+        Path(a.output).parent.mkdir(parents=True, exist_ok=True)
+        tifffile.imwrite(a.output, labels, ome=True, compression="deflate", photometric="minisblack",
+            metadata={"axes": "YX", "PhysicalSizeX": a.mpp_x, "PhysicalSizeY": a.mpp_y,
+                      "PhysicalSizeXUnit": "µm", "PhysicalSizeYUnit": "µm"})
+        if a.report:
+            Path(a.report).parent.mkdir(parents=True, exist_ok=True)
+            Path(a.report).write_text(json.dumps(report, indent=2))
+        print(json.dumps(report, indent=2)); return
     if a.command == "benchmark":
         from .benchmark_pipeline import run_pipeline
         try:

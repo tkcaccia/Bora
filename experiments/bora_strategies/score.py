@@ -36,7 +36,8 @@ def summarize(cases,conversions):
     return ranking
 
 
-def score_case(case,root,source,protocol):
+def score_case(case,root,source,protocol,strategies=None):
+    strategies=STRATEGIES if strategies is None else strategies
     cvrows=[];out=root/'cases'/case;src=source/'cases'/case;sample=json.loads((out/'SAMPLE.json').read_text())
     if digest(src/'reference.native.tif')!=sample['reference_native_sha256']:raise ValueError('Reference changed')
     truth=tifffile.imread(src/'reference.native.tif');evaluator=Evaluator(truth,sample['native_mpp_xy']);tissue=tifffile.imread(src/'tissue.native.tif')>0
@@ -44,7 +45,7 @@ def score_case(case,root,source,protocol):
     with threadpool_limits(limits=2):
         for m in protocol['conversions']:
             folder=out/m;frozen=json.loads((folder/'FROZEN.json').read_text());methods={}
-            for key in STRATEGIES:
+            for key in strategies:
                 pred=tifffile.imread(folder/key/'bora.native.tif');score=evaluator.score(pred)
                 methods[key]=dict(score=score,delta_vs_tiles=score['macro_iou']-baseline['macro_iou'],seconds=frozen['records'][key]['seconds'],changed_tissue_percent_vs_tiles=float(100*np.mean(pred[tissue]!=tiles[tissue])),
                     missing_predicted_classes=sorted(set(map(int,evaluator.classes))-set(map(int,np.unique(pred[evaluator.valid])))))
