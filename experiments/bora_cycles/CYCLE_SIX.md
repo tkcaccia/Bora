@@ -94,3 +94,36 @@ identical one/two-thread outputs. The small local timing workload shows no
 threading benefit; larger and Chiamaka workloads must be measured rather
 than assuming speedup. No benchmark prediction or accuracy gain is asserted
 by these numerical tests. Five of twenty cycles remain complete.
+
+## Engineering pilot and full execution
+
+The frozen de01909 snapshot also passes all 209 focused tests on Chiamaka.
+All 176 pilot masks succeed, with zero failed methods. Both remote and local
+audits verify the 176 exact display rasters and 40 unchanged-parent native
+comparisons. All eight all-method contact sheets and three native label
+sheets were actually inspected, with hashes and explicit observations.
+
+Native BCSS45 shows J01 largely correcting H02's vessel-to-fat stripe, while
+J02/J08 retain that error. In BCSS26 J08/J15 still insert false fat, and J06
+adds false violet loops and rims. J15 creates nested contours in the BCSS06
+overview. The background child J03 deletes an additional 6,474 annotated
+positive native pixels across the eight cases. Its BCSS06 native crop shows
+extra deletion along an already incorrect white cut through annotated fat;
+all models also miss small green stromal islands. These are explanatory
+development observations, not independent validation or survivor selection.
+
+Finite optimizer flags remain explicit: J15 is unsuccessful on six pilot
+cases, C01/J09 on three each, J07/J13 on two, and H10/J06/J14 on one each.
+Successful mask production does not mean every optimization converged.
+
+Serial Chiamaka synthetic kernel profiles give one/two-thread medians of
+0.05432/0.02739 seconds for the million-pixel Gaussian kernel (1.983x), and
+0.02223/0.01165 seconds for 2,048 dominance quadratics (1.908x), with exact
+thread-output parity. This is kernel evidence, not whole-mask acceleration.
+
+The same frozen implementation is now running all 149 ROIs, with no model
+change after pilot scoring or visual review. Three low-priority image
+processes each use two numerical/OpenMP threads. Main PID898917 and dependent
+read-only audit PID903248 are recorded in the run checkpoint; their actual
+processes and terminal artifacts must be revalidated before continuation.
+No cycle-six survivor selection exists yet. Five of twenty cycles are complete.
