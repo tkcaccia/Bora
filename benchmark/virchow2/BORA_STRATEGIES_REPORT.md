@@ -1,5 +1,13 @@
 # Twenty Bora inference strategies on the frozen 49-ROI benchmark
 
+Best observed individual pipeline: **9 + 19 RGB with B09 geodesic competition**,
+native macro IoU **0.759756**, versus **0.758606** for B01 on that same input.
+Boundary F1 at 8 µm is **0.509499 versus 0.495495**. The paired descriptive IoU
+difference interval is **[-0.002191, +0.004640]**, with 27 improved cases, 21
+worse and one tied. This is a post-comparison candidate, not held-out evidence
+of general superiority. The aggregate strategy ranking below averages all seven
+inputs and therefore answers a different question.
+
 Highest measured aggregate macro IoU: **B01 Current balanced wand**, 0.755587; change versus current B01 +0.000000.
 
 All 49 ROIs from TIGER (16), BCSS (16), CAMELYON16 (7) and BEETLE (10) are evaluated with the same seven retained RGB conversions: 5, 8, 9, 10, 15, 19, and 9 + 19. The 20 strategies produce **6,860 final native masks**. RGB conversion #4 remains rejected. Strategy IDs B01–B20 are separate from RGB conversion IDs. No unfavorable result is discarded.

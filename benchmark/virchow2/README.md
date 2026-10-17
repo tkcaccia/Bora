@@ -9,6 +9,13 @@ classification, graph cuts, harmonic propagation, geodesic competition, region
 merging, topology constraints, elastic deformation and a coarse-only small CNN.
 RGB conversion IDs and Bora strategy IDs are separate; conversion 4 stays rejected.
 
+The highest observed input/strategy pairing is **9 + 19 RGB with B09 geodesic
+competition**: native macro IoU **0.7598**, versus **0.7586** for current Bora
+on the same input. Boundary F1 at 8 µm is **0.5095 versus 0.4955**. The paired
+IoU difference interval includes zero, so this is a candidate for inspection,
+not an established general improvement. It improves 27 cases, worsens 21 and
+ties one. This pairing was selected after comparing the full result matrix.
+
 Current Bora has the highest measured aggregate native macro IoU, **0.7556**.
 Geodesic competition B09 is close at **0.7553**, with a paired descriptive interval
 for its difference spanning zero. Its mean boundary F1 at 8 µm is higher:
