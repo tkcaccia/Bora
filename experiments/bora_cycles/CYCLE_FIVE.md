@@ -112,7 +112,7 @@ tamper-rejection regression test. No model, prediction or score is changed.
 The corrected auditor runs from a separate posthoc source snapshot; the
 executed model snapshot remains immutable for the full-run parity check.
 
-## Full execution checkpoint: complete visual review still pending
+## Full execution and selection
 
 All 149 ROIs have 3,278 successful native predictions, zero failed methods and
 149 contact sheets. Chiamaka and local integrity audits pass, including 745
@@ -126,12 +126,20 @@ one second. H10 improves D08 by 0.011375 mean IoU at 0.059427 seconds versus
 0.679529, but 121 over-limit images lower its utility to 0.645593 at a mean
 1.654383 seconds. These are repeatedly reused development images.
 
-Actual review covers BCSS01–24 and four native crops. BCSS07's cleft remains
-filled; H03 opens BCSS18's cleft with noisy edges. H02 mistakes blood vessel
-for fat in BCSS45, whereas H10 corrects that error against D08 in BCSS26.
-Fat and vessel are different mask IDs with similar gold display colours; the
-original conversion is unchanged. There are 125 overviews remaining before
-selection, so only four of twenty cycles are complete.
+All 149 full-run all-method contact sheets were actually inspected and recorded
+against their frozen hashes, plus four native label sheets. The signed five
+are H02, C17, H10, H04 and C01. H02 is the runtime-adjusted leader; the slow
+raw leader F01 and its H03 child are rejected. H04 ranks fourth but is slower
+and less accurate than C17; its retention is not a parent-improvement claim.
+
+BCSS07's cleft remains filled; H03 opens BCSS18's cleft with noisy edges but
+deletes positive fat/lumina elsewhere. H02 mistakes blood vessel for fat in
+BCSS45, whereas H10 corrects that error against D08 in BCSS26. Fat and vessel
+are different mask IDs with similar gold display colours. Many TIGER gland
+islands remain merged or connected, and thin tissue fingers remain lost.
+Five of twenty cycles are now complete. The next fifteen models have not
+been implemented by this selection. CYCLE_FIVE_REVIEW.md and the signed
+CYCLE_FIVE_SELECTION.json record the decision for every candidate.
 
 H02's largest linear residual is 2.143e-14. H10 has eight unsuccessful optimizer
 terminations, H07 has six, and unchanged C01 has 67. All 505 H15 class fits hit
