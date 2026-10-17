@@ -24,9 +24,17 @@ def main():
     for name,digest in visuals.items():assert sha(root/name)==digest,name
     runtime=json.loads((root/'RUNTIME_CODE.json').read_text())['files_sha256']
     for name,digest in runtime.items():assert sha(root/'runtime_sources'/name)==digest,name
+    metadata=parents=0
+    for manifest,counter in [('METADATA_MANIFEST.json','metadata'),('PARENT_INPUT_MANIFEST.json','parents')]:
+        if (root/manifest).exists():
+            entries=json.loads((root/manifest).read_text())['files_sha256']
+            for name,digest in entries.items():assert sha(root/name)==digest,name
+            if counter=='metadata':metadata=len(entries)
+            else:parents=len(entries)
     assert masks==frozen['native_masks']
     result=dict(scientific_remote_audit_passed=True,prediction_manifests=len(pairs),frozen_files_verified=files,native_masks_verified=masks,
-        visual_files_verified=len(visuals),runtime_sources_verified=len(runtime),all_checks_passed=True,verification_source_sha256=sha(Path(__file__)))
+        visual_files_verified=len(visuals),runtime_sources_verified=len(runtime),metadata_files_verified=metadata,parent_inputs_verified=parents,
+        all_checks_passed=True,verification_source_sha256=sha(Path(__file__)))
     (root/'LOCAL_COPY_AUDIT.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))
 
 
