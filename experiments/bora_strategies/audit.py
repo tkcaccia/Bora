@@ -36,8 +36,14 @@ def main():
                 target=folder/strategy;mask=tifffile.imread(target/'bora.native.tif')
                 assert mask.shape==truth.shape and np.all(mask[support]>0) and np.all(mask[~support]==0)
                 assert set(map(int,np.unique(mask)))<=allowed
-                assert np.array_equal(np.array(Image.open(target/'mask.png').convert('RGBA'))[...,3]>0,support)
-                difference=np.array(Image.open(target/'difference.mask.png').convert('RGBA'))[...,3]>0
+                visual=Image.open(target/'mask.png')
+                assert visual.mode=='P' and visual.info['transparency']==0
+                assert np.array_equal(np.array(visual),mask)
+                colours=np.array(visual.getpalette(),np.uint8).reshape(-1,3)
+                for label in np.unique(mask[mask>0]):assert np.array_equal(colours[label],row['sample']['palette'][int(label)-1])
+                difference_image=Image.open(target/'difference.mask.png')
+                assert difference_image.mode=='P' and difference_image.info['transparency']==0
+                difference=np.array(difference_image)>0
                 assert np.array_equal(difference,mask!=current)
                 score=row['conversions'][conversion]['strategies'][strategy]['score']
                 assert score['valid_pixels']==int(valid.sum())

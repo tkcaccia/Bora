@@ -52,6 +52,7 @@ def test_indexed_visual_masks_preserve_class_colours_and_transparency(tmp_path):
     from experiments.virchow2_smoothing.publish import save_palette
     mask=np.array([[0,1,3],[2,1,0]],np.uint8);colours=[[250,30,50],[40,200,80],[30,60,230]]
     path=tmp_path/'mask.png';save_palette(mask,colours,path)
+    assert np.array_equal(np.array(Image.open(path)),mask)
     rgba=np.array(Image.open(path).convert('RGBA'))
     assert np.array_equal(rgba[...,3]>0,mask>0)
     for i,colour in enumerate(colours,1):assert np.all(rgba[mask==i,:3]==colour)
