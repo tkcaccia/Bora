@@ -10,6 +10,77 @@
 #include <omp.h>
 #endif
 
+static void cheb_simplex(std::vector<double>& q, std::vector<double>& ordered) {
+    ordered=q; std::sort(ordered.begin(),ordered.end(),std::greater<double>());
+    double sum=0,threshold=0;
+    for(size_t j=0;j<q.size();++j) {
+        sum+=ordered[j];
+        if(ordered[j]>(sum-1)/(j+1)) threshold=(sum-1)/(j+1);
+    }
+    for(double& value:q) value=std::max(0.,value-threshold);
+}
+
+// Independent Chambolle-Pock solves. The dual of beta*||r||_infinity is the
+// indicator of an L1 ball. The gap uses the exact simplex-prox conjugate.
+extern "C" int bora_chebyshev_palette(const float* x,const float* prior,
+        const double* colors,float* output,double* gaps,int32_t* used,
+        int64_t n,int k,double ridge,double beta,double step,
+        double tolerance,int iterations,int threads) {
+    if(n<1||k<2||ridge<=0||beta<=0||step<=0||iterations<1||threads<1) return 1;
+    #pragma omp parallel for num_threads(threads) schedule(static)
+    for(int64_t row=0;row<n;++row) {
+        std::vector<double> q(k),bar(k),changed(k),star(k),ordered(k);
+        for(int g=0;g<k;++g) q[g]=prior[row*k+g];
+        cheb_simplex(q,ordered);bar=q;
+        double dual[3]={0,0,0},gap=std::numeric_limits<double>::infinity();
+        int count=0;
+        for(int it=0;it<iterations;++it) {
+            double sumabs=0,absolute[3];
+            for(int j=0;j<3;++j) {
+                double residual=-x[row*3+j];
+                for(int g=0;g<k;++g) residual+=bar[g]*colors[g*3+j];
+                dual[j]+=step*residual;absolute[j]=std::abs(dual[j]);sumabs+=absolute[j];
+            }
+            if(sumabs>beta) {
+                std::sort(absolute,absolute+3,std::greater<double>());
+                double sum=0,threshold=0;
+                for(int j=0;j<3;++j) {sum+=absolute[j];if(absolute[j]>(sum-beta)/(j+1))threshold=(sum-beta)/(j+1);}
+                for(double& value:dual) value=std::copysign(std::max(0.,std::abs(value)-threshold),value);
+            }
+            for(int g=0;g<k;++g) {
+                double linear=0;for(int j=0;j<3;++j)linear+=colors[g*3+j]*dual[j];
+                changed[g]=(q[g]-step*linear+step*ridge*prior[row*k+g])/(1+step*ridge);
+            }
+            cheb_simplex(changed,ordered);
+            for(int g=0;g<k;++g) {bar[g]=2*changed[g]-q[g];q[g]=changed[g];}
+            count=it+1;
+            if(count%10==0||count==iterations) {
+                double primal=0,dualvalue=0,maxerror=0;
+                for(int g=0;g<k;++g) {
+                    double linear=0;for(int j=0;j<3;++j)linear+=colors[g*3+j]*dual[j];
+                    star[g]=prior[row*k+g]-linear/ridge;
+                }
+                cheb_simplex(star,ordered);
+                for(int g=0;g<k;++g) {
+                    double linear=0;for(int j=0;j<3;++j)linear+=colors[g*3+j]*dual[j];
+                    primal+=.5*ridge*std::pow(q[g]-prior[row*k+g],2);
+                    dualvalue+=.5*ridge*std::pow(star[g]-prior[row*k+g],2)+star[g]*linear;
+                }
+                for(int j=0;j<3;++j) {
+                    double error=-x[row*3+j];
+                    for(int g=0;g<k;++g)error+=q[g]*colors[g*3+j];
+                    maxerror=std::max(maxerror,std::abs(error));dualvalue-=x[row*3+j]*dual[j];
+                }
+                gap=std::max(0.,primal+beta*maxerror-dualvalue);
+                if(gap<tolerance)break;
+            }
+        }
+        gaps[row]=gap;used[row]=count;
+        for(int g=0;g<k;++g)output[row*k+g]=float(q[g]);
+    }
+    return 0;
+}
+
 // Class-specific quadratic Gaussian scores. Each row is independent, so
 // one/two-thread calculations have identical floating-point operation order.
 extern "C" int bora_gaussian_logits(const float* x, const double* means,

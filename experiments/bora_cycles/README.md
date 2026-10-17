@@ -6,7 +6,7 @@ Current verified status: **six of twenty cycles complete**. Cycle six has
 J07 and H10**. J01 improves H02 by 0.27685 IoU percentage points at approximately
 0.19 seconds per ROI, with important documented regressions. See
 [CYCLE_SIX_REVIEW.md](CYCLE_SIX_REVIEW.md). Earlier checkpoints below describe
-their historical stages. No seventh-cycle model has been implemented yet.
+their historical stages. Cycle seven now has fifteen implemented hypotheses; independent preflight and a frozen pilot are required before its full run.
 
 The user now requests a runtime penalty above one second per image. From
 cycle5 the primary selection utility is the image-average of
@@ -204,3 +204,8 @@ CYCLE_SIX_SELECTION.json. Original H&E edge conductance improves appearance
 fields; Gaussian-integrated hinge risk improves the fast discriminant branch.
 Background deletion and nonlinear colour-vote artifacts remain documented
 failures. Fourteen cycles and the final all-conversion comparison remain.
+
+Cycle-seven interventions and numerical budgets are described prospectively in
+[CYCLE_SEVEN.md](CYCLE_SEVEN.md) and seven_manifest.py. They retain the actual
+signed J01/H02/C17/J07/H10 lineage. Implementation and numerical tests alone
+do not complete cycle seven; all execution and actual review gates still apply.

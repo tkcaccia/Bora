@@ -26,7 +26,8 @@ from .registry import (candidates, roster, CHILDREN_TWO, CYCLE_TWO_SURVIVORS,
                        CHILDREN_THREE, CYCLE_THREE_SURVIVORS,
                        CHILDREN_FOUR, CYCLE_FOUR_SURVIVORS,
                        CHILDREN_FIVE, CYCLE_FIVE_SURVIVORS,
-                       CHILDREN_SIX, CYCLE_SIX_SURVIVORS)
+                       CHILDREN_SIX, CYCLE_SIX_SURVIVORS,
+                       CHILDREN_SEVEN, CYCLE_SEVEN_SURVIVORS)
 from .diagnostics import novelty, white_regions, mask_diagnostics
 from .runtime_policy import active_policy, runtime_ranking
 
@@ -362,7 +363,7 @@ def main():
     parser.add_argument("--keys", nargs="+")
     parser.add_argument("--workers", type=int, choices=(1, 2, 3), default=3)
     parser.add_argument("--repeats", type=int, default=1)
-    parser.add_argument("--cycle", type=int, choices=(1, 2, 3, 4, 5, 6), default=1)
+    parser.add_argument("--cycle", type=int, choices=(1, 2, 3, 4, 5, 6, 7), default=1)
     parser.add_argument("--previous", type=Path)
     parser.add_argument("--metric-backend", choices=("numpy", "cpp"), default="cpp")
     args = parser.parse_args()
@@ -383,7 +384,8 @@ def main():
                                3: (CYCLE_THREE_SURVIVORS, CHILDREN_THREE),
                                4: (CYCLE_FOUR_SURVIVORS, CHILDREN_FOUR),
                                5: (CYCLE_FIVE_SURVIVORS, CHILDREN_FIVE),
-                               6: (CYCLE_SIX_SURVIVORS, CHILDREN_SIX)}[args.cycle]
+                               6: (CYCLE_SIX_SURVIVORS, CHILDREN_SIX),
+                               7: (CYCLE_SEVEN_SURVIVORS, CHILDREN_SEVEN)}[args.cycle]
         if previous["cycle"] != args.cycle-1 or selection["survivors"] != list(survivors):
             parser.error("Implemented children do not match the actual reviewed survivors")
         if digest(args.previous/"VISUAL_REVIEW.json") != selection["review_sha256"]:

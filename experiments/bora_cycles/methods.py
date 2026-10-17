@@ -714,6 +714,9 @@ PALETTE_IMPLEMENTED = {
 
 
 def predict(key, rgb, coarse, support, mpp_xy, palette, he=None):
+    if key.startswith("K"):
+        from .cycle_seven import predict as predict_child
+        return predict_child(key, rgb, coarse, support, mpp_xy, palette, he)
     if key.startswith("J"):
         from .cycle_six import predict as predict_child
         return predict_child(key, rgb, coarse, support, mpp_xy, palette, he)

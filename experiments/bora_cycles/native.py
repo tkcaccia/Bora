@@ -78,6 +78,31 @@ def gaussian_logits(x, means, precision, intercept, threads=2):
     return output
 
 
+def chebyshev_palette(x, prior, colors, ridge=.012, beta=.025,
+                      tolerance=1e-7, iterations=600, threads=2):
+    x, prior = [np.ascontiguousarray(a, np.float32) for a in (x, prior)]
+    colors = np.ascontiguousarray(colors, np.float64)
+    if (x.ndim != 2 or x.shape[1] != 3 or prior.ndim != 2 or len(prior) != len(x)
+            or colors.shape != (prior.shape[1], 3) or prior.shape[1] < 2
+            or ridge <= 0 or beta <= 0 or tolerance <= 0 or iterations < 1
+            or not all(np.isfinite(a).all() for a in (x, prior, colors))):
+        raise ValueError('Incompatible Chebyshev palette problem')
+    function = library().bora_chebyshev_palette
+    function.argtypes = [ctypes.c_void_p]*6+[ctypes.c_int64, ctypes.c_int]+[ctypes.c_double]*4+[ctypes.c_int]*2
+    function.restype = ctypes.c_int
+    output = np.empty_like(prior); gap = np.empty(len(x), np.float64); used = np.empty(len(x), np.int32)
+    step = .99/max(float(np.linalg.norm(colors, 2)), 1e-8)
+    status = function(x.ctypes.data, prior.ctypes.data, colors.ctypes.data, output.ctypes.data,
+        gap.ctypes.data, used.ctypes.data, len(x), prior.shape[1], ridge, beta,
+        step, tolerance, iterations, threads)
+    if status or not np.isfinite(output).all() or not np.isfinite(gap).all():
+        raise RuntimeError('C++ Chebyshev inverse failed')
+    return output, dict(max_primal_dual_gap=float(gap.max()),
+        unconverged_nodes=int((gap > tolerance).sum()), converged=bool(np.all(gap <= tolerance)),
+        max_iterations=int(used.max()), mean_iterations=float(used.mean()),
+        ridge=ridge, maximum_channel_weight=beta, threads=threads)
+
+
 def dominance_qp(x, prior, colors, labels, initial=None, tolerance=1e-7,
                  iterations=400, threads=2):
     x, prior = [np.ascontiguousarray(a, np.float32) for a in (x, prior)]
