@@ -111,3 +111,30 @@ now recomputes using the policy inside each result's protocol, with a new
 tamper-rejection regression test. No model, prediction or score is changed.
 The corrected auditor runs from a separate posthoc source snapshot; the
 executed model snapshot remains immutable for the full-run parity check.
+
+## Full execution checkpoint: complete visual review still pending
+
+All 149 ROIs have 3,278 successful native predictions, zero failed methods and
+149 contact sheets. Chiamaka and local integrity audits pass, including 745
+exact unchanged-parent comparisons. All 176 pilot/full native masks match.
+The separate posthoc job passed nine checks and completed the small-region
+atlas. All five saved artifact hashes match locally.
+
+H02 leads the new utility: IoU 0.671889 at 0.180560 seconds, with no image above
+one second. H10 improves D08 by 0.011375 mean IoU at 0.059427 seconds versus
+0.049341 seconds: 98 wins, 45 losses and six ties. F01 still leads raw IoU at
+0.679529, but 121 over-limit images lower its utility to 0.645593 at a mean
+1.654383 seconds. These are repeatedly reused development images.
+
+Actual review covers BCSS01–24 and four native crops. BCSS07's cleft remains
+filled; H03 opens BCSS18's cleft with noisy edges. H02 mistakes blood vessel
+for fat in BCSS45, whereas H10 corrects that error against D08 in BCSS26.
+Fat and vessel are different mask IDs with similar gold display colours; the
+original conversion is unchanged. There are 125 overviews remaining before
+selection, so only four of twenty cycles are complete.
+
+H02's largest linear residual is 2.143e-14. H10 has eight unsuccessful optimizer
+terminations, H07 has six, and unchanged C01 has 67. All 505 H15 class fits hit
+the finite EM budget without convergence. Scores retain the fits as executed;
+finite masks do not establish exact optimization or biological correctness.
+CYCLE_FIVE_EXECUTION.json records all ranks, cases, hashes and status.
