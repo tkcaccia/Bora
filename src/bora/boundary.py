@@ -39,6 +39,72 @@ class BoundaryConfig:
     local_color_fraction: float = 0.70
     internal_spatial_weight: float = 1.5
     internal_median_size: int = 9
+    internal_regularizer: str = "median"
+    internal_regularizer_weight: float = 0.35
+    internal_regularizer_iterations: int = 6
+    internal_edge_sigma: float = 12.0
+
+
+def _regularize_classes(answer, editable, ids, lab, config, costs=None):
+    """Optional categorical postfilters; the default preserves legacy output.
+
+    Majority ties keep the current label. Edge-aware red/black ICM minimizes
+    the original wand unary plus a four-neighbour contrast-weighted Potts cost.
+    Label values are identities, never ordered measurements, in both options.
+    """
+    mode = config.internal_regularizer
+    if mode == "none":
+        return answer
+    if mode == "median":
+        if config.internal_median_size > 1 and answer.max() <= 255:
+            smoothed = cv2.medianBlur(answer.astype(np.uint8), config.internal_median_size)
+            answer[editable] = smoothed[editable]
+        return answer
+    if mode == "majority":
+        size = config.internal_median_size
+        counts = np.stack([cv2.boxFilter((answer == g).astype(np.float32), -1,
+                          (size, size), normalize=False, borderType=cv2.BORDER_REPLICATE)
+                           for g in ids])
+        best = counts.max(axis=0)
+        current = np.zeros(answer.shape, np.float32)
+        for i, g in enumerate(ids):
+            current[answer == g] = counts[i][answer == g]
+        # Preserve ties rather than preferring the smallest numeric class ID.
+        unique = (counts == best).sum(axis=0) == 1
+        chosen = ids[counts.argmax(axis=0)]
+        update = editable & unique & (best > current)
+        answer[update] = chosen[update]
+        return answer
+    if mode != "edge_potts" or costs is None:
+        raise ValueError(f"Unknown or incomplete internal regularizer: {mode}")
+    if config.internal_regularizer_weight < 0 or config.internal_edge_sigma <= 0:
+        raise ValueError("Regularizer weight must be nonnegative and edge sigma positive")
+    sigma2 = 2 * config.internal_edge_sigma ** 2
+    horizontal = np.exp(-np.sum(np.diff(lab, axis=1) ** 2, axis=2) / sigma2)
+    vertical = np.exp(-np.sum(np.diff(lab, axis=0) ** 2, axis=2) / sigma2)
+    yy, xx = np.indices(answer.shape)
+    for _ in range(config.internal_regularizer_iterations):
+        changed = 0
+        for parity in (0, 1):
+            energy = costs.copy()
+            for i, g in enumerate(ids):
+                penalty = np.zeros(answer.shape, np.float32)
+                penalty[:, 1:] += horizontal * (answer[:, :-1] != g)
+                penalty[:, :-1] += horizontal * (answer[:, 1:] != g)
+                penalty[1:] += vertical * (answer[:-1] != g)
+                penalty[:-1] += vertical * (answer[1:] != g)
+                energy[i] += config.internal_regularizer_weight * penalty
+            minimum = energy.min(axis=0)
+            current = np.full(answer.shape, np.inf, np.float32)
+            for i, g in enumerate(ids):
+                current[answer == g] = energy[i][answer == g]
+            selected = ids[energy.argmin(axis=0)]
+            update = editable & ((yy + xx) % 2 == parity) & (minimum < current - 1e-7)
+            changed += int(update.sum())
+            answer[update] = selected[update]
+        if changed == 0:
+            break
+    return answer
 
 
 def _connected_to_seeds(candidate: np.ndarray, seeds: np.ndarray,
@@ -190,6 +256,7 @@ def _interior(image: np.ndarray, labels: np.ndarray, tile: float,
     sigma = max(3.0, tile * config.local_color_fraction)
     best = np.full(labels.shape, np.inf, np.float32)
     answer = labels.copy()
+    costs = [] if config.internal_regularizer == "edge_potts" else None
     for raw_id in ids:
         region = labels == raw_id
         inside = cv2.distanceTransform(region.astype(np.uint8), cv2.DIST_L2, 3)
@@ -202,6 +269,8 @@ def _interior(image: np.ndarray, labels: np.ndarray, tile: float,
         mass = cv2.GaussianBlur(sample, (0, 0), sigma)
         global_values = lab[core]
         if global_values.size == 0:
+            if costs is not None:
+                costs.append(np.full(labels.shape, np.inf, np.float32))
             continue
         global_mean = np.mean(global_values, axis=0)
         global_var = np.var(global_values, axis=0)
@@ -220,12 +289,13 @@ def _interior(image: np.ndarray, labels: np.ndarray, tile: float,
         outside = cv2.distanceTransform((~region).astype(np.uint8), cv2.DIST_L2, 3)
         cost += config.internal_spatial_weight * (outside / radius) ** 2
         cost[outside > radius + 1] = np.inf
+        if costs is not None:
+            costs.append(cost)
         chosen = editable & (cost < best)
         answer[chosen] = raw_id
         best[chosen] = cost[chosen]
-    if config.internal_median_size > 1 and answer.max() <= 255:
-        smoothed = cv2.medianBlur(answer.astype(np.uint8), config.internal_median_size)
-        answer[editable] = smoothed[editable]
+    answer = _regularize_classes(answer, editable, ids, lab, config,
+                                  np.stack(costs) if costs is not None else None)
     # Color alone can select isolated pixels in heterogeneous H&E. Keep only
     # regions connected to a reliable seed of the same original class.
     for raw_id in ids:
