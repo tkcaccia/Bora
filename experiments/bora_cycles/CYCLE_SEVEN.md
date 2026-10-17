@@ -267,6 +267,7 @@ reference pixels and are not normalized to an optimistic cap.
 Seven of twenty cycles are complete. See CYCLE_SEVEN_REVIEW.md and the signed
 CYCLE_SEVEN_SELECTION.json for every benefit, limitation and rejection reason.
 All200 requested/additional input sets are prepared and independently audited,
-for349 future ROIs. Expanded inference, unchanged conversions, task/scaling
-adapters and review gates remain to be implemented before an expanded cycle.
+for349 future ROIs. Expanded feature inference is now complete and its600 arrays
+pass the independent audit. Unchanged conversions, task/scaling integration and
+review gates remain to be implemented before an expanded cycle.
 Historical149-image cycle-seven predictions and scores remain unchanged.

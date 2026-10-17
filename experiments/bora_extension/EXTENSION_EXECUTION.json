@@ -34,10 +34,10 @@
   "tiger_overlap_checked": true,
   "no_duplicate_source_RGB_bytes": true,
   "historical_predictions_modified": false,
-  "additional_feature_inference_complete": false,
+  "additional_feature_inference_complete": true,
   "additional_masks_scored": false,
   "audit_code_sha256": "8245a7650488b0d63f2bcababf6acb820fa56e7b2f84d05922889efeecb52cc1",
-  "status": "200 additional inputs prepared and independently audited; feature extraction/conversions and expanded cycles not yet run",
+  "status": "200 input triples and600 frozen Virchow2 arrays audited; conversions and expanded Bora cycles still pending",
   "local_copy_verified": true,
   "local_copy_files_checked": 1000,
   "input_audit_sha256": "dcc9b8f68453e21aab77c8a6f00877219c66e9a43e2bf023b58b4e19e92c8e50",
@@ -85,12 +85,23 @@
   "cycle_seven_selection_created": true,
   "subsequent_cycle_scope": 349,
   "remaining_work": [
-    "Prepare unchanged Virchow2 conversions for all200 added images, with explicit unknown-spacing and single-class adapters",
-    "Implement task-appropriate scoring, per-dataset/single-class strata and expanded349-image review gate",
-    "Continue through20 complete cycles and final all-five-conversion evaluation"
+    "Prepare unchanged09/10/15/19/equal09+19 conversions for200 additions; explicit unknown-spacing and30 single-eligible-class cases",
+    "Assemble349 immutable inputs and implement task-appropriate scoring, separate physical/pixel strata and manifest-based review gates",
+    "Implement cycle8's15 distinct children from signedJ01/K05/C17/J07/K13; then continue through20 complete cycles",
+    "Final all-five-conversion evaluation and selected-five viewer at each completed cycle"
   ],
-  "checkpoint_utc": "2026-10-17T22:40:58.909052+00:00",
+  "checkpoint_utc": "2026-10-17T23:02:28.938046+00:00",
   "complete_goal": false,
   "actual_cycle_seven_native_crops": 8,
-  "cycle_seven_selection_sha256": "8a346fe3880cc06e9b7043bd5608683825882cdc1163c6022c2250011867622f"
+  "cycle_seven_selection_sha256": "8a346fe3880cc06e9b7043bd5608683825882cdc1163c6022c2250011867622f",
+  "additional_feature_inference_started": true,
+  "additional_feature_arrays": 600,
+  "feature_audit_passed": true,
+  "feature_audit_sha256": "7c80d96e3cdc1534b9bb0e825683a4de8145e35d2baf592e77399a8eccd2360a",
+  "feature_protocol_sha256": "3009a1733ef097c32231294d927f2fbfcc262c1a14ef8427fffae85fbf3fb76c",
+  "single_eligible_class": {
+    "wsss4luad": 11,
+    "rings-tumor": 19
+  },
+  "feature_record": "FEATURE_EXECUTION.json"
 }

@@ -172,3 +172,12 @@ single-class/task/calibration adapters and a manifest-based review gate.
 WSSS/RINGS remain uncalibrated pixel-only data. Historical subset scores stay
 separately comparable; all reused images are development data.
 Thirteen cycles and the final all-five-conversion evaluation remain.
+
+Expanded-input update: all200 additions now have600 pinned Virchow2 arrays,
+with full-field coverage, source/cache integrity, finite values and per-scale
+calibration verified by a model-free audit.120 are calibrated and80 pixel-only.
+Thirty expose a single eligible training class (11 WSSS,19 RINGS), including
+three WSSS cases with other coarse labels outside eligible central summaries.
+No additional class is inferred from reference metadata. Shared encoder time
+is recorded separately from Bora timing. RGB conversions and expanded cycle8
+are not yet run; see ../bora_extension/FEATURE_EXECUTION.json.

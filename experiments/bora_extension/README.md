@@ -2,9 +2,9 @@
 
 The user requested continuing the 20-cycle study and adding images alongside
 the current 149. **200 additional image/coarse/reference triples are prepared
-and pass a native-source/overlap audit.** This is input preparation, not
-completed encoder inference, Bora prediction, expanded scores or a completed
-cycle. Cycle seven is now signed after all149 actual overview inspections and
+and pass a native-source/overlap audit.** Full encoder inference is also complete:
+all600 arrays across200 additions pass the independent feature audit. Expanded
+Bora prediction and scoring are pending. Cycle seven is signed after149 actual overview inspections and
 eight native label crops; seven of twenty cycles are complete.
 
 | Dataset | Existing | Added | Planned total | Added representation |
@@ -131,6 +131,12 @@ statistic: it uses variance-only cache dimensions, explicitly marked as such;
 its downstream class-probability RGB must be constant, with no reference-derived
 extra classes.
 
+The completed feature audit finds30 cases with one eligible training class:
+11 WSSS and19 RINGS. The input-level counts above remain correct for classes
+present anywhere in the coarse mask. In WSSS04/10/19, additional coarse labels
+do not occur in eligible central tile summaries. Those three therefore also
+require the explicit constant-conversion case; no extra class may be invented.
+
 Small fields are reflect-padded at the right/bottom to the224px minimum window
 before the existing14px patch padding. Original pixels are never resized for
 this padding, and original token coordinates remain unchanged. Actual
@@ -146,6 +152,15 @@ calibration, exact unchanged feature selection, single-class degeneracy, full
 field coverage without reading a poison reference file, and tampered-cache
 rejection. Check execution records for actual pilot/full completion; source
 availability alone is not evidence that inference finished.
+
+`FEATURE_EXECUTION.json` records actual200-case/600-array completion, source/cache
+and per-scale coverage checks, exact frozen code/checkpoint, the initial failed
+model-directory launch, the corrected successful pilot, and tests. The full
+feature and audit processes are terminal. Arrays remain on Chiamaka; local
+copies contain metadata, while all200 original input triples are local.
+Shared feature preparation averages1.753 seconds per new image, excluding model
+loading. This is separate from Bora refinements' runtime and is not an
+end-to-end subsecond claim. RGB conversions and expanded Bora scoring are pending.
 
 `task_adapter.py` prepares the expanded runner's unit and RINGS semantics
 contract. Uncalibrated numerical coordinates are unit pixels, with physical
