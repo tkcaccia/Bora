@@ -87,7 +87,7 @@ def build_history(base):
             key = row["method"]
             title = cycle["roster_titles"].get(key, "reference control")
             if not row["complete"]:
-                body.append(f'<tr><td>{escape(key)} {escape(title)}</td><td colspan="5">Incomplete</td></tr>')
+                body.append(f'<tr><td>{escape(key)} {escape(title)}</td><td colspan="6">Incomplete</td></tr>')
                 continue
             body.append(f'<tr><td>{escape(key)} {escape(title)}</td>'
                         f'<td>{row["mean_iou"]:.6f}</td><td>{row["mean_seconds"]:.4f}</td>'
