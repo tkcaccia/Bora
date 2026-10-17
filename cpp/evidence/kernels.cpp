@@ -37,6 +37,67 @@ extern "C" int bora_evidence_openmp() {
 #endif
 }
 
+// Exact signed categorical count differences for each own/rival comparison.
+// The product over rivals is a composite likelihood, not the joint K-class
+// winner probability. Lower class indices win ties. Probability derivatives
+// account for p(neutral)=1-p(own)-p(rival), before the Python softmax chain rule.
+extern "C" int bora_categorical_winner(const double* p, const int32_t* labels,
+    double* logp, double* gradient, int bags, int pixels, int classes, int threads) {
+    if(bags<1 || pixels<1 || classes<2 || threads<1) return -1;
+    for(int b=0;b<bags;++b) if(labels[b]<0 || labels[b]>=classes) return -2;
+    const int width=2*pixels+1, zero=pixels;
+    #pragma omp parallel for num_threads(threads) schedule(static)
+    for(int b=0;b<bags;++b) {
+        const int own=labels[b];
+        double* grad=gradient+static_cast<int64_t>(b)*pixels*classes;
+        std::fill(grad,grad+pixels*classes,0.);
+        logp[b]=0.;
+        for(int rival=0;rival<classes;++rival) if(rival!=own) {
+            std::vector<double> forward((pixels+1)*width,0.),backward((pixels+1)*width,0.);
+            forward[zero]=1.; backward[pixels*width+zero]=1.;
+            for(int i=0;i<pixels;++i) {
+                const double* row=p+(static_cast<int64_t>(b)*pixels+i)*classes;
+                const double a=row[own],d=row[rival],n=std::max(0.,1.-a-d);
+                for(int s=-i;s<=i;++s) {
+                    const double v=forward[i*width+zero+s];
+                    forward[(i+1)*width+zero+s]+=n*v;
+                    forward[(i+1)*width+zero+s+1]+=a*v;
+                    forward[(i+1)*width+zero+s-1]+=d*v;
+                }
+            }
+            for(int i=pixels-1;i>=0;--i) {
+                const double* row=p+(static_cast<int64_t>(b)*pixels+i)*classes;
+                const double a=row[own],d=row[rival],n=std::max(0.,1.-a-d);
+                const int length=pixels-i-1;
+                for(int s=-length;s<=length;++s) {
+                    const double v=backward[(i+1)*width+zero+s];
+                    backward[i*width+zero+s]+=n*v;
+                    backward[i*width+zero+s+1]+=a*v;
+                    backward[i*width+zero+s-1]+=d*v;
+                }
+            }
+            const int threshold=(rival<own?1:0);
+            double probability=0.;
+            for(int s=threshold;s<=pixels;++s) probability+=forward[pixels*width+zero+s];
+            logp[b]+=std::log(std::max(probability,1e-300));
+            if(probability<=1e-300) continue; // derivative of the explicit floor
+            for(int i=0;i<pixels;++i) {
+                double lower=0.,same=0.;
+                const int rest=pixels-i-1;
+                for(int s=-i;s<=i;++s) {
+                    const double v=forward[i*width+zero+s];
+                    const int a=threshold-1-s,d=threshold-s;
+                    if(a>=-rest && a<=rest) lower+=v*backward[(i+1)*width+zero+a];
+                    if(d>=-rest && d<=rest) same+=v*backward[(i+1)*width+zero+d];
+                }
+                grad[i*classes+own]-=lower/probability;
+                grad[i*classes+rival]+=same/probability;
+            }
+        }
+    }
+    return 0;
+}
+
 // Signed depth of a point in a convex polytope whose facet normals have unit
 // length. Stream facets rather than materializing a pixels-by-facets matrix.
 extern "C" int bora_hull_depth(const float* x, const double* planes, float* out,

@@ -247,10 +247,94 @@ CYCLE_THREE.update({item["id"]: Candidate(item["title"], item["intervention"],
     for item in CHILDREN_THREE})
 
 
+CYCLE_FOUR_SURVIVORS = ("F01", "C17", "C01", "D08", "C15")
+CHILDREN_FOUR = [
+    dict(id="G01", parent="F01", title="Bounded local colour prediction",
+         intervention="bounded-beta-predictive-observation",
+         equation_or_rule="Moment-match local affine mean and regression predictive variance to independent Beta channel densities on the RGB unit cube; classify by their normalized log density.",
+         failure_hypothesis="Channel independence and feasible Beta variance projection can exaggerate endpoint colours or lose cross-channel discrimination.",
+         difference_from_parent="Replace the unbounded multivariate Gaussian observation by a bounded normalized likelihood; preserve the local regression but do not claim an exact latent Beta integral."),
+    dict(id="G02", parent="F01", title="Spatial Laplace regression",
+         intervention="spatial-affine-least-absolute-deviation-likelihood",
+         equation_or_rule="Fit each class/channel's global spatial-affine RGB surface by sparse linear-program weighted absolute deviation plus L1 slopes, then use a normalized independent-channel Laplace observation model.",
+         failure_hypothesis="A single spatial surface cannot track genuine nonlinear appearance drift; coarse mixture medians can still be wrong.",
+         difference_from_parent="Use a robust spatial median regression and Laplace likelihood in place of moving-window squared-error fits with Gaussian predictive variance; the LP solves the stated convex fit."),
+    dict(id="G03", parent="F01", title="White-space clearance reconstruction",
+         intervention="physical-disk-granulometry-glass-reconstruction",
+         equation_or_rule="Compute the physical Euclidean distance transform inside bright original-H&E components; reconstruct and remove entire 8-connected white components containing a disk of radius 4 um.",
+         failure_hypothesis="A large true gland lumen or adipocyte interior can also contain the required disk; fine reference-positive removals remain errors.",
+         difference_from_parent="Add a physical-clearance glass state. Unlike the rejected inertia rule, a broad cavity can pass while a long narrow intercellular slit fails; neither aspect ratio nor border connectivity is used."),
+    dict(id="G04", parent="C17", title="Poisson palette observation",
+         intervention="nonnegative-poisson-mean-palette-inverse",
+         equation_or_rule="Minimize sum of palette mean minus observed RGB times log palette mean, plus the coarse colour-prior quadratic, on the probability simplex using feasible accelerated projected gradients.",
+         failure_hypothesis="Synthetic conversion RGB is not a photon count; intensity-dependent observation curvature can distort low-valued channels.",
+         difference_from_parent="Change the RGB observation likelihood to generalized I-divergence rather than changing the prior geometry, solver tolerance or regularization coefficient."),
+    dict(id="G05", parent="C17", title="Conserved class-area projection",
+         intervention="global-class-mass-constrained-relative-entropy-projection",
+         equation_or_rule="Find the minimum KL change from the parent posterior subject to row sums one and global class totals equal to coarse-weighted known class proportions extrapolated across all detected tissue; solve the convex dual by Newton steps.",
+         failure_hypothesis="Coarse tile winners are not area fractions, and unannotated tissue may have different composition; the global totals can be incorrect.",
+         difference_from_parent="Couple all tissue pixels through explicit class-mass constraints instead of independent colour inverses or an expected-IoU utility decision; no pixel is frozen."),
+    dict(id="G06", parent="C17", title="Ordinal palette observation",
+         intervention="within-pixel-channel-rank-logistic-inverse",
+         equation_or_rule="Use three within-pixel RGB channel-order comparisons as logistic observations of the palette mixture, with the original coarse-colour quadratic prior; solve the convex simplex objective.",
+         failure_hypothesis="Only six strict RGB channel orders exist; classes with the same order become weakly identifiable and rely on the coarse prior.",
+         difference_from_parent="Discard channel amplitudes and model channel ordering, rather than Euclidean colour distance, directional normalization, or interval feasibility bounds."),
+    dict(id="G07", parent="C01", title="Correlated tile-count evidence",
+         intervention="intrabag-count-design-effect-likelihood",
+         equation_or_rule="Estimate an intrabag design effect from class-centred between-tile posterior-mean variation versus within-tile variation, then scale the pairwise normal count variance and fit its analytic-gradient composite likelihood.",
+         failure_hypothesis="Between-tile biological heterogeneity can be mistaken for pixel correlation; one fixed estimated design effect may be poorly calibrated.",
+         difference_from_parent="Model correlated tile observations and their effective sample size instead of treating 25 pixels as independent count evidence; this is not an iteration-budget sweep."),
+    dict(id="G08", parent="C01", title="Exact categorical tile comparisons",
+         intervention="signed-categorical-count-dynamic-programming-likelihood",
+         equation_or_rule="For every own/rival pair, convolve the independent per-pixel +1/0/-1 categorical count factors, sum the exact winner tail with deterministic ties, and obtain analytic probability derivatives by forward/backward convolution in C++ OpenMP.",
+         failure_hypothesis="Exact independent-pixel count tails still misrepresent correlated tissue; the product of pairwise probabilities is a composite likelihood, not the joint multiclass event.",
+         difference_from_parent="Replace approximate normal tails with exact heterogeneous categorical count-difference distributions; unlike the rejected Poisson model, the count total is fixed and each pixel supplies at most one class."),
+    dict(id="G09", parent="C01", title="Pairwise ranking of tile colours",
+         intervention="analytic-one-versus-rest-pairwise-ranking-risk",
+         equation_or_rule="For each known class minimize mean squared positive-versus-negative tile colour ranking error with a ridge; solve its pair-difference second-moment normal equation analytically and identify the intercept by the mean midpoint.",
+         failure_hypothesis="Ranking risk does not identify calibrated multiclass probabilities and mixed tile means can suppress true small structures.",
+         difference_from_parent="Learn between-tile ordering rather than a within-tile winner count event; all pair moments are computed analytically without sampling pairs or fitting coupled pairwise classifiers."),
+    dict(id="G10", parent="D08", title="Angular nuisance scatter",
+         intervention="regularized-tyler-within-tile-shape-estimator",
+         equation_or_rule="Estimate within-tile RGB residual shape by the trace-normalized regularized Tyler fixed point, combine it with one empirical radial scale, and apply the shared-covariance class discriminant.",
+         failure_hypothesis="Real class distinctions can depend on the radial excursions that this shape estimator downweights; finite fixed-point convergence is recorded.",
+         difference_from_parent="Replace ordinary residual second moments by an angular, radially invariant scatter objective rather than changing class centroids, spatial smoothing or thread count."),
+    dict(id="G11", parent="D08", title="Pooled rank-normal colour geometry",
+         intervention="nonparanormal-within-bag-discriminant-geometry",
+         equation_or_rule="Estimate one pooled coarse-weighted empirical CDF per RGB channel, transform every tissue colour to marginal normal scores, then fit the within-tile shared-covariance discriminant in that geometry.",
+         failure_hypothesis="Pooled channel ranks can distort a class-specific contrast or amplify rare tails, especially where coarse sampling is biased.",
+         difference_from_parent="Change the common observation coordinate system; unlike the copula parent branch, no per-class marginal density or per-class rank-dependence density is fitted."),
+    dict(id="G12", parent="D08", title="Matched neighbouring-tile contrasts",
+         intervention="matched-design-class-contrast-normal-equations",
+         equation_or_rule="Use adjacent unlike-label coarse tile pairs as matched colour-difference observations; solve the class-incidence normal equations for consistent class prototypes, with weak coarse-mean anchors for disconnected contrasts.",
+         failure_hypothesis="Boundary tiles may not represent class interiors, and local stain nuisance may not cancel between paired tiles.",
+         difference_from_parent="Estimate class appearance through a matched observational design rather than independent class means; the graph contains class contrasts, not image pixels or propagated labels."),
+    dict(id="G13", parent="C15", title="Local colour-distribution transport",
+         intervention="sliced-wasserstein-patch-to-class-distribution-distance",
+         equation_or_rule="Compare each nine-point physical RGB neighbourhood with weighted class colour quantiles through seven fixed one-dimensional projections; assign by mean squared quantile transport distance.",
+         failure_hypothesis="Finite projections and a small patch can miss true multivariate structure; a mixed coarse class has a contaminated target distribution.",
+         difference_from_parent="Compare local empirical colour distributions by transport rather than evaluating a single pixel's marginal/copula density, patch covariance, dictionary residual or colour-energy potential."),
+    dict(id="G14", parent="C15", title="Full-tissue modal colour basins",
+         intervention="shared-colour-density-mode-basin-semisupervision",
+         equation_or_rule="Estimate one density on all detected tissue RGB, follow deterministic 26-neighbour ascent to colour modes, and fit each basin's Dirichlet class counts only from original known coarse tissue; expose unsupported modes as unknown-identity proposals.",
+         failure_hypothesis="Different tissues may share one colour mode; unsupported basins have no semantic evidence and equal prior counts give an arbitrary lowest-ID hard tie.",
+         difference_from_parent="Use the cluster assumption in a full-tissue unsupervised colour partition instead of separate class densities; this is colour-space mode analysis, not a revived spatial watershed or a solver ensemble."),
+    dict(id="G15", parent="C15", title="Joint maximum-entropy colour density",
+         intervention="normalized-joint-legendre-moment-maximum-entropy",
+         equation_or_rule="Fit a normalized exponential-family RGB density per class using all 26 nonconstant tensor degree-two Legendre moments and a convex ridge dual; normalize by fixed midpoint cubature on the RGB cube.",
+         failure_hypothesis="Low-order moments can erase rare modes and finite cubature approximates the continuous normalizer; unsuccessful optimization remains explicit.",
+         difference_from_parent="Replace separately estimated marginals and Gaussian copula dependence by a single bounded-domain joint maximum-entropy density, including three-way moment interactions."),
+]
+CYCLE_FOUR = {key: CYCLE_THREE[key] for key in CYCLE_FOUR_SURVIVORS}
+CYCLE_FOUR.update({item["id"]: Candidate(item["title"], item["intervention"],
+    item["equation_or_rule"], item["failure_hypothesis"], True, item["parent"])
+    for item in CHILDREN_FOUR})
+
+
 def candidates(cycle=1):
-    if cycle not in (1, 2, 3):
+    if cycle not in (1, 2, 3, 4):
         raise ValueError("This cycle has no implemented, reviewed lineage")
-    return {1: CYCLE_ONE, 2: CYCLE_TWO, 3: CYCLE_THREE}[cycle]
+    return {1: CYCLE_ONE, 2: CYCLE_TWO, 3: CYCLE_THREE, 4: CYCLE_FOUR}[cycle]
 
 
 def roster(cycle=1):

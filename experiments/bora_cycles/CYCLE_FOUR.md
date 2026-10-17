@@ -1,0 +1,88 @@
+# Cycle four: fifteen review-derived hypotheses
+
+Five unchanged parents are F01, C17, C01, D08 and C15, as signed after all 149
+cycle-three visual inspections. No RGB representation, encoder, fine reference,
+or semantic training label is changed. Every candidate still analyses all
+detected tissue. Three children per parent give twenty candidates plus two
+controls. This document describes hypotheses, not established improvements.
+
+| ID | Parent | Mathematical intervention | Main risk |
+| --- | --- | --- | --- |
+| G01 | F01 | Bounded-channel Beta predictive densities using local mean/variance | Endpoint artefacts and lost cross-channel dependence |
+| G02 | F01 | Global spatial-affine Laplace likelihood, fitted by exact LAD linear programs | Too little local flexibility; mixed coarse medians |
+| G03 | F01 | Physical disk clearance and white-component reconstruction | Large true lumina/fat can also be removed |
+| G04 | C17 | Poisson/I-divergence palette observation on the simplex | Synthetic RGB is not photon data |
+| G05 | C17 | Minimum-KL posterior change with prescribed global class totals | Coarse winner proportions are not true areas |
+| G06 | C17 | Logistic observations of within-pixel channel rank order | Only six strict orders; weak class identifiability |
+| G07 | C01 | Intrabag design-effect correction to count variance | Heterogeneity can masquerade as dependence |
+| G08 | C01 | Exact signed categorical count comparisons by C++ dynamic programming | Independence remains false; pairwise composite, not joint event |
+| G09 | C01 | Analytic one-versus-rest between-tile ranking risk | Ranking scores are not calibrated probabilities |
+| G10 | D08 | Regularized Tyler angular scatter of within-tile residuals | Relevant radial colour variation is downweighted |
+| G11 | D08 | One pooled rank-normal RGB geometry before bag discrimination | Biased pooled ranks distort class contrasts |
+| G12 | D08 | Matched neighbouring-tile contrast normal equations | Boundary appearance may differ from interiors |
+| G13 | C15 | Seven-projection patch-to-class quantile transport | Finite projections and mixed class distributions |
+| G14 | C15 | Full-tissue colour-density mode basins, coarse-only class counts | Shared modes merge classes; unsupported modes have unknown identity |
+| G15 | C15 | Joint normalized maximum-entropy RGB density from Legendre moments | Rare modes lost; cubature and fitting are approximate |
+
+## Why these follow the actual review
+
+G01 and G02 question F01's Gaussian appearance assumption rather than adding
+another postprocessing vote. G02 changes both the error model and the unit of
+spatial fit to one robust surface per class. It is a single Laplace regression
+model, not a claimed exact local Gaussian integral. G03 tests the opposite
+failure pattern from the rejected inertia-based F03: a broad cavity can pass
+the clearance rule while a narrow branching intercellular space cannot. Its
+explicit large-lumen/adipose risk must be judged against positive-reference
+errors and actual native views. The original H&E white threshold stays fixed.
+
+G04 and G06 change distinct aspects of the palette observation: amplitude
+likelihood versus ordinal information. G05 instead tests a single global
+class-mass-constrained relative-entropy objective, with an intentionally
+falsifiable assumption about extrapolating known coarse areas. These three
+share a palette ancestry but are not solver ports or coefficient sweeps.
+
+G07 questions effective sample size, G08 tests the normal tail approximation,
+and G09 changes the observation to between-tile ranking. The G08 kernel uses
+exact heterogeneous categorical factors and deterministic count ties. Its
+gradient is derived from forward/backward convolutions. Exact arithmetic for
+the stated pair events does not validate independent tissue pixels or turn
+their product into a joint multiclass likelihood. The C++ port is machinery
+within this one count-model intervention, not an additional candidate.
+
+G10 changes nuisance scatter, G11 changes the shared observation geometry,
+and G12 changes the matched observational design for class contrasts. G12's
+small graph indexes classes, not image regions; it does not diffuse a mask.
+G13 compares local distributions by transport, G14 uses density mode basins
+learned on all tissue, and G15 fits a single joint maximum-entropy density.
+The G14 density may observe unannotated tissue, but only original coarse
+labels train its semantic counts. Unsupported modes and connected regions
+are reported with unknown identity. Their hard-mask tie is documented, not
+presented as discovery of a named tissue class.
+
+## Evaluation and execution
+
+Use all 149 frozen cases and the same 9+19 conversion. First run the focused
+numerical/semantic tests and a four-dataset engineering pilot with exact
+unchanged-survivor native-mask parity. A pilot does not complete a cycle.
+Freeze executed source and compiled-library hashes before any fine-reference
+scoring. Predictions must all finish before reference-mask scoring starts.
+
+Primary selection remains the mean native per-image macro IoU over all 149.
+Runtime includes each candidate's own preparation and native projection.
+Report physical small-region recall/misses, all positive-reference deletions,
+background evidence and outlier proposals separately. The five-survivor
+decision requires actual inspection of every all-method contact sheet and
+targeted native crops. Numerical residuals and optimizer flags are retained;
+finite budgets are not a claim of exact convergence.
+
+Chiamaka normally uses three low-priority image processes with two numerical
+threads each. Local engineering fallback uses one image process with two
+threads on the 8-GB Mac, preserving the desktop's memory. Local elapsed times
+must not be compared as speedups over the earlier Chiamaka cycle. The new C++
+count kernel is checked against exhaustive categorical outcomes, analytic
+gradient tests and exact one-versus-two-thread parity. Controlled kernel
+profiling is separate from end-to-end elapsed-time measurements.
+
+Only three of the required twenty cycles are currently reviewed and selected.
+The fourth cycle is an implementation until full execution and actual review
+are complete; no improvement is asserted by this proposal document.

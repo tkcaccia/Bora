@@ -59,6 +59,26 @@ def logits(x, coefficient, intercept, threads=2):
     return out
 
 
+def categorical_winner(probability, labels, threads=2):
+    probability = np.ascontiguousarray(probability, dtype=np.float64)
+    labels = np.ascontiguousarray(labels, dtype=np.int32)
+    if (probability.ndim != 3 or labels.shape != (probability.shape[0],)
+            or probability.shape[-1] < 2 or not np.isfinite(probability).all()
+            or np.any(probability < 0)
+            or not np.allclose(probability.sum(-1), 1, atol=1e-10)):
+        raise ValueError("Expected bags of categorical probability vectors")
+    function = library().bora_categorical_winner
+    function.argtypes = [ctypes.c_void_p]*4+[ctypes.c_int]*4
+    function.restype = ctypes.c_int
+    logp = np.empty(len(labels), np.float64)
+    derivative = np.empty_like(probability)
+    status = function(probability.ctypes.data, labels.ctypes.data, logp.ctypes.data,
+                      derivative.ctypes.data, *probability.shape, threads)
+    if status or not np.isfinite(logp).all() or not np.isfinite(derivative).all():
+        raise RuntimeError("C++ categorical count likelihood rejected input")
+    return logp, derivative
+
+
 def hull_depth(x, planes, threads=2):
     x = np.ascontiguousarray(x, dtype=np.float32)
     planes = np.ascontiguousarray(planes, dtype=np.float64)

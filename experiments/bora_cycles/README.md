@@ -82,7 +82,7 @@ cycle or select survivors. The pilot.sh script checks one case from each of
 the four dataset groups. Changed source/protocol requires a fresh output
 folder; executed source and compiled library hashes are archived.
 
-The runner implements cycles one, two and three. Cycle one has 149 actual contact
+The runner implements cycles one, two, three and four. Cycle one has 149 actual contact
 sheet reviews, additional native crop reviews, and a signed five-survivor
 selection. Cycle two retains C18/C17/C01/C03/C15 unchanged and implements
 fifteen distinct children. Its mathematical changes and risks are described
@@ -158,3 +158,14 @@ regressions, white-gap failures and timing limitations are described in
 [CYCLE_THREE_REVIEW.md](CYCLE_THREE_REVIEW.md). Three of twenty cycles are
 complete. Earlier pending/execution snapshots above describe their historical
 stage and do not supersede the signed selection.
+
+Cycle four's fifteen G-series implementations are described before evaluation
+in [CYCLE_FOUR.md](CYCLE_FOUR.md) and registry.py. They retain the signed
+F01/C17/C01/D08/C15 parents unchanged. Run with `--cycle 4 --previous /path/to/cycle-03`;
+cycle_four.sh accepts explicit pilot/full scope and an optional image-worker
+count. Local fallback uses one image process and two numerical threads; its
+timings are a different host stratum from previous Chiamaka runs. The new C++
+exact categorical-count kernel is independently checked against exhaustive
+outcomes and analytic-gradient tests. Implementation and passing tests do not
+complete a cycle; all149 execution, scoring and actual visual review remain
+required before selection.
