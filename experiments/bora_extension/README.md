@@ -146,3 +146,12 @@ calibration, exact unchanged feature selection, single-class degeneracy, full
 field coverage without reading a poison reference file, and tampered-cache
 rejection. Check execution records for actual pilot/full completion; source
 availability alone is not evidence that inference finished.
+
+`task_adapter.py` prepares the expanded runner's unit and RINGS semantics
+contract. Uncalibrated numerical coordinates are unit pixels, with physical
+length/area keys relabelled to pixel units. RINGS scoring alone maps removed
+background zero to the valid outside-tumor target; saved masks stay unchanged,
+and deleted true tumor remains incorrect. Other datasets retain prediction
+zero as an error on positive reference. Four checks cover calibration
+contradictions, honest pixel reporting, deleted-tumor errors and all-tumor
+crops. These helpers are not yet integrated into an expanded scoring run.
