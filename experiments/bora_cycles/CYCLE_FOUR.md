@@ -86,3 +86,31 @@ profiling is separate from end-to-end elapsed-time measurements.
 Only three of the required twenty cycles are currently reviewed and selected.
 The fourth cycle is an implementation until full execution and actual review
 are complete; no improvement is asserted by this proposal document.
+
+## Engineering pilot and numerical repair
+
+The first local pilot (source f748a64) completed all 88 method/image outputs,
+with all twenty unchanged-survivor native masks exactly matching cycle three.
+All four overview sheets were actually inspected and journalled. All twenty
+hypotheses remain in the full-cycle roster; no candidate is selected from
+these four scores. G03 visibly removes large internal adipose/lumen-like
+cavities in CAM01 that the reference includes in green. This is a scored
+deletion risk, not proof of expert glass segmentation.
+
+G06's initial 160-step projected solver retained stationarity residuals up
+to 0.007355. Its objective and observation model remain unchanged, but its
+numerical implementation now uses feasible damped Newton iterations with
+checked C++ quadratic simplex subproblems. An independent constrained
+optimization test was added. The first pilot stays preserved; a fresh source
+snapshot and pilot must verify the replacement and exact non-G06 parity.
+The revised focused suite has 122 passing tests.
+
+A separate synthetic count-kernel profile includes wrapper allocation and
+seven repetitions. At 64 bags, two C++ threads are slightly slower than one
+(median 0.000567 versus 0.000493 s): threading has overhead. At 2048 bags,
+medians are 0.01842 s for one thread and 0.01015 s for two, a 1.814x kernel
+ratio. NumPy's independent convolution/gradient implementation takes 1.0273 s
+for the larger workload. Numerical errors are below 5e-15 for that workload,
+and the two C++ thread outputs are exactly equal. These synthetic ratios are
+not end-to-end Bora speedups; CPU affinity and machine exclusivity were not
+controlled. The script and both complete timing records are retained.

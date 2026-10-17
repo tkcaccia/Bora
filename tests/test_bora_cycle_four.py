@@ -136,6 +136,26 @@ def test_ordinal_observation_ignores_amplitude_when_prior_is_uniform():
     np.testing.assert_allclose(outputs[0], outputs[1], atol=1e-7)
 
 
+def test_ordinal_newton_matches_independent_convex_minimum():
+    palette = np.array([[210, 40, 90], [40, 80, 210], [30, 215, 70]], np.uint8)
+    rgb = np.full((8, 9, 3), [120, 80, 100], np.uint8)
+    coarse = np.tile(np.repeat([1, 2, 3], 3), (8, 1)).astype(np.uint8)
+    c = Evidence(rgb, coarse, np.ones_like(coarse, bool), [1., 1.])
+    c.weight[:] = 0.
+    q, detail = ordinal_palette(c, palette, None)
+    colors = palette/255
+    a = np.stack([colors[:, i]-colors[:, j] for i, j in [(0, 1), (0, 2), (1, 2)]], -1)/.05
+    sign = np.array([1., 1., -1.])
+    objective = lambda v: np.logaddexp(0, -sign*(v@a)).sum()+.006*np.sum((v-1/3)**2)
+    fit = minimize(objective, np.full(3, 1/3), method="SLSQP", bounds=[(0, 1)]*3,
+                   constraints=dict(type="eq", fun=lambda v: v.sum()-1),
+                   options=dict(ftol=1e-13, maxiter=500))
+    assert fit.success
+    np.testing.assert_allclose(q[0, 0], fit.x, atol=2e-5)
+    assert detail["converged"]
+    assert np.max(np.diff(detail["objective_history"])) < 1e-7
+
+
 def test_mass_projection_matches_independent_constrained_kl_minimum():
     q0 = np.array([[.8, .1, .1], [.1, .6, .3], [.3, .3, .4], [.4, .4, .2]])
     target = np.array([.7, 1.5, 1.8])

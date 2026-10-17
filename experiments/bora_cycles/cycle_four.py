@@ -202,23 +202,39 @@ def ordinal_palette(c, palette, he):
     pairs = [(0, 1), (0, 2), (1, 2)]
     a = np.stack([colors[:, i]-colors[:, j] for i, j in pairs], -1)/.05
     sign = np.stack([np.sign(x[:, i]-x[:, j]) for i, j in pairs], -1)
-    step = .99/(.25*np.linalg.norm(a, 2)**2+.012)
+    def value(q):
+        return float(np.sum(np.logaddexp(0, -sign*(q@a)))+.006*np.sum((q-prior)**2))
     def gradient(q):
         margin = sign*(q@a)
         return (-sign*expit(-margin))@a.T+.012*(q-prior)
-    q, z, acceleration = prior.copy(), prior.copy(), 1.
-    for iteration in range(160):
-        new = project_simplex(z-step*gradient(z))
-        change = float(np.max(np.abs(new-q)))
-        next_acceleration = (1+np.sqrt(1+4*acceleration**2))/2
-        z = new+(acceleration-1)/next_acceleration*(new-q)
-        q, acceleration = new, next_acceleration
-        if change < 1e-6:
+    q = prior.astype(float).copy()
+    history = [value(q)]
+    for iteration in range(40):
+        grad = gradient(q)
+        residual = float(np.max(np.abs(q-project_simplex(q-grad))))
+        if residual < 1e-6:
             break
-    residual = float(np.max(np.abs(q-project_simplex(q-step*gradient(q))))/step)
+        probability = expit(-sign*(q@a))
+        curvature = sign**2*probability*(1-probability)
+        hessian = np.einsum("ni,ki,li->nkl", curvature, a, a)+.012*np.eye(c.k)
+        linear = np.einsum("nij,nj->ni", hessian, q)-grad
+        quadratic, _ = native.quadratic_simplex(hessian, linear, q)
+        direction = quadratic-q
+        slope, step = float(np.sum(grad*direction)), 1.
+        for _ in range(40):
+            candidate = q+step*direction
+            objective = value(candidate)
+            if objective <= history[-1]+1e-4*step*slope+1e-10:
+                break
+            step *= .5
+        q = candidate
+        history.append(objective)
+    residual = float(np.max(np.abs(q-project_simplex(q-gradient(q)))))
     return correct_coarse(q[index], c), dict(
         observation="three within-pixel channel-order logistic comparisons, amplitudes discarded",
-        iterations=iteration+1, iteration_budget=160, projected_gradient_residual=residual,
+        iterations=iteration+1, iteration_budget=40, projected_gradient_residual=residual,
+        converged=residual < 1e-6, objective_history=history,
+        solver="feasible damped Newton, checked C++ simplex quadratic subproblems",
         ordering_temperature=.05, quantization_bins=24,
         caveat="Only six strict channel orders exist; classes sharing an order need coarse prior evidence.")
 
