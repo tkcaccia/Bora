@@ -4,7 +4,8 @@ The user requested continuing the 20-cycle study and adding images alongside
 the current 149. **200 additional image/coarse/reference triples are prepared
 and pass a native-source/overlap audit.** Full encoder inference is also complete:
 all600 arrays across200 additions pass the independent feature audit. Expanded
-Bora prediction and scoring are pending. Cycle seven is signed after149 actual overview inspections and
+Bora cycle8 is now running on all349 inputs after a reviewed engineering pilot.
+Full scoring, review and selection are pending. Cycle seven is signed after149 actual overview inspections and
 eight native label crops; seven of twenty cycles are complete.
 
 | Dataset | Existing | Added | Planned total | Added representation |
@@ -197,3 +198,12 @@ individual datasets, measured/unknown spacing and single/multiple eligible
 coarse classes. Small-region summaries in micrometres and pixels are separate.
 Cycle8 introduces the five signed parents plus fifteen models described in
 `../bora_cycles/eight_manifest.py`; none changes the frozen RGB conversions.
+
+The pilot's16 actual overview inspections exposed constant-RGB numerical class
+artifacts in WSSS04/10. All30 degenerate inputs now use the same frozen completed-
+coarse fallback for every candidate/control, with only independent H&E glass
+handling retained. No refinement is claimed on constant evidence. A fresh
+16-image pilot passes293 remote checks and the352-mask audit, including110
+explicit fallback comparisons. Four native-label crops were actually inspected.
+`../bora_cycles/CYCLE_EIGHT_EXECUTION.json` records the full-run launch and its
+current incomplete status; no cycle8 survivor has been selected.

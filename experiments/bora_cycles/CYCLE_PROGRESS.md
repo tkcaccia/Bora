@@ -6,6 +6,16 @@ second per image. The explicit working policy is:
 
     adjusted utility = mean_i[macro_IoU_i - 0.05 * max(seconds_i - 1, 0)]
 
+Cycle8 expands prospectively to349 ROIs, retaining the original149 exactly and
+adding40 each from BCSS, TIGER, WSSS4LUAD, RINGS tumor and OCELOT. All inputs and
+1745 fixed RGB conversions are frozen and audited. The full349x22 run is active
+after16 actual pilot overview reviews and four native-label crops; it is not
+yet a completed cycle. See `CYCLE_EIGHT_EXECUTION.json`. Historical149 and new200
+scores are reported separately. Unknown-resolution pixel-area summaries are
+separate from physical-area summaries. A common completed-coarse fallback
+prevents numerical class artifacts on30 constant-RGB inputs; no refinement
+claim is made for those cases.
+
 This subtracts five IoU percentage points per excess second, with no bonus
 below one second. Calculate excess on each image before averaging: a method
 whose mean time is below one second can still incur a penalty on slow cases.

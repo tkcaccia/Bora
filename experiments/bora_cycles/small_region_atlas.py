@@ -85,6 +85,7 @@ def export(source, root, output):
     rows, total = [], dict(small_components=0, absent_coarse_class=0,
         support_cannot_reach_50pct=0, no_method_reaches_50pct=0,
         all_methods_completely_miss=0, coarse_recovered_but_all_refinements_below_50pct=0)
+    totals_by_units = {}
     for case in protocol["cases"]:
         row = by_case[case]
         src, out = source/"cases"/case, root/"cases"/case
@@ -111,18 +112,23 @@ def export(source, root, output):
         data = components(truth, support, coarse, masks, coordinates["algorithm_spacing_xy"],
                           {key: row["methods"][key]["score"] for key in methods},
                           sample=sample if protocol.get("benchmark_scope") else None)
+        unit_total = totals_by_units.setdefault(coordinates['units'], {key:0 for key in total})
         for item in data["components"]:
-            total["small_components"] += 1
-            total["absent_coarse_class"] += item["class_absent_from_original_coarse"]
-            total["support_cannot_reach_50pct"] += item["common_support_cannot_reach_50pct"]
-            total["no_method_reaches_50pct"] += item["no_method_reaches_50pct"]
-            total["all_methods_completely_miss"] += item["all_methods_completely_miss"]
-            total["coarse_recovered_but_all_refinements_below_50pct"] += (
-                item["original_coarse_reaches_50pct"] and item["no_method_reaches_50pct"])
+            events = dict(small_components=1, absent_coarse_class=item['class_absent_from_original_coarse'],
+                support_cannot_reach_50pct=item['common_support_cannot_reach_50pct'],
+                no_method_reaches_50pct=item['no_method_reaches_50pct'],
+                all_methods_completely_miss=item['all_methods_completely_miss'],
+                coarse_recovered_but_all_refinements_below_50pct=(
+                    item['original_coarse_reaches_50pct'] and item['no_method_reaches_50pct']))
+            for key, value in events.items():
+                total[key] += int(value)
+                unit_total[key] += int(value)
         rows.append(dict(case=case, native_mpp_xy=sample["native_mpp_xy"],
                          omitted_failed_methods=sorted(set(protocol["methods"])-set(methods)), **data))
         print(json.dumps(dict(small_region_atlas=case, components=len(data["components"]))), flush=True)
     record = dict(cycle=protocol["cycle"], pilot=protocol["pilot"], cases=len(rows), totals=total,
+        totals_by_coordinate_units=totals_by_units,
+        combined_totals_mix_distinct_small_region_criteria=len(totals_by_units) > 1,
         rows=rows, protocol_sha256=digest(root/"PROTOCOL.json"),
         results_sha256=digest(root/"RESULTS.json"), atlas_source_sha256=digest(Path(__file__)),
         score_policy="Original reference-positive pixels; 8-connected per-class components; <=400 um2 if calibrated, <=400 px2 if unknown. Per-case coordinate units are explicit; RINGS zero follows its valid negative task.",

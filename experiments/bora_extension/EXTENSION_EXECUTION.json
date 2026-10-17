@@ -37,7 +37,7 @@
   "additional_feature_inference_complete": true,
   "additional_masks_scored": false,
   "audit_code_sha256": "8245a7650488b0d63f2bcababf6acb820fa56e7b2f84d05922889efeecb52cc1",
-  "status": "All349 inputs and1745 RGBs audited; cycle8 implementation/preflight in progress; full scoring pending",
+  "status": "All349 frozen inputs audited; full349x22 cycle8 inference launched after16 actual pilot overviews and4 native label crops",
   "local_copy_verified": true,
   "local_copy_files_checked": 1000,
   "input_audit_sha256": "dcc9b8f68453e21aab77c8a6f00877219c66e9a43e2bf023b58b4e19e92c8e50",
@@ -106,5 +106,7 @@
   "feature_record": "FEATURE_EXECUTION.json",
   "additional_rgb_conversions_complete": true,
   "combined_inputs_frozen": true,
-  "conversion_execution": "CONVERSION_EXECUTION.json"
+  "conversion_execution": "CONVERSION_EXECUTION.json",
+  "cycle_eight_full_inference_started": true,
+  "cycle_eight_execution": "../bora_cycles/CYCLE_EIGHT_EXECUTION.json"
 }
