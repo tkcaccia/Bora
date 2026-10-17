@@ -98,6 +98,15 @@ supports explicit `pilot` and `full` scopes. Compiled scoring is the default,
 following exact cycle-one parity on all 3278 masks. New numerical/model tests
 are in tests/test_bora_cycle_two.py.
 
+Cycle two is now fully reviewed and selected: 149 actual all-method overview
+reviews, six additional native-coordinate crop reviews, 3278 frozen masks
+verified locally and 745 exact unchanged-survivor comparisons. The survivors
+are D10, C17, C01, D08 and C15. [CYCLE_TWO_REVIEW.md](CYCLE_TWO_REVIEW.md)
+explains the findings and limitations; CYCLE_TWO_SELECTION.json records all
+twenty decisions and the accuracy/time/small-region Pareto evidence. Two of
+the required twenty cycles are complete. Cycle three and later cycles still
+require fifteen new implementations, full execution and actual review each.
+
 ## Review and selection
 
 The gallery.html file exposes every image and native mask. Each contact.jpg
