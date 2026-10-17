@@ -149,3 +149,12 @@ against its score. The new C++ hull kernel is tested against NumPy and across
 thread counts, and is not counted as a separate innovation. The runner requires
 the complete cycle-two visual review and matching signed survivor lineage.
 Cycle three cannot be called complete before all 149 outputs are reviewed.
+
+Cycle three is now fully reviewed and selected: all 149 all-method contact
+sheets were actually viewed, six additional native-coordinate crops were
+recorded, and F01/C17/C01/D08/C15 were retained. The signed decisions for all
+twenty candidates are in CYCLE_THREE_SELECTION.json; the measured gains,
+regressions, white-gap failures and timing limitations are described in
+[CYCLE_THREE_REVIEW.md](CYCLE_THREE_REVIEW.md). Three of twenty cycles are
+complete. Earlier pending/execution snapshots above describe their historical
+stage and do not supersede the signed selection.

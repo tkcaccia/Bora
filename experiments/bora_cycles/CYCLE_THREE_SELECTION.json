@@ -1,0 +1,440 @@
+{
+  "cycle": 3,
+  "survivors": [
+    "F01",
+    "C17",
+    "C01",
+    "D08",
+    "C15"
+  ],
+  "rejected": [
+    "D10",
+    "F02",
+    "F03",
+    "F04",
+    "F05",
+    "F06",
+    "F07",
+    "F08",
+    "F09",
+    "F10",
+    "F11",
+    "F12",
+    "F13",
+    "F14",
+    "F15"
+  ],
+  "tradeoffs": {
+    "F01": "KEEP: Primary mean-IoU leader 0.679529. It improves 96 images and worsens 52 versus D10 (one tie), including a native whole-tumor recovery in BCSS44, but worsens BCSS02. At 1.740 s it costs twice D10 and ten times C17; small-region recall falls to 0.189664. Retain for accuracy and target its redundant local linear algebra next.",
+    "C17": "KEEP: Mean IoU 0.671604 at 0.1715 s gives a compact, visually restrained palette solution about ten times faster than F01 with a 0.007925 accuracy gap. Small-region recall 0.183608 is weak and native BCSS54 confirms it fills a broad white gap. Keep its explicit inverse geometry as a different mathematical branch.",
+    "C01": "KEEP: Tile-winner weak supervision gives mean IoU 0.663706 at 0.0868 s and small-region recall 0.203302, with 4239 completely missed small components. It shares a linear output family with D08 but estimates a different observation likelihood. Fits report unsuccessful termination on 67 cases; finite-budget predictions are retained without claiming exact optimization.",
+    "D08": "KEEP: Fastest candidate, 0.0498 s per image, with mean IoU 0.656050 and small-region recall 0.194626. Analytic bag-centred covariance avoids the iterative tile-winner fit. It loses thin known structures and cannot invent absent coarse classes. Retain as the low-cost statistical branch, acknowledging its linear-family overlap with C01.",
+    "C15": "KEEP: Mean IoU 0.644943 is lower, but small-region recall 0.225562 is stronger than the four other restrained survivors. Native and overview review show false coloured rims and merged channels, so this is a sensitivity research branch, not the preferred final mask. F14/F15 sensitivity gains are rejected because their visual false structures and accuracy losses are much larger.",
+    "D10": "REJECT: Accurate parent at 0.672397 and 0.8621 s, with better small-region recall than F01. F01 improves mean IoU by 0.007132 and supplies the required primary leader; C17 is almost as accurate as D10 and five times faster. Keep those two distinct accuracy/speed branches instead of using two slots for near-identical local affine models. D10 is not claimed to be Pareto-dominated.",
+    "F02": "REJECT: Excluding the entire query tile lowers mean IoU to 0.666752 and raises runtime to 2.476 s, while small-region recall 0.196677 does not exceed D10. Sparse class evidence disappears with its own tile and broad visual errors remain. The honest-local-fit intervention does not justify a survivor slot.",
+    "F03": "REJECT: Whole-component inertia rule gives mean IoU 0.671295 at 0.8892 s, below D10 with almost unchanged small recall/misses. It removes useful narrow clefts but native BCSS54 still fills a broad empty cleft; native TIGER36 deletes branching bright spaces within annotated tumor. Its shape prior is not a dependable glass-versus-lumen discriminator.",
+    "F04": "REJECT: Assumed spatial forward-blur inversion costs 17.116 s versus C17 0.1715 s and lowers mean IoU to 0.661424. Small recall 0.188896 does not compensate for this roughly hundredfold cost and persistent smooth missing anatomy. The fixed 160-iteration output has recorded projected-gradient residuals, not an exact optimum.",
+    "F05": "REJECT: Coarse-calibrated affine palette sensor lowers mean IoU to 0.665634 while increasing time to 0.2564 s versus C17. Small recall improves only to 0.186222 and the masks retain the broad cleft/internal-region failures. Mixed coarse samples bias the sensor; keep the simpler uncalibrated palette inverse.",
+    "F06": "REJECT: Intrinsic palette triangulation is faster than C17 at 0.1475 s but mean IoU falls to 0.657581 and small recall to 0.179433. Overview review shows grey leakage into green compartments in BCSS48/74/86 and TIGER37. Piecewise barycentric decoding does not improve the accuracy/sensitivity tradeoff.",
+    "F07": "REJECT: Convex mean-logit bag cross entropy converges on all 149 fits but mean IoU is only 0.653280, small recall 0.187582, and 4418 small components are completely missed. D08 is faster and better on both average IoU and mean small recall. Numerical convergence alone does not restore missed anatomy.",
+    "F08": "REJECT: Representative-witness log-mean-exp bag likelihood lowers mean IoU to 0.648465 at 0.1084 s and small recall to 0.186702. Review shows false gold regions, including the severe purple-to-gold change in BCSS45, and overexpanded rims. A locally extreme colour is an unreliable class witness under these weak labels.",
+    "F09": "REJECT: Kernel-mean bag distribution regression has mean IoU 0.652859 at 0.2844 s. Small recall 0.206339 slightly exceeds C01, but 4442 small components are completely missed versus C01 4239. Lower accuracy, over threefold cost and continued fine-structure loss do not justify this nonlinear bag branch.",
+    "F10": "REJECT: Adjacent colour-increment covariance gives mean IoU 0.650945, 0.0783 s, and small recall 0.189780. D08 is faster and better on both accuracy and sensitivity. Spatial increments cannot reliably distinguish local colour noise from true microscopic variation in these smooth fixed RGB fields.",
+    "F11": "REJECT: Class-specific random-intercept covariance gives mean IoU 0.654627 at 0.1300 s and small recall 0.191398. All three averages are worse than D08. Estimating extra class covariance from limited tile means expands some regions without recovering the persistent tiny structures.",
+    "F12": "REJECT: Whitened all-rival squared-hinge classifier improves mean IoU over D08 by only 0.001452, costs more at 0.0599 s and reduces small recall to 0.190074. It still changes some tissue interiors incorrectly (e.g. BCSS37); 56 fits hit the 150-iteration budget with unsuccessful termination. Retain the simpler analytic D08 branch for speed and stability.",
+    "F13": "REJECT: Distributional energy potentials give mean IoU 0.653393 at 0.1833 s, small recall 0.188211 and 4466 completely missed small regions. It sacrifices C15 sensitivity without reaching C17 accuracy or D08 speed. Empirical colour-distance centres do not solve ambiguous modes or fine structures.",
+    "F14": "REJECT: Lowest mean IoU 0.458250 despite small recall 0.262087 and only 3448 completely missed small components. Actual review repeatedly shows false concentric rims/grid speckle and large class-interior inversions; native BCSS39 changes an entirely correct 256x256 tumor crop to lymphocytic purple. More component hits are not sufficient evidence of anatomical specificity. The useful C++ kernel engineering is preserved as provenance, not a surviving model.",
+    "F15": "REJECT: Highest small recall 0.263653 comes with mean IoU only 0.604482 and 0.3493 s. Class-specific typicality sometimes gives clean binary cases, but creates false gold/blue rims and whole-region changes (BCSS43/83/85/87, TIGER02/08/31/39, CAM01/07). Rank calibration broadens class acceptance unspecifically; keep unknown-colour proposals diagnostic rather than treating them as validated new tissue identities."
+  },
+  "results_sha256": "297e085f9dfacf8ac582dc41ee60cec814a40afba83040c01b99aeb65bceeb82",
+  "review_sha256": "2f3446420fe36631c1d485d8de89a2af1f3218cb6a156ea33e5f878ca703ea4a",
+  "protocol_sha256": "0c7b24a230e3fca6092d86fc9c4044d549e038afd1109f702772a5cd5cea1713",
+  "selection_code_sha256": "b6b5dbd76433ccbe74f962fe6d3bbf84f66a3c3ab8ddb69128e46ea23e0cd8c3",
+  "primary_accuracy_leaders": [
+    "F01"
+  ],
+  "no_next_cycle_implemented_by_this_selection": true,
+  "completed_at_utc": "2026-10-17T16:23:43.198992+00:00",
+  "evidence": {
+    "primary": "native per-image macro IoU, unweighted average across all 149",
+    "pareto_candidates": [
+      "D10",
+      "C17",
+      "C01",
+      "D08",
+      "C15",
+      "F01",
+      "F05",
+      "F09",
+      "F12",
+      "F14",
+      "F15"
+    ],
+    "selected_ranking": [
+      {
+        "method": "F01",
+        "complete": true,
+        "cases": 149,
+        "mean_iou": 0.6795289552668143,
+        "mean_dice": 0.7599667984673169,
+        "mean_seconds": 1.740170440211542,
+        "small_region_recall": 0.18966441423567537,
+        "small_region_cases": 130,
+        "completely_missed_small_regions": 4417,
+        "per_dataset": {
+          "bcss": {
+            "cases": 92,
+            "mean_iou": 0.6029038081479419
+          },
+          "beetle": {
+            "cases": 10,
+            "mean_iou": 0.873577289206277
+          },
+          "camelyon16-subset": {
+            "cases": 7,
+            "mean_iou": 0.8447208633878593
+          },
+          "tiger": {
+            "cases": 40,
+            "mean_iou": 0.7783461262341723
+          }
+        }
+      },
+      {
+        "method": "C17",
+        "complete": true,
+        "cases": 149,
+        "mean_iou": 0.6716041092892011,
+        "mean_dice": 0.7536804284431817,
+        "mean_seconds": 0.17154771822110917,
+        "small_region_recall": 0.18360751209542425,
+        "small_region_cases": 130,
+        "completely_missed_small_regions": 4491,
+        "per_dataset": {
+          "bcss": {
+            "cases": 92,
+            "mean_iou": 0.5942438244395705
+          },
+          "beetle": {
+            "cases": 10,
+            "mean_iou": 0.8677613775821401
+          },
+          "camelyon16-subset": {
+            "cases": 7,
+            "mean_iou": 0.8404868592702769
+          },
+          "tiger": {
+            "cases": 40,
+            "mean_iou": 0.7709389661234289
+          }
+        }
+      },
+      {
+        "method": "C01",
+        "complete": true,
+        "cases": 149,
+        "mean_iou": 0.6637063748721175,
+        "mean_dice": 0.747556592553502,
+        "mean_seconds": 0.08677747228101595,
+        "small_region_recall": 0.2033016543832125,
+        "small_region_cases": 130,
+        "completely_missed_small_regions": 4239,
+        "per_dataset": {
+          "bcss": {
+            "cases": 92,
+            "mean_iou": 0.5857871620754556
+          },
+          "beetle": {
+            "cases": 10,
+            "mean_iou": 0.8706018606016468
+          },
+          "camelyon16-subset": {
+            "cases": 7,
+            "mean_iou": 0.8333945195965604
+          },
+          "tiger": {
+            "cases": 40,
+            "mean_iou": 0.7615012675452802
+          }
+        }
+      },
+      {
+        "method": "D08",
+        "complete": true,
+        "cases": 149,
+        "mean_iou": 0.6560497869932923,
+        "mean_dice": 0.740867337654492,
+        "mean_seconds": 0.04980865965953609,
+        "small_region_recall": 0.19462570834921641,
+        "small_region_cases": 130,
+        "completely_missed_small_regions": 4423,
+        "per_dataset": {
+          "bcss": {
+            "cases": 92,
+            "mean_iou": 0.5739732312960681
+          },
+          "beetle": {
+            "cases": 10,
+            "mean_iou": 0.872012620009922
+          },
+          "camelyon16-subset": {
+            "cases": 7,
+            "mean_iou": 0.8343683114433409
+          },
+          "tiger": {
+            "cases": 40,
+            "mean_iou": 0.7596294150639921
+          }
+        }
+      },
+      {
+        "method": "C15",
+        "complete": true,
+        "cases": 149,
+        "mean_iou": 0.6449431612484133,
+        "mean_dice": 0.7336076624272171,
+        "mean_seconds": 0.30730201050189115,
+        "small_region_recall": 0.22556207568713058,
+        "small_region_cases": 130,
+        "completely_missed_small_regions": 4233,
+        "per_dataset": {
+          "bcss": {
+            "cases": 92,
+            "mean_iou": 0.5680924701075636
+          },
+          "beetle": {
+            "cases": 10,
+            "mean_iou": 0.8647799192587696
+          },
+          "camelyon16-subset": {
+            "cases": 7,
+            "mean_iou": 0.8124599055257502
+          },
+          "tiger": {
+            "cases": 40,
+            "mean_iou": 0.7374251311212449
+          }
+        }
+      }
+    ],
+    "actual_overview_reviews": 149,
+    "actual_full_native_crops": 6,
+    "native_review_sha256": "a12d3a7e246459a37d14b5a544f9cae8e107450a9ed26c11cce2a1d9f75b082f",
+    "native_pilot_reuse": "Four actually viewed pilot crops linked to identical full-run pixels by PILOT_NATIVE_PARITY.json; not counted as new views.",
+    "paired_F01_vs": {
+      "D10": {
+        "mean_delta": 0.0071321821861085166,
+        "wins": 96,
+        "losses": 52,
+        "ties": 1,
+        "best": [
+          [
+            "bcss_44",
+            0.08359062725787725
+          ],
+          [
+            "bcss_60",
+            0.069187780614833
+          ],
+          [
+            "tiger_18",
+            0.053187594460841536
+          ],
+          [
+            "bcss_45",
+            0.05310423840262046
+          ]
+        ],
+        "worst": [
+          [
+            "bcss_02",
+            -0.006902831286601074
+          ],
+          [
+            "bcss_53",
+            -0.005937130142680158
+          ],
+          [
+            "tiger_32",
+            -0.005840175159887884
+          ],
+          [
+            "tiger_14",
+            -0.005302384724848563
+          ]
+        ]
+      },
+      "C17": {
+        "mean_delta": 0.007924845977613233,
+        "wins": 115,
+        "losses": 33,
+        "ties": 1,
+        "best": [
+          [
+            "bcss_44",
+            0.11084055351524835
+          ],
+          [
+            "bcss_69",
+            0.06761362444942476
+          ],
+          [
+            "bcss_31",
+            0.05070153472259953
+          ],
+          [
+            "bcss_41",
+            0.04632670735144734
+          ]
+        ],
+        "worst": [
+          [
+            "bcss_23",
+            -0.05543076912563233
+          ],
+          [
+            "bcss_78",
+            -0.017799946965619262
+          ],
+          [
+            "bcss_10",
+            -0.016780295165240267
+          ],
+          [
+            "bcss_87",
+            -0.01648163553608628
+          ]
+        ]
+      },
+      "C01": {
+        "mean_delta": 0.015822580394696868,
+        "wins": 125,
+        "losses": 23,
+        "ties": 1,
+        "best": [
+          [
+            "bcss_44",
+            0.16244240941513333
+          ],
+          [
+            "tiger_26",
+            0.08397080139361113
+          ],
+          [
+            "bcss_91",
+            0.08042850614484859
+          ],
+          [
+            "tiger_18",
+            0.06911708736819644
+          ]
+        ],
+        "worst": [
+          [
+            "beetle_08",
+            -0.023085978505838378
+          ],
+          [
+            "bcss_78",
+            -0.013024209102181605
+          ],
+          [
+            "bcss_74",
+            -0.011900935057898077
+          ],
+          [
+            "tiger_25",
+            -0.00939114343515568
+          ]
+        ]
+      },
+      "D08": {
+        "mean_delta": 0.023479168273522106,
+        "wins": 134,
+        "losses": 14,
+        "ties": 1,
+        "best": [
+          [
+            "bcss_44",
+            0.15623916148125738
+          ],
+          [
+            "bcss_26",
+            0.15447684731526184
+          ],
+          [
+            "bcss_52",
+            0.1168116169000426
+          ],
+          [
+            "bcss_31",
+            0.10899553622497932
+          ]
+        ],
+        "worst": [
+          [
+            "beetle_08",
+            -0.031003363179377685
+          ],
+          [
+            "bcss_40",
+            -0.006186306580135026
+          ],
+          [
+            "tiger_28",
+            -0.003087919255298832
+          ],
+          [
+            "bcss_83",
+            -0.0027979523058849765
+          ]
+        ]
+      },
+      "C15": {
+        "mean_delta": 0.03458579401840102,
+        "wins": 138,
+        "losses": 10,
+        "ties": 1,
+        "best": [
+          [
+            "bcss_44",
+            0.15050669148734308
+          ],
+          [
+            "bcss_47",
+            0.1464166826058877
+          ],
+          [
+            "tiger_17",
+            0.12338683759847868
+          ],
+          [
+            "bcss_41",
+            0.09865580181251182
+          ]
+        ],
+        "worst": [
+          [
+            "tiger_12",
+            -0.014192176769677434
+          ],
+          [
+            "bcss_73",
+            -0.01158501313722049
+          ],
+          [
+            "bcss_75",
+            -0.00845558413835601
+          ],
+          [
+            "beetle_08",
+            -0.004119511210547544
+          ]
+        ]
+      }
+    },
+    "numerical_status": "C01 unsuccessful flags 67; F12 unsuccessful flags 56; finite stored outputs assessed as executed.",
+    "development_notice": "All149 are reused for selection; no independent validation or statistical significance claim.",
+    "shared_background_notice": "Reference-zero pixels unscored; all reference-positive pixels, including removed support and absent coarse classes, remain scored."
+  }
+}
