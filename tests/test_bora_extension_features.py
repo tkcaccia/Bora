@@ -75,7 +75,8 @@ def test_full_field_encoder_does_not_read_reference_and_resume_checks_hashes(tmp
         channels = 1280 if selected is None else len(selected)
         values = np.random.default_rng(94).normal(size=(*np.array(padded.shape[:2])//14, channels)).astype(np.float16)
         return values, dict(window_coordinates_yx=[(y, x) for y in starts(padded.shape[0]) for x in starts(padded.shape[1])],
-            patch_px=14, padded_shape_yx=list(padded.shape[:2]))
+            patch_px=14, padded_shape_yx=list(padded.shape[:2]),
+            selected_dimensions=None if selected is None else selected.tolist())
 
     record = freeze_case(src, out, sample, None, encode)
     assert len(calls) == 3
@@ -87,6 +88,26 @@ def test_full_field_encoder_does_not_read_reference_and_resume_checks_hashes(tmp
     assert verify_case(out/"cases"/case.name, sample) == record
     freeze_case(src, out, sample, None, encode)
     assert len(calls) == 3  # Verified frozen resume does not encode again.
+    # A second, model-free pass verifies full array geometry and coverage.
+    from experiments.bora_extension.audit_features import audit
+    (src/"PLAN.json").write_text(json.dumps(dict(samples=[sample])))
+    (out/"PROTOCOL.json").write_text(json.dumps(dict(cases=[case.name],
+        source_plans={str(src): digest(src/"PLAN.json")})))
+    def refreeze():
+        record["files_sha256"]["features/READY.json"] = digest(out/"cases"/case.name/"features/READY.json")
+        (out/"cases"/case.name/"FEATURES_FROZEN.json").write_text(json.dumps(record))
+        (out/"ALL_FEATURES_FROZEN.json").write_text(json.dumps(dict(cases=1,
+            protocol_sha256=digest(out/"PROTOCOL.json"),
+            case_manifest_sha256={case.name:digest(out/"cases"/case.name/"FEATURES_FROZEN.json")})))
+    refreeze()
+    assert audit(out)["arrays"] == 3
+    meta_path = out/"cases"/case.name/"features/READY.json"
+    meta = json.loads(meta_path.read_text())
+    meta["window_coordinates_yx"] = []
+    meta_path.write_text(json.dumps(meta))
+    refreeze()  # Hash-consistent but geometrically incomplete synthetic cache.
+    with pytest.raises(ValueError, match="cover"):
+        audit(out)
     (out/"cases"/case.name/"features/base.npy").write_bytes(b"tampered")
     with pytest.raises(ValueError, match="cache changed"):
         verify_case(out/"cases"/case.name, sample)
