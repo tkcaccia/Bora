@@ -172,3 +172,37 @@ At 64 bags the ratio is 1.011x, effectively no useful threading gain. These
 kernel measurements include wrapper allocation, not whole-mask execution;
 CPU affinity and machine exclusivity were not controlled. The historical Mac
 profiles remain separately labelled.
+
+## Completed execution; visual review in progress
+
+The full Chiamaka run is terminal with all 3278 predictions, scores and all
+149 all-method comparison sheets. Both Chiamaka and the local mirror passed
+the integrity audit: 6854 frozen files, 3278 native masks and exact display
+rasters, and 745 unchanged-parent comparisons. All 176 pilot/full native
+comparisons are exact. The small-region atlas and cached colour-proposal
+checks are complete. These checks do not replace actual visual review.
+
+No new child exceeds F01's mean image macro IoU of 0.679529. The closest new
+method, G01, reaches 0.674400 and wins 47 images, loses 101 and ties one against
+F01. It increases mean small-region recall from 0.189664 to 0.201831 but takes
+2.106 rather than 1.914 seconds/image in this run. These single-run elapsed
+times include preparation and native projection; they are not controlled CPU
+scaling measurements. The full numerical ranking, parent comparisons and
+execution hashes are in CYCLE_FOUR_EXECUTION.json. No survivors have yet been
+chosen for this cycle.
+
+The review checkpoint has 24 actual all-method overviews and two new native
+crops. BCSS18 shows G03 opening a real bright cleft left zero by the reference;
+BCSS07 shows it leaving a broad pale cleft filled. Earlier pilot crops, linked
+to identical full-run masks, also show deletion of positively annotated fat.
+G03 adds 5726334 unassigned positive-reference pixels across mixed native
+spacings; the report also sums physical area using each case's spacing. Such
+deletions are scored, while reference-zero clefts remain qualitative evidence.
+
+Numerical budgets remain explicit: G06 has 43 unconverged cases (largest
+projected-gradient residual 0.000366965), G08 has fifteen unsuccessful optimizer
+flags, and unchanged C01 has 67. G02's 1515 linear-program fits and G15's 505
+class fits report success, but this does not imply better tissue masks or
+arbitrarily small gradients. G05 meets its mass tolerance on all149 cases yet
+has lower accuracy; satisfying a mathematical constraint does not validate
+its assumed biological class totals. All149 cases remain development data.
