@@ -28,8 +28,8 @@ python -m experiments.virchow2_multi.plan --data-root DATA --root INPUTS \
   --previous OLD_MULTICASE --quotas tiger=40 bcss=92 camelyon16-subset=7 beetle=10 --seed 8811
 python -m experiments.bora_strategies.prepare --root INPUTS \
   --previous OLD_MULTICASE --model-dir CHECKPOINT
-python -m experiments.bora_strategies.run --source INPUTS --root OUTPUTS --workers 2
-python -m experiments.bora_strategies.score --source INPUTS --root OUTPUTS --workers 2
+python -m experiments.bora_strategies.run --source INPUTS --root OUTPUTS --workers 3
+python -m experiments.bora_strategies.score --source INPUTS --root OUTPUTS --workers 3
 python -m experiments.bora_strategies.publish --source INPUTS --root OUTPUTS
 python -m experiments.bora_strategies.audit --source INPUTS --root OUTPUTS \
   --previous-results OLD_TWENTY_STRATEGY_OUTPUTS
