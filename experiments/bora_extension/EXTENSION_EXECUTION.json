@@ -79,17 +79,18 @@
     "experiments/bora_extension/audit_inputs.py": "8245a7650488b0d63f2bcababf6acb820fa56e7b2f84d05922889efeecb52cc1",
     "experiments/bora_extension/prepare_ocelot.py": "d5c8d3c1fd918117d7822c16ffe1169014e207e87b5fc4d7bbfb7529f4f67b45"
   },
-  "completed_cycles": 6,
-  "active_cycle": 7,
-  "actual_cycle_seven_overviews": 64,
-  "cycle_seven_selection_created": false,
+  "completed_cycles": 7,
+  "active_cycle": 8,
+  "actual_cycle_seven_overviews": 149,
+  "cycle_seven_selection_created": true,
   "subsequent_cycle_scope": 349,
   "remaining_work": [
-    "Finish actual149-image cycle7 visual review and native crops, sign5 and show selected viewer",
     "Prepare unchanged Virchow2 conversions for all200 added images, with explicit unknown-spacing and single-class adapters",
     "Implement task-appropriate scoring, per-dataset/single-class strata and expanded349-image review gate",
     "Continue through20 complete cycles and final all-five-conversion evaluation"
   ],
-  "checkpoint_utc": "2026-10-17T22:16:47.387727+00:00",
-  "complete_goal": false
+  "checkpoint_utc": "2026-10-17T22:40:58.909052+00:00",
+  "complete_goal": false,
+  "actual_cycle_seven_native_crops": 8,
+  "cycle_seven_selection_sha256": "8a346fe3880cc06e9b7043bd5608683825882cdc1163c6022c2250011867622f"
 }

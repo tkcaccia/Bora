@@ -1,6 +1,6 @@
 # Accuracy, speed and the new one-second penalty
 
-Six of twenty cycles are complete on all 149 repeatedly reused development
+Seven of twenty cycles are complete on all 149 repeatedly reused development
 ROIs. The user now requests penalizing algorithms that take longer than one
 second per image. The explicit working policy is:
 
@@ -111,7 +111,7 @@ on the small workload. This is kernel evidence, not whole-algorithm acceleration
 
 `runtime_report.py` derives `RUNTIME_PENALTY_HISTORY.json` and `runtime_history.html`
 from signed completed-cycle evidence. The selected-five viewer shows the
-penalty and orders its five methods by adjusted utility. Six of twenty cycles
+penalty and orders its five methods by adjusted utility. Seven of twenty cycles
 are complete. All later selections must respect the one-second preference.
 
 ## Cycle 6: measurable gains below one second
@@ -138,22 +138,37 @@ the native audits. See CYCLE_SIX_REVIEW.md for every decision. These remain
 development results, with 14 cycles and the final full-conversion comparison
 still outstanding.
 
-## Cycle 7 in progress
+## Cycle 7: complementary subsecond improvements
 
-Fifteen K-series interventions retain the signed J01/H02/C17/J07/H10 lineage.
-All 241 checks pass locally and remotely (205 in the frozen launcher plus 36
-supplemental J-series checks). The eight-case pilot has 176 successful masks,
-both audits confirm 40 exact parents, and all eight overviews plus three native
-crops were actually viewed. The unchanged model has finished all149 ROIs,
-scores and contact sheets, with zero failures. Both native audits pass3278
-masks and745 exact unchanged-parent comparisons. Actual overview review has
-reached64/149; full-run native crops and selection remain pending. No
-cycle-seven survivors are claimed yet.
+All149 all-method overviews and eight native label crops are actually reviewed.
+The signed survivors are **J01,K05,C17,J07,K13**. Both native audits pass3278
+masks and745 exact parent comparisons. All241 focused checks pass on both hosts.
 
-The user now requests retaining these149 images and extending the benchmark.
+J01 remains the leader at IoU0.674658 and0.2008 seconds; no new child beats it.
+K05 replaces H02: a biharmonic curvature penalty on class appearance raises
+IoU0.671889 to0.672922 (**0.10329 points**,94 wins/53 losses/2 ties).
+Mean time rises0.1946 to0.3080 seconds, still zero images over one second.
+Small-region recall improves0.192574 to0.202911. It retains BCSS53's tumour
+band lost by J01, but misclassifies vessel interiors in BCSS26/45.
+
+K13 replaces H10: empirical within-tile residual integration raises IoU0.667425
+to0.668351 (**0.09265 points**,73 wins/64 losses/12 ties), with mean time
+0.0569 to0.0714 seconds. Native BCSS87 removes the false-fat interior.
+Optimizer unsuccessful flags rise8 to18; maximum gradient norm0.004826.
+J07 is slightly more accurate at0.668524/0.0735 seconds; the two-millisecond
+difference is not a controlled speedup. Retaining both compares distinct
+Gaussian and empirical noise assumptions. C17 retains the direct palette model.
+
+K04 receives a penalty on21 images despite mean time below one second.
+K06 exceeds one second on10. K07's C++ kernel scales1.979x from one to two
+threads on the large synthetic case, but accuracy falls and126/149 image
+fits contain unfinished gaps. Engineering gains do not override anatomical
+regressions. See CYCLE_SEVEN_REVIEW.md for all20 decisions.
+
 All200 additional native/coarse/reference input sets are prepared and audited:
-40 BCSS,40 non-TCGA TIGER,40 WSSS4LUAD,40 RINGS tumor and40 OCELOT tissue ROIs.
-The planned subsequent-cycle corpus has349 images. New feature extraction,
-unchanged conversion generation, task-aware adapters and an expanded review
-gate are still required. Historical149-image evidence is immutable and remains
-separately comparable. See ../bora_extension/README.md.
+40 each BCSS,TIGER,WSSS4LUAD,RINGS,OCELOT. The planned corpus is349 ROIs,
+retaining all149 historical cases. Future cycles must add unchanged conversions,
+single-class/task/calibration adapters and a manifest-based review gate.
+WSSS/RINGS remain uncalibrated pixel-only data. Historical subset scores stay
+separately comparable; all reused images are development data.
+Thirteen cycles and the final all-five-conversion evaluation remain.

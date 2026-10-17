@@ -250,19 +250,23 @@ confirm3278 exact displayed masks and745 unchanged-parent comparisons. All176
 pilot/full mask arrays also agree exactly, and596 reused diagnostic files have
 verified hashes. No restart is needed.
 
-Actual full-run overview review has reached64/149 cases (BCSS01–64), with
-hash-pinned notes and a separate durable journal. Targeted full-run native
-review is still pending; the three pilot crops do not substitute for it.
-The shared support still fills conspicuous bright clefts and removes some
-positively annotated fat. These failures remain errors where annotated; no
-novel biological identity is inferred from an unfamiliar converted colour.
-The input audit separately finds56 cases with a fine class absent from coarse
-labels and4,079,674 positive reference pixels outside shared support. Primary
-scores are neither gated by that support nor normalized to an optimistic cap.
+All149 full-run all-method overviews and eight native label sheets have now
+been actually inspected with hash-pinned observations. The signed five are
+J01,K05,C17,J07,K13. No child exceeds J01's overall accuracy. K05 improves H02
+by0.10329 IoU percentage points with94 wins/53 losses/2 ties, while K13 improves
+H10 by0.09265 points with73 wins/64 losses/12 ties. Both stay below one second
+on every image, but neither is a uniform anatomical winner.
 
-Six of twenty cycles remain complete. Remaining actual all-image review,
-targeted native review and signed selection are required before cycle-eight
-children may be implemented. A newly user-requested200-image input extension
-is prepared and independently audited alongside this cycle; it does not alter
-the frozen149-image cycle-seven protocol, predictions or scores. See
-../bora_extension/README.md for the planned349-image subsequent-cycle corpus.
+Native BCSS45/40 distinguish blood-vessel from similar-coloured fat errors.
+Native BCSS53 shows J01 deleting a tumour band retained by K05. Every model
+truncates the TIGER23 stromal wedge and colours the bright BCSS07 cleft.
+The input audit finds56 cases with a fine class absent from coarse and4,079,674
+positive reference pixels outside support. Primary scores include positive
+reference pixels and are not normalized to an optimistic cap.
+
+Seven of twenty cycles are complete. See CYCLE_SEVEN_REVIEW.md and the signed
+CYCLE_SEVEN_SELECTION.json for every benefit, limitation and rejection reason.
+All200 requested/additional input sets are prepared and independently audited,
+for349 future ROIs. Expanded inference, unchanged conversions, task/scaling
+adapters and review gates remain to be implemented before an expanded cycle.
+Historical149-image cycle-seven predictions and scores remain unchanged.
