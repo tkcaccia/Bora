@@ -160,7 +160,7 @@ feature and audit processes are terminal. Arrays remain on Chiamaka; local
 copies contain metadata, while all200 original input triples are local.
 Shared feature preparation averages1.753 seconds per new image, excluding model
 loading. This is separate from Bora refinements' runtime and is not an
-end-to-end subsecond claim. RGB conversions and expanded Bora scoring are pending.
+end-to-end subsecond claim. Expanded Bora scoring is pending.
 
 `task_adapter.py` prepares the expanded runner's unit and RINGS semantics
 contract. Uncalibrated numerical coordinates are unit pixels, with physical
@@ -169,4 +169,31 @@ background zero to the valid outside-tumor target; saved masks stay unchanged,
 and deleted true tumor remains incorrect. Other datasets retain prediction
 zero as an error on positive reference. Four checks cover calibration
 contradictions, honest pixel reporting, deleted-tumor errors and all-tumor
-crops. These helpers are not yet integrated into an expanded scoring run.
+crops. The prospective cycle-eight runner now integrates these helpers;
+expanded prediction/scoring must still execute before results can be claimed.
+
+## Completed conversion stage
+
+`conversions.py` assembled the349-image input corpus and applied the exact
+unchanged09/10/15/19/equal09+19 formulas to the200 additions. The independent
+`audit_conversions.py` checks all6980 frozen files,1745 RGB rasters and149
+byte-identical historical input manifests. Combined plan SHA256:
+`7aff79d91f5bd8b301f939dc83bc7892eda388bf7f33e4476f6f2dc8cb9c8957`.
+Chiamaka input root:
+`/mnt/sata_ssd/Bora-benchmark/results/bora-expanded-349-inputs-2026-10-18-v1`.
+The converter opens no fine-reference pixels and performs no Bora inference.
+Original reference bytes are transferred and hash-checked as acquisition data.
+
+Eight input sheets were actually inspected with H&E and all five conversions.
+The constant RGB in single-eligible-class cases is a documented limitation,
+not a reconstructed second tissue. Input inspection does not establish fine
+mask accuracy or complete a cycle. `CONVERSION_EXECUTION.json` pins the successful
+full audit, frozen source, pilot observations and real execution records.
+
+The expanded scoring contract requires all349 images; a149-image subset cannot
+complete cycle8. Accuracy is still equal per-image native macro IoU with the
+same runtime penalty. Reports separate the original149/additional200 cohorts,
+individual datasets, measured/unknown spacing and single/multiple eligible
+coarse classes. Small-region summaries in micrometres and pixels are separate.
+Cycle8 introduces the five signed parents plus fifteen models described in
+`../bora_cycles/eight_manifest.py`; none changes the frozen RGB conversions.

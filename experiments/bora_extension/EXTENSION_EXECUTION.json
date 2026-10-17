@@ -37,7 +37,7 @@
   "additional_feature_inference_complete": true,
   "additional_masks_scored": false,
   "audit_code_sha256": "8245a7650488b0d63f2bcababf6acb820fa56e7b2f84d05922889efeecb52cc1",
-  "status": "200 input triples and600 frozen Virchow2 arrays audited; conversions and expanded Bora cycles still pending",
+  "status": "All349 inputs and1745 RGBs audited; cycle8 implementation/preflight in progress; full scoring pending",
   "local_copy_verified": true,
   "local_copy_files_checked": 1000,
   "input_audit_sha256": "dcc9b8f68453e21aab77c8a6f00877219c66e9a43e2bf023b58b4e19e92c8e50",
@@ -103,5 +103,8 @@
     "wsss4luad": 11,
     "rings-tumor": 19
   },
-  "feature_record": "FEATURE_EXECUTION.json"
+  "feature_record": "FEATURE_EXECUTION.json",
+  "additional_rgb_conversions_complete": true,
+  "combined_inputs_frozen": true,
+  "conversion_execution": "CONVERSION_EXECUTION.json"
 }

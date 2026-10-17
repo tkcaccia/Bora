@@ -27,9 +27,12 @@ from .registry import (candidates, roster, CHILDREN_TWO, CYCLE_TWO_SURVIVORS,
                        CHILDREN_FOUR, CYCLE_FOUR_SURVIVORS,
                        CHILDREN_FIVE, CYCLE_FIVE_SURVIVORS,
                        CHILDREN_SIX, CYCLE_SIX_SURVIVORS,
-                       CHILDREN_SEVEN, CYCLE_SEVEN_SURVIVORS)
+                       CHILDREN_SEVEN, CYCLE_SEVEN_SURVIVORS,
+                       CHILDREN_EIGHT, CYCLE_EIGHT_SURVIVORS)
 from .diagnostics import novelty, white_regions, mask_diagnostics
 from .runtime_policy import active_policy, runtime_ranking
+from .benchmark_scope import load_scope, validate_scope, requires_parent_parity
+from experiments.bora_extension.task_adapter import geometry, report_units
 
 
 def digest(path):
@@ -55,7 +58,8 @@ def source_record():
     files = list(folder.glob("*.py"))+list(folder.glob("*.sh"))+list(folder.glob("*.md")) + [
         Path(__file__).with_name("protocol.json"),
         repo/"src/bora/evidence.py", repo/"cpp/evidence/kernels.cpp",
-        repo/"cpp/evidence/libbora_evidence.so"]
+        repo/"cpp/evidence/libbora_evidence.so",
+        repo/"experiments/bora_extension/task_adapter.py"]
     return {str(p.relative_to(repo)): digest(p) for p in files}
 
 
@@ -99,7 +103,10 @@ def freeze_case(args):
     coarse = tifffile.imread(src/"coarse.tif")
     support = tifffile.imread(src/"tissue.working.tif") > 0
     native_support = tifffile.imread(src/"tissue.native.tif") > 0
-    lineage = json.loads((root/"PROTOCOL.json").read_text()).get("lineage")
+    protocol = json.loads((root/"PROTOCOL.json").read_text())
+    lineage = protocol.get("lineage")
+    coordinates = geometry(sample)
+    spacing = coordinates["algorithm_spacing_xy"]
     records, files = {}, {}
     with threadpool_limits(limits=2):
         for key in keys:
@@ -112,12 +119,12 @@ def freeze_case(args):
                     started = time.perf_counter()
                     if key in ("B21", "B22"):
                         analysis, details = predict_evidence(
-                            rgb, coarse, support, sample["working_mpp_xy"],
+                            rgb, coarse, support, spacing,
                             method="linear" if key == "B21" else "simplex",
                             palette=sample["palette"])
                     else:
                         analysis, details = predict(
-                            key, rgb, coarse, support, sample["working_mpp_xy"],
+                            key, rgb, coarse, support, spacing,
                             palette=sample["palette"], he=he)
                     native = resize(analysis, sample["native_shape_yx"], True)
                     native[~native_support] = 0
@@ -126,16 +133,19 @@ def freeze_case(args):
                         raise RuntimeError("Non-deterministic candidate")
                     previous = native
                 assert native.shape == tuple(sample["native_shape_yx"])
-                if key not in ("C20", "D12", "F03", "G03", "H03", "J03"):
+                if key not in ("C20", "D12", "F03", "G03", "H03", "J03", "L03"):
                     assert np.all(native[native_support] > 0)
                 assert np.all(native[~native_support] == 0)
                 assert set(np.unique(native)) <= set(np.unique(coarse)) | {0}
-                if lineage and key in lineage["unchanged_survivors"]:
+                if lineage and key in lineage["unchanged_survivors"] and requires_parent_parity(protocol, sample["case"]):
                     old_path = Path(lineage["previous"])/"cases"/sample["case"]/key/"native.tif"
                     if not np.array_equal(native, tifffile.imread(old_path)):
                         raise RuntimeError("An unchanged survivor changed its prediction")
                     details["unchanged_survivor_native_parity"] = True
                     details["previous_prediction_sha256"] = digest(old_path)
+                if protocol.get("benchmark_scope"):
+                    details = report_units(details, coordinates["units"])
+                    details["coordinate_geometry"] = coordinates
                 tifffile.imwrite(target/"native.tif", native, compression="deflate")
                 files[key+"/native.tif"] = digest(target/"native.tif")
                 records[key] = dict(
@@ -148,7 +158,9 @@ def freeze_case(args):
             files[key+"/DETAILS.json"] = digest(target/"DETAILS.json")
         started = time.perf_counter()
         distance, regions, detail = novelty(
-            rgb, coarse, support, sample["working_mpp_xy"])
+            rgb, coarse, support, spacing)
+        if protocol.get("benchmark_scope"):
+            detail = report_units(detail, coordinates["units"])
         detail["seconds"] = time.perf_counter()-started
         np.savez_compressed(out/"NOVELTY.npz", distance=distance, regions=regions)
         save(out/"NOVELTY.json", detail)
@@ -166,6 +178,9 @@ def freeze_case(args):
 
 
 def score_case(args):
+    if len(args) == 7:
+        from .expanded_metrics import score_case as expanded_score
+        return expanded_score(args)
     from .metrics import RegionEvaluator, discovery_score
     source, root, sample, keys, manifests, metric_backend = args
     cv2.setNumThreads(2)
@@ -203,6 +218,9 @@ def score_case(args):
 
 
 def aggregate(rows, keys, runtime_penalty=None):
+    if rows and "coordinate_units" in rows[0]:
+        from .expanded_metrics import aggregate as expanded_aggregate
+        return expanded_aggregate(rows, keys, runtime_penalty)
     ranking = []
     for key in keys:
         entries = [row["methods"][key] for row in rows]
@@ -363,7 +381,7 @@ def main():
     parser.add_argument("--keys", nargs="+")
     parser.add_argument("--workers", type=int, choices=(1, 2, 3), default=3)
     parser.add_argument("--repeats", type=int, default=1)
-    parser.add_argument("--cycle", type=int, choices=(1, 2, 3, 4, 5, 6, 7), default=1)
+    parser.add_argument("--cycle", type=int, choices=(1, 2, 3, 4, 5, 6, 7, 8), default=1)
     parser.add_argument("--previous", type=Path)
     parser.add_argument("--metric-backend", choices=("numpy", "cpp"), default="cpp")
     args = parser.parse_args()
@@ -385,7 +403,8 @@ def main():
                                4: (CYCLE_FOUR_SURVIVORS, CHILDREN_FOUR),
                                5: (CYCLE_FIVE_SURVIVORS, CHILDREN_FIVE),
                                6: (CYCLE_SIX_SURVIVORS, CHILDREN_SIX),
-                               7: (CYCLE_SEVEN_SURVIVORS, CHILDREN_SEVEN)}[args.cycle]
+                               7: (CYCLE_SEVEN_SURVIVORS, CHILDREN_SEVEN),
+                               8: (CYCLE_EIGHT_SURVIVORS, CHILDREN_EIGHT)}[args.cycle]
         if previous["cycle"] != args.cycle-1 or selection["survivors"] != list(survivors):
             parser.error("Implemented children do not match the actual reviewed survivors")
         if digest(args.previous/"VISUAL_REVIEW.json") != selection["review_sha256"]:
@@ -406,8 +425,9 @@ def main():
         samples = [sample for sample in samples if sample["case"] in args.cases]
         if set(args.cases) != {s["case"] for s in samples}:
             parser.error("Unknown case")
-    if not args.pilot and (len(samples) != 149 or set(keys)-{"B21", "B22"} != set(active)):
-        parser.error("Full cycle requires all 149 cases and all 20 candidates")
+    scope = load_scope(args.source, args.cycle)
+    if not args.pilot and set(keys)-{"B21", "B22"} != set(active):
+        parser.error("Full cycle requires all 20 candidates")
     if not samples or len(set(keys)) != len(keys):
         parser.error("Empty scope or duplicate method")
     args.root.mkdir(parents=True, exist_ok=True)
@@ -418,6 +438,14 @@ def main():
         workers=args.workers, numerical_threads=2, primary_conversion="ensemble", metric_backend=args.metric_backend,
         study_protocol=json.loads(Path(__file__).with_name("protocol.json").read_text()),
         python=platform.python_version(), host=platform.node(), environment=environment_record())
+    if scope is not None:
+        protocol["benchmark_scope"] = scope
+        protocol["study_protocol"].update(
+            case_scope="All349 frozen ROIs; original149 retained exactly plus200 additions, prospective from cycle8",
+            reference_policy="Fine masks are read only after all predictions freeze. All349 images are development data. Reference0 is ignored; RINGS scoring-only removed background is valid outside-tumor.",
+            small_region_policy="All reference components scored. Separate <=400 um2 and <=400 px2 summaries; unknown spacing never assigned a physical area.",
+            selection="Review every349 image and select five with the unchanged excess-one-second penalty. Report historical149 and new200 separately.")
+    validate_scope(protocol, pilot=args.pilot)
     if (args.root/"PROTOCOL.json").exists():
         if json.loads((args.root/"PROTOCOL.json").read_text()) != protocol:
             raise RuntimeError("Changed source/protocol requires a fresh output folder")
@@ -447,7 +475,8 @@ def main():
         verify(out, json.loads((out/"PREDICTIONS.json").read_text())["files_sha256"])
     with ProcessPoolExecutor(max_workers=args.workers, mp_context=get_context("spawn")) as pool:
         rows = list(pool.map(score_case, [
-            (args.source, args.root, sample, keys, frozen["manifests"], args.metric_backend) for sample in samples]))
+            (args.source, args.root, sample, keys, frozen["manifests"], args.metric_backend)
+            + ((scope,) if scope is not None else ()) for sample in samples]))
     result = dict(protocol=protocol, cases=rows,
                   ranking=aggregate(rows, keys, active_policy(protocol)))
     save(args.root/"RESULTS.json", result)

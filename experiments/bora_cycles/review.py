@@ -56,8 +56,8 @@ def require_review(root):
     protocol = json.loads((root/"PROTOCOL.json").read_text())
     if protocol["pilot"]:
         raise ValueError("An engineering pilot cannot complete a cycle")
-    if len(protocol["cases"]) != 149:
-        raise ValueError("The full 149-image benchmark is required")
+    from .benchmark_scope import validate_scope
+    validate_scope(protocol)
     candidates = set(protocol["roster"])
     if len(candidates) != 20 or not candidates <= set(protocol["methods"]):
         raise ValueError("Every cycle needs twenty candidates")

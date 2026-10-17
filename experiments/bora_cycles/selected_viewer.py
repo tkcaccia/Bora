@@ -57,9 +57,11 @@ def number(value, digits=4):
 
 def summary(entry):
     score = entry["score"]
-    small = score["regions"]["small_le_400_um2"]
+    small_key = "small_le_400_um2" if "small_le_400_um2" in score["regions"] else "small_le_400_px2"
+    small = score["regions"][small_key]
     return dict(iou=score["macro_iou"], dice=score["macro_dice"],
                 seconds=entry["median_seconds"], small_recall=small["recall_at_50pct"],
+                small_units="µm²" if small_key.endswith("um2") else "pixels²",
                 runtime_adjusted_score=adjusted_score(score["macro_iou"], entry["median_seconds"]),
                 completely_missed_small=small["completely_missed"],
                 annotated_unassigned_pixels=score["annotated_unassigned_pixels"])
@@ -122,14 +124,16 @@ def publish_selected(root):
             title = (f'<strong>{escape(key)} · {escape(protocol["roster"][key]["title"])}</strong>'
                      f'<br>IoU {number(info["iou"])} · {number(info["seconds"],3)} s'
                      f' · adjusted {number(info["runtime_adjusted_score"])}'
-                     f'<br>Small-region recall {number(info["small_recall"],3)}'
+                     f'<br>Small-region recall (≤400 {info["small_units"]}) {number(info["small_recall"],3)}'
                      f' · fully missed {info["completely_missed_small"]}')
             outputs.append(panel(case, title, key+"/mask.png", ratio, True, key+"/native.tif"))
         legend = ''.join(
             f'<span><i class="swatch" style="background:rgb({",".join(map(str,color))})"></i>'
             f'{escape(sample["class_names"].get(str(i),str(i)))}</span>'
             for i,color in enumerate(sample["palette"],1))
-        spacing = ' × '.join(number(v,3) for v in sample['native_mpp_xy'])
+        spacing = (' × '.join(number(v,3) for v in sample['native_mpp_xy'])+' µm/pixel'
+                   if sample['native_mpp_xy'] is not None else
+                   'Microscopy pixel spacing unknown; numerical scales and area scores are in pixels')
         omitted = row.get('reference_classes_absent_from_coarse', [])
         omitted_note = ('<p class="note">Input tile labels omit these reference classes: '
                         +escape(', '.join(sample['class_names'].get(str(i),str(i)) for i in omitted))
@@ -137,8 +141,12 @@ def publish_selected(root):
         sections.append(
             f'<section data-case="{escape(case,quote=True)}" hidden><h2>{escape(case)}</h2>'
             f'<p class="note">{escape(row["dataset"])} · {escape(sample["source_region_type"])} · '
-            f'{width} × {height} native pixels · {spacing} µm/pixel. '
+            f'{width} × {height} native pixels · {spacing}. '
             'Pixel spacing is not optical resolving power.</p>'+omitted_note+
+            ('<p class="note">Single eligible coarse class: converted RGB is constant and cannot recover competing class boundaries.</p>'
+             if row.get('single_eligible_class') else '')+
+            ('<p class="note">RINGS is tumor versus outside-tumor, including glass/lumina. Outside-tumor is not expert stroma. Saved background0 is scored as outside-tumor; deleted tumor is still wrong.</p>'
+             if row['dataset'] == 'rings-tumor' else '')+
             f'<div class="inputs">{inputs}</div><div class="legend">{legend}</div>'
             f'<div class="outputs">{"".join(outputs)}</div></section>')
         records.append(dict(case=case,dataset=row["dataset"],methods=entries))
@@ -150,7 +158,12 @@ def publish_selected(root):
         f'<td>{number(r["mean_runtime_penalty"])}</td>'
         f'<td><strong>{number(r["runtime_adjusted_score"])}</strong></td>'
         f'<td>{number(r["small_region_recall"],3)}</td>'
-        f'<td>{r["completely_missed_small_regions"]}</td></tr>' for r in ranks)
+        f'<td>{r["completely_missed_small_regions"]}</td>'
+        +(f'<td>{number(r.get("pixel_small_region_recall"),3)}</td>'
+          f'<td>{r.get("pixel_completely_missed_small_regions",0)}</td>'
+          f'<td>{number(r["strata"]["historical149"]["mean_iou"])}</td>'
+          f'<td>{number(r["strata"]["additional200"]["mean_iou"])}</td>'
+          if protocol.get('benchmark_scope') else '')+'</tr>' for r in ranks)
     html = ('<!doctype html><html lang="en"><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1">'
             f'<title>Bora cycle {selection["cycle"]}: selected five</title><style>{STYLE}</style>'
@@ -173,11 +186,13 @@ def publish_selected(root):
               if active_policy(protocol) is None else '')+
             '<p class="note">All images are development data in this repeated-selection study. '
             'Scores count all positive reference pixels; reference 0 is unscored. '
-            'Small regions are ≤400 µm²; recall requires ≥50% correct class coverage. '
+            'Small-region recalls use separate ≤400 µm² and ≤400 pixel² strata when resolution is unknown; recall requires ≥50% correct class coverage. '
             'Opacity affects the display only. Click a panel for its full raster.</p>'
             '<div class="scores"><table><tr><th>Selected algorithm</th><th>Mean IoU</th>'
             '<th>Mean Dice</th><th>Mean seconds</th><th>Images &gt;1s</th>'
             '<th>Mean penalty</th><th>Adjusted score</th><th>Small recall</th><th>Small fully missed</th>'
+            +('<th>Pixel-small recall</th><th>Pixel-small missed</th><th>Original149 IoU</th><th>Additional200 IoU</th>'
+              if protocol.get('benchmark_scope') else '')+
             f'</tr>{table}</table></div>'+''.join(sections)
             +f'<script>{SCRIPT}</script></main></html>')
     (root/"selected.html").write_text(html)

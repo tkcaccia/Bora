@@ -13,6 +13,7 @@ from PIL import Image
 import tifffile
 
 from .run import aggregate, digest, palette_bytes, verify
+from .benchmark_scope import validate_scope, requires_parent_parity
 
 
 def load(path):
@@ -32,9 +33,10 @@ def audit(source, root, previous=None, executed_code=None):
     cases, methods = protocol["cases"], protocol["methods"]
     if len(cases) != len(set(cases)) or len(methods) != len(set(methods)):
         raise ValueError("Duplicate case or method in protocol")
-    if not protocol["pilot"] and (len(cases) != 149 or len(protocol["roster"]) != 20
+    validate_scope(protocol, pilot=protocol["pilot"])
+    if not protocol["pilot"] and (len(protocol["roster"]) != 20
                                   or set(protocol["roster"])-set(methods)):
-        raise ValueError("A full-cycle audit requires all 149 cases and twenty candidates")
+        raise ValueError("A full-cycle audit requires twenty candidates")
     frozen = load(root/"ALL_PREDICTIONS_FROZEN.json")
     if frozen["protocol_sha256"] != digest(root/"PROTOCOL.json") or frozen["fine_reference_read"]:
         raise ValueError("Prediction freeze/protocol changed or read reference prematurely")
@@ -115,7 +117,7 @@ def audit(source, root, previous=None, executed_code=None):
                 raise ValueError("Native geometry changed: "+case+"/"+method)
             if not set(np.unique(mask)) <= allowed or np.any(mask[~support] != 0):
                 raise ValueError("Class IDs/background clipping violated: "+case+"/"+method)
-            if method not in ("C20", "D12", "F03", "G03", "H03", "J03") and np.any(mask[support] == 0):
+            if method not in ("C20", "D12", "F03", "G03", "H03", "J03", "L03") and np.any(mask[support] == 0):
                 raise ValueError("Unexpected unassigned tissue: "+case+"/"+method)
             with Image.open(out/method/"mask.png") as display:
                 if display.mode != "P" or not np.array_equal(np.asarray(display), mask):
@@ -134,22 +136,24 @@ def audit(source, root, previous=None, executed_code=None):
                 "relative_mass_error", "fixed_point_change", "message", "fits") if key in detail}
             if numerical:
                 optimizer.setdefault(method, []).append(dict(case=case, **numerical))
-            if method in survivors:
+            if method in survivors and requires_parent_parity(protocol, case):
                 old = previous/"cases"/case/method/"native.tif"
                 if digest(old) != detail["previous_prediction_sha256"]:
                     raise ValueError("Previous survivor file changed: "+case+"/"+method)
                 if not detail["unchanged_survivor_native_parity"] or not np.array_equal(mask, tifffile.imread(old)):
                     raise ValueError("Unchanged survivor prediction differs: "+case+"/"+method)
                 counts["unchanged_survivor_comparisons"] += 1
-        for child_id, parent_id in (("F03", "D10"), ("G03", "F01"), ("H03", "F01"), ("J03", "H02")):
+        for child_id, parent_id in (("F03", "D10"), ("G03", "F01"), ("H03", "F01"), ("J03", "H02"), ("L03", "J01")):
             if child_id not in mask_paths or parent_id not in mask_paths:
                 continue
             removed = glass_changes(tifffile.imread(mask_paths[parent_id]),
                                     tifffile.imread(mask_paths[child_id]))
             glass.append(dict(case=case, child=child_id, parent=parent_id,
                 newly_unassigned_pixels=removed,
-                additional_annotated_unassigned_pixels=row["methods"][child_id]["score"]["annotated_unassigned_pixels"]
-                -row["methods"][parent_id]["score"]["annotated_unassigned_pixels"]))
+                additional_annotated_unassigned_pixels=row["methods"][child_id]["score"].get(
+                    "saved_mask_annotated_unassigned_pixels", row["methods"][child_id]["score"]["annotated_unassigned_pixels"])
+                -row["methods"][parent_id]["score"].get("saved_mask_annotated_unassigned_pixels",
+                    row["methods"][parent_id]["score"]["annotated_unassigned_pixels"])))
         if digest(out/"contact.jpg") != visual[case]:
             raise ValueError("Contact sheet changed: "+case)
         counts["contact_sheets"] += 1

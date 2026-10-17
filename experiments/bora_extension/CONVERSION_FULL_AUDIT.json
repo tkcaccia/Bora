@@ -1,0 +1,3442 @@
+{
+  "passed": true,
+  "cases": 349,
+  "full_corpus": true,
+  "frozen_files": 6980,
+  "exact_historical_manifests": 149,
+  "rgb_conversions": 1745,
+  "single_eligible_class": 30,
+  "datasets": {
+    "tiger": 80,
+    "bcss": 132,
+    "camelyon16-subset": 7,
+    "beetle": 10,
+    "wsss4luad": 40,
+    "rings-tumor": 40,
+    "ocelot": 40
+  },
+  "plan_sha256": "7aff79d91f5bd8b301f939dc83bc7892eda388bf7f33e4476f6f2dc8cb9c8957",
+  "audit_code_sha256": "656fabeba4e8881fbdaea76c14eb868113f4007f4b1f3bd2158130a5fc8b5167",
+  "fine_reference_decoded": false,
+  "bora_run": false,
+  "visual_reviews_created": false,
+  "actual_review_required_for_generated_sheets": false,
+  "records": [
+    {
+      "case": "tiger_01",
+      "dataset": "tiger",
+      "input_manifest_sha256": "792558b924ff3d16e50114378b036ca784995d480728bcfc0f9cc6a94674d379",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "tiger_02",
+      "dataset": "tiger",
+      "input_manifest_sha256": "779228830ed51117c0c7252118523382044aef9ea6ba2080b4038b621d5e985f",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_03",
+      "dataset": "tiger",
+      "input_manifest_sha256": "adbf09b76bdfb32c0294d6f50d9e73857e0cf4cc30eb99bdf54334ae27c6def6",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_04",
+      "dataset": "tiger",
+      "input_manifest_sha256": "5a72e767ec7722ec9ab8644d3dacb7230391900860ff5b0a364f8c54f0250169",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_05",
+      "dataset": "tiger",
+      "input_manifest_sha256": "a6ff05f1fff2ac9b9e99e30cd507ac51c24ca863c8e9be4fc2399ab40ebb7c68",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_06",
+      "dataset": "tiger",
+      "input_manifest_sha256": "b199200b3345f558af2bfb601e93d85b1ac71d9d0ec5956c550f568b060649ff",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_07",
+      "dataset": "tiger",
+      "input_manifest_sha256": "5bf39df6cec034613a94512d280827c4a3422e1c2b79549a3b0f39734817ac5c",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_08",
+      "dataset": "tiger",
+      "input_manifest_sha256": "f55951131388bcbf820247beb7f58a06cac7bded6b352fb69624a9bf9bcd01f1",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_09",
+      "dataset": "tiger",
+      "input_manifest_sha256": "df0ac58789d99620fbacb7e1fd4845e314a6f7ee45f04768061cc95f25a34cbc",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_10",
+      "dataset": "tiger",
+      "input_manifest_sha256": "6f8d3ef5c163b7eeb075023659f8669c5febfd59062e137294da03736444f5ad",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_11",
+      "dataset": "tiger",
+      "input_manifest_sha256": "c6476c0df8d3c960ee089c8833ab4a760820b7349e202918e216adc874c41058",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_12",
+      "dataset": "tiger",
+      "input_manifest_sha256": "5100dcf50d92ee082af18caf97e95bb9dddc05a404018ae933d5e4f10ba245bb",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_13",
+      "dataset": "tiger",
+      "input_manifest_sha256": "e2f8bcac8e7aaf6daec3f47d4a8edb9439be1104f173409f7c0825314593b097",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_14",
+      "dataset": "tiger",
+      "input_manifest_sha256": "770092ae2f27aa7ae53c5380ddd250817f536cf0218bbdb9263cc3590031ceca",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_15",
+      "dataset": "tiger",
+      "input_manifest_sha256": "3d7aa285f20a611f04fdc714a0f553ab06d36a1eaa93de32683e7cacd929b748",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_16",
+      "dataset": "tiger",
+      "input_manifest_sha256": "4021da0b876570d2a044179ae8cce0bf49e82e46f56be8fd81aecae9ea6f0380",
+      "eligible_classes": [
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_01",
+      "dataset": "bcss",
+      "input_manifest_sha256": "a950b6a5faf112bc0c6dae9c37da5bc6595582e635ee4b8a90067d7ac2674e59",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        5
+      ]
+    },
+    {
+      "case": "bcss_02",
+      "dataset": "bcss",
+      "input_manifest_sha256": "caad533a7149b7d6db212562395e6f9867aadee8d673cd5f914c8d038c1966d5",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_03",
+      "dataset": "bcss",
+      "input_manifest_sha256": "41e30c34dfccc245e67542e3577bb03932d5ff095470624303131242f6dacb48",
+      "eligible_classes": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "case": "bcss_04",
+      "dataset": "bcss",
+      "input_manifest_sha256": "95fddc13f41aaab217d0157b8853dbddd60f315d8e2b70e6b3e488054993759d",
+      "eligible_classes": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "case": "bcss_05",
+      "dataset": "bcss",
+      "input_manifest_sha256": "b11d551a5f69a664f9d53ea15d4dc3504203001848880b463fb331909c257005",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_06",
+      "dataset": "bcss",
+      "input_manifest_sha256": "1167b47e6d172437950fe60040cb52ec2f822896985538d32f3a68db13218cab",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        5
+      ]
+    },
+    {
+      "case": "bcss_07",
+      "dataset": "bcss",
+      "input_manifest_sha256": "ad80c1741bd7d6144e5e5f5bf5d3633beea5de6624331e077d1d2901909c6627",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_08",
+      "dataset": "bcss",
+      "input_manifest_sha256": "fba2e2a49385624f3d8b51f13888a17cda7aea6b960cf0cdc13666d2fa2699b0",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_09",
+      "dataset": "bcss",
+      "input_manifest_sha256": "1fe54921423f88bffc69a0f6caaa53dbdfa1e3ef12e9a48e1dd8d9337486f969",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_10",
+      "dataset": "bcss",
+      "input_manifest_sha256": "3c402dffe3337a3760f08a3e7fcfe9ced2ef54747ea457f5cb0a472fd16ea8f2",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_11",
+      "dataset": "bcss",
+      "input_manifest_sha256": "a3ced698add300fab11886e0c5c20cf9a65307cfbab1e2d4f408b2de909df191",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "case": "bcss_12",
+      "dataset": "bcss",
+      "input_manifest_sha256": "139d18b85908d4a51fa938be0ee154d7fd878afac3dbd867e7c72cdf4e70925b",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_13",
+      "dataset": "bcss",
+      "input_manifest_sha256": "cf58629fa3350f6efb668b9aa69a2c4091a550d4116bed2b0aaa23f78a482c65",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        5
+      ]
+    },
+    {
+      "case": "bcss_14",
+      "dataset": "bcss",
+      "input_manifest_sha256": "535313e7cca19caf25dafbdb8ddec9689398d3dc46e4f644e17904ba859afe8b",
+      "eligible_classes": [
+        1,
+        3
+      ]
+    },
+    {
+      "case": "bcss_15",
+      "dataset": "bcss",
+      "input_manifest_sha256": "d8022f610cf8b1400d94d7631457796a6895993bbf1732b892894c1d93b86d8c",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_16",
+      "dataset": "bcss",
+      "input_manifest_sha256": "6055fed4bfb398adc5a8dfb7c14416bf80e5902d2f43ab46f496b21cd7e8b689",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "camelyon16-subset_01",
+      "dataset": "camelyon16-subset",
+      "input_manifest_sha256": "f947f8871571b7b4c03b7abaf466825f54516c1f5b83ee99af8db2c0b9d844a2",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "camelyon16-subset_02",
+      "dataset": "camelyon16-subset",
+      "input_manifest_sha256": "800f6007d8cfab876bf65de6b1cfb63eea4e67cdb6245e96246a115cac318459",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "camelyon16-subset_03",
+      "dataset": "camelyon16-subset",
+      "input_manifest_sha256": "02512d2d1ae12a3d34e0a74a47306654c330851a9f7002d1c555fe8fd6e5fe5d",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "camelyon16-subset_04",
+      "dataset": "camelyon16-subset",
+      "input_manifest_sha256": "92212ef5302682588b1cf938bac26921854cfab8992f937f8a35413d6979742f",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "camelyon16-subset_05",
+      "dataset": "camelyon16-subset",
+      "input_manifest_sha256": "770d3896b67a726f2172f60dfb216948eab3b084b9c18a969edb78a3c6f5adf0",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "camelyon16-subset_06",
+      "dataset": "camelyon16-subset",
+      "input_manifest_sha256": "340926ce273443ed0d6b3f196277e0e7d60061fc8b9409650fa6e4a746d647ad",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "camelyon16-subset_07",
+      "dataset": "camelyon16-subset",
+      "input_manifest_sha256": "8018630a2bacd7883413696d10cfdf8d3e42b64e3d34d8435eb903033110082b",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "beetle_01",
+      "dataset": "beetle",
+      "input_manifest_sha256": "658e1598d4fc40ee82c70af0297df883692fec785745a4beddab792d2182cbc0",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "beetle_02",
+      "dataset": "beetle",
+      "input_manifest_sha256": "69991716d7b2f6f686bd0136a6c62bd3d3faa9c5d1cd0332c6714b529f5195b3",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "beetle_03",
+      "dataset": "beetle",
+      "input_manifest_sha256": "486cd676b4dcdbe458a10392db2d9250d7944f5518f2e8d2959731a86ccb41bb",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "beetle_04",
+      "dataset": "beetle",
+      "input_manifest_sha256": "f7a02705e12ee9f2f9bc287b7a6026f0aaa73bca4c3e9db193841e27cc3598ba",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "beetle_05",
+      "dataset": "beetle",
+      "input_manifest_sha256": "564cbc9f7f361f1592bbf18b506fb9c4702a8fa2642151e2887a2a6b9dc21ad0",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "beetle_06",
+      "dataset": "beetle",
+      "input_manifest_sha256": "70c85bc8f7fb4689ca54b0273ecbe98e045feebd5b99d650eaf3520f5b5ec519",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "beetle_07",
+      "dataset": "beetle",
+      "input_manifest_sha256": "a7b7541d657778a66826939adfb99a45989c4bf455c9ec32f826c29cbcd32dfa",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "beetle_08",
+      "dataset": "beetle",
+      "input_manifest_sha256": "09bf5a0248423ef0ce116288698bdf81d1a495bcff809c5152771e244308127b",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "beetle_09",
+      "dataset": "beetle",
+      "input_manifest_sha256": "43b769ec8dd3bbadd737985436653d8ec07d1913632d72277a957cc6f3556763",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "beetle_10",
+      "dataset": "beetle",
+      "input_manifest_sha256": "0885c5f374b3b27abbd5e5de65b3c5c6bd8f3ba603dfee571c3f1a7ae8d0a250",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_17",
+      "dataset": "tiger",
+      "input_manifest_sha256": "487bd07c8ad5f875627a2e663556e6cf39ba009e0e981091059e4c02f177e403",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_18",
+      "dataset": "tiger",
+      "input_manifest_sha256": "31ed9be06e9ea8bc9b5647677a877f57cc83d82e1c2b4f3840f2442666fcbfe7",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_19",
+      "dataset": "tiger",
+      "input_manifest_sha256": "827ab8673be58e1bbea16d473356c02ce4993ecc920e5e0431eb1c3b859c3608",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_20",
+      "dataset": "tiger",
+      "input_manifest_sha256": "1801adf2435f207c687ae29eea9dd77ffe458728f6ef46f4dbfc4a9852349ec0",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_21",
+      "dataset": "tiger",
+      "input_manifest_sha256": "0342a00528dcf5154ca94d7e63868622d0fe8d2212a286e868c0cd6f53360cfc",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_22",
+      "dataset": "tiger",
+      "input_manifest_sha256": "40321ca8921646a1a9ecb353221656a5cb4489fe2e7775471a4e4a607bcd04a7",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_23",
+      "dataset": "tiger",
+      "input_manifest_sha256": "ff2e970d13550995312acf354abb78a89991824bf384d4fc40238575ac58aaae",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "tiger_24",
+      "dataset": "tiger",
+      "input_manifest_sha256": "597e6e937329ddaad521efd7afdfdad636e5acc31d05525425fffb6127bf9703",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_25",
+      "dataset": "tiger",
+      "input_manifest_sha256": "de4df450085fab2b629b1a702e0a0fd0672cea4190204c33dbd8ec0c0fea8cb8",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_26",
+      "dataset": "tiger",
+      "input_manifest_sha256": "ee5360ac95713d1282b0e8174fa1639ba689ab9f6f31a196b456e4cd0bdd5557",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_27",
+      "dataset": "tiger",
+      "input_manifest_sha256": "dc207cf751ff4a7e98814af8d0f4cc84be93f55ecd7473e5408ce440e1b81d76",
+      "eligible_classes": [
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "tiger_28",
+      "dataset": "tiger",
+      "input_manifest_sha256": "57e7880eb41f84f5d59e3987e0f88006605b49c7572ffa114f3657e8e1583876",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_29",
+      "dataset": "tiger",
+      "input_manifest_sha256": "73fea9cef34c7c83dd9fc2cd441f6d19740a602b0354872509059ee911fbeec2",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_30",
+      "dataset": "tiger",
+      "input_manifest_sha256": "9d96ed04c83a4a71e1ca5138c300b8801bd6ccc7f5cfef456f6a23a9e0c1cb37",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_31",
+      "dataset": "tiger",
+      "input_manifest_sha256": "f49201573f2be381224a64430c1b2e97d8596c10400857893d362c3f0074c08c",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_32",
+      "dataset": "tiger",
+      "input_manifest_sha256": "3eb9d2f3b236f9f693ffc5b17daaeb5970e46b1e1fe5b7962a6dec3dbc26bdf1",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "tiger_33",
+      "dataset": "tiger",
+      "input_manifest_sha256": "a708e08cb7570a6c68af613e54af47486c3ee0eeda19b3822cff7370bfc031fa",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_34",
+      "dataset": "tiger",
+      "input_manifest_sha256": "438e3382137f8dbdd5e2ad455837eddf4f5141946a9d04df67beb497715c3963",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_35",
+      "dataset": "tiger",
+      "input_manifest_sha256": "a9c98f4a98948a9f5c6ce96d50fbbe3027df94c8a05d3b6aae9c64a1d3a8f90a",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_36",
+      "dataset": "tiger",
+      "input_manifest_sha256": "141521c5aebf3aa2f0d87d765e2ed3ca6ef7520bac80d3ef3c44dbcd3002997e",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_37",
+      "dataset": "tiger",
+      "input_manifest_sha256": "4da0939ca36b00590edd3bffa90e9f19d66b5af1c091fef2ad37d7a2b69f10e3",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_38",
+      "dataset": "tiger",
+      "input_manifest_sha256": "8abeda021dd2b9ec62ef0f3fcfc390e65395612a2577b4ae508e7bc6be2d422c",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_39",
+      "dataset": "tiger",
+      "input_manifest_sha256": "8993304c50b08789cd508aa5bf2ebc82eb9d9460ac4f681da13dac3287b1237f",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_40",
+      "dataset": "tiger",
+      "input_manifest_sha256": "e1656ee529e79330525cfaaff548b7a32d33a70bed3207201d0ab1ecc02f8ed4",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_17",
+      "dataset": "bcss",
+      "input_manifest_sha256": "e211f11c67a16801b775c512bc5d5b8d080e38e5f5588e36d589f58527111d54",
+      "eligible_classes": [
+        1,
+        2,
+        5
+      ]
+    },
+    {
+      "case": "bcss_18",
+      "dataset": "bcss",
+      "input_manifest_sha256": "baec34bb6d6627827f3fb2d54a464d5aa4e79b3fbe134e8d3395df1740dc7162",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "bcss_19",
+      "dataset": "bcss",
+      "input_manifest_sha256": "57e9e234193be7ee9aa4c03d035279e9a1cf881f984222294e61eb893a16c746",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        7,
+        8
+      ]
+    },
+    {
+      "case": "bcss_20",
+      "dataset": "bcss",
+      "input_manifest_sha256": "88435c4cc83cd3f22575e4d9fb24469247482173394b4d182b8bc42711714f4f",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "case": "bcss_21",
+      "dataset": "bcss",
+      "input_manifest_sha256": "3a5901e0a2429bdac1ae5583789f6054b369daa47474f1f2eb2190ae614e3c09",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "case": "bcss_22",
+      "dataset": "bcss",
+      "input_manifest_sha256": "5bef7c361b8ab672f62bae7fbb43088a9e9f1b867abc510b93157c45f8dd7626",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_23",
+      "dataset": "bcss",
+      "input_manifest_sha256": "834f7d5bc4f73f2c02706ce2616aa1f6ad9f173bfe69cc1ef41c883abc5dd961",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_24",
+      "dataset": "bcss",
+      "input_manifest_sha256": "595ebf5d32c99af58743b917e3c3836b11c1363fc07dcd37e79c2a4a56dbc68a",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_25",
+      "dataset": "bcss",
+      "input_manifest_sha256": "f73b5a04a0d01ae5104e491185ea7f6f257d03f0eb1463285028015cd59e6e6c",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_26",
+      "dataset": "bcss",
+      "input_manifest_sha256": "2d39ea4d1aeffae95912fd4ad9fe5a8ff460441534426642a4198de51fc5d003",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7
+      ]
+    },
+    {
+      "case": "bcss_27",
+      "dataset": "bcss",
+      "input_manifest_sha256": "409536a72d4531d73a1970dce740254d20413cf69972dfa4806f02348dbe9944",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_28",
+      "dataset": "bcss",
+      "input_manifest_sha256": "3e728cc630607951cd061a18ffc02f15d5fa5bc6c9b98c94a31cfd2d75ca6d89",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_29",
+      "dataset": "bcss",
+      "input_manifest_sha256": "6b35ff378afcfd981f64fe960cfd6c9a53b9730b0be71044578a834a884dcb32",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "case": "bcss_30",
+      "dataset": "bcss",
+      "input_manifest_sha256": "67db136fef6867b39a44d7ab25770adf742f9714d5ac3514d3bcf5654d9e185c",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_31",
+      "dataset": "bcss",
+      "input_manifest_sha256": "f6def9f969697a8dd14c0fd4ef0c83abbaaf9beafa22616a16dc3ad4a8a64567",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "case": "bcss_32",
+      "dataset": "bcss",
+      "input_manifest_sha256": "9f8684c0b151274d94d895eb741b43d82afc14fa54dd2c2b06206f95f5134b04",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_33",
+      "dataset": "bcss",
+      "input_manifest_sha256": "d7a66591c764081f2825e515135b8e0635a33b4ecc7714cb24710e85b68adc1e",
+      "eligible_classes": [
+        1,
+        2,
+        4,
+        6,
+        7
+      ]
+    },
+    {
+      "case": "bcss_34",
+      "dataset": "bcss",
+      "input_manifest_sha256": "aff2673533c6f45a5694c7e3376023d165cd2ab17c642570a10b119aec6071e1",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_35",
+      "dataset": "bcss",
+      "input_manifest_sha256": "35a56464eb398d4469d9838da33d8747facc92042fa4f7fd7786ff7a3cd9e74e",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_36",
+      "dataset": "bcss",
+      "input_manifest_sha256": "2eb2aab37073715fbc7750757665ccc85cb39b0140994e52f9bcb287c2b24e10",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_37",
+      "dataset": "bcss",
+      "input_manifest_sha256": "5cdf17b84d49d7128a7df684dd9526057685245eb88c5da97f6db0870b204590",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_38",
+      "dataset": "bcss",
+      "input_manifest_sha256": "2d92757572e4b5e9002bcd9d603e6f9004115c5d1969eb05758e9b08cd63ec2f",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_39",
+      "dataset": "bcss",
+      "input_manifest_sha256": "8cb372ea3e3b323a69e07feb65889469192a7be386ea47319b92efbc817a7146",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_40",
+      "dataset": "bcss",
+      "input_manifest_sha256": "95cd2392301551821cccbcfdacb83a17e9c4512840131918dc8c39b1edf2a86e",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        6,
+        7
+      ]
+    },
+    {
+      "case": "bcss_41",
+      "dataset": "bcss",
+      "input_manifest_sha256": "04b8a916df9992f4c99c13d35a5562d599b6d6efe349146df61763ec9f27f596",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        6
+      ]
+    },
+    {
+      "case": "bcss_42",
+      "dataset": "bcss",
+      "input_manifest_sha256": "dd32c207d91867ff575f61b3480ec0bf97e80c91ab10b084cc790271a9dfad62",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_43",
+      "dataset": "bcss",
+      "input_manifest_sha256": "aca203dba0d05ff4ca0ae9d68c5b72cbb10e16a8cc99f31a6d787023b5cb9d69",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_44",
+      "dataset": "bcss",
+      "input_manifest_sha256": "ee2ba0a073408a9cb128433e8e0d9d54d104a1a6936ec966db0f7ab273fb03bf",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "bcss_45",
+      "dataset": "bcss",
+      "input_manifest_sha256": "f7737c19827abaf1582e09cb2c1814f2d1710bdd230010bbd69b76931b2274dc",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "case": "bcss_46",
+      "dataset": "bcss",
+      "input_manifest_sha256": "b83da6b6b617f7bd2bba493794a67e0ce34efe44b6405bbd05fb445153c01461",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_47",
+      "dataset": "bcss",
+      "input_manifest_sha256": "8b9c9b811c0f45b4d5c5dd6294db34193b0f7c7727c1eae6edc59087728fbd99",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_48",
+      "dataset": "bcss",
+      "input_manifest_sha256": "663b95d3dce88a9ad55492c2ffb5510e221d3c6373ed9e5d3f215993fdd56af0",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        5
+      ]
+    },
+    {
+      "case": "bcss_49",
+      "dataset": "bcss",
+      "input_manifest_sha256": "e8a44fea80d6c6984022ea31582c6d9c15632a7bfd985ab86b21c2dd97741189",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        5
+      ]
+    },
+    {
+      "case": "bcss_50",
+      "dataset": "bcss",
+      "input_manifest_sha256": "d8c5e68c6c7c5d6b2c99543482133e660da9968ee03a3c52c596c173d74f1a5b",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_51",
+      "dataset": "bcss",
+      "input_manifest_sha256": "3e88b769d0f82242a0303eee87388f24155be4d81bd8f58668bc9021866e510b",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_52",
+      "dataset": "bcss",
+      "input_manifest_sha256": "bbdea2dcdb5bf8f8f7f5dc5f506f6ed99a70815785c2b4195df89cd8e72087f2",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7
+      ]
+    },
+    {
+      "case": "bcss_53",
+      "dataset": "bcss",
+      "input_manifest_sha256": "e556708a94a1866fb01006d7ff57f2bc2ee383e35e95a3a124aadfbf0b9abbd5",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "bcss_54",
+      "dataset": "bcss",
+      "input_manifest_sha256": "6141123f3ce1e27f45fd4e2be3b93d2494d590de83de93633b231a3083776a3c",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_55",
+      "dataset": "bcss",
+      "input_manifest_sha256": "af624c76325dac0a307f1214477d1c1557fd5375b1ef44729c0690633260c5aa",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        5,
+        6
+      ]
+    },
+    {
+      "case": "bcss_56",
+      "dataset": "bcss",
+      "input_manifest_sha256": "59f597beab51d1fa1c5873ce09386f4cc65bc5b9a492f7458495248e761bee6e",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "case": "bcss_57",
+      "dataset": "bcss",
+      "input_manifest_sha256": "940122ce23b2eb6bdb933e983baf8d2309e5759e518c40d7b593b40b878d9421",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_58",
+      "dataset": "bcss",
+      "input_manifest_sha256": "684ae2b8a739dbed1893b75ca5f3e1fd893ad7a35b56f90b08d02a545fc68f9f",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "case": "bcss_59",
+      "dataset": "bcss",
+      "input_manifest_sha256": "3136f6716017a89d25c07352741571bc032f917d8a3324cd09ea1116df9bec5a",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_60",
+      "dataset": "bcss",
+      "input_manifest_sha256": "04bc13027cc7e81b3923946aebfa2fdd302c4068e34bcd274fde9b9f8a098ac9",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        5
+      ]
+    },
+    {
+      "case": "bcss_61",
+      "dataset": "bcss",
+      "input_manifest_sha256": "06e0dfcbdfcf7ecf2119822592b1da2c9c9d410e59fa35f7a071a373fe6e673b",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_62",
+      "dataset": "bcss",
+      "input_manifest_sha256": "2c7f5af98702f70bcd9a34d92f51f5aa58f524a9a32f142cb7d2e5271c6d2673",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_63",
+      "dataset": "bcss",
+      "input_manifest_sha256": "baf1f7616e2e7f57a394a913829f4c22824048ba96cbc4990591184cdae7c5d8",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_64",
+      "dataset": "bcss",
+      "input_manifest_sha256": "d1b9f3a6bf4bfa76df9da54717ca05e7666d28c2255dd48b75514a8f53ec7d6d",
+      "eligible_classes": [
+        1,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_65",
+      "dataset": "bcss",
+      "input_manifest_sha256": "9edbd04a80165e061a359a2f02e46d25133299f94a583f9ba3ebc4bb10003b4c",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_66",
+      "dataset": "bcss",
+      "input_manifest_sha256": "1a57a386a8afe981d510c12cb9dae1daf81d510c463883d98c7c95bb39a0bdc0",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_67",
+      "dataset": "bcss",
+      "input_manifest_sha256": "336ca1522d05ed861e423ff882d5d333625617cca18536b8f27149b3550d7733",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_68",
+      "dataset": "bcss",
+      "input_manifest_sha256": "54c23b21a202ad6d61d03004c383a75481382e6f37c9e719d9f6a8beca864f16",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_69",
+      "dataset": "bcss",
+      "input_manifest_sha256": "efcf7b5ab5026b461575efa5a43b4ae2f147e58d58e3a83720c7174fac18c6e2",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "case": "bcss_70",
+      "dataset": "bcss",
+      "input_manifest_sha256": "16da38c4deabbbfef85b99bc4e7d77d244ebc8e4f001faa32a24a040240838da",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_71",
+      "dataset": "bcss",
+      "input_manifest_sha256": "8db102265a529929afdd5e4d6fe42019e9a1d9005bf4d764db7eaa60589a5ea2",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_72",
+      "dataset": "bcss",
+      "input_manifest_sha256": "76bdf1855a790159b3fec501beb10e5bbf7dd34bfb506ad5cc97f698a4f52d21",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        5,
+        6
+      ]
+    },
+    {
+      "case": "bcss_73",
+      "dataset": "bcss",
+      "input_manifest_sha256": "c651230c01039b9418fbdd52eaa9ee5e5729fbc3b47c1c63e26a5fb1a1c86105",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_74",
+      "dataset": "bcss",
+      "input_manifest_sha256": "3d9d43ccdc027c5e5e1bf424bdd3b74bad226d8f084b6f4cd58cde1e6bf14508",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_75",
+      "dataset": "bcss",
+      "input_manifest_sha256": "7e0b91fd1cf02b5d5c22699fca917b3913204d1d4feac91705a5e1c71bc7714f",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_76",
+      "dataset": "bcss",
+      "input_manifest_sha256": "3016b75a863a7c4041ad1568ba4fb078ba8d7f3cfcc212c0f28f4219cbe7b602",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        5,
+        8
+      ]
+    },
+    {
+      "case": "bcss_77",
+      "dataset": "bcss",
+      "input_manifest_sha256": "70166f33333f680afd01a04fc01095ef1c20e9959bfe7dee293697a04494a01d",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "case": "bcss_78",
+      "dataset": "bcss",
+      "input_manifest_sha256": "a3bff06326c9be45e8e78f3e2921da15a824841647f86ba61b4029c6154d1263",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_79",
+      "dataset": "bcss",
+      "input_manifest_sha256": "fc785a640ce19c3536e2fd20c50f38c8cb5a3328ef0179267a3bdd00448f44c3",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_80",
+      "dataset": "bcss",
+      "input_manifest_sha256": "27ff890b987952fb535314be805a8316f2ef37dbd662a2a91d13efe09f8e1606",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        5
+      ]
+    },
+    {
+      "case": "bcss_81",
+      "dataset": "bcss",
+      "input_manifest_sha256": "52e5088855cf8b4f5bf1efe76df2c4490ab6bc9dc1eca97a03b3c5fad1372ec6",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_82",
+      "dataset": "bcss",
+      "input_manifest_sha256": "6e899000f304da57b16af7f972f27e0eafcfa4e4995e5772048d2799277ee9ea",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        5
+      ]
+    },
+    {
+      "case": "bcss_83",
+      "dataset": "bcss",
+      "input_manifest_sha256": "a485f4c4b840e65fb91213582ed617a7b584434d463c9c4aa4c4f0a4dae8bcf4",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_84",
+      "dataset": "bcss",
+      "input_manifest_sha256": "20e7d5d0ceda0c32d682694532300ea057ccbb3ad5730e3897defe1748cab7ad",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_85",
+      "dataset": "bcss",
+      "input_manifest_sha256": "c172011ca6b5bcbfac2388835dbe69e0ddac1cb06dc9d5d937b13f817b112d92",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        5
+      ]
+    },
+    {
+      "case": "bcss_86",
+      "dataset": "bcss",
+      "input_manifest_sha256": "83cdd1ef3e85253aa70abaffe4667dcd7e8566922b718490ea8a3c169ed7f271",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_87",
+      "dataset": "bcss",
+      "input_manifest_sha256": "214bf9f8ba37b587367c79b52ef8273bf732e13456b3ca1974bcf445c4cad2a3",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "case": "bcss_88",
+      "dataset": "bcss",
+      "input_manifest_sha256": "6f589b8657f6be129f33628a0d9bd0dff0945ee44af46f92427246e3f17d317c",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "case": "bcss_89",
+      "dataset": "bcss",
+      "input_manifest_sha256": "5a975904dfc50efc3852d7259dd407072afd1d056a1b6113e67cce21c50f4175",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_90",
+      "dataset": "bcss",
+      "input_manifest_sha256": "58e428910ae59a41dd36adeb84ab1c0b0eecc42120fb7a11a48046e421e665e9",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_91",
+      "dataset": "bcss",
+      "input_manifest_sha256": "4da9354ca83949e32d5b7328bc574d279853dca1e485e9fa400aaf2d4730c1d3",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "case": "bcss_92",
+      "dataset": "bcss",
+      "input_manifest_sha256": "abc61efd40a9fceea545093f51ca5e055ec1ab68028f90382ee1e7f0d13bcf73",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        7
+      ]
+    },
+    {
+      "case": "bcss_93",
+      "dataset": "bcss",
+      "input_manifest_sha256": "a84b3071b9dfaa49b7acf3893803517b99fafa51854d04ee6dd89c70d83badb9",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        6
+      ]
+    },
+    {
+      "case": "bcss_94",
+      "dataset": "bcss",
+      "input_manifest_sha256": "144b992fb71881154721591e7038e3479c2b486f87fa3563241e3e02feb8f4d2",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7
+      ]
+    },
+    {
+      "case": "bcss_95",
+      "dataset": "bcss",
+      "input_manifest_sha256": "55b95a5559c0ec03063b614b4ac0487709d54a39b7d2faf387f82e3bf1cc01b3",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_96",
+      "dataset": "bcss",
+      "input_manifest_sha256": "45c0eb159c06b9ff4b198a68003bd40b131aca0569c929b7eefce16b74a66116",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7
+      ]
+    },
+    {
+      "case": "bcss_97",
+      "dataset": "bcss",
+      "input_manifest_sha256": "50ae4d721d1769fe098acceafbe7b35cf6d35f854f0b93c0a0de4576119a06b4",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_98",
+      "dataset": "bcss",
+      "input_manifest_sha256": "b05a3d8e652d43e536be8c11d7285460e02187661490278a8d6859dcaf195e46",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        6
+      ]
+    },
+    {
+      "case": "bcss_99",
+      "dataset": "bcss",
+      "input_manifest_sha256": "d0c98b7124a6915f01f1b7064a4485ad69520567e44c07fc6f64304443016ba4",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_100",
+      "dataset": "bcss",
+      "input_manifest_sha256": "f3ab2ef9c8b73b254bf4d32d0e004f569a5e53a05a3ec0703622527d5f449a50",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "bcss_101",
+      "dataset": "bcss",
+      "input_manifest_sha256": "7acb1982af693ce5f8ece2702596e36953c9734113afa2412e6e8ac05c46c5bc",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_102",
+      "dataset": "bcss",
+      "input_manifest_sha256": "566727bbed2f9c7e0faf87cb9eea9f9ca74620e97e80345fdc5eff3224874d81",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_103",
+      "dataset": "bcss",
+      "input_manifest_sha256": "6f878eaf6fedfedad6f97d47159e900cdf743ef96dbe9a4ce38905aeb13f6e30",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "case": "bcss_104",
+      "dataset": "bcss",
+      "input_manifest_sha256": "5220d30594cae711d95163753a8e56cf902dfb0f43158d33c08a528404bd7057",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_105",
+      "dataset": "bcss",
+      "input_manifest_sha256": "98e89f224bdf634feddced2231413caf50aee68efca1bdeda7d0009d3adacf90",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_106",
+      "dataset": "bcss",
+      "input_manifest_sha256": "e028bd1998141d4e153b6925b37ecb4ea9f695b6f8a35888c696c7a1bd1d518c",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        6
+      ]
+    },
+    {
+      "case": "bcss_107",
+      "dataset": "bcss",
+      "input_manifest_sha256": "46da88627392e3a03483f01d90b89f9306d0a7661774352ae57bd4c9b12afbe1",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_108",
+      "dataset": "bcss",
+      "input_manifest_sha256": "21f699d517ef97dfaacb6e47e49513989b9d44ba48949ea11c2e64a17a584d6d",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_109",
+      "dataset": "bcss",
+      "input_manifest_sha256": "4043482dd84b7f2c853e3f3e0103e9203164309412b2c4f046553ba251aa6b2e",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        6
+      ]
+    },
+    {
+      "case": "bcss_110",
+      "dataset": "bcss",
+      "input_manifest_sha256": "1e0463ca6e4677661fb9f3755291474333c1255e0473fd35ba603a7740eb051b",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_111",
+      "dataset": "bcss",
+      "input_manifest_sha256": "8d62e70972b1c30e744e6d9b69a4758ba92bcab90396e8ede472deedd8079b7f",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_112",
+      "dataset": "bcss",
+      "input_manifest_sha256": "a6bf0369633dcb9e71479eafd68e4d1c37068c788e88fef9b45a401bb8c4e8ff",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        5,
+        6
+      ]
+    },
+    {
+      "case": "bcss_113",
+      "dataset": "bcss",
+      "input_manifest_sha256": "c8fd7c0556551bb47b551c7cb7c8e34913a4f14f0ccdd343cc1ab77414061951",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_114",
+      "dataset": "bcss",
+      "input_manifest_sha256": "a9b75d84816da7f364bf82638bbdd1f33a3d297261f14901a33a855c38be8af3",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        6
+      ]
+    },
+    {
+      "case": "bcss_115",
+      "dataset": "bcss",
+      "input_manifest_sha256": "86570f1e89fa2037e4043d4a899b5afa6822e73aad8741506074b76881b8b1ef",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_116",
+      "dataset": "bcss",
+      "input_manifest_sha256": "afb93c6bbec36c9e9d5f2cd15200c4c923cc807be265d4bee077d33b61130cf6",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7
+      ]
+    },
+    {
+      "case": "bcss_117",
+      "dataset": "bcss",
+      "input_manifest_sha256": "8b539dd453ccbc2ae4a46d099ab62f9ef6db50e9d94620ab1a032b98c41f0b72",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_118",
+      "dataset": "bcss",
+      "input_manifest_sha256": "6a5480f8a071560cbb9e8f453da5961847d5f97287732e7712b288003bb18ce4",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_119",
+      "dataset": "bcss",
+      "input_manifest_sha256": "60ae240187fd8fcee0bd1abaf6f00e5c67bfa8820d9486208f4f492aaa3e21b2",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_120",
+      "dataset": "bcss",
+      "input_manifest_sha256": "b830d9bb0b88aa8d8fb14bd9abbbc57c25001c991176a82ce6253e43aa6d6b09",
+      "eligible_classes": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "case": "bcss_121",
+      "dataset": "bcss",
+      "input_manifest_sha256": "590cfcad67aabe68125cd85b728a5819109caae5fcc8991c119e868467847b30",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_122",
+      "dataset": "bcss",
+      "input_manifest_sha256": "708e8ec96f6d973ae9e7a748163acd8f2b6c6b074ad20f637adfc3b5699af52b",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_123",
+      "dataset": "bcss",
+      "input_manifest_sha256": "fbdd7db5064f53f8a7f640955ed7b9699e7a94da2df8781266c05e168f1e79aa",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        6
+      ]
+    },
+    {
+      "case": "bcss_124",
+      "dataset": "bcss",
+      "input_manifest_sha256": "54d4b3cf81107ea06c09dd2c0ef21e8880cc03226651daffd2cc315b13c3a147",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "bcss_125",
+      "dataset": "bcss",
+      "input_manifest_sha256": "95f123ee68604a11c1b6e025b5cfebc2efbacc481d41d6efa7cfe15c799327d2",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_126",
+      "dataset": "bcss",
+      "input_manifest_sha256": "e3688de50a5560f541f027f8a23f6fdd0bcde8a0310883776e989642c4081673",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_127",
+      "dataset": "bcss",
+      "input_manifest_sha256": "3ca3d89c3e2cab59c6c619e32bb5780a4a16b0432feb6769913695512e6d6bdc",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        6
+      ]
+    },
+    {
+      "case": "bcss_128",
+      "dataset": "bcss",
+      "input_manifest_sha256": "8d89fb2f0171353d7e4e6be1603179eda9a276b9ac1698a5944c13b158e01010",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "bcss_129",
+      "dataset": "bcss",
+      "input_manifest_sha256": "816b79118b792c6ffa030a241545cfac1464c78c48386c868391e681cb300c65",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "case": "bcss_130",
+      "dataset": "bcss",
+      "input_manifest_sha256": "e7e943569e1476931385b54e81b7d8c0f9f2535183bc068c2e82ecea79bc1b5e",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "case": "bcss_131",
+      "dataset": "bcss",
+      "input_manifest_sha256": "a64790b51a560a7c52a2d86b48fe4f568f43b823ecafaa85851cf3f9caf7cbfa",
+      "eligible_classes": [
+        1,
+        2,
+        4,
+        5
+      ]
+    },
+    {
+      "case": "bcss_132",
+      "dataset": "bcss",
+      "input_manifest_sha256": "ac6923f990fe9c69ea7a9f93fd9f8f264a51131b2be79690a786ecadb99c8ac2",
+      "eligible_classes": [
+        1,
+        2,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "case": "tiger_41",
+      "dataset": "tiger",
+      "input_manifest_sha256": "ccbd96461694ef24553c12c2f9c4292b0b38ea41f7927528f3f2af8470f31be2",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_42",
+      "dataset": "tiger",
+      "input_manifest_sha256": "dde243392d2783836ce8229ea7808ab5e9e5da4775778d08d344ad4d80986841",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_43",
+      "dataset": "tiger",
+      "input_manifest_sha256": "cbd524347c85f3167dcb233d1f4780fd842904615f97601d5424e556e6355bc4",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_44",
+      "dataset": "tiger",
+      "input_manifest_sha256": "b00cf9709ddcde876d24c6d46727e70e3a7e5f15167d9dbaad4e9e24a3c3ba2a",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_45",
+      "dataset": "tiger",
+      "input_manifest_sha256": "d7c3c62f55c6cebaaa9c05756163a4272b5b6d5b481ecbd0e07408f9e78c9da6",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_46",
+      "dataset": "tiger",
+      "input_manifest_sha256": "efc42ce3b0cd046d1968bb85e238f7e28357277643cda52dec39bc4a79f7c04f",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_47",
+      "dataset": "tiger",
+      "input_manifest_sha256": "167e517cc7a90aa587659794363fe93fde1033902baabc3aec9d8d8404757a06",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_48",
+      "dataset": "tiger",
+      "input_manifest_sha256": "bf1a1f102edb85a21ac25363da3bec2ddd39c72e231948505d40b334a70f7c87",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "tiger_49",
+      "dataset": "tiger",
+      "input_manifest_sha256": "d2ffc0adb4c004b46b6ef316387a78f5c8c02228a5843e7735bb7d6978f51d19",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_50",
+      "dataset": "tiger",
+      "input_manifest_sha256": "03046bb8ddf5cd3cd9b2ea35e3b7d7c2efc5ce8c4def73ac7ec92c9f70b32e06",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_51",
+      "dataset": "tiger",
+      "input_manifest_sha256": "2ce2db8b8cbc4b71eb4090b3a2f5c345387a25a09b345133a3fe3a8f22d5294a",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_52",
+      "dataset": "tiger",
+      "input_manifest_sha256": "e023c64ace61b274715f9da07795f6085f7a44f9e5e5a7495184b9ce22726c8a",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_53",
+      "dataset": "tiger",
+      "input_manifest_sha256": "e42fa7b9753e6dda603a35fe7e1881914dc71c4a997d50e3336f5a5b1a0bdc92",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_54",
+      "dataset": "tiger",
+      "input_manifest_sha256": "a1cd3fca4b83c29eb2e6de1ef6f6091e929940b7d201bbc02380a1ed11d043b5",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_55",
+      "dataset": "tiger",
+      "input_manifest_sha256": "5aba24da6c4cf2683488d74e7c264f0d2085e2f6b948ae254e7d980286cfb90a",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_56",
+      "dataset": "tiger",
+      "input_manifest_sha256": "98ff39b6a8eb1e3767a2b921d0ac4156da45850b53dcf1feb6632a3406341cd7",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_57",
+      "dataset": "tiger",
+      "input_manifest_sha256": "066b9bcf2c06915ef52e6dee4d9ef69da836b88c54bd8e3b5b08a8e8c741c7f5",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_58",
+      "dataset": "tiger",
+      "input_manifest_sha256": "d92a557b042c12b7f5111ef53dec32e9d8ceda295ef8c1e89ec94879c8ae8fd7",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_59",
+      "dataset": "tiger",
+      "input_manifest_sha256": "4fe4e14fae2ee424cffd133d2dccfd04ade372432b5fd9f9b980cd7d73857616",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_60",
+      "dataset": "tiger",
+      "input_manifest_sha256": "78621a4fdc067e61d1ef4c135efb49a54f0961c01dd9cfb330b2375a3cc91970",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_61",
+      "dataset": "tiger",
+      "input_manifest_sha256": "3aa4843cef2e504e3d992b5568854f8a3be35dceb4424d91a05c998cbecbbe8d",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_62",
+      "dataset": "tiger",
+      "input_manifest_sha256": "6e217e7893014a0880aad6d8293c87f0f3f3e8bcca6b0d0840dbec026a2e0b5d",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_63",
+      "dataset": "tiger",
+      "input_manifest_sha256": "567a5e4b908dc25e68ddbae0e31f9084c1c86bea25450531eb2d948d3a5c83a7",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_64",
+      "dataset": "tiger",
+      "input_manifest_sha256": "a16f623ba0350685107c10db377fa228f56e08920972622181cea80d9946a610",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_65",
+      "dataset": "tiger",
+      "input_manifest_sha256": "3a24330b8284d6c3586b0532ce61408cc7263d3c584a70a83f09ea68a9137806",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_66",
+      "dataset": "tiger",
+      "input_manifest_sha256": "289448a29cb932cda31f43b7e171c7e33ae1626cf392ca7542c3341ba67804d3",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_67",
+      "dataset": "tiger",
+      "input_manifest_sha256": "004243c3542053328d8e71e373f16a8035cb9d4570689b02a334d1c0678cd41d",
+      "eligible_classes": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "case": "tiger_68",
+      "dataset": "tiger",
+      "input_manifest_sha256": "a1ce7709f2d17d05ede795606146cbd2efd037c410ee84b9bc7491d6bac052f1",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_69",
+      "dataset": "tiger",
+      "input_manifest_sha256": "fee918dba1165c5fae78b09b59dfd9bec773224acb50cb4100e35a0bd924ad08",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_70",
+      "dataset": "tiger",
+      "input_manifest_sha256": "2c4eb7b449a8b2dfe2fa8e8b5b4185688c5ac22b92d21ba0bfe8f50228202f74",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_71",
+      "dataset": "tiger",
+      "input_manifest_sha256": "1edbddc5ae1780f1ecb745cb9c2d8fa37321dcf2ffd09bece2b34a329b2112c4",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_72",
+      "dataset": "tiger",
+      "input_manifest_sha256": "bd72eff20aca06b9cb093958b89a6e0e42d0993dc1e5d3d02f76206ed2c5a603",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_73",
+      "dataset": "tiger",
+      "input_manifest_sha256": "7ad0f433d5fdd64a344629a9bb58cf5f03d5d35f5d7811313495bb80acde1a3f",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_74",
+      "dataset": "tiger",
+      "input_manifest_sha256": "e46310a3c8fb7c57564fc2db9237040083e3c173be6e654271a14ead045b01f9",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_75",
+      "dataset": "tiger",
+      "input_manifest_sha256": "469818d381ad653058feb46f9b04c1bb0bc910e76e6dc91316369de00909ff5e",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_76",
+      "dataset": "tiger",
+      "input_manifest_sha256": "6663e2bf837ce84174b8502669f0d4a3530c4227276b1ac73972cd398fd1b539",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "tiger_77",
+      "dataset": "tiger",
+      "input_manifest_sha256": "81f1331f7ae04a65a50edb19515b971b7df4622694f9868973376861e1c6b38d",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_78",
+      "dataset": "tiger",
+      "input_manifest_sha256": "a672ed29ac9e5801b08f1b9edba6ca8c922024f88b8b1e67e1bbcf3082eff96d",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_79",
+      "dataset": "tiger",
+      "input_manifest_sha256": "43eda8e1d6fc0348bb5d0f24b45fa8a6eeed4ed6d474f852f24dad2fbbd76207",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "tiger_80",
+      "dataset": "tiger",
+      "input_manifest_sha256": "e4ee186c4f7810c02d3652730b4143f3405179388a4e202b0c68086d94338049",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_01",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "a5b5102fc638fd4aab4c3505b2edcd5a67f9111df18f29c77d3124e28bfa7d89",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_02",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "55c245778b03654d50c685453d319bc73ebdfe8e79211e7c6260ee4b3ea8bcc6",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_03",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "13c40a40d10f190d4505f4842c77708172ea1c243376837768dc034e61467625",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_04",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "25477017a7af8a6e63db19a506604dd6b6a72859de830cabbcdc2f3b45702757",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "wsss4luad_05",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "855cb2f03b25a22359f56a0f7e401406f4dd2027ea0c610aead87baf4a32059f",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_06",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "17f1cbb50d7e2499bc9e6d040400dd176b48a32ffa2a73e8058c8de5189789ed",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "wsss4luad_07",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "22aa684ab6f416dfbab7cabd122bf7d9a4af7ab1aca87188281acf4806537081",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_08",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "8df46aa0c829a62e151ed69af39cfae64d4c41d81be1a06c87f4189067466efd",
+      "eligible_classes": [
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_09",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "9f2524519bf9f098a0b96fb663f000edd0904c83598f8ecc93497049d475e047",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_10",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "cf98e296a22dccf4839359b6578817b9fa7f96cda997362fb6b10e3ae7ec7891",
+      "eligible_classes": [
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_11",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "98de52155591180c777635e8427445bbb6d6faa5021afad4fcf4b4811accffc4",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_12",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "f9abd19ffca1872db6661ac657558e558e16b31934056fff5fc86e87cde85c9a",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "wsss4luad_13",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "b084f1f404d9f63c846e7f27c113e778009db4ccc27a2fffa971641a902ddb71",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_14",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "0da73d4ee5e08edb8bf45150adee1d8f6f6b37a139af374aa9f919b99654948b",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_15",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "514947e4ee8f296a9010f34464587954de5f99164213022a0ae1ba08cbd727e5",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_16",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "004c794c0d9bb8366edcc62da210fd4de80c10f759cd1ab380366db7bea1f138",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_17",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "24cfbced35485c6361258ee4e4c16bf968f0e781aa10ebfa6850f5602bb0fde4",
+      "eligible_classes": [
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_18",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "8554a2ef39326398a0eff64d168b5236eda1e1803c8fd5282e5635b48e0529da",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_19",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "e54469aa797c7ad06139463cde1ceb319ba33786e9c419deba6d221faffd2606",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "wsss4luad_20",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "429b387ead5538965ee858ea553f6da5d57a0e32c2f52f40655ae0069414e48d",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_21",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "7687136d06b35c1e7eed91c4bbf657a1c0d712e17b0d53506ecab6489a7b485a",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_22",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "b8e3af490c63106097df658434941e9be51d5a5ca22cd8a23aa0e57f98703b3d",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_23",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "9957a4b2355ec560e1afeb06eb181504ce479efb0b9e31b117d90bcc3628922d",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_24",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "db647ff3ad0e7e6236f7397fc6c4212eb5b3f3c099cc9ac4e1a964d7ae7a598b",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_25",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "1d41019b8dc5b7f467e1c87c3268a6e0907cf5677e80e7f5dd2fd23817cbe107",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_26",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "a17fe38a2e6a33859ced597ed1ea867cb3640e388ca8dd1c3e0e82358f9f87b2",
+      "eligible_classes": [
+        2,
+        3
+      ]
+    },
+    {
+      "case": "wsss4luad_27",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "81fd0ea5a5409476b136acd7e354a3897aceee60c5f11deea79ffced810e7a7e",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "wsss4luad_28",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "0c5b0b9693f1929b98798823bf668e58f2026604841372ce6fbf6d2cf5478331",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_29",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "6cff3ce2d3bbbb332fae4aa102e3dca58b6bee209bdc471d6d89a131360d3f52",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "wsss4luad_30",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "3137a945fc7fd01f1ccf89405f1524da9d1ce57ae213c19e9e062b2592eeb9a1",
+      "eligible_classes": [
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_31",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "7254a9b7d4e9c3501f1aa568429b013d58a6c4b1af13e4da5ba70fcb57c46b46",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_32",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "b76f5e91a59e36c8c81b664c11215c3084b18baca8fcf689fb10b76a7e18c464",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "wsss4luad_33",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "06a8e14622f9edf6bddf8b6acd56a483e4fc3c3d56369c91b7d66de888fd06a2",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_34",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "eb1833ed66eb8985896df21a963ea544d33f925c0792471a9003b8d8f4623994",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_35",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "bbf90e17a8bcb780c552ddd73dccc8e2acda303fba07f262fa3561c5f1e6ec08",
+      "eligible_classes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "case": "wsss4luad_36",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "8c41a3ac03919252d4e86113985d68be04c536ef5e83b39e10b87fdc0d6bfc0d",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "wsss4luad_37",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "e06d3aabfa760e660dbd69c2f551f03a161e44a49229b9fec45d4fc5eabfcc7b",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "wsss4luad_38",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "2c956b92c4610dcc59b30ab5f7de2c053a340de8d820bfe8a179f4e8350227f5",
+      "eligible_classes": [
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_39",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "dd6a8c5bc225f78d6b50e74a3bf5daa5e89b7c06a7e05522d67ea68349a885d7",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "wsss4luad_40",
+      "dataset": "wsss4luad",
+      "input_manifest_sha256": "d97db06e6aeee1aaf212fe99e744b4ee1dcb014d37db16eeb81082892823f437",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_01",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "ca6ff8ddb76aaf9dcd90ee88e5cd51455168adceacb7eef815519b9caeb47a8c",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_02",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "7f331f9a4396a8f6528e49bca99ed90eb255f921f53f7569d7b153a4794fc09b",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_03",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "af116c4c23392ec65c629f095bfba05794d2cf127ea9d7bf4c80b87bbd486d08",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_04",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "3c639570201231d0070fff088be92c2a1a5d9e87a84feb455f845e6ae746cb04",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_05",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "ab376e5ec77b5352488c81ae3323afe1440b6351422bfb2ba91c84c555377737",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_06",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "8ed453c2067ac6fef6150f7f964a84e985443274d710bb139e631fa57e6a1c85",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_07",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "a3a81f1727e44fe47d1697ea2301e9e1b990b14f777b6dee89e51a21717b8405",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_08",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "60728e16801fefb2e90add63ea5de482684f8afb7fd2821e86e042933784567b",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_09",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "6853cf4a06e8f5ed48f0552363094a4a8b6d4eeaba6f1c74a7611a09c92fe902",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_10",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "4dbb8672b0a520f43a3f0acc30279e72a0721c6c62b018555b93ccc4a72b820c",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_11",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "3836bbe5d21a753699cb66f1b8f3f14312acfec19808720942403ea9f3c03fef",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_12",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "f0fad73b84385e670f06782b3b86872cd20ee0e69008ffa254e1803d7f4d134d",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_13",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "25a3e0729e7300d24e469e94b0b4edfeb736281ddbab4b4a39693902c68b861e",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_14",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "f317ca4421104610a682f6ea0b73dc547ae67b3630855821678c005296b67841",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_15",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "810a0aab251608b54ca91c9913d480d8e2fa303bde0e339da5c21362f3372afc",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_16",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "8f460162a9d91791ec59fc270577f3cd5eb314a2cf62b1f5b3917e5b681bcf48",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_17",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "5956fc046eb1e3a86e17b7d6cb61fc4e94b24d20a3aa271f288bae76e80fea9b",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_18",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "9126332d0840ee62a764bf05de8344d5d0ac29688b365ccfe13049d1c0d6b0b6",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_19",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "12b4e25d461777392946f47760908cc430d153f45cf0906723c55c7e8b0bc918",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_20",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "e3be7931ac9b058af080a54f5fbcd5048806d7edca28b0d800bb3d39d9226f84",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_21",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "8d03e4875cbf20408d5be2da88df8edaeea05108553161f14274be64756462f8",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_22",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "36998ed2da18d2b70ee536e8cc201edb547d3b7931c522dff8013abec296ee2d",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_23",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "0d82cbf83254da7fc119ce1861db64932e90ec67e5feed35cfdf2fb1ee404539",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_24",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "75c262e64edd9211118a24dfc7929908fc825714bab22cc7d991489fd5a7070e",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_25",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "eb216672049a164fc0587a26d4b2d6f0bdd64bdc8868be7089e51abf15577bf3",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_26",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "b1c743b8ab2021ff5db67142ca6f432485fa32a8ddb6ab577b8ba39b30640409",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_27",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "2483ef9de95266cb80d9dae07de620d04a85367b14d4058b75180d440ef5a177",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_28",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "a6241ea7490235e0dc7cf8830447d357488a2ead4f197ba473ac8da8f55c07d2",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_29",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "f55c5df854cacfe74748a6a3d5c17a9f4f14840e3c4ba6c9f4f726649577372d",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_30",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "d1db55456a4557218ea9e3c4b26ce8c56658baa1d3605828c76687aca01362d5",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_31",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "dfde6d1331ec5b543bc593bfc07d8dd3a5677f692867c653d86f5424e976782a",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_32",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "e4222cf1750a5816ced24d364901dc393a811e7a2b7c841e15f687f08f8b629f",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_33",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "abcfd25cabd54b1560dfc84ea083bf854d5b5ed70e03eb5358d9d01a9822810f",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_34",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "06a78745f54eac2ba9bc2f1fc124cb1807a0bd3e94f63bb829bf752da4cabe96",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_35",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "34ce3d254a93515815e076166a204d0d7abc91e84687f72b7d4665bf3b491b43",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_36",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "96aded5585e6d8126f5e196a77a6288600336a17b0b2aaddf52e025dacaa8435",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_37",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "b59bcaae6a0148533c46017a093dd4510d901cfccdb3cddcdc4ff81f7c35525a",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "rings-tumor_38",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "d2b30a5e9f3b089e732f35e552c7ecf73ac158be792a83b94329762d239d809c",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_39",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "618ff26471e0ac8eb6a8eedc2dbc809ea6900f94861b49d1930e171e3e5a4965",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "rings-tumor_40",
+      "dataset": "rings-tumor",
+      "input_manifest_sha256": "65246d1a6abc89f29c0f0cd6feac4769001eff8bb8e867253b8b30c43c6c6530",
+      "eligible_classes": [
+        1
+      ]
+    },
+    {
+      "case": "ocelot_01",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "e42cd24a23d3075fe24f4b4718b774c6dfcc4bb285bd0f4cdd7b89f05aa4c758",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_02",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "436f3637112d2fb4307a7a8edb07ae3910daaf31dcc95fc79ceaef725cfd9418",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_03",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "7a344747ac362f7f3af2e600b6c9854bd8a2aee09cb438b48131a313692e24f3",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_04",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "699302c7d91dba8b6753191263c6de7df83e66e4afea46c8f79e8eaf1776e6d1",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_05",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "98230ea97c32a1d505c3800cbe59d726f86e0d62756a477362b439c8f93f04b2",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_06",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "9405643efbb659fe07ba0fa16c2b5428d721804c572eb013b56b109a9ca13fe5",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_07",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "c80c0615ba671266427ef41789226d34164f78670c285c6db929182a0f2fe124",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_08",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "f20bc7a5d5a310ac027e766721c78c7cf674a9ab294c75d72c0cab3dc28eb173",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_09",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "fc44679d9c9c5fcbabaf56f4b4721c02bc3908ae554abecabd983ab29e84da0a",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_10",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "0ad158367cbfc99d7994e53f262cf6dddc8e95f91606970f70e56de36a83dfc1",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_11",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "cc830412525fb0064f572998a42fd564aa0805e9874d17bd9d5b9d8046228339",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_12",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "5b21e298cfbba34d3d3c4850e6ea812f780ee5ee6eb3a7ad0f4deba9c553d5fb",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_13",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "5ce1cd5e25f8ec186ef3e0588f22baa9791d6c5e9715e294efa5f0732228b043",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_14",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "8e3704498469db9e370f31021d3f95a9156534a996a86ee36297f8a839345df8",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_15",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "c28f954fd4149a7fceca8b813b7557a52d8eaae9acd61e04ea2caff1815c4d63",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_16",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "8b80625a0569186f49279930eb482ea2f9eede5484222f8ed53d35183b6af046",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_17",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "f17d26bd441de8942e112b47241176987d01e47bdaccb98b3b7a3de03dc33cd1",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_18",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "e6ac71c97d11c892384425e4c3446d6a5614173439ada8b11161399bba76ffd8",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_19",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "eccbb296ae289417002ae78d4ee077501eb0593ef28cd5777a4f94d4290e92c1",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_20",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "6421625eb1008f82919adcd9aae2a395bbe838596878f8ffceee590f04ca0a37",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_21",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "904a157da18d5ef627620df17d91514ddba325cd1ff0f4479cb5ce5d82763ba4",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_22",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "594d2a67fe71c5c31ed10d11e1245353ea8bb7f8ead59d887640912c88496f95",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_23",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "08e8bdd59c8a62f67f3bbd55454205854f4a28aa762679e2c6b2caa1f796c78e",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_24",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "4f9936b88e1059043340637af662a2f7cf731383ffc43f9bfd1a961659cc1d50",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_25",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "110848566234b40a17ca3ecfeaffcf83ee395033603bf6b146968af3cb01541e",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_26",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "b55b14b00e7e039ccdcfccd29e1367e1acf42eff72a8e160209450cc046f2280",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_27",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "04b6ddd95dcf8d1a3cf3030aed7cfccb642b572e5a2aacdc08ced7d2e6d95af5",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_28",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "6f2015e64b68d3b38af49f839a5574d3bfad76140de9ddb78df93daed192184a",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_29",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "9a86bb88097469a4cf927c33ce93d65f1e7c0f75bbed85f24234423a74717e3b",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_30",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "e9e15615c222abf247b224312b710718bb88fefb84178d4e2458ed819dea13bb",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_31",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "f44b48db22c2ab7010cf106648ecc2864e12781c74f3e5533592089e41da0645",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_32",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "2d86194a138ad89a545fb6b161b9a688fc20dba4e3f29a88dc5ea09aebc32c48",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_33",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "ef962e582780d2fdec512f2d1e900909498591c9107de97b7b3241c1a1979ef3",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_34",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "307d6c9ab2a39d0cd72497b352c5da144515223baed3f05647b048d82f3205a4",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_35",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "0750edf479f748aefff6fe100bd148f98fd5646aeb6cc41bd14fad0e6bc36b2c",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_36",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "1e6342ad0fbcb52aae2c3ceda4b9dcfd655c5aaa0f2b2988de79a772413e603c",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_37",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "ab6b8d43f697d3af69ff46a21b941484932d3847b2cc452c173eb78beb95d0ba",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_38",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "22088ae56eec2c760eb99d49b3ee486c1e5a414fa4fcac1b63c7c9a482ac42b9",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_39",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "f17402297c9033d08a5426b288aac765ea983faa3f8ff2dec7ebc33aed5f2d72",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "ocelot_40",
+      "dataset": "ocelot",
+      "input_manifest_sha256": "8847d9a3a637800da3e8c9e89129b797f4e648aa8777e75948ffc610f2cee534",
+      "eligible_classes": [
+        1,
+        2
+      ]
+    }
+  ]
+}

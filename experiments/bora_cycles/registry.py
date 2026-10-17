@@ -506,12 +506,19 @@ CYCLE_SEVEN.update({item['id']: Candidate(item['title'], item['intervention'],
     item['equation_or_rule'], item['failure_hypothesis'], True, item['parent'])
     for item in CHILDREN_SEVEN})
 
+from .eight_manifest import SURVIVORS as CYCLE_EIGHT_SURVIVORS, CHILDREN as CHILDREN_EIGHT
+
+CYCLE_EIGHT = {key: CYCLE_SEVEN[key] for key in CYCLE_EIGHT_SURVIVORS}
+CYCLE_EIGHT.update({item['id']: Candidate(item['title'], item['intervention'],
+    item['equation_or_rule'], item['failure_hypothesis'], True, item['parent'])
+    for item in CHILDREN_EIGHT})
+
 
 def candidates(cycle=1):
-    if cycle not in (1, 2, 3, 4, 5, 6, 7):
+    if cycle not in (1, 2, 3, 4, 5, 6, 7, 8):
         raise ValueError("This cycle has no implemented, reviewed lineage")
     return {1: CYCLE_ONE, 2: CYCLE_TWO, 3: CYCLE_THREE, 4: CYCLE_FOUR,
-            5: CYCLE_FIVE, 6: CYCLE_SIX, 7: CYCLE_SEVEN}[cycle]
+            5: CYCLE_FIVE, 6: CYCLE_SIX, 7: CYCLE_SEVEN, 8: CYCLE_EIGHT}[cycle]
 
 
 def roster(cycle=1):

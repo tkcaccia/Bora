@@ -65,7 +65,9 @@ def export_zoom(source, root, case, xywh, methods):
         case=case, native_crop_xywh=[x, y, width, height],
         native_mpp_xy=sample["native_mpp_xy"],
         class_names=sample["class_names"], palette=sample["palette"],
-        physical_fov_um_xy=[width * sample["native_mpp_xy"][0], height * sample["native_mpp_xy"][1]],
+        physical_fov_um_xy=([width * sample["native_mpp_xy"][0], height * sample["native_mpp_xy"][1]]
+                            if sample["native_mpp_xy"] is not None else None),
+        coordinate_units="micrometres" if sample["native_mpp_xy"] is not None else "pixels",
         methods=methods, source_sha256=hashes, display_mask_opacity=.45,
         converted_rgb_resampling="bilinear for display only; no inference",
         predictions_modified=False, scores_modified=False, actual_visual_review_required=True))
