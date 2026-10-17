@@ -5,7 +5,7 @@ from PIL import Image
 import pytest
 import tifffile
 
-from experiments.bora_cycles.audit_cycle import audit
+from experiments.bora_cycles.audit_cycle import audit, glass_changes
 from experiments.bora_cycles.run import aggregate, digest, palette_bytes
 
 
@@ -97,3 +97,12 @@ def test_aggregate_tamper_is_rejected(evidence):
     write(path, data)
     with pytest.raises(ValueError, match="Saved aggregate differs"):
         audit(source, root)
+
+
+def test_glass_only_intervention_cannot_relabel_nonzero_tissue():
+    parent = np.array([[1, 2, 0], [2, 1, 2]], np.uint8)
+    child = parent.copy();child[0, 0] = child[1, 2] = 0
+    assert glass_changes(parent, child) == 2
+    child[1, 1] = 2
+    with pytest.raises(ValueError, match="nonzero tissue"):
+        glass_changes(parent, child)

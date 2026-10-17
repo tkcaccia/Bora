@@ -19,6 +19,13 @@ def load(path):
     return json.loads(Path(path).read_text())
 
 
+def glass_changes(parent, child):
+    """A glass-only intervention may remove labels, never replace tissue IDs."""
+    if np.any((child != parent) & (child != 0)):
+        raise ValueError("Glass child changes nonzero tissue labels")
+    return int(np.count_nonzero((parent > 0) & (child == 0)))
+
+
 def audit(source, root, previous=None, executed_code=None):
     source, root = Path(source), Path(root)
     protocol = load(root/"PROTOCOL.json")
@@ -107,7 +114,7 @@ def audit(source, root, previous=None, executed_code=None):
                 raise ValueError("Native geometry changed: "+case+"/"+method)
             if not set(np.unique(mask)) <= allowed or np.any(mask[~support] != 0):
                 raise ValueError("Class IDs/background clipping violated: "+case+"/"+method)
-            if method not in ("C20", "D12", "F03") and np.any(mask[support] == 0):
+            if method not in ("C20", "D12", "F03", "G03") and np.any(mask[support] == 0):
                 raise ValueError("Unexpected unassigned tissue: "+case+"/"+method)
             with Image.open(out/method/"mask.png") as display:
                 if display.mode != "P" or not np.array_equal(np.asarray(display), mask):
@@ -122,7 +129,8 @@ def audit(source, root, previous=None, executed_code=None):
             numerical = {key: detail[key] for key in (
                 "optimizer_success", "iterations", "termination", "objective",
                 "gradient_infinity_norm", "projected_gradient_residual",
-                "max_kkt_residual", "missing_known_bag_class") if key in detail}
+                "max_kkt_residual", "missing_known_bag_class", "converged",
+                "relative_mass_error", "fixed_point_change", "message", "fits") if key in detail}
             if numerical:
                 optimizer.setdefault(method, []).append(dict(case=case, **numerical))
             if method in survivors:
@@ -132,14 +140,15 @@ def audit(source, root, previous=None, executed_code=None):
                 if not detail["unchanged_survivor_native_parity"] or not np.array_equal(mask, tifffile.imread(old)):
                     raise ValueError("Unchanged survivor prediction differs: "+case+"/"+method)
                 counts["unchanged_survivor_comparisons"] += 1
-        if "F03" in mask_paths and "D10" in mask_paths:
-            parent = tifffile.imread(mask_paths["D10"])
-            child = tifffile.imread(mask_paths["F03"])
-            if np.any((child != parent) & (child != 0)):
-                raise ValueError("Glass child changes nonzero tissue labels: "+case)
-            glass.append(dict(case=case, newly_unassigned_pixels=int(np.count_nonzero((parent > 0) & (child == 0))),
-                additional_annotated_unassigned_pixels=row["methods"]["F03"]["score"]["annotated_unassigned_pixels"]
-                -row["methods"]["D10"]["score"]["annotated_unassigned_pixels"]))
+        for child_id, parent_id in (("F03", "D10"), ("G03", "F01")):
+            if child_id not in mask_paths or parent_id not in mask_paths:
+                continue
+            removed = glass_changes(tifffile.imread(mask_paths[parent_id]),
+                                    tifffile.imread(mask_paths[child_id]))
+            glass.append(dict(case=case, child=child_id, parent=parent_id,
+                newly_unassigned_pixels=removed,
+                additional_annotated_unassigned_pixels=row["methods"][child_id]["score"]["annotated_unassigned_pixels"]
+                -row["methods"][parent_id]["score"]["annotated_unassigned_pixels"]))
         if digest(out/"contact.jpg") != visual[case]:
             raise ValueError("Contact sheet changed: "+case)
         counts["contact_sheets"] += 1
