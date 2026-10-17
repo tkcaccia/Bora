@@ -1,0 +1,21 @@
+{
+  "study": "bora-20-cycles-2026-10-17",
+  "cycles_required": 20,
+  "candidates_per_cycle": 20,
+  "survivors_per_cycle": 5,
+  "new_children_per_survivor": 3,
+  "case_scope": "Every one of the 149 frozen ROIs in virchow2-expanded-inputs-2026-10-17/PLAN.json, every cycle",
+  "primary_conversion": "ensemble",
+  "unchanged_conversions": ["09", "10", "15", "19", "ensemble"],
+  "primary_metric": "Arithmetic mean of native per-image macro IoU over all 149 cases",
+  "reference_policy": "Fine masks are read only by scoring, after all cycle predictions are frozen. All 149 cases are repeatedly used for selection; this is development, not an independent test.",
+  "background_policy": "Original H&E supplies tissue/white diagnostics, independently of annotation. Score on original reference >0, including annotated pixels removed by a candidate. Internal white lumina are not automatically discarded.",
+  "outlier_policy": "Save colour novelty scores and connected region proposals without assigning an unsupported biological identity. Primary masks retain known coarse class IDs. Report discovered components separately from claims of new classes.",
+  "small_region_policy": "Score all reference classes, including absent coarse classes, and every connected reference component. Report component coverage, completely missed components and recall at 50% correct coverage in physical-area bands <=400, 400-2500, and >2500 um^2. Empty strata are null, never perfect.",
+  "runtime_policy": "At most 3 low-priority CPU processes and 2 numerical/OpenMP threads each. Include each algorithm's preparation, inference, background policy and native projection. Exclude shared disk loading, scoring, compression and rendering. Verify Python/C++ parity separately; a port does not count as an innovation.",
+  "visual_review": "Produce a synchronized full-resolution view plus an all-method contact sheet for every case. Explicit review records must identify actual viewed sheets and observations. Automated image checks do not constitute visual inspection. No next cycle or survivor selection before every case is reviewed.",
+  "selection": "After all 149 cases are scored and visually reviewed, choose the accuracy leader. Form accuracy/speed/small-region Pareto candidates, then select four further methods with explicit written tradeoffs and family identities. Record all 15 rejections; do not silently omit failed methods. Selection is a review decision, not an unrecorded best-conversion oracle.",
+  "innovation_policy": "Exactly five unchanged survivors and fifteen new implementations from cycle 2 onward, three children per survivor. Each child must have one clear mathematical intervention, a distinct mechanism tag, parent lineage, an explicit failure hypothesis and executed-source hash. Parameter sweeps, ports and elaborate solver ensembles do not count as distinct innovations.",
+  "final_delivery": "Only after twenty completed, fully reviewed cycles: all-cycle history, final ranking, per-case/per-class/small-region scores, CPU timing and C++ parity evidence, every final-cycle mask, all five unchanged RGB visualizations and final-method outputs for all conversions.",
+  "excluded_prior_strategies": ["B01", "B04", "B05", "B06", "B07", "B09", "B10", "B11", "B12", "B13", "B14", "B15", "B16", "B17", "B18", "B20"]
+}
