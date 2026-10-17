@@ -12,7 +12,7 @@ import numpy as np
 from PIL import Image
 import tifffile
 
-from .run import aggregate, digest, palette_bytes, verify
+from .run import aggregate, digest, palette_bytes, verify, resize
 from .benchmark_scope import validate_scope, requires_parent_parity
 
 
@@ -100,6 +100,11 @@ def audit(source, root, previous=None, executed_code=None):
             raise ValueError("Original scoring reference changed: "+case)
         coarse = tifffile.imread(src/"coarse.tif")
         support = tifffile.imread(src/"tissue.native.tif").astype(bool)
+        constant_expected = None
+        if inputs.get('single_eligible_class') and protocol.get('study_protocol', {}).get('degenerate_evidence_policy'):
+            completed = tifffile.imread(src/'coarse.completed.tif')
+            constant_expected = resize(completed, sample['native_shape_yx'], True)
+            constant_expected[~support] = 0
         allowed = set(np.unique(coarse)) | {0}
         mask_paths = {}
         for method in methods:
@@ -129,6 +134,15 @@ def audit(source, root, previous=None, executed_code=None):
             counts["native_masks"] += 1
             counts["exact_display_rasters"] += 1
             detail = saved["details"]
+            if constant_expected is not None:
+                if (detail.get('input_contract_fallback') != 'constant-evidence-coarse-completion-v1'
+                        or detail.get('refinement_performed') is not False):
+                    raise ValueError('Constant RGB incorrectly claims refinement: '+case+'/'+method)
+                if method == 'L03':
+                    glass_changes(constant_expected, mask)
+                elif not np.array_equal(mask, constant_expected):
+                    raise ValueError('Constant-evidence fallback changed coarse completion: '+case+'/'+method)
+                counts['constant_evidence_contract_comparisons'] += 1
             numerical = {key: detail[key] for key in (
                 "optimizer_success", "iterations", "termination", "objective",
                 "gradient_infinity_norm", "projected_gradient_residual",

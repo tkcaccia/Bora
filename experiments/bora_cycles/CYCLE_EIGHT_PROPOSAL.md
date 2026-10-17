@@ -51,3 +51,16 @@ Hessian floor and was therefore still convex. Its nonconvex description was
 incorrect. L09 now uses concave smoothed Shannon entropy, with an explicit
 tangent-majorization inequality test. The first engineering pilot remains
 archived; its implementation is not a separate candidate or completed cycle.
+
+The second pilot passed its352-mask integrity audit and all16 overviews were
+actually inspected. WSSS04/10 exposed a distinct input-identifiability issue:
+their constant RGB produced contradictory uniform classes and tiny islands
+from numerical differences in class appearance fits. No such gain is accepted.
+`expanded_prediction.py` now applies the same frozen completed-coarse fallback
+to every candidate/control for the30 explicitly degenerate inputs. An explicit
+H&E glass rule may still remove white pixels. This is an input contract, not
+another model or a change to the RGB conversion. All319 nonconstant cases and
+every historical parent parity requirement retain their original algorithms.
+The second pilot is archived and superseded before full launch; revised pilot
+verification is still required. Single-class IoU1 on ignored background or
+RINGS valid negatives is not a claim of fine-boundary recovery.

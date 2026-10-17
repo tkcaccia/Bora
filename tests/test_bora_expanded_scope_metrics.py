@@ -113,3 +113,66 @@ def test_rings_input_bound_cannot_rule_out_correct_removed_negative():
     truth = np.array([[1, 2]], np.uint8)
     bound = summarize(truth, np.array([[0, 1]], bool), np.array([[2]], np.uint8), {}, [1, 1], sample=sample)
     assert bound['optimistic_macro_iou_upper_bound'] == 1
+
+
+def test_constant_input_cannot_create_numerical_class_islands():
+    from experiments.bora_cycles.expanded_prediction import constant_evidence_fallback
+    from experiments.bora_cycles.registry import candidates
+    coarse = np.ones((24, 24), np.uint8)
+    coarse[12:, 12:] = 2
+    coarse[:4, :4] = 0
+    completed = coarse.copy()
+    completed[:4, :4] = 1
+    rgb = np.full((24, 24, 3), [30, 180, 60], np.uint8)
+    support = np.ones(coarse.shape, bool)
+    for key in ['B21', 'B22']+list(candidates(8)):
+        mask, detail = constant_evidence_fallback(key, rgb, coarse, completed, support, [1, 1], rgb)
+        np.testing.assert_array_equal(mask, completed)
+        assert not detail['refinement_performed'] and not detail['fine_reference_used']
+    bad = rgb.copy()
+    bad[0, 0, 0] += 1
+    with pytest.raises(ValueError, match='exactly constant'):
+        constant_evidence_fallback('J01', bad, coarse, completed, support, [1, 1], rgb)
+    changed = completed.copy()
+    changed[12, 12] = 1
+    with pytest.raises(ValueError, match='cannot invent'):
+        constant_evidence_fallback('J01', rgb, coarse, changed, support, [1, 1], rgb)
+
+
+def test_runner_freezes_common_fallback_without_opening_poison_reference(tmp_path, monkeypatch):
+    import json
+    from PIL import Image
+    import tifffile
+    from experiments.bora_cycles import run
+    source, root = tmp_path/'source', tmp_path/'result'
+    src = source/'cases'/'constant'
+    src.mkdir(parents=True)
+    (src/'ensemble').mkdir()
+    root.mkdir()
+    (root/'PROTOCOL.json').write_text(json.dumps(dict(cycle=8, lineage=None,
+        benchmark_scope={'version': 'expanded349-v1'})))
+    coarse = np.ones((24, 24), np.uint8)
+    coarse[12:] = 2
+    rgb = np.full((24, 24, 3), [30, 180, 60], np.uint8)
+    for name in ['original.png', 'ensemble/representation.png']:
+        Image.fromarray(rgb).save(src/name)
+    for name, data in [('coarse.tif', coarse), ('coarse.completed.tif', coarse),
+                       ('tissue.working.tif', np.ones_like(coarse)), ('tissue.native.tif', np.ones_like(coarse))]:
+        tifffile.imwrite(src/name, data)
+    (src/'reference.native.tif').write_bytes(b'This poison reference must never be decoded')
+    files = [p for p in src.rglob('*') if p.is_file() and p.name != 'reference.native.tif']
+    (src/'INPUTS_FROZEN.json').write_text(json.dumps(dict(single_eligible_class=True,
+        files_sha256={str(p.relative_to(src)):run.digest(p) for p in files})))
+    def forbidden(*args, **kwargs):
+        raise AssertionError('A non-degenerate predictor was called')
+    monkeypatch.setattr(run, 'predict', forbidden)
+    monkeypatch.setattr(run, 'predict_evidence', forbidden)
+    sample = dict(case='constant', working_mpp_xy=None, pixel_only=True,
+        physical_metrics_allowed=False, native_shape_yx=[24, 24], palette=[[30, 180, 60], [220, 30, 40]])
+    run.freeze_case((source, root, sample, ['B21', 'J01', 'L02', 'L03'], 1))
+    record = json.loads((root/'cases/constant/PREDICTIONS.json').read_text())
+    assert not record['fine_reference_read']
+    for key, entry in record['methods'].items():
+        assert entry['status'] == 'ok', entry
+        assert entry['details']['coordinate_geometry']['units'] == 'pixels'
+        np.testing.assert_array_equal(tifffile.imread(root/'cases/constant'/key/'native.tif'), coarse)

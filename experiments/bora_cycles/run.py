@@ -101,6 +101,8 @@ def freeze_case(args):
     rgb = np.array(Image.open(src/"ensemble/representation.png").convert("RGB"))
     he = np.array(Image.open(src/"original.png").convert("RGB"))
     coarse = tifffile.imread(src/"coarse.tif")
+    constant_input = bool(record.get("single_eligible_class", False))
+    completed = tifffile.imread(src/"coarse.completed.tif") if constant_input else None
     support = tifffile.imread(src/"tissue.working.tif") > 0
     native_support = tifffile.imread(src/"tissue.native.tif") > 0
     protocol = json.loads((root/"PROTOCOL.json").read_text())
@@ -117,7 +119,11 @@ def freeze_case(args):
                 previous = None
                 for repeat in range(repeats):
                     started = time.perf_counter()
-                    if key in ("B21", "B22"):
+                    if constant_input:
+                        from .expanded_prediction import constant_evidence_fallback
+                        analysis, details = constant_evidence_fallback(
+                            key, rgb, coarse, completed, support, spacing, he)
+                    elif key in ("B21", "B22"):
                         analysis, details = predict_evidence(
                             rgb, coarse, support, spacing,
                             method="linear" if key == "B21" else "simplex",
@@ -444,6 +450,7 @@ def main():
             case_scope="All349 frozen ROIs; original149 retained exactly plus200 additions, prospective from cycle8",
             reference_policy="Fine masks are read only after all predictions freeze. All349 images are development data. Reference0 is ignored; RINGS scoring-only removed background is valid outside-tumor.",
             small_region_policy="All reference components scored. Separate <=400 um2 and <=400 px2 summaries; unknown spacing never assigned a physical area.",
+            degenerate_evidence_policy="Exactly constant single-eligible-class RGB uses the same frozen coarse-completion fallback for every candidate/control, with only explicitly independent H&E glass removal retained. It is not claimed to be refinement.",
             selection="Review every349 image and select five with the unchanged excess-one-second penalty. Report historical149 and new200 separately.")
     validate_scope(protocol, pilot=args.pilot)
     if (args.root/"PROTOCOL.json").exists():

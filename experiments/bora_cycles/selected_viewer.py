@@ -143,7 +143,7 @@ def publish_selected(root):
             f'<p class="note">{escape(row["dataset"])} · {escape(sample["source_region_type"])} · '
             f'{width} × {height} native pixels · {spacing}. '
             'Pixel spacing is not optical resolving power.</p>'+omitted_note+
-            ('<p class="note">Single eligible coarse class: converted RGB is constant and cannot recover competing class boundaries.</p>'
+            ('<p class="note">Single eligible coarse class: converted RGB is constant. Every method uses the common completed-coarse fallback; an explicit H&amp;E glass rule may still remove background. No RGB refinement is claimed.</p>'
              if row.get('single_eligible_class') else '')+
             ('<p class="note">RINGS is tumor versus outside-tumor, including glass/lumina. Outside-tumor is not expert stroma. Saved background0 is scored as outside-tumor; deleted tumor is still wrong.</p>'
              if row['dataset'] == 'rings-tumor' else '')+
