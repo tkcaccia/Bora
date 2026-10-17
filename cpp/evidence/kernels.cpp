@@ -240,3 +240,51 @@ extern "C" int bora_adaptive_linear(const float* rgb,const double* coef,
     statistics[0]=visited;statistics[1]=certified;statistics[2]=dense;
     return 0;
 }
+
+// One native pixel pass for semantic confusion and reference-component recall.
+// Reference-zero pixels never enter the confusion matrix or correctness counts.
+extern "C" int bora_region_counts(const uint8_t* truth,const uint8_t* prediction,
+    const int32_t* components,int64_t* confusion,int64_t* correct,
+    int64_t pixels,int component_count,int threads) {
+    if(pixels<0||component_count<1||threads<1) return -1;
+    std::fill(confusion,confusion+256*256,0);
+    std::fill(correct,correct+component_count,0);
+    #pragma omp parallel num_threads(threads)
+    {
+        std::vector<int64_t> local_confusion(256*256,0),local_correct(component_count,0);
+        #pragma omp for schedule(static)
+        for(int64_t i=0;i<pixels;++i) if(truth[i]>0) {
+            ++local_confusion[static_cast<int>(truth[i])*256+prediction[i]];
+            if(truth[i]==prediction[i]) ++local_correct[components[i]];
+        }
+        #pragma omp critical
+        {
+            for(int i=0;i<256*256;++i) confusion[i]+=local_confusion[i];
+            for(int i=0;i<component_count;++i) correct[i]+=local_correct[i];
+        }
+    }
+    return 0;
+}
+
+// Exact categorical diversity at selected white pixels for the supplied
+// discrete ellipse. A cheap rectangular min/max prefilter is done in Python.
+extern "C" int bora_white_diversity(const uint16_t* labels,const int64_t* points,
+    const int32_t* offsets,uint8_t* result,int height,int width,
+    int64_t point_count,int offset_count,int threads) {
+    if(height<1||width<1||point_count<0||offset_count<1||threads<1) return -1;
+    #pragma omp parallel for num_threads(threads) schedule(static)
+    for(int64_t i=0;i<point_count;++i) {
+        int y=points[i]/width,x=points[i]%width,first=0;
+        result[i]=0;
+        for(int j=0;j<offset_count;++j) {
+            int yy=y+offsets[j*2],xx=x+offsets[j*2+1];
+            if(yy<0||xx<0||yy>=height||xx>=width) continue;
+            int label=labels[static_cast<int64_t>(yy)*width+xx];
+            if(label>0) {
+                if(first==0) first=label;
+                else if(label!=first){result[i]=1;break;}
+            }
+        }
+    }
+    return 0;
+}

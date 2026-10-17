@@ -83,15 +83,40 @@ def rare_colors(rgb, support, mpp_xy):
         identity="rare-colour region candidates, not established new tissue classes")
 
 
-def mask_diagnostics(labels, support, white, exterior, mpp_xy):
+def mask_diagnostics(labels, support, white, exterior, mpp_xy, backend="numpy"):
     positive = labels > 0
     radius = max(1, round(8/np.sqrt(np.prod(mpp_xy))))
-    nearby = np.zeros(labels.shape, np.uint16)
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
                                        (2*radius+1, 2*radius+1))
-    for label in np.unique(labels[positive]):
-        nearby += cv2.dilate((labels == label).astype(np.uint8), kernel)
-    interface_white = white & (nearby >= 2)
+    if backend == "numpy":
+        nearby = np.zeros(labels.shape, np.uint16)
+        for label in np.unique(labels[positive]):
+            nearby += cv2.dilate((labels == label).astype(np.uint8), kernel)
+        interface_white = white & (nearby >= 2)
+    elif backend == "cpp":
+        from .native import white_diversity
+        interface_white = np.zeros(labels.shape, bool)
+        if white.any():
+            # max != min among positive labels is equivalent to >=2 classes.
+            # A rectangle overestimates the ellipse, so this prefilter cannot
+            # discard an actual qualifying ellipse. Query exact offsets only
+            # where a white pixel could see multiple classes.
+            dtype = np.uint8 if labels.max() < 255 else np.uint16
+            sentinel = np.iinfo(dtype).max
+            field = labels.astype(dtype)
+            rectangular = np.ones(kernel.shape, np.uint8)
+            maximum = cv2.dilate(field, rectangular, borderType=cv2.BORDER_CONSTANT,
+                                  borderValue=0)
+            nonzero = np.where(positive, labels, sentinel).astype(dtype)
+            minimum = cv2.erode(nonzero, rectangular, borderType=cv2.BORDER_CONSTANT,
+                                borderValue=int(sentinel))
+            points = np.flatnonzero(white & (maximum > minimum))
+            offsets = np.argwhere(kernel > 0)-radius
+            order = np.argsort(np.sum(offsets**2, axis=1), kind="stable")
+            found = white_diversity(labels, points, offsets[order])
+            interface_white.ravel()[points] = found
+    else:
+        raise ValueError("Unknown diagnostic implementation")
     return dict(
         unassigned_supported_pixels=int((support & ~positive).sum()),
         assigned_outside_frozen_support=int((~support & positive).sum()),

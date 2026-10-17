@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from experiments.bora_cycles.metrics import RegionEvaluator, discovery_score
-from experiments.bora_cycles.diagnostics import white_regions, novelty, rare_colors
+from experiments.bora_cycles.diagnostics import white_regions, novelty, rare_colors, mask_diagnostics
 
 
 def test_small_regions_absent_from_coarse_are_not_omitted():
@@ -140,3 +140,25 @@ def test_cpp_spatial_certificate_matches_dense_class_decisions():
     assert details["visited_blocks"] > 0
     assert details["certified_blocks"] > 0
     assert details["densely_classified_pixels"] < rgb.shape[0]*rgb.shape[1]
+
+
+def test_compiled_metric_matches_every_numpy_metric_field_exactly():
+    rng = np.random.default_rng(950)
+    truth = rng.choice([0, 1, 7, 21], size=(127, 179)).astype(np.uint8)
+    prediction = rng.choice([0, 1, 7, 21, 255], size=truth.shape).astype(np.uint8)
+    evaluator = RegionEvaluator(truth, [2., .25])
+    expected = evaluator.score(prediction, backend="numpy")
+    actual = evaluator.score(prediction, backend="cpp")
+    assert actual == expected
+
+
+@pytest.mark.parametrize("spacing", [[1., 1.], [.25, .25], [2., .5]])
+def test_compiled_white_queries_equal_full_per_class_ellipse_dilation(spacing):
+    rng = np.random.default_rng(612)
+    labels = rng.choice([0, 1, 7, 255], size=(47, 53)).astype(np.uint8)
+    support = rng.uniform(size=labels.shape) > .1
+    white = rng.uniform(size=labels.shape) > .7
+    exterior = white & (rng.uniform(size=labels.shape) > .7)
+    expected = mask_diagnostics(labels, support, white, exterior, spacing)
+    actual = mask_diagnostics(labels, support, white, exterior, spacing, backend="cpp")
+    assert actual == expected

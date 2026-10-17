@@ -26,6 +26,11 @@ def library():
         _LIB.bora_adaptive_linear.argtypes = [
             ptr, ptr, ptr, ptr, ptr, ctypes.c_int,
             ctypes.c_int, ctypes.c_int, ctypes.c_int]
+        _LIB.bora_region_counts.argtypes = [
+            ptr, ptr, ptr, ptr, ptr, ctypes.c_int64, ctypes.c_int, ctypes.c_int]
+        _LIB.bora_white_diversity.argtypes = [
+            ptr, ptr, ptr, ptr, ctypes.c_int, ctypes.c_int,
+            ctypes.c_int64, ctypes.c_int, ctypes.c_int]
     return _LIB
 
 
@@ -99,3 +104,41 @@ def adaptive_linear(rgb, coefficient, intercept, threads=2):
                         certified_blocks=int(statistics[1]),
                         densely_classified_pixels=int(statistics[2]),
                         total_pixels=int(np.prod(labels.shape)))
+
+
+def region_counts(truth, prediction, components, component_count, threads=2):
+    truth, prediction, components = map(np.asarray, (truth, prediction, components))
+    if truth.shape != prediction.shape or truth.shape != components.shape:
+        raise ValueError("Native metric geometry mismatch")
+    if (truth.min() < 0 or truth.max() > 255 or prediction.min() < 0
+            or prediction.max() > 255 or components.min() < 0
+            or components.max() >= component_count):
+        raise ValueError("Invalid native metric label or component IDs")
+    truth = np.ascontiguousarray(truth, np.uint8)
+    prediction = np.ascontiguousarray(prediction, np.uint8)
+    components = np.ascontiguousarray(components, np.int32)
+    confusion = np.zeros((256, 256), np.int64)
+    correct = np.zeros(component_count, np.int64)
+    status = library().bora_region_counts(
+        truth.ctypes.data, prediction.ctypes.data, components.ctypes.data,
+        confusion.ctypes.data, correct.ctypes.data, truth.size, component_count, threads)
+    if status:
+        raise RuntimeError("C++ metric kernel rejected input")
+    return confusion, correct
+
+
+def white_diversity(labels, points, offsets, threads=2):
+    labels = np.ascontiguousarray(labels, np.uint16)
+    points = np.ascontiguousarray(points, np.int64)
+    offsets = np.ascontiguousarray(offsets, np.int32)
+    if labels.ndim != 2 or offsets.ndim != 2 or offsets.shape[1] != 2:
+        raise ValueError("Invalid categorical window input")
+    if points.size and (points.min() < 0 or points.max() >= labels.size):
+        raise ValueError("White query point is outside the image")
+    result = np.empty(len(points), np.uint8)
+    status = library().bora_white_diversity(
+        labels.ctypes.data, points.ctypes.data, offsets.ctypes.data,
+        result.ctypes.data, *labels.shape, len(points), len(offsets), threads)
+    if status:
+        raise RuntimeError("White diversity kernel rejected input")
+    return result.astype(bool)

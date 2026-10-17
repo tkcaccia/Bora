@@ -28,21 +28,34 @@ class RegionEvaluator:
         self.area_um2 = self.area_pixels*self.pixel_area
         self.component_classes = np.asarray(classes)
 
-    def score(self, prediction):
+    def score(self, prediction, backend="numpy"):
         prediction = np.asarray(prediction)
         if prediction.shape != self.truth.shape:
             raise ValueError("Native geometry mismatch")
+        if backend not in ("numpy", "cpp"):
+            raise ValueError("Unknown metric implementation")
+        confusion, native_correct = None, None
+        if backend == "cpp":
+            from .native import region_counts
+            confusion, native_correct = region_counts(
+                self.truth, prediction, self.components, len(self.area_pixels))
         per_class = {}
         for label in self.ids:
-            target = self.truth == label
-            proposed = (prediction == label) & self.valid
-            intersection = int(np.count_nonzero(target & proposed))
-            union = int(np.count_nonzero(target | proposed))
-            total = int(target.sum()+proposed.sum())
+            if confusion is None:
+                target = self.truth == label
+                proposed = (prediction == label) & self.valid
+                intersection = int(np.count_nonzero(target & proposed))
+                target_pixels, proposed_pixels = int(target.sum()), int(proposed.sum())
+            else:
+                intersection = int(confusion[label, label])
+                target_pixels = int(confusion[label].sum())
+                proposed_pixels = int(confusion[:, label].sum())
+            union = target_pixels+proposed_pixels-intersection
+            total = target_pixels+proposed_pixels
             per_class[str(int(label))] = dict(
                 iou=intersection/union, dice=2*intersection/total,
-                truth_pixels=int(target.sum()), prediction_pixels=int(proposed.sum()))
-        correct = np.bincount(
+                truth_pixels=target_pixels, prediction_pixels=proposed_pixels)
+        correct = native_correct if native_correct is not None else np.bincount(
             self.components.ravel(),
             weights=(prediction == self.truth).ravel(),
             minlength=len(self.area_pixels))
@@ -68,8 +81,10 @@ class RegionEvaluator:
         return dict(
             macro_iou=float(np.mean([r["iou"] for r in per_class.values()])),
             macro_dice=float(np.mean([r["dice"] for r in per_class.values()])),
-            pixel_accuracy=float((prediction[self.valid] == self.truth[self.valid]).mean()),
-            annotated_unassigned_pixels=int(np.count_nonzero(self.valid & (prediction == 0))),
+            pixel_accuracy=float(np.trace(confusion)/confusion.sum()) if confusion is not None
+            else float((prediction[self.valid] == self.truth[self.valid]).mean()),
+            annotated_unassigned_pixels=int(confusion[:, 0].sum()) if confusion is not None
+            else int(np.count_nonzero(self.valid & (prediction == 0))),
             valid_pixels=int(self.valid.sum()), per_class=per_class, regions=strata,
             missed_regions=[
                 dict(component=int(i), label=int(self.component_classes[i]),
