@@ -114,3 +114,13 @@ numerical and visual evidence remains available, including failures.
 
 Only after all twenty cycles are complete should the final all-conversion
 benchmark, complete history and final viewer be presented as a finished study.
+
+Report export uses the same process limit as inference, retaining only small
+contact thumbnails in memory instead of every native RGB mask. Indexed PNG
+exports preserve exact class colours. A separate four-case publication check
+verified all 88 native coloured masks and all four contact-sheet byte hashes
+against the previous exporter. This engineering change is not a new candidate
+and does not alter segmentation scores or measured candidate times.
+
+The publish_only.py module can render existing predictions into a new folder,
+without rerunning segmentation or overwriting signed visual-review evidence.

@@ -83,17 +83,24 @@ def select(root, survivors, tradeoffs):
     ranks = {row["method"]: row for row in results["ranking"]}
     if any(not ranks[key]["complete"] for key in survivors):
         raise ValueError("A survivor must have predictions and scores for every case")
+    best = max(ranks[key]["mean_iou"] for key in candidates if ranks[key]["complete"])
+    leaders = sorted(key for key in candidates if ranks[key]["complete"]
+                     and ranks[key]["mean_iou"] == best)
+    if not set(leaders).intersection(survivors):
+        raise ValueError("The preregistered primary accuracy leader must survive")
     completed = dict(
         cycle=protocol["cycle"], survivors=survivors,
         rejected=sorted(candidates-set(survivors)), tradeoffs=tradeoffs,
         results_sha256=digest(root/"RESULTS.json"),
         review_sha256=digest(root/"VISUAL_REVIEW.json"),
         protocol_sha256=digest(root/"PROTOCOL.json"),
+        selection_code_sha256=digest(Path(__file__)), primary_accuracy_leaders=leaders,
         no_next_cycle_implemented_by_this_selection=True,
         completed_at_utc=datetime.now(timezone.utc).isoformat())
     save(root/"SELECTION.json", completed)
     save(root/"STAGE.json", dict(state="cycle_reviewed_and_selected",
-                                cycle=protocol["cycle"], complete_goal=False))
+                                cycle=protocol["cycle"], completed_cycles=protocol["cycle"],
+                                complete_goal=False))
     return completed
 
 

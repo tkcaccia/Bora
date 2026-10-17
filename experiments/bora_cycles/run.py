@@ -213,57 +213,81 @@ def palette_image(labels, colors):
     return image.convert("RGB")
 
 
-def publish(source, root, result):
+def palette_bytes(colors):
+    table = np.zeros((256, 3), np.uint8)
+    table[0] = [245, 245, 245]
+    table[1:len(colors)+1] = colors
+    return table.ravel().tolist()
+
+
+def render_case(args):
+    source, root, row, keys = args
+    source, root = Path(source), Path(root)
+    case = row["case"]
+    src, out = source/"cases"/case, root/"cases"/case
+    colors = row["sample"]["palette"]
+    original = Image.open(src/"original.native.png").convert("RGB")
+    truth = palette_image(tifffile.imread(src/"reference.native.tif"), colors)
+    coarse = resize(tifffile.imread(src/"coarse.tif"), original.size[::-1], True)
+    panels = [("Original H&E", "original-he.jpg", original),
+              ("Reference", "reference.jpg", truth),
+              ("Original coarse mask", "coarse.jpg", palette_image(coarse, colors)),
+              ("Fixed converted RGB", "converted.jpg",
+               Image.open(src/"ensemble/representation.png").convert("RGB"))]
+    tiles = []
+    for title, name, panel in panels:
+        panel.save(out/name, quality=90)
+        preview = panel.copy()
+        preview.thumbnail((372, 292))
+        tiles.append((title, name, preview))
+    for key in keys:
+        entry = row["methods"][key]
+        if entry["status"] == "ok":
+            indexed = Image.fromarray(tifffile.imread(out/key/"native.tif"), "P")
+            indexed.putpalette(palette_bytes(colors))
+            indexed.save(out/key/"mask.png", compress_level=1)
+            panel = indexed.convert("RGB")
+            title = (f'{key}: IoU {entry["score"]["macro_iou"]:.4f}, '
+                     f'{entry["median_seconds"]:.3f}s')
+            panel.thumbnail((372, 292))
+            tiles.append((title, key+"/mask.png", panel))
+        else:
+            panel = Image.new("RGB", original.size, "#fff0f0")
+            ImageDraw.Draw(panel).text((20, 20), "FAILED: "+entry["exception"][:130], fill="black")
+            panel.save(out/key/"failed.jpg")
+            panel.thumbnail((372, 292))
+            tiles.append((key+": FAILED", key+"/failed.jpg", panel))
+    columns, width, height = 6, 384, 330
+    sheet = Image.new("RGB", (columns*width, ((len(tiles)+columns-1)//columns)*height), "white")
+    draw = ImageDraw.Draw(sheet)
+    for i, (title, _, panel) in enumerate(tiles):
+        x, y = (i % columns)*width, (i//columns)*height
+        thumb = panel.copy()
+        thumb.thumbnail((width-12, height-38))
+        sheet.paste(thumb, (x+(width-thumb.width)//2, y+30))
+        draw.text((x+6, y+5), title, fill="black")
+    sheet.save(out/"contact.jpg", quality=93)
+    section = (
+        f'<section id="{case}"><h2>{case}</h2><p>{row["dataset"]}</p>'
+        f'<a href="cases/{case}/contact.jpg"><img class="sheet" loading="lazy" '
+        f'src="cases/{case}/contact.jpg"></a><div class="panels">'+
+        "".join(f'<figure><figcaption>{title}</figcaption><a href="cases/{case}/{name}">'
+                f'<img loading="lazy" src="cases/{case}/{name}"></a></figure>'
+                for title, name, _ in tiles)+"</div></section>")
+    print(json.dumps(dict(rendered=case)), flush=True)
+    return case, digest(out/"contact.jpg"), section
+
+
+def publish(source, root, result, workers=1):
     keys = result["protocol"]["methods"]
-    sections = []
-    manifest = {}
-    for row in result["cases"]:
-        case = row["case"]
-        src, out = source/"cases"/case, root/"cases"/case
-        colors = row["sample"]["palette"]
-        original = Image.open(src/"original.native.png").convert("RGB")
-        truth = palette_image(tifffile.imread(src/"reference.native.tif"), colors)
-        coarse = resize(tifffile.imread(src/"coarse.tif"), original.size[::-1], True)
-        panels = [("Original H&E", "original-he.jpg", original),
-                  ("Reference", "reference.jpg", truth),
-                  ("Original coarse mask", "coarse.jpg", palette_image(coarse, colors)),
-                  ("Fixed converted RGB", "converted.jpg",
-                   Image.open(src/"ensemble/representation.png").convert("RGB"))]
-        tiles = []
-        for title, name, panel in panels:
-            panel.save(out/name, quality=90)
-            tiles.append((title, name, panel))
-        for key in keys:
-            entry = row["methods"][key]
-            if entry["status"] == "ok":
-                panel = palette_image(tifffile.imread(out/key/"native.tif"), colors)
-                panel.save(out/key/"mask.png")
-                title = (f'{key}: IoU {entry["score"]["macro_iou"]:.4f}, '
-                         f'{entry["median_seconds"]:.3f}s')
-                tiles.append((title, key+"/mask.png", panel))
-            else:
-                panel = Image.new("RGB", original.size, "#fff0f0")
-                ImageDraw.Draw(panel).text((20, 20), "FAILED: "+entry["exception"][:130], fill="black")
-                panel.save(out/key/"failed.jpg")
-                tiles.append((key+": FAILED", key+"/failed.jpg", panel))
-        columns, width, height = 6, 384, 330
-        sheet = Image.new("RGB", (columns*width, ((len(tiles)+columns-1)//columns)*height), "white")
-        draw = ImageDraw.Draw(sheet)
-        for i, (title, _, panel) in enumerate(tiles):
-            x, y = (i % columns)*width, (i//columns)*height
-            thumb = panel.copy()
-            thumb.thumbnail((width-12, height-38))
-            sheet.paste(thumb, (x+(width-thumb.width)//2, y+30))
-            draw.text((x+6, y+5), title, fill="black")
-        sheet.save(out/"contact.jpg", quality=93)
-        manifest[case] = digest(out/"contact.jpg")
-        sections.append(
-            f'<section id="{case}"><h2>{case}</h2><p>{row["dataset"]}</p>'
-            f'<a href="cases/{case}/contact.jpg"><img class="sheet" loading="lazy" '
-            f'src="cases/{case}/contact.jpg"></a><div class="panels">'+
-            "".join(f'<figure><figcaption>{title}</figcaption><a href="cases/{case}/{name}">'
-                    f'<img loading="lazy" src="cases/{case}/{name}"></a></figure>'
-                    for title, name, _ in tiles)+"</div></section>")
+    tasks = [(source, root, row, keys) for row in result["cases"]]
+    if workers == 1:
+        rendered = [render_case(task) for task in tasks]
+    else:
+        with ProcessPoolExecutor(max_workers=workers, mp_context=get_context("spawn")) as pool:
+            rendered = list(pool.map(render_case, tasks))
+    sections = [section for _, _, section in rendered]
+    manifest = {case: sha for case, sha, _ in rendered}
     save(root/"VISUAL_MANIFEST.json", dict(contact_sha256=manifest))
     if not (root/"VISUAL_REVIEW.json").exists():
         save(root/"VISUAL_REVIEW.json", dict(reviewed={}, required_cases=list(manifest),
@@ -380,10 +404,10 @@ def main():
             (args.source, args.root, sample, keys, frozen["manifests"], args.metric_backend) for sample in samples]))
     result = dict(protocol=protocol, cases=rows, ranking=aggregate(rows, keys))
     save(args.root/"RESULTS.json", result)
-    publish(args.source, args.root, result)
+    publish(args.source, args.root, result, workers=args.workers)
     save(args.root/"STAGE.json", dict(
         state="pilot_complete" if args.pilot else "awaiting_visual_review",
-        cases=len(rows), method_count=len(keys), completed_cycles=0,
+        cases=len(rows), method_count=len(keys), completed_cycles=args.cycle-1,
         complete_goal=False))
     print(json.dumps(dict(state="pilot_complete" if args.pilot else "awaiting_visual_review",
                           ranking=result["ranking"])), flush=True)
