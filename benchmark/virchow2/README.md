@@ -1,5 +1,49 @@
 # Virchow2 experiments for Bora
 
+## Twenty Bora inference strategies on the same 49 ROIs
+
+Twenty distinct strategies, **B01–B20**, now run across all seven retained RGB
+conversions and all 49 benchmark ROIs: **6,860 final native masks**. B01 is the
+exact current balanced-wand baseline. Alternatives include whole-field appearance
+classification, graph cuts, harmonic propagation, geodesic competition, region
+merging, topology constraints, elastic deformation and a coarse-only small CNN.
+RGB conversion IDs and Bora strategy IDs are separate; conversion 4 stays rejected.
+
+Current Bora has the highest measured aggregate native macro IoU, **0.7556**.
+Geodesic competition B09 is close at **0.7553**, with a paired descriptive interval
+for its difference spanning zero. Its mean boundary F1 at 8 µm is higher:
+**0.5051 versus 0.4922**. Thus the study does not establish a general overlap
+improvement; the complete galleries preserve the boundary/area tradeoffs and all
+weak results for visual assessment. Means weight conversions equally within each
+case and the four datasets equally. Coarse labels are reference-derived and the
+cases have been previously inspected.
+
+On the expert-tissue subset excluding CAMELYON's automatically generated
+non-tumor reference, B09 has slightly higher mean IoU: **0.7261 versus 0.7247**.
+This planned secondary comparison remains exploratory.
+
+- [Twenty-strategy report](BORA_STRATEGIES_REPORT.md)
+- [Exact final protocol](BORA_STRATEGIES_PROTOCOL.json)
+- [Geometry correction and unchanged-output lineage](BORA_STRATEGIES_CORRECTION.json)
+- [Code and reproduction commands](../../experiments/bora_strategies/)
+- [Separate five-setting smoothing ablation](SMOOTHING_REPORT.md)
+
+Outputs on Chiamaka:
+`/mnt/sata_ssd/Bora-benchmark/results/bora-strategies-2026-10-17/`
+
+Mac copy:
+`/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-strategies-2026-10-17/`
+
+Open **gallery.html** for original/reference/tile/converted inputs and all 20
+native-mask comparisons at synchronized zoom, opacity and crop. Native TIFFs and
+PNGs, exact difference maps, physical sampling, per-class scores and the original
+annotation-only quality support are retained. Display masks are nearest-neighbor
+previews capped at 1,536 pixels; full native files remain linked. **all_outputs.html**
+contains all 49 cases and every retained conversion. B17's sampled-coordinate
+interpolation was corrected using a synthetic identity test; the initial run is
+archived, the other 19 outputs remain byte-identical, and unchanged scores are
+reused only after matching native hashes, reference geometry and evaluator code.
+
 ## Full tissue, background removal and all algorithms side by side
 
 The latest rerun separates **RGB-detected tissue** from **annotated scoring

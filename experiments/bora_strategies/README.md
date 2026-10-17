@@ -48,3 +48,14 @@ magenta differences. The all-image page links every comparison sheet.
 
 Default production Bora behavior remains unchanged; the new mechanisms live
 in this experiment package until they have been assessed and validated.
+
+B17 uses true [::step] pixel coordinates when expanding retrieved probabilities.
+A synthetic coordinate-identity regression test guards against generic-resize
+center offsets. The initial run is archived under
+`bora-strategies-initial-grid-2026-10-17`; `CORRECTION_LINEAGE.json` records the
+correction. The correction utility is
+`experiments/correct_bora_sample_grid.py`. Other strategy functions and their
+native outputs were preserved. Optional `score --reuse-scores <initial-root>`
+reuses their scores only after native hashes, geometry, reference-plan hashes
+and evaluator source match; B17 is always rescored. A fresh standard run needs
+no correction utility and computes the correct coordinates directly.
