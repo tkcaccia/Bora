@@ -1,0 +1,95 @@
+{
+  "passed": true,
+  "historical_case_count": 149,
+  "additional_case_count": 200,
+  "combined_case_count": 349,
+  "additional_counts": {
+    "bcss": 40,
+    "tiger": 40,
+    "wsss4luad": 40,
+    "rings-tumor": 40,
+    "ocelot": 40
+  },
+  "source_groups": {
+    "bcss": 40,
+    "tiger": 40,
+    "wsss4luad": 40,
+    "rings-tumor": 32,
+    "ocelot": 40
+  },
+  "single_coarse_class": {
+    "bcss": 0,
+    "tiger": 0,
+    "wsss4luad": 8,
+    "rings-tumor": 19,
+    "ocelot": 0
+  },
+  "calibration_counts": {
+    "calibrated": 120,
+    "pixel_only": 80
+  },
+  "historical_plan_sha256": "df1774258b8a1c43fdf0b845bbbbac930d82f8821f9a994e243512c222422392",
+  "source_and_native_pixels_verified": true,
+  "coarse_majorities_verified": true,
+  "tiger_overlap_checked": true,
+  "no_duplicate_source_RGB_bytes": true,
+  "historical_predictions_modified": false,
+  "additional_feature_inference_complete": false,
+  "additional_masks_scored": false,
+  "audit_code_sha256": "8245a7650488b0d63f2bcababf6acb820fa56e7b2f84d05922889efeecb52cc1",
+  "status": "200 additional inputs prepared and independently audited; feature extraction/conversions and expanded cycles not yet run",
+  "local_copy_verified": true,
+  "local_copy_files_checked": 1000,
+  "input_audit_sha256": "dcc9b8f68453e21aab77c8a6f00877219c66e9a43e2bf023b58b4e19e92c8e50",
+  "copy_audit_sha256": "dc6852785c7d2031f7c5f8be29911cff449ee7ee599720e7dfa7b733c06a3465",
+  "source_plans": [
+    {
+      "root": "/mnt/sata_ssd/Bora-benchmark/results/bora-extension-inputs-2026-10-18-v1",
+      "sha256": "26e192561bf01207246c48933800f31db987f28b72d50e1569fc646e948d277f"
+    },
+    {
+      "root": "/mnt/sata_ssd/Bora-benchmark/results/bora-ocelot-inputs-2026-10-18-v1",
+      "sha256": "dbd1992b30ea5751ced1dcecc20d9c6c3302e4dc0906d83db27fe6c61447cf72"
+    }
+  ],
+  "acquisition": {
+    "dataset": "ocelot",
+    "version": "1.0.1",
+    "source": "https://zenodo.org/records/8417503",
+    "url": "https://zenodo.org/records/8417503/files/ocelot2023_v1.0.1.zip?download=1",
+    "publisher_md5": "215230295b0440b4dc356519ef9ff644",
+    "sha256": "74f46b79e3c4076ca0012d403629ab1e1e412591faf79a910d4d8bdd92c47920",
+    "bytes": 303248865,
+    "archive": "raw/ocelot/ocelot2023_v1.0.1.zip",
+    "extracted": "raw/ocelot/extracted",
+    "license": "CC BY-NC 4.0",
+    "terms": "https://lunit-io.github.io/research/ocelot_tc/",
+    "downloaded_utc": "2026-10-17T22:04:51.981012+00:00",
+    "intended_task": "Tissue cancer/non-cancer segmentation; cell point annotations are not benchmark masks",
+    "no_upstream_code_executed": true,
+    "benchmark_not_yet_extended": true,
+    "acquisition_code_sha256": "277cd1d2325f390fadcb5e9c92c79f8f625364531b19f1fc980b16a2eda678c4"
+  },
+  "extension_tests_local": 8,
+  "extension_tests_remote": 8,
+  "source_files_sha256": {
+    "experiments/bora_extension/plan.py": "f37d3ab272ab2d8604e097edf09216174196594e81e5c5210d568d95d40a6456",
+    "experiments/bora_extension/acquire_ocelot.py": "277cd1d2325f390fadcb5e9c92c79f8f625364531b19f1fc980b16a2eda678c4",
+    "experiments/bora_extension/__init__.py": "c3ad00bdc63f3182f9bd42830bdbd8bad86f18ca0796cc349f296585e16dc3e6",
+    "experiments/bora_extension/audit_inputs.py": "8245a7650488b0d63f2bcababf6acb820fa56e7b2f84d05922889efeecb52cc1",
+    "experiments/bora_extension/prepare_ocelot.py": "d5c8d3c1fd918117d7822c16ffe1169014e207e87b5fc4d7bbfb7529f4f67b45"
+  },
+  "completed_cycles": 6,
+  "active_cycle": 7,
+  "actual_cycle_seven_overviews": 64,
+  "cycle_seven_selection_created": false,
+  "subsequent_cycle_scope": 349,
+  "remaining_work": [
+    "Finish actual149-image cycle7 visual review and native crops, sign5 and show selected viewer",
+    "Prepare unchanged Virchow2 conversions for all200 added images, with explicit unknown-spacing and single-class adapters",
+    "Implement task-appropriate scoring, per-dataset/single-class strata and expanded349-image review gate",
+    "Continue through20 complete cycles and final all-five-conversion evaluation"
+  ],
+  "checkpoint_utc": "2026-10-17T22:16:47.387727+00:00",
+  "complete_goal": false
+}

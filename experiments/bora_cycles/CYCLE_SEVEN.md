@@ -244,8 +244,25 @@ and 0.799729 on two, ratio 1.979, with exact outputs. 29,564/32,768 synthetic
 nodes miss the 1e-7 gap tolerance at 600 iterations; maximum gap is 1.393e-5.
 These measurements are kernel-only, not whole-image speed claims.
 
-The same frozen model is running all 149 ROIs, main PID 1090822, with read-only
-posthoc PID 1093871 queued. Revalidate actual commands and artifacts; never
-restart from a stale checkpoint or an observation timeout. Six of twenty
-cycles remain complete. Full execution, scoring, actual all-image visual review
-and signed selection remain required before cycle eight may be implemented.
+The same frozen model completed all149 ROIs with zero failed methods. Both
+main PID1090822 and posthoc PID1093871 are terminal/missing. Both native audits
+confirm3278 exact displayed masks and745 unchanged-parent comparisons. All176
+pilot/full mask arrays also agree exactly, and596 reused diagnostic files have
+verified hashes. No restart is needed.
+
+Actual full-run overview review has reached64/149 cases (BCSS01–64), with
+hash-pinned notes and a separate durable journal. Targeted full-run native
+review is still pending; the three pilot crops do not substitute for it.
+The shared support still fills conspicuous bright clefts and removes some
+positively annotated fat. These failures remain errors where annotated; no
+novel biological identity is inferred from an unfamiliar converted colour.
+The input audit separately finds56 cases with a fine class absent from coarse
+labels and4,079,674 positive reference pixels outside shared support. Primary
+scores are neither gated by that support nor normalized to an optimistic cap.
+
+Six of twenty cycles remain complete. Remaining actual all-image review,
+targeted native review and signed selection are required before cycle-eight
+children may be implemented. A newly user-requested200-image input extension
+is prepared and independently audited alongside this cycle; it does not alter
+the frozen149-image cycle-seven protocol, predictions or scores. See
+../bora_extension/README.md for the planned349-image subsequent-cycle corpus.

@@ -144,5 +144,16 @@ Fifteen K-series interventions retain the signed J01/H02/C17/J07/H10 lineage.
 All 241 checks pass locally and remotely (205 in the frozen launcher plus 36
 supplemental J-series checks). The eight-case pilot has 176 successful masks,
 both audits confirm 40 exact parents, and all eight overviews plus three native
-crops were actually viewed. The unchanged model is running all 149 ROIs.
-No cycle-seven survivors or full-benchmark gain are claimed yet.
+crops were actually viewed. The unchanged model has finished all149 ROIs,
+scores and contact sheets, with zero failures. Both native audits pass3278
+masks and745 exact unchanged-parent comparisons. Actual overview review has
+reached64/149; full-run native crops and selection remain pending. No
+cycle-seven survivors are claimed yet.
+
+The user now requests retaining these149 images and extending the benchmark.
+All200 additional native/coarse/reference input sets are prepared and audited:
+40 BCSS,40 non-TCGA TIGER,40 WSSS4LUAD,40 RINGS tumor and40 OCELOT tissue ROIs.
+The planned subsequent-cycle corpus has349 images. New feature extraction,
+unchanged conversion generation, task-aware adapters and an expanded review
+gate are still required. Historical149-image evidence is immutable and remains
+separately comparable. See ../bora_extension/README.md.

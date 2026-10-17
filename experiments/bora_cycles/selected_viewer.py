@@ -130,11 +130,15 @@ def publish_selected(root):
             f'{escape(sample["class_names"].get(str(i),str(i)))}</span>'
             for i,color in enumerate(sample["palette"],1))
         spacing = ' × '.join(number(v,3) for v in sample['native_mpp_xy'])
+        omitted = row.get('reference_classes_absent_from_coarse', [])
+        omitted_note = ('<p class="note">Input tile labels omit these reference classes: '
+                        +escape(', '.join(sample['class_names'].get(str(i),str(i)) for i in omitted))
+                        +'. Their pixels still count in accuracy and missed-region scores.</p>') if omitted else ''
         sections.append(
             f'<section data-case="{escape(case,quote=True)}" hidden><h2>{escape(case)}</h2>'
             f'<p class="note">{escape(row["dataset"])} · {escape(sample["source_region_type"])} · '
             f'{width} × {height} native pixels · {spacing} µm/pixel. '
-            'Pixel spacing is not optical resolving power.</p>'
+            'Pixel spacing is not optical resolving power.</p>'+omitted_note+
             f'<div class="inputs">{inputs}</div><div class="legend">{legend}</div>'
             f'<div class="outputs">{"".join(outputs)}</div></section>')
         records.append(dict(case=case,dataset=row["dataset"],methods=entries))
@@ -182,5 +186,6 @@ def publish_selected(root):
         predictions_modified=False,scores_modified=False, derived_runtime_scores_added=True,
         runtime_penalty_policy=policy, historical_selection_unchanged=True))
     return dict(selected_gallery="selected.html",selected_gallery_sha256=digest(root/"selected.html"),
+                selected_viewer_source_sha256=digest(Path(__file__)),
                 selected_results_sha256=digest(root/"SELECTED_RESULTS.json"),
                 displayed_methods=order,displayed_cases=len(records))
