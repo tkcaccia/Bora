@@ -1,0 +1,104 @@
+# Cycle five: fifteen distinct hypotheses under a one-second runtime penalty
+
+The signed cycle-four survivors are F01, C17, C01, D08 and C15. They remain
+unchanged in this roster, with three new children each. All149 frozen ROIs,
+the original coarse inputs and the equal #9+#19 conversion remain unchanged.
+No Virchow2 inference or RGB conversion is repeated.
+
+The new primary selection utility is the mean over all149 images of
+`macro_IoU - 0.05 * max(candidate_seconds - 1, 0)`. Raw IoU is still reported.
+The penalty is per image before averaging; time includes each candidate's
+preparation, inference, glass policy and native projection. A slow raw-IoU
+leader is no longer guaranteed a survivor slot. This policy is frozen in
+protocol.json before any cycle-five predictions or reference scoring.
+
+## Implementations and falsifiable assumptions
+
+| Child | Parent | New mathematical observation/model | Principal failure risk |
+| --- | --- | --- | --- |
+| H01 | F01 | Two latent Gaussian appearances per class, with spatial mixture weights | Weak labels create false appearance states |
+| H02 | F01 | One global screened-Laplace class-appearance field | Smooth fields erase abrupt local drift |
+| H03 | F01 | White component state conditioned on two-class evidence in its external ring | Real interface lumina are deleted |
+| H04 | C17 | Joint bounded palette and latent mixture fitting on known coarse tissue | Nonconvex calibration follows coarse contamination |
+| H05 | C17 | Class-specific nonnegative brightness/neutral-offset nuisance planes | Different class planes overlap |
+| H06 | C17 | Smooth nonlinear cardinal coordinates anchored at palette vertices | Nonlinear interpolation misdecodes true colour mixtures |
+| H07 | C01 | A latent set of at least ceil(25/K) supporting pixels per tile | Necessary plurality support is not the actual winner event |
+| H08 | C01 | Explicit forward channel from latent tissue to corrupted coarse label | Palette fractions estimate the wrong noise mechanism |
+| H09 | C01 | Multinomial information-volume bias correction | Finite-sample correction distorts weak labels |
+| H10 | D08 | Analytically Gaussian-noise-marginalized exponential discrimination | Correlated tissue violates the mean-error model |
+| H11 | D08 | Full-tissue likelihood estimation of class prevalence, with fixed semantic densities | Unlabelled appearance shift collapses rare classes |
+| H12 | D08 | Whitened geometric medians of class tile centres | Genuine minority appearances are downweighted |
+| H13 | C15 | Class-specific Chow-Liu dependence trees among RGB variables | Two edges miss genuine three-way dependence |
+| H14 | C15 | Adaptive nearest-neighbour colour-density ratios | Duplicates and finite sampling concentrate false evidence |
+| H15 | C15 | Positive, normalized continuous tensor Bernstein/Beta density mixtures | Low polynomial order erases rare modes |
+
+The exact rules, constants, parent differences and risks are in
+CHILDREN_FIVE in registry.py. These are separate models, not a voting ensemble.
+No candidate is a port or a parameter sweep counted as an innovation.
+
+H01 fits at most4096 original known pixels per class by twenty finite EM
+steps, using the parent's shared noise covariance. It then estimates local
+mixture proportions in a48um window, avoiding a matrix inverse at every
+image pixel. The new C++ OpenMP kernel evaluates the spatially varying
+mixture by streaming log-sum-exp. Its threading is engineering inside H01,
+not an extra candidate. Latent states do not establish new biological classes.
+
+H02 instead minimizes one screened quadratic energy on an8um appearance grid,
+with16um gradient regularity and global-mean anchoring. Sparse equations have
+recorded residuals. Only an appearance surface is interpolated: no label mask
+or class posterior is diffused. H03 tests a semantic cavity hypothesis rather
+than the failed inertia or clearance geometry. A bright component must have
+at least32um² and a2um outer ring supporting two classes by at least0.25 mean
+posterior each. Lumina at real class interfaces remain a stated deletion risk.
+
+H04's simplex and palette updates minimize one anchored objective. Palette
+fitting uses only original known coarse tissue, never semantic pseudo-labels
+from unknown tissue. Fifteen alternating steps are a finite nonconvex fit,
+not a global-optimality claim. H05 profiles gain/offset analytically; H06 uses
+regularized constant-reproducing radial interpolation, splitting duplicate
+palette vertices equally. Neither changes the input conversion image.
+
+H07 changes the tile observation to a combinatorial supporting set; H08
+instead models class-dependent corruption of the observed coarse label.
+H09 has a fixed reference-class gauge and analytic information-determinant
+gradients. Its small information ridge means it is Firth-type correction,
+not an exact invariant Jeffreys prior. All three fit at most60 iterations and
+report termination and gradients. They do not claim an exact count likelihood.
+
+H10's Gaussian expectation gives a single convex exponential-risk objective.
+H11 uses all detected tissue to estimate mixture proportions, while retaining
+coarse-trained class appearance parameters unchanged. This is a label-shift
+hypothesis, not prescribed coarse-area conservation or semantic self-training.
+H12 keeps D08's nuisance covariance and changes only class location to a
+smoothed multivariate geometric median. Missing original bag classes trigger
+an explicit recorded linear fallback, as in the parent.
+
+H13's tree is over RGB variables, not spatial regions or colour-space bins.
+Its discrete density product normalizes exactly. H14 uses eight neighbours,
+at most2048 weighted-quantile colour samples per class, and a one-level RGB
+radius floor. All-class radius outliers are reported with unknown identity;
+the primary mask still uses only supported original class IDs. H15 uses64
+normalized cubic tensor Beta components, positive EM weights, a weak symmetric
+Dirichlet term and a forty-step budget with likelihood history. Colour-node
+representatives approximate training values in H04–H06/H11/H14/H15.
+
+## Execution and verification
+
+Run independent analytic-gradient, convex-objective, normalization, physical
+policy and C++ parity checks first. The eight-case engineering pilot covers
+all four dataset groups and previous numerical edge cases: TIGER32/07/09/14,
+BCSS17/06, BEETLE01 and CAMELYON01. All forty unchanged-parent native masks
+must match cycle four exactly. Pilots cannot complete a cycle or select five.
+
+Chiamaka runs three low-priority image processes with two numerical/OpenMP
+threads each. Profile the new mixture kernel separately at one and two
+threads; do not turn a kernel-only ratio into an end-to-end speedup claim.
+After pilot checks, freeze executed source and compiled-library hashes and
+run all149 cases before opening any fine reference for scoring. All positive
+reference pixels remain scored, including deleted white anatomy and classes
+absent from coarse. Annotation-zero tissue is still predicted and unscored.
+
+After execution, audit native masks and unchanged parents, measure missed
+small regions and inspect every all-method overview plus targeted native
+crops. Only then select five and open the selected-five viewer. Four of twenty
+cycles are complete at this proposal stage; no cycle-five gain is asserted.

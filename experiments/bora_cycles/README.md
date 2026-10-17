@@ -5,7 +5,8 @@ Current verified status: **four of twenty cycles complete**. Cycle four has
 a signed five-survivor selection. No new child improves the primary accuracy
 leader; the five survivors remain F01, C17, C01, D08 and C15. See
 [CYCLE_FOUR_REVIEW.md](CYCLE_FOUR_REVIEW.md). Earlier checkpoints below describe
-their historical stages; cycle five has not been implemented or executed.
+their historical stages. Cycle five is implemented and awaiting execution;
+it has not completed the full-run/review/selection gates.
 
 The user now requests a runtime penalty above one second per image. From
 cycle5 the primary selection utility is the image-average of
@@ -190,3 +191,9 @@ exact categorical-count kernel is independently checked against exhaustive
 outcomes and analytic-gradient tests. Implementation and passing tests do not
 complete a cycle; all149 execution, scoring and actual visual review remain
 required before selection.
+
+Cycle five now implements fifteen distinct children of F01/C17/C01/D08/C15,
+under the new one-second runtime utility. [CYCLE_FIVE.md](CYCLE_FIVE.md)
+describes the mathematical changes and risks. Implementation is not a
+completed cycle: focused tests, an exact-parent eight-case pilot, full149-case
+execution, actual visual review and a signed selection are still required.

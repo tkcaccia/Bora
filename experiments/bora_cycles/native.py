@@ -59,6 +59,28 @@ def logits(x, coefficient, intercept, threads=2):
     return out
 
 
+def local_mixture_logits(x, coefficient, intercept, mixing, threads=2):
+    x = np.ascontiguousarray(x, np.float32)
+    coefficient = np.ascontiguousarray(coefficient, np.float64)
+    intercept = np.ascontiguousarray(intercept, np.float64)
+    mixing = np.ascontiguousarray(mixing, np.float32)
+    if (mixing.shape != (*x.shape[:-1], len(coefficient)) or coefficient.ndim != 2
+            or coefficient.shape[1] != x.shape[-1] or intercept.shape != (len(coefficient),)
+            or np.any(mixing < 0) or not np.allclose(mixing.sum(-1), 1, atol=1e-6)
+            or not all(np.isfinite(v).all() for v in (x, coefficient, intercept, mixing))):
+        raise ValueError("Incompatible spatial mixture")
+    function = library().bora_local_mixture_logits
+    function.argtypes = [ctypes.c_void_p]*5+[ctypes.c_int64]+[ctypes.c_int]*3
+    function.restype = ctypes.c_int
+    out = np.empty(x.shape[:-1], np.float32)
+    status = function(x.ctypes.data, coefficient.ctypes.data, intercept.ctypes.data,
+                      mixing.ctypes.data, out.ctypes.data, out.size, x.shape[-1],
+                      len(coefficient), threads)
+    if status or not np.isfinite(out).all():
+        raise RuntimeError("C++ local mixture rejected input")
+    return out
+
+
 def categorical_winner(probability, labels, threads=2):
     probability = np.ascontiguousarray(probability, dtype=np.float64)
     labels = np.ascontiguousarray(labels, dtype=np.int32)

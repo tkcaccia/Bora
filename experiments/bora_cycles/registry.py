@@ -331,10 +331,94 @@ CYCLE_FOUR.update({item["id"]: Candidate(item["title"], item["intervention"],
     for item in CHILDREN_FOUR})
 
 
+CYCLE_FIVE_SURVIVORS = ("F01", "C17", "C01", "D08", "C15")
+CHILDREN_FIVE = [
+    dict(id="H01", parent="F01", title="Spatial latent appearance states",
+         intervention="spatial-mixture-of-coarse-trained-gaussian-appearances",
+         equation_or_rule="Fit two shared-covariance Gaussian appearances per known coarse class by finite EM, then infer their local mixture probabilities from original coarse-weighted responsibilities in a48um window; evaluate log mixture evidence in C++ OpenMP.",
+         failure_hypothesis="A mixed coarse class can create a false appearance mode, and finite EM can reach a poor local optimum.",
+         difference_from_parent="Represent distinct appearances as latent states instead of averaging them into one moving affine prototype or integrating a single Gaussian intercept."),
+    dict(id="H02", parent="F01", title="Screened harmonic appearance field",
+         intervention="global-screened-laplace-prototype-variational-field",
+         equation_or_rule="Minimize coarse-weighted RGB prototype residuals plus16um squared-gradient energy and0.015 global-mean anchoring on an8um field grid; solve sparse positive-definite equations and classify by the fitted class appearances.",
+         failure_hypothesis="A smooth global field can erase abrupt genuine appearance drift and interpolate an inappropriate coarse class.",
+         difference_from_parent="Fit one global variational appearance surface rather than independent moving-window regressions; no label mask or posterior is spatially diffused."),
+    dict(id="H03", parent="F01", title="Interface-conditioned white cavities",
+         intervention="semantic-ring-conditioned-white-component-state",
+         equation_or_rule="Keep the parent tissue probabilities but remove a bright original-H&E component only when area is at least32um2 and its2um external ring supports two classes with at least0.25 mean posterior each.",
+         failure_hypothesis="True lumina at class interfaces and uncertain rings can still be deleted; positive reference removals remain scored errors.",
+         difference_from_parent="Condition the cavity state on competing surrounding semantic evidence rather than border access, inertia elongation or inscribed-disk clearance."),
+    dict(id="H04", parent="C17", title="Coarse-supervised blind palette fitting",
+         intervention="joint-latent-mixture-and-bounded-palette-estimation",
+         equation_or_rule="Alternate checked simplex mixture optima and bounded palette least squares for one anchored biconvex objective, using at most4096 original known coarse points; freeze the learned palette before whole-tissue inference.",
+         failure_hypothesis="Coarse mixture contamination can bias the palette, and alternating minimization is not a globally identified solution.",
+         difference_from_parent="Estimate free bounded palette vertices jointly with latent known-region mixtures instead of assuming exact palette colours or fitting a single affine sensor correction."),
+    dict(id="H05", parent="C17", title="Brightness and offset nuisance planes",
+         intervention="profiled-nonnegative-gain-neutral-offset-class-geometry",
+         equation_or_rule="For each class profile squared RGB residual over a nonnegative gain and neutral offset with0.01 identity ridge; use the resulting class energy and unchanged confidence-dependent coarse correction.",
+         failure_hypothesis="Class planes can overlap and absorb real discriminating intensity differences as nuisance.",
+         difference_from_parent="Replace mixed-palette fractions by a union of per-class nuisance planes, estimating brightness and offset together rather than unit-vector normalization."),
+    dict(id="H06", parent="C17", title="Nonlinear cardinal palette coordinates",
+         intervention="constant-reproducing-radial-cardinal-colour-decoder",
+         equation_or_rule="Fit constant-reproducing Gaussian radial interpolants at unique palette vertices with median squared-distance bandwidth and1e-7 ridge; project interpolated coordinates to the simplex and split duplicate vertices equally.",
+         failure_hypothesis="Smooth nonlinear interpolation may assign the wrong fractions to genuinely mixed conversion colours or overshoot between vertices.",
+         difference_from_parent="Decode with a globally smooth nonlinear cardinal coordinate system, not a linear mixture inverse, spatial blur inversion or Delaunay tessellation."),
+    dict(id="H07", parent="C01", title="Minimal plural support sets",
+         intervention="latent-top-count-support-bag-observation",
+         equation_or_rule="Pool each tile/class over its highest ceil(25/K) pixel logits, then fit one ridge bag-label likelihood with deterministic support-set ties and analytic gradients.",
+         failure_hypothesis="The necessary minimum winning count does not specify the true plurality event and can reward spurious support subsets.",
+         difference_from_parent="Use a combinatorial minimum-size supporting set rather than independent count tails, mean logits or a single soft witness pixel."),
+    dict(id="H08", parent="C01", title="Explicit coarse observation channel",
+         intervention="forward-coarse-label-corruption-channel-likelihood",
+         equation_or_rule="Estimate a row-stochastic coarse-label channel from palette fractions of original known tile means, shrink it halfway to identity, and fit bag-mean probability likelihood through that fixed channel.",
+         failure_hypothesis="Palette fractions may not identify the real coarse-label error mechanism, and forward correction can suppress valid rare tissues.",
+         difference_from_parent="Model class-dependent errors in the observed coarse label explicitly instead of reweighting training trust or changing a count distribution."),
+    dict(id="H09", parent="C01", title="Information-volume tile likelihood",
+         intervention="multinomial-firth-type-information-volume-correction",
+         equation_or_rule="Fit mean-tile multinomial likelihood with minus half the log determinant of the ridged Fisher information, a fixed reference-class gauge and analytic determinant gradients; report finite-budget stationarity.",
+         failure_hypothesis="The information correction can distort weak tile evidence and the numerical information ridge breaks exact Jeffreys invariance.",
+         difference_from_parent="Address separation and small-sample coefficient bias through information volume rather than pixel-count independence or witness pooling."),
+    dict(id="H10", parent="D08", title="Noise-marginalized exponential discrimination",
+         intervention="analytic-gaussian-tile-error-exponential-risk",
+         equation_or_rule="Whiten original tile means by within-tile covariance and minimize the all-rival exponential loss analytically integrated over Gaussian mean error of covariance I/25, plus one quadratic coefficient penalty.",
+         failure_hypothesis="Spatial correlation invalidates the Gaussian mean-error approximation and exponential risk can amplify wrong coarse labels.",
+         difference_from_parent="Integrate measurement uncertainty into a single convex discriminative objective, instead of treating observed class centroids as exact or using a deterministic hinge loss."),
+    dict(id="H11", parent="D08", title="Whole-tissue prevalence inference",
+         intervention="fixed-semantic-density-label-shift-mixture-proportions",
+         equation_or_rule="Keep original coarse-trained class densities fixed and maximize the full-tissue RGB mixture likelihood over class proportions with a weak symmetric Dirichlet term; apply those proportions as posterior class priors.",
+         failure_hypothesis="Label shift fails when unannotated tissue has different appearance, potentially collapsing a rare real class.",
+         difference_from_parent="Estimate prevalence from all detected tissue without creating semantic training labels; unlike conserved coarse-area projection, class masses are inferred rather than prescribed."),
+    dict(id="H12", parent="D08", title="Robust tile-centroid location",
+         intervention="whitened-geometric-median-class-centroid-estimation",
+         equation_or_rule="In within-tile whitened RGB coordinates, estimate each known class centre by the convex smoothed geometric-median objective with1e-4 norm smoothing, then use the shared nuisance metric for pixel discrimination.",
+         failure_hypothesis="A minority valid appearance can be treated as contamination and downweighted along with erroneous coarse tiles.",
+         difference_from_parent="Change class location estimation to bounded-influence multivariate spatial medians, retaining the covariance model instead of changing its scatter estimator."),
+    dict(id="H13", parent="C15", title="RGB dependence trees",
+         intervention="class-conditional-chow-liu-rgb-variable-tree-density",
+         equation_or_rule="Estimate positive class RGB histograms, choose the maximum-mutual-information spanning tree of the three channel variables, and use its exactly normalized discrete conditional-density product.",
+         failure_hypothesis="A two-edge dependence graph cannot represent three-way interactions and coarse contamination can choose misleading channel links.",
+         difference_from_parent="Learn a conditional-independence graph among RGB variables, not a Gaussian copula, spatial graph or recursive colour-space partition."),
+    dict(id="H14", parent="C15", title="Adaptive neighbour colour density",
+         intervention="class-knn-colour-volume-density-ratio",
+         equation_or_rule="Represent weighted original coarse colours by at most2048 deterministic quantile samples per class, estimate local density from eight-neighbour ball volumes at occupied RGB nodes, and report all-class radius outliers with unknown identity.",
+         failure_hypothesis="Repeated colours, finite sampling and a one-level RGB radius floor can overconcentrate densities or miss rare modes.",
+         difference_from_parent="Adapt the local observation volume to training density rather than fitting fixed marginal bins, a class support hull or global colour modes."),
+    dict(id="H15", parent="C15", title="Positive Bernstein RGB density",
+         intervention="normalized-continuous-tensor-beta-mixture-likelihood",
+         equation_or_rule="Fit positive weights of64 normalized tensor cubic Bernstein/Beta densities by finite EM on original coarse-weighted colour nodes, with a weak symmetric Dirichlet term and explicit likelihood history.",
+         failure_hypothesis="A low-order continuous density can erase rare sharp modes and finite EM may not meet its stopping tolerance.",
+         difference_from_parent="Use a normalized positive joint continuous mixture, rather than separate marginals and a copula, piecewise histograms or an exponential maximum-entropy family."),
+]
+CYCLE_FIVE = {key: CYCLE_FOUR[key] for key in CYCLE_FIVE_SURVIVORS}
+CYCLE_FIVE.update({item["id"]: Candidate(item["title"], item["intervention"],
+    item["equation_or_rule"], item["failure_hypothesis"], True, item["parent"])
+    for item in CHILDREN_FIVE})
+
+
 def candidates(cycle=1):
-    if cycle not in (1, 2, 3, 4):
+    if cycle not in (1, 2, 3, 4, 5):
         raise ValueError("This cycle has no implemented, reviewed lineage")
-    return {1: CYCLE_ONE, 2: CYCLE_TWO, 3: CYCLE_THREE, 4: CYCLE_FOUR}[cycle]
+    return {1: CYCLE_ONE, 2: CYCLE_TWO, 3: CYCLE_THREE, 4: CYCLE_FOUR, 5: CYCLE_FIVE}[cycle]
 
 
 def roster(cycle=1):

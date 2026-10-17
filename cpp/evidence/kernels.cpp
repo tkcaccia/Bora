@@ -3,10 +3,30 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <limits>
 #include <vector>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+
+extern "C" int bora_local_mixture_logits(const float* x, const double* coefficient,
+        const double* intercept, const float* mixing, float* output,
+        int64_t n, int dimensions, int components, int threads) {
+    if(n<0 || dimensions<1 || components<1 || threads<1) return 1;
+    #pragma omp parallel for num_threads(threads) schedule(static)
+    for(int64_t i=0;i<n;++i) {
+        double maximum=-std::numeric_limits<double>::infinity();
+        double sum=0;
+        for(int g=0;g<components;++g) {
+            double score=intercept[g]+std::log(std::max(double(mixing[i*components+g]),1e-30));
+            for(int j=0;j<dimensions;++j) score+=x[i*dimensions+j]*coefficient[g*dimensions+j];
+            if(score>maximum) {sum=sum*std::exp(maximum-score)+1;maximum=score;}
+            else sum+=std::exp(score-maximum);
+        }
+        output[i]=float(maximum+std::log(sum));
+    }
+    return 0;
+}
 
 static bool solve(std::vector<double> a, std::vector<double> b,
                   std::vector<double>& x, int n) {
