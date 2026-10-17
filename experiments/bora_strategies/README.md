@@ -23,7 +23,12 @@ are disjoint from the previous plan. Available BEETLE and eligible CAMELYON
 sources were already represented, so new-only results cover two datasets.
 The full corpus covers four datasets. There are 5,960 final masks.
 
+Run from the experiment's source checkout (on Chiamaka, the saved job source is
+`/mnt/sata_ssd/Bora-benchmark/experiments/bora-expanded-2026-10-17/code`). Use
+its recorded Python environment and expose the local `src` package:
+
 ```bash
+export PYTHONPATH=src OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
 python -m experiments.virchow2_multi.plan --data-root DATA --root INPUTS \
   --previous OLD_MULTICASE --quotas tiger=40 bcss=92 camelyon16-subset=7 beetle=10 --seed 8811
 python -m experiments.bora_strategies.prepare --root INPUTS \

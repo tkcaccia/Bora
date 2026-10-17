@@ -1,6 +1,49 @@
 # Virchow2 experiments for Bora
 
-## Twenty Bora inference strategies on the same 49 ROIs
+## Expanded benchmark: eight retained strategies on 149 ROIs
+
+The active benchmark retains **B02, B03, B05, B08, B09, B10, B12 and B19**,
+with RGB conversions **#9, #10, #15, #19 and equal 9+19**. It adds **100 new
+ROIs** (24 TIGER and 76 BCSS groups) to the original 49, giving **5,960 final
+native masks**. New groups are disjoint from the original plan. New-only and
+full-corpus rankings are reported separately against the common input tile mask.
+
+Across the five retained RGB inputs, **B09 geodesic competition** has the highest
+observed mean native macro IoU on the **100 new images: 0.694649**, versus
+**0.628784** for their completed input tiles (difference **+0.065865**, descriptive
+paired 95% interval **[+0.055613, +0.076594]**). B05 watershed is second at
+**0.681854**. B09 also ranks first on the full 149-image, four-dataset aggregate
+at **0.770765**, versus input tiles **0.717299**. New-only results balance TIGER
+and BCSS; full results equally weight those plus CAMELYON16 and BEETLE, so the
+two aggregates describe different dataset mixtures. These remain controlled
+refinement experiments using reference-derived per-image coarse supervision.
+
+
+Rejected B04/B20/B16/B17/B14/B13/B01/B06/B07/B11/B15/B18 and conversions
+#4/#5/#8 are absent from the active benchmark. Their implementations were removed.
+**B19 revision 2** now combines only B02/B05/B09/B10, with appearance resolving
+ties. The production Bora package remains intact. Earlier sections below describe
+historical studies; their code is retained in recorded Git revisions and output
+runtime snapshots, while the current code implements the retained scope.
+
+- [Expanded report](BORA_RETAINED_EXPANDED_REPORT.md)
+- [Locked input plan](BORA_RETAINED_EXPANDED_PLAN.json)
+- [Exact execution protocol](BORA_RETAINED_EXPANDED_PROTOCOL.json)
+- [Complete output audit](BORA_RETAINED_EXPANDED_AUDIT.json)
+- [Active source and commands](../../experiments/bora_strategies/)
+
+Chiamaka results:
+`/mnt/sata_ssd/Bora-benchmark/results/bora-retained-expanded-2026-10-17/`
+
+Mac copy:
+`/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-retained-expanded-2026-10-17/`
+
+Open `gallery.html` for the new-image filter, all converted RGBs, original H&E,
+original annotation, input tiles and all eight final masks with synchronized
+semi-transparent overlays. `all_outputs.html` includes every image/conversion.
+Sampling, class legends, quality support and per-class scores are preserved.
+
+## Archived twenty-strategy study on 49 ROIs
 
 Twenty distinct strategies, **B01–B20**, now run across all seven retained RGB
 conversions and all 49 benchmark ROIs: **6,860 final native masks**. B01 is the
