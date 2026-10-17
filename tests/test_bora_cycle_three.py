@@ -142,6 +142,10 @@ def test_tile_objective_gradients(kind):
         x = rng.normal(size=(6, 4))
         f = lambda v: margin_objective(v, x, y, weight, k)
     assert check_grad(lambda v: f(v)[0], lambda v: f(v)[1], theta) < 2e-6
+    if kind == "margin":
+        # Every rival score ties at initialization. The original maximum-rival
+        # pilot objective failed line search at this exact point.
+        assert check_grad(lambda v: f(v)[0], lambda v: f(v)[1], np.zeros_like(theta)) < 2e-6
 
 
 def test_fft_distributional_energy_matches_brute_force_distances():

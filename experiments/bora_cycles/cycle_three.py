@@ -378,14 +378,13 @@ def random_intercept(c, palette, he):
 def margin_objective(flat, x, y, weight, k):
     theta = flat.reshape(x.shape[1], k)
     score = x@theta
-    rivals = score+1
-    rivals[np.arange(len(y)), y] = -np.inf
-    other = rivals.argmax(-1)
-    gap = np.maximum(0, rivals[np.arange(len(y)), other]-score[np.arange(len(y)), y])
-    derivative = np.zeros_like(score)
-    derivative[np.arange(len(y)), other] += 2*weight*gap
-    derivative[np.arange(len(y)), y] -= 2*weight*gap
-    return float(weight@(gap*gap)+.0025*np.sum(theta*theta)), (x.T@derivative+.005*theta).ravel()
+    gap = np.maximum(0, 1+score-score[np.arange(len(y)), y, None])
+    gap[np.arange(len(y)), y] = 0
+    # A sum of squared rival hinges has a continuous gradient even when rival
+    # scores tie. It is one joint multiclass classifier, not coupled binary fits.
+    derivative = 2*weight[:, None]*gap/(k-1)
+    derivative[np.arange(len(y)), y] = -derivative.sum(-1)
+    return float(np.sum(weight[:, None]*gap**2)/(k-1)+.0025*np.sum(theta*theta)), (x.T@derivative+.005*theta).ravel()
 
 
 def joint_margin(c, palette, he):
@@ -401,7 +400,7 @@ def joint_margin(c, palette, he):
                    jac=True, method="L-BFGS-B", options=dict(maxiter=150, gtol=1e-6, ftol=1e-11))
     theta = fit.x.reshape(4, c.k)
     return softmax(native.logits(c.rgb, (whitening@theta[:3]).T, theta[3]), -1), dict(
-        observation="joint multiclass squared maximum-rival hinge on whitened tile means",
+        observation="joint multiclass mean squared all-rival hinge on whitened tile means",
         training_bags=len(labels), optimizer_success=bool(fit.success), iterations=int(fit.nit),
         termination=str(fit.message), objective=float(fit.fun),
         gradient_infinity_norm=float(np.max(np.abs(fit.jac))), convex=True)

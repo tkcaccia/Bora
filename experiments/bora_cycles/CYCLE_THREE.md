@@ -24,7 +24,7 @@ improvement. No rejected solver is restored under a new ID.
 | F09 | C01 | Analytic ridge regression on kernel mean embeddings of tile colour distributions. | A tile-distribution predictor may not transfer to individual pixels. |
 | F10 | D08 | Estimate nuisance covariance from adjacent within-tile colour increments. | Spatially correlated noise or real microscopic boundaries violate the noise model. |
 | F11 | D08 | Separate latent between-tile appearance variance from within-tile sampling noise. | Few bags produce unstable class-specific covariance and engulf small tissue. |
-| F12 | D08 | Fit a joint maximum-rival margin in within-tile noise-whitened colour coordinates. | Coarse tile means force the wrong separating plane. |
+| F12 | D08 | Fit joint squared all-rival margins in within-tile noise-whitened colour coordinates. | Coarse tile means force the wrong separating plane. |
 | F13 | C15 | Distributional energy score from expected RGB distances, evaluated by FFT potentials. | Broad distributions obscure small distinctive modes. |
 | F14 | C15 | Signed geometric depth in learned class colour-support hulls. | Convex support bridges holes and is enlarged by contaminated training colours. |
 | F15 | C15 | Compare held-out class-specific density ranks rather than raw density heights. | Broad classes look typical for many colours; weak spatial samples give no coverage guarantee. |
@@ -68,3 +68,11 @@ or a selection cohort. The full run freezes all predictions before any fine
 reference is opened. Only actual review of all 149 all-method sheets, scores,
 time and native failures permits the next five-survivor selection. Repeated
 selection on these images is development, not independent validation.
+
+The first four-group pilot is preserved as cycle-03-pilot-v1. It exposed
+zero-iteration failures in two F12 maximum-rival fits because the loss was
+nondifferentiable at tied rivals. Before the full cycle, F12 was revised to
+the mean of squared all-rival hinges, which has a continuous gradient at
+ties. An explicit tied-initialization gradient check covers this failure.
+The corrected source and a fresh pilot are version two; v1 is not a completed
+cycle and its failed-fit masks are not silently substituted into the full run.
