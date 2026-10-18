@@ -8,6 +8,8 @@ from experiments.bora_cycles.run import digest, save
 
 
 def main():
+    import cv2
+    cv2.setNumThreads(2)
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('source', 'root', 'plan'):
         parser.add_argument('--'+name, type=Path, required=True)
