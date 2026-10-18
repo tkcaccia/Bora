@@ -33,7 +33,10 @@ N-series models and numerical limits are described in `CYCLE_TEN_PROPOSAL.md`.
 The357 local and remote regression checks passed. All13 pilot overviews and
 3 native label crops were actually inspected;286 mask/display checks,65 parent
 mask and65 parent-score comparisons and44 constant-input checks passed.
-The unchanged frozen source2f25e21 is now running all349 cases on Chiamaka,
+The unchanged frozen source2f25e21 completed all349 predictions, scoring and
+rendering on Chiamaka. Thirty all-method overviews have been actually inspected;
+319 overviews and15 planned native crops remain. Diagnostic/audit reporting is
+still running. Computation used
 3 nice12 workers and2 numerical threads each. N07 remains a visibly labelled
 finite-budget approximate solver with unfinished stationarity; N14 has two
 pilot stationarity flags. No tenth-cycle visual selection is claimed yet.

@@ -1,5 +1,5 @@
 {
-  "stage": "all349_predictions_frozen_scoring_and_rendering",
+  "stage": "all349_scored_and_rendered_actual_review_in_progress",
   "completed_cycles": 9,
   "active_cycle": 10,
   "source_commit": "2f25e218a173265c15923e16eab2571bcf8fa2db",
@@ -18,7 +18,7 @@
   "expected_full_cases": 349,
   "expected_full_methods": 22,
   "complete_goal": false,
-  "checkpoint_utc": "2026-10-18T03:57:48.372051+00:00",
+  "checkpoint_utc": "2026-10-18T04:12:32.841963+00:00",
   "pilot_process_terminal": true,
   "pilot_decision_sha256": "53aa9a36a315f1634d068d32be7b1bd7f9931f149c6316ddbedf3ed5f4df304f",
   "remote_frozen_preflight_checks": 357,
@@ -29,7 +29,7 @@
   "main_log": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-extension-2026-10-18/cycle-ten-full-v1.log",
   "remote_full_result": "/mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-10",
   "local_full_result": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-10-chiamaka",
-  "actual_full_overviews": 0,
+  "actual_full_overviews": 30,
   "actual_full_native_crops": 0,
   "survivors_selected": false,
   "posthoc_waiter_pid": 2044266,
@@ -48,6 +48,8 @@
   "full_protocol_sha256": "74c3e8093e408794c8ac6a861352c556dd4faa6e15146372f955678ebd63e547",
   "successful_predictions": 7678,
   "failed_predictions": 0,
-  "previous_goal_turn_classification": "verified_wait",
-  "current_goal_turn_classification": "progress"
+  "previous_goal_turn_classification": "progress",
+  "current_goal_turn_classification": "progress",
+  "full_result_sha256": "8b71d33b30b71a1449114646a5d03a84f49e34d9b0b89dc2060b1b811bf63588",
+  "posthoc_complete": false
 }
