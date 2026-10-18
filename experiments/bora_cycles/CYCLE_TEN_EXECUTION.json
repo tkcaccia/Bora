@@ -1,6 +1,6 @@
 {
   "stage": "all349_scored_and_rendered_actual_review_in_progress",
-  "completed_cycles": 9,
+  "completed_cycles": 10,
   "active_cycle": 10,
   "source_commit": "2f25e218a173265c15923e16eab2571bcf8fa2db",
   "source_snapshot": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-extension-2026-10-18/cycle-ten-code-v1-2f25e21",
@@ -18,7 +18,7 @@
   "expected_full_cases": 349,
   "expected_full_methods": 22,
   "complete_goal": false,
-  "checkpoint_utc": "2026-10-18T04:12:32.841963+00:00",
+  "checkpoint_utc": "2026-10-18T04:58:22.169155+00:00",
   "pilot_process_terminal": true,
   "pilot_decision_sha256": "53aa9a36a315f1634d068d32be7b1bd7f9931f149c6316ddbedf3ed5f4df304f",
   "remote_frozen_preflight_checks": 357,
@@ -29,9 +29,9 @@
   "main_log": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-extension-2026-10-18/cycle-ten-full-v1.log",
   "remote_full_result": "/mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-10",
   "local_full_result": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-10-chiamaka",
-  "actual_full_overviews": 30,
-  "actual_full_native_crops": 0,
-  "survivors_selected": false,
+  "actual_full_overviews": 349,
+  "actual_full_native_crops": 15,
+  "survivors_selected": true,
   "posthoc_waiter_pid": 2044266,
   "posthoc_log": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-extension-2026-10-18/cycle-ten-posthoc-v1.log",
   "posthoc_requires_all349_prediction_freeze_scoring_rendering": true,
@@ -51,5 +51,31 @@
   "previous_goal_turn_classification": "progress",
   "current_goal_turn_classification": "progress",
   "full_result_sha256": "8b71d33b30b71a1449114646a5d03a84f49e34d9b0b89dc2060b1b811bf63588",
-  "posthoc_complete": false
+  "posthoc_complete": true,
+  "main_process_terminal": true,
+  "posthoc_process_terminal": true,
+  "audited_native_masks": 7678,
+  "audited_display_masks": 7678,
+  "unchanged_parent_native_comparisons": 1745,
+  "unchanged_parent_score_comparisons": 1745,
+  "constant_input_comparisons": 660,
+  "exported_native_crops": 15,
+  "repeated_pilot_native_comparisons": 286,
+  "repeated_pilot_accuracy_comparisons": 286,
+  "repeated_pilot_differences": 0,
+  "full_audit_sha256": "c6ffe265e5a250fc33e255d011156ad62904d2b85922b31d972001fe14bef6b6",
+  "posthoc_complete_sha256": "88fa627d89a352b486f4120abc3005c7177bfda38283834d536c7106380bf093",
+  "explicit_nonconvergence": {
+    "N07": 319,
+    "N14": 25
+  },
+  "next_action": "Publish and inspect selected-five viewer, then prospectively propose cycle11.",
+  "survivors": [
+    "J01",
+    "M04",
+    "N08",
+    "N10",
+    "C17"
+  ],
+  "selection_sha256": "b07ec34dede9b2187e41707799ff64e8e1d5d3a48836c186ecd47dbecdf28197"
 }

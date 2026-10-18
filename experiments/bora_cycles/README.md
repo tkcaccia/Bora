@@ -1,18 +1,24 @@
 # Twenty review-gated Bora improvement cycles
 
-Current verified status: **nine of twenty cycles complete**. Cycle nine has
-349 actual all-method overview reviews, nine full-run native crop reviews,
-7,678 audited masks and a signed selection: **J01, M04, K05, M11, C17**.
-J01 remains the runtime-adjusted leader; the other four preserve distinct
-mechanisms with explicit accuracy, speed and tissue-preservation tradeoffs.
-See [CYCLE_NINE_REVIEW.md](CYCLE_NINE_REVIEW.md).
+Current verified status: **ten of twenty cycles complete**. Cycle ten has
+349 actual all-method overview reviews,15 full-run native label crop reviews,
+7,678 audited masks and a signed selection: **J01, M04, N08, N10, C17**.
+J01 remains the runtime-adjusted leader. N10 replaces M11 with a tissue envelope;
+N08 replaces K05 as an explicit raw-accuracy/variance tradeoff despite lower
+utility and worse mean small-region recall. These are not the five highest
+utility ranks. See [CYCLE_TEN_REVIEW.md](CYCLE_TEN_REVIEW.md) for all20 decisions.
 
-Cycle ten is running on the same 349 frozen ROIs after its 13-image pilot,
+Cycle ten has computed, scored, rendered and audited the same 349 frozen ROIs after its 13-image pilot,
 357 checks and actual inspection of all pilot overviews plus three native
 crops. Its prospective mathematics are in
 [CYCLE_TEN_PROPOSAL.md](CYCLE_TEN_PROPOSAL.md); pilot behavior and finite-solver
 limitations are in [CYCLE_TEN_PILOT_REVIEW.md](CYCLE_TEN_PILOT_REVIEW.md).
-No tenth selection is claimed. Read execution JSON and the signed selections
+All349 full-run overviews and all15 planned native label crops have been actually
+inspected. All7,678 mask/display checks,1,745 parent native
+comparisons,1,745 parent accuracy comparisons and660 constant-input checks pass.
+N07 remains a finite60-step approximation on319 informative cases; N14 has25
+stationarity flags. The signed tenth selection is in CYCLE_TEN_SELECTION.json.
+Read execution JSON and the signed selections
 for newer status. Historical checkpoints later in this document describe
 earlier stages, not the current completion count.
 

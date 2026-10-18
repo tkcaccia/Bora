@@ -1,7 +1,7 @@
 # Accuracy, speed and the new one-second penalty
 
-Nine of twenty cycles are complete: cycles1–7 use149 repeatedly reused development
-ROIs and cycles8–9 use349. The user requests penalizing algorithms that take longer than one
+Ten of twenty cycles are complete: cycles1–7 use149 repeatedly reused development
+ROIs and cycles8–10 use349. The user requests penalizing algorithms that take longer than one
 second per image. The explicit working policy is:
 
     adjusted utility = mean_i[macro_IoU_i - 0.05 * max(seconds_i - 1, 0)]
@@ -34,13 +34,25 @@ The357 local and remote regression checks passed. All13 pilot overviews and
 3 native label crops were actually inspected;286 mask/display checks,65 parent
 mask and65 parent-score comparisons and44 constant-input checks passed.
 The unchanged frozen source2f25e21 completed all349 predictions, scoring and
-rendering on Chiamaka. Thirty all-method overviews have been actually inspected;
-319 overviews and15 planned native crops remain. Diagnostic/audit reporting is
-still running. Computation used
+rendering on Chiamaka. All349 all-method overviews and all15 planned native label
+crops have been actually inspected. Posthoc reporting is
+complete: all7678 native/display masks,1745 unchanged-parent native comparisons,
+1745 unchanged-parent score comparisons and660 constant-input checks pass.
+The13 overlapping pilot/full cases also match in all286 native mask and286
+accuracy comparisons. This is a scoped repeatability check, not timing or
+biological validation. Computation used
 3 nice12 workers and2 numerical threads each. N07 remains a visibly labelled
-finite-budget approximate solver with unfinished stationarity; N14 has two
-pilot stationarity flags. No tenth-cycle visual selection is claimed yet.
-See `CYCLE_TEN_PILOT_REVIEW.json` and `CYCLE_TEN_EXECUTION.json`.
+finite-budget approximate solver with unfinished stationarity on all319
+informative full-run cases; N14 has25 full-run stationarity flags. Native review
+shows false colour fringes, filled internal gland lumina, shared tissue-support
+holes, and deletion of positively annotated fat by aggressive glass rules.
+Selected five: J01,M04,N08,N10,C17. N10 improves M11 mean IoU by0.08772 percentage
+points with258 wins,19 losses and72 ties, preserving more tissue without directional
+rays. N08 is the raw leader at0.721170133 but has lower utility and lower mean
+small-region recall than K05; its replacement is an explicit appearance-variance
+tradeoff, not dominance. J01 still leads utility at0.719594170. The viewer shows only
+these five across all349 cases. See `CYCLE_TEN_REVIEW.md` for all20 decisions and
+`CYCLE_TEN_SELECTION.json` for signed evidence. Ten further cycles remain.
 
 This subtracts five IoU percentage points per excess second, with no bonus
 below one second. Calculate excess on each image before averaging: a method
@@ -147,7 +159,7 @@ on the small workload. This is kernel evidence, not whole-algorithm acceleration
 
 `runtime_report.py` derives `RUNTIME_PENALTY_HISTORY.json` and `runtime_history.html`
 from signed completed-cycle evidence. The selected-five viewer shows the
-penalty and orders its five methods by adjusted utility. Eight of twenty cycles
+penalty and orders its five methods by adjusted utility. Ten of twenty cycles
 are complete. All later selections must respect the one-second preference.
 
 ## Cycle 6: measurable gains below one second
