@@ -149,3 +149,31 @@ scoring, do not revive rejected RGB conversion04, and use the active protocol's
 roster rather than older rejected strategies. Resource budget: at most three
 nice12 image workers, two numerical/OpenMP threads each; leave desktop and
 other users' jobs alone.
+
+
+## Local mirrors from cycle10 onward
+
+The Mac had about8 GiB free when cycle10 started. Complete result rasters stay
+on Chiamaka. Local cycle10 and later mirrors contain contact sheets, detailed
+label crops, JSON reports and actual review records; they are not full native
+prediction archives. Nothing was deleted from earlier local results.
+
+The viewer is served through an SSH forward at `http://127.0.0.1:64889`.
+A remote result such as `results/bora-cycles-2026-10-17/cycle-10/selected.html`
+appears at `/bora-cycles-2026-10-17/cycle-10/selected.html` on that local port.
+This viewer reads every image, PNG mask and native TIFF from the canonical
+remote result folder. Opening local mirrored HTML on port64888 does not supply
+these omitted assets. Earlier64888 viewers remain unchanged.
+
+Both server and SSH listener bind only127.0.0.1. The local results base has
+`REMOTE_VIEWER.json` with the tunnel PID and port; Chiamaka has the HTTP server
+receipt under `experiments/bora-extension-2026-10-18/result-viewer-64889.json`.
+Check live processes and HTTP responses before restarting a tunnel or server.
+A dropped connection is not proof that computation stopped. Do not re-run
+predictions because a local mirror is intentionally incomplete.
+
+`CURRENT_RUN.json` identifies the last actually delivered selected-five viewer.
+A working server or exported crop does not select methods or establish an
+actual inspection. After all349 overviews are reviewed and five are signed,
+the report HTML and signed review/selection records are synchronized back to
+Chiamaka, then its selected-five page is opened through the local forward.
