@@ -1,23 +1,17 @@
 # Accuracy, speed and the new one-second penalty
 
-Seven of twenty cycles are complete on all 149 repeatedly reused development
-ROIs. The user now requests penalizing algorithms that take longer than one
+Eight of twenty cycles are complete: cycles1–7 use149 repeatedly reused development
+ROIs and cycle8 uses349. The user now requests penalizing algorithms that take longer than one
 second per image. The explicit working policy is:
 
     adjusted utility = mean_i[macro_IoU_i - 0.05 * max(seconds_i - 1, 0)]
 
-Cycle8 expands prospectively to349 ROIs, retaining the original149 exactly and
-adding40 each from BCSS, TIGER, WSSS4LUAD, RINGS tumor and OCELOT. All inputs and
-1745 fixed RGB conversions are frozen and audited. The full349x22 run and
-posthoc audits are complete:7678 native masks,745 exact historical parent
-comparisons and660 constant-input contract checks pass.102 actual full-run
-overview sheets and14 native label crops have been reviewed;247 overviews
-remain before five survivors can be signed. Cycle8 is not yet complete.
-See `CYCLE_EIGHT_EXECUTION.json`. Historical149 and new200
-scores are reported separately. Unknown-resolution pixel-area summaries are
-separate from physical-area summaries. A common completed-coarse fallback
-prevents numerical class artifacts on30 constant-RGB inputs; no refinement
-claim is made for those cases.
+Cycle8 is signed after349 actual all-method overview reviews and14 native label crops.
+It retains149 original inputs and adds200,40 each BCSS,TIGER,WSSS4LUAD,RINGS
+and OCELOT. Selected five: J01,L02,K05,L03,C17. All7678 native masks,
+745 historical-parent comparisons and660 constant-input checks pass. J01 still
+leads adjusted utility; no child improves it. Eight of twenty cycles are complete.
+See `CYCLE_EIGHT_REVIEW.md` and the signed selection.
 
 This subtracts five IoU percentage points per excess second, with no bonus
 below one second. Calculate excess on each image before averaging: a method
@@ -124,7 +118,7 @@ on the small workload. This is kernel evidence, not whole-algorithm acceleration
 
 `runtime_report.py` derives `RUNTIME_PENALTY_HISTORY.json` and `runtime_history.html`
 from signed completed-cycle evidence. The selected-five viewer shows the
-penalty and orders its five methods by adjusted utility. Seven of twenty cycles
+penalty and orders its five methods by adjusted utility. Eight of twenty cycles
 are complete. All later selections must respect the one-second preference.
 
 ## Cycle 6: measurable gains below one second
