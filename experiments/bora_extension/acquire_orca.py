@@ -19,6 +19,7 @@ from .orca_labels import decode_orca
 
 
 FOLDER='https://drive.google.com/drive/folders/1XfplgYK5JWzzYWXQhrPUQujXNKUDK-WR'
+FOLDERS={'validation':FOLDER,'test':'https://drive.google.com/drive/folders/1A_xiKTwBNO9XS_NzdDvWJNAx_z1nRnpS'}
 
 
 def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -45,9 +46,10 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root',type=Path,required=True)
     parser.add_argument('--list',type=Path,required=True)
+    parser.add_argument('--split',choices=sorted(FOLDERS),default='validation')
     args=parser.parse_args()
     entries=json.loads(args.list.read_text())
-    folder=args.root/'raw/orca/validation-native'
+    folder=args.root/'raw/orca'/(args.split+'-native')
     folder.mkdir(parents=True,exist_ok=True)
     masks=[r for r in entries if r['path'].endswith('_mask.png')]
     image_by_name={Path(r['path']).name:r for r in entries if not r['path'].endswith('_mask.png')}
@@ -102,14 +104,14 @@ def main():
         selected.append(row)
         if len(selected)==40:break
     report=dict(dataset='orca',source='https://sites.google.com/unibas.it/orca/download',
-        original_folder=FOLDER,folder_inventory_sha256=sha(args.list),
-        annotation='carcinoma255; non-carcinoma tissue127/128; non-tissue0 ignored',
-        release='original validation100',license='provider educational-use notice; no broader license inferred',
+        original_folder=FOLDERS[args.split],folder_inventory_sha256=sha(args.list),
+        annotation='carcinoma255; normalized non-carcinoma tissue127; non-tissue0 ignored',
+        release='original '+args.split+'100',license='provider educational-use notice; no broader license inferred',
         microscopy_mpp=None,groups=len({r['source_group'] for r in selected}),selected=selected,excluded=excluded,
         temporarily_unavailable=unavailable,
         quota=40,selected_count=len(selected),full_coarse_gate_pending=True,
         segmentation_run=False,encoder_run=False)
-    output=args.root/'metadata/orca-native-acquisition-v1.json'
+    output=args.root/'metadata'/('orca-native-acquisition-v1.json' if args.split=='validation' else 'orca-test-native-acquisition-v1.json')
     output.write_text(json.dumps(report,indent=2)+'\n')
     print(json.dumps(dict(dataset='orca',selected=len(selected),source_groups=report['groups'],excluded=len(excluded))),flush=True)
 

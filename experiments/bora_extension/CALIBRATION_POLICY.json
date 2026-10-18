@@ -1,0 +1,22 @@
+{
+  "version": "virchow-physical-sampling-v1",
+  "effective_from_cycle": 11,
+  "require_native_mpp_xy": true,
+  "require_working_mpp_xy": true,
+  "magnification_alone_establishes_mpp": false,
+  "base_target_mpp": 0.5,
+  "scale_factors": [1, 2, 4],
+  "target_scale_mpp": [0.5, 1.0, 2.0],
+  "documented_model_training_mpp": [0.25, 0.5, 1.0, 2.0],
+  "relative_sampling_rounding_tolerance": 0.02,
+  "encoder_window_pixels": 224,
+  "encoder_stride_pixels": 112,
+  "encoder_token_pixels": 14,
+  "coarse_tile_pixels": 90,
+  "minimum_base_physical_field_um_per_axis": 448,
+  "source": "https://huggingface.co/paige-ai/Virchow2/blob/main/README.md",
+  "resampling": "Compute physical axes from actual source and resized dimensions. Record upsampling explicitly; it cannot restore missing optical detail or establish an acquired microscope magnification. Native/ref working geometry must preserve the same physical field.",
+  "unknown_calibration": "Retain source data in acquisition inventory, outside new Virchow2 inference and Bora benchmark scores. Never substitute numerical1.0micrometre spacing, estimate MPP from nuclei, or infer it from20x/40x alone.",
+  "optics": "Record scanner/objective when reported. Objective, optical resolving power and pixel sampling are distinct; unavailable optical resolving power remains unknown.",
+  "history": "Earlier signed cycles and caches remain historical. Unknown-calibration caches are not admitted into new cycles. A calibration correction requires a new input/cohort freeze and matched parent baselines. RGB conversion formulae remain unchanged."
+}

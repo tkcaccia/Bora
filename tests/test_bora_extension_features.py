@@ -57,15 +57,15 @@ def test_full_field_encoder_does_not_read_reference_and_resume_checks_hashes(tmp
     import experiments.bora_extension.features as module
     monkeypatch.setattr(module.shutil, "disk_usage", lambda p: SimpleNamespace(free=25*1024**3))
     src, out = tmp_path/"source", tmp_path/"output"
-    case = src/"cases"/"uncalibrated_one_class"
+    case = src/"cases"/"calibrated_fixture"
     case.mkdir(parents=True)
     out.mkdir()
-    image = np.random.default_rng(93).integers(0, 255, (180, 180, 3), dtype=np.uint8)
+    image = np.random.default_rng(93).integers(0, 255, (896, 896, 3), dtype=np.uint8)
     Image.fromarray(image).save(case/"original.png")
-    tifffile.imwrite(case/"coarse.tif", np.ones((180, 180), np.uint8))
+    tifffile.imwrite(case/"coarse.tif", np.ones((896, 896), np.uint8))
     (case/"reference.native.tif").write_bytes(b"not a readable TIFF; predictor must not open")
-    sample = dict(case=case.name, dataset="example", working_mpp_xy=None,
-        fov_um_xy=None, working_shape_yx=[180, 180],
+    sample = dict(case=case.name, dataset="example", working_mpp_xy=[.5,.5],
+        native_mpp_xy=[.5,.5], native_shape_yx=[896,896], fov_um_xy=[448,448], working_shape_yx=[896,896],
         original_sha256=digest(case/"original.png"), coarse_sha256=digest(case/"coarse.tif"))
     calls = []
 
@@ -80,14 +80,21 @@ def test_full_field_encoder_does_not_read_reference_and_resume_checks_hashes(tmp
 
     record = freeze_case(src, out, sample, None, encode)
     assert len(calls) == 3
-    assert calls[0].shape == (224, 224, 3)
-    assert np.array_equal(calls[0][:180, :180], image)  # No annotation/tissue gate or resampling.
+    assert calls[0].shape == (896, 896, 3)
+    assert np.array_equal(calls[0], image)  # No annotation/tissue gate or resampling.
     assert record["all_original_tokens_covered"]
     assert not record["fine_reference_read"] and not record["bora_run"]
-    assert record["sampling"]["mpp_xy"] is None
+    assert record["sampling"]["mpp_xy"] == [.5,.5]
     assert verify_case(out/"cases"/case.name, sample) == record
     freeze_case(src, out, sample, None, encode)
     assert len(calls) == 3  # Verified frozen resume does not encode again.
+    old_record=dict(record)
+    old_record.pop('physical_calibration')
+    (out/'cases'/case.name/'FEATURES_FROZEN.json').write_text(json.dumps(old_record))
+    with pytest.raises(ValueError,match='physical calibration changed or is missing'):
+        freeze_case(src,out,sample,None,encode)
+    assert len(calls)==3
+    (out/'cases'/case.name/'FEATURES_FROZEN.json').write_text(json.dumps(record))
     # A second, model-free pass verifies full array geometry and coverage.
     from experiments.bora_extension.audit_features import audit
     (src/"PLAN.json").write_text(json.dumps(dict(samples=[sample])))

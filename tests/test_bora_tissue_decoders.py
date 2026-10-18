@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from experiments.bora_extension.orca_labels import decode_orca
 from experiments.bora_extension.prepare_puma import rasterize
 from experiments.bora_extension.prepare_gleasonxai import consensus
@@ -24,3 +25,13 @@ def test_gleason_plurality_ignores_rater_tie():
     mask,info=consensus(rows,(20,20));assert not mask.any() and info['disagreement_tie_pixels']>0
     rows.append(dict(annotator='c',grade='3',coords=coords))
     mask,info=consensus(rows,(20,20));assert mask[5,5]==3 and mask[5,15]==0
+
+
+def test_puma_one_pixel_edge_excursion_is_clipped_without_coordinate_scaling():
+    def document(left):
+        return dict(features=[dict(properties=dict(classification=dict(name='tissue_stroma')),
+            geometry=dict(type='Polygon',coordinates=[[[left,0],[100,0],[100,100],[left,100],[left,0]]]))])
+    mask,_=rasterize(document(-1))
+    assert mask.shape==(1024,1024) and mask[50,0]==2 and mask[50,150]==0
+    with pytest.raises(ValueError,match='outside original annotated ROI'):
+        rasterize(document(-20))

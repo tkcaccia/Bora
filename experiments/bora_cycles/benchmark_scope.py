@@ -78,6 +78,10 @@ def load_scope(source, cycle):
         return None
     plan = json.loads((source/"PLAN.json").read_text())
     frozen = json.loads((source/"ALL_INPUTS_FROZEN.json").read_text())
+    if cycle >= 11:
+        from experiments.bora_extension.calibration import require
+        for sample in plan["samples"]:
+            require(sample)
     ids = [s["case"] for s in plan["samples"]]
     counts = dict(Counter(s["dataset"] for s in plan["samples"]))
     sha = digest(source/"PLAN.json")

@@ -41,7 +41,10 @@ def rasterize(document):
                 points=np.asarray(ring,dtype=float)
                 if points.ndim!=2 or points.shape[1]!=2 or not np.isfinite(points).all():
                     raise ValueError('Invalid tissue polygon')
-                if np.min(points)<-.01 or np.max(points)>1024.01:
+                # One released polygon (metastatic ROI018) extends to -1px.
+                # Permit this bounded edge excursion and let the fixed1024px
+                # canvas clip it. Do not rescale coordinates or label context.
+                if np.min(points)<-1.01 or np.max(points)>1025.01:
                     raise ValueError('Polygon is outside original annotated ROI')
                 # Source vector coordinates describe pixel edges. Shift by half
                 # a pixel before fixed-point rasterization (1/16 pixel precision).
@@ -105,6 +108,7 @@ def main():
                     original_context_shape_yx=[5120,5120],source_context_crop_xywh=[1536,1536,2048,2048],
                     annotated_centre_xywh=[512,512,1024,1024],unannotated_context_ignored=True,
                     central_RGBA_exact_match=True,polygon_overlap_conflict_pixels_in_provider_order=conflicts,
+                    polygon_canvas_clipping='Original1024px canvas clips at most1px source edge excursions; no coordinate rescaling or annotation beyond ROI',
                     source_tiff_mpp_xy=cmpp,source_tiff_resolution_units='centimetre',
                     record='https://zenodo.org/records/15050523',license='CC0-1.0',provider_split='training (development)',
                     microscopy='Native TIFF axis calibration; published0.22micrometres/px is rounded',

@@ -63,7 +63,9 @@ def source_record():
         repo/"cpp/evidence/libbora_evidence.so",
         repo/"experiments/bora_extension/task_adapter.py",
         repo/"experiments/bora_extension/eligibility.py",
-        repo/"experiments/bora_extension/eligibility_policy.json"]
+        repo/"experiments/bora_extension/eligibility_policy.json",
+        repo/"experiments/bora_extension/calibration.py",
+        repo/"experiments/bora_extension/CALIBRATION_POLICY.json"]
     return {str(p.relative_to(repo)): digest(p) for p in files}
 
 

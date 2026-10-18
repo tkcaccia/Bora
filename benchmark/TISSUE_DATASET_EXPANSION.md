@@ -7,6 +7,41 @@ machine-readable acquisition manifest records actual completed counts. Source
 patients, slides, TMA cores and ROIs are different units and are reported
 separately; forty crops are not automatically forty independent patients.
 
+## Physical calibration requirement (latest user instruction)
+
+**New Virchow2 inference and Bora benchmark runs require traceable native and
+working µm/pixel axes.** Magnification alone and pixel dimensions are
+insufficient. Unknown-calibration images may remain in the acquisition inventory
+but are excluded from new model inference and benchmark scores. A metadata audit
+of the299 size/group-qualified existing fields clears269;9 WSSS4LUAD and21 RINGS
+fields remain calibration-pending. Earlier signed scores remain historical.
+
+The current encoder uses224×224px inputs at approximately0.5,1 and2µm/px:
+physical window widths112,224 and448µm. Calculate exact per-axis values from
+actual resize dimensions, including source pixels per window,14px token size,
+112px stride and90px coarse supervision tiles. Record source scanner/objective
+when reported; optical resolving power remains unknown unless actually supplied.
+The hard checks are in `calibration.py` and `CALIBRATION_POLICY.json`, called
+before GPU loading and before admitting inputs to cycle11 onward. Resampling is
+explicit: interpolation can match a physical field but cannot restore missing
+optical detail or establish an acquired microscope magnification.
+
+## Acquired and audited fields
+
+The first acquisition audit contains160 physically calibrated fields:40 each
+from IGNITE, PESO, GCSS and GleasonXAI. Original file hashes, paired native and
+working grids, all fine classes, observed coarse groups and physical window
+sizes were checked. This is an acquisition inventory; a combined inference
+cohort and new segmentation scores have not yet been frozen.
+
+The local review page is
+[the acquisition viewer](http://127.0.0.1:64889/bora-tissue-acquisition-2026-10-18-v1/index.html).
+Each original/reference/coarse preview has a100µm scale bar. The viewer states
+the actual native/working axes and any interpolation. Two aligned native
+image/mask examples per completed dataset are copied under
+`benchmark/examples/tissue-expansion-2026-10-18-v1/`, with individual JSON
+provenance and separately named working grids. Source data remain outside Git.
+
 ## Sources being acquired
 
 |Dataset|Annotation task|Released source / analysis unit|Native sampling|
@@ -71,7 +106,10 @@ refinement benchmark, not population-random sampling.
 - **PUMA:** use the real context TIFF, never padded or enlarged1024px originals.
   Its central1024px RGBA pixels must exactly equal the separately released ROI.
   Rasterize only tissue polygons, preserve holes, and record vector-to-pixel
-  and overlap conventions. Unannotated context remains reference0, while all
+  and overlap conventions. A single original polygon extends to−1px; the fixed
+ 1024px canvas clips excursions of at most1px, with no coordinate rescaling.
+ Larger excursions fail rather than silently changing the frame.
+ Unannotated context remains reference0, while all
   its tissue is available for future encoder inference.
 - **ORCA:** the original paper specifies black non-tissue, grey non-carcinoma
   tissue and white carcinoma. Released PNGs contain grey129/130 and antialiased

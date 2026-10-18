@@ -1,7 +1,8 @@
 """Full-field frozen Virchow2 inference for the 200 audited additions.
 
 This stage never opens a fine reference or runs Bora. Unknown pixel spacing
-stays unknown; native-pixel inference is explicitly exploratory. The encoder,
+stays unknown; new inference now requires traceable physical sampling.
+Historical exploratory pixel-only caches remain archived outside new runs. The encoder,
 normalization, token selection and overlap stitching reuse the fixed study
 implementation. Multiscale variants retain its original factors two and four.
 """
@@ -85,10 +86,14 @@ def encode_complete(model, image, selected, encode):
     return values, metadata
 
 
-def verify_case(folder, sample):
+def verify_case(folder, sample, *, calibration=None):
     record = json.loads((folder/"FEATURES_FROZEN.json").read_text())
     if record["image_sha256"] != sample["original_sha256"] or record["coarse_sha256"] != sample["coarse_sha256"]:
         raise ValueError("Frozen feature input identity changed")
+    # Historical evidence can still be inspected. Prospective reuse must be
+    # bound to the current physical transform, not just identical PNG bytes.
+    if calibration is not None and record.get("physical_calibration") != calibration:
+        raise ValueError("Frozen feature physical calibration changed or is missing; use a new cache version")
     for name, expected in record["files_sha256"].items():
         if digest(folder/name) != expected:
             raise ValueError("Frozen feature cache changed: " + name)
@@ -97,13 +102,15 @@ def verify_case(folder, sample):
 
 def freeze_case(source, root, sample, model, encode):
     """Encode all original pixels, irrespective of fine masks or tissue support."""
+    from .calibration import require
+    calibration = require(sample)  # Before GPU inference or reuse of an old cache.
     began = time.monotonic()
     src, dst = source/"cases"/sample["case"], root/"cases"/sample["case"]
     for name, key in (("original.png", "original_sha256"), ("coarse.tif", "coarse_sha256")):
         if digest(src/name) != sample[key]:
             raise ValueError("Source input changed: " + name)
     if (dst/"FEATURES_FROZEN.json").exists():
-        return verify_case(dst, sample)
+        return verify_case(dst, sample, calibration=calibration)
     if shutil.disk_usage(root).free < 20*1024**3:
         raise RuntimeError("Keep at least20 GiB free before another feature case")
     dst.mkdir(parents=True, exist_ok=True)
@@ -138,7 +145,7 @@ def freeze_case(source, root, sample, model, encode):
         image_sha256=sample["original_sha256"], coarse_sha256=sample["coarse_sha256"],
         encoder_revision=MODEL_REVISION, encoder_checkpoint_sha256=MODEL_SHA256,
         files_sha256=files, sampling=sampling(sample, image.shape[:2]),
-        all_original_tokens_covered=True, fine_reference_read=False,
+        all_original_tokens_covered=True, fine_reference_read=False, physical_calibration=calibration,
         bora_run=False, seconds=time.monotonic()-began,
         single_coarse_class=selection["single_coarse_class"])
     save_json(dst/"FEATURES_FROZEN.json", record)
@@ -159,7 +166,7 @@ def main():
     if len({r["case"] for _, r in samples}) != len(samples):
         raise ValueError("Duplicate extension case identifiers")
     repo = Path(__file__).resolve().parents[2]
-    files = [Path(__file__)] + [p for package in ("virchow2_multi", "virchow2_inverse", "virchow2_tissue")
+    files = [Path(__file__),Path(__file__).with_name("calibration.py"),Path(__file__).with_name("CALIBRATION_POLICY.json")] + [p for package in ("virchow2_multi", "virchow2_inverse", "virchow2_tissue")
                                for p in sorted((repo/"experiments"/package).glob("*.py"))]
     protocol = dict(cases=[r["case"] for _, r in samples],
         source_plans={str(s): digest(s/"PLAN.json") for s, _ in sources},
@@ -171,7 +178,7 @@ def main():
         small_field_padding="reflect right/bottom to at least224; original top-left pixels unchanged",
         gpu_memory_fraction=.4, torch_threads=2, nice_expected=12,
         entire_original_RGB_encoded=True, fine_references_read=False,
-        uncalibrated_images="native pixels; physical metadata null; exploratory inference",
+        uncalibrated_images="blocked before GPU inference; retained only in acquisition inventory",
         single_class="encode full image; variance-only cache; constant observed-class RGB downstream")
     if (root/"PROTOCOL.json").exists() and json.loads((root/"PROTOCOL.json").read_text()) != protocol:
         raise ValueError("Frozen feature protocol changed")
@@ -180,6 +187,10 @@ def main():
     if not wanted <= set(protocol["cases"]):
         raise ValueError("Requested unknown case")
     pending = [(s, r) for s, r in samples if r["case"] in wanted]
+    # Reject unknown/incorrect physical sampling before importing GPU packages.
+    from .calibration import require
+    for _, sample in pending:
+        require(sample)
     # Import GPU packages only in the executable inference path.
     import torch
     from threadpoolctl import threadpool_limits
