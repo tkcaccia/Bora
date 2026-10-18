@@ -2,6 +2,8 @@ import numpy as np
 import pytest
 from bora.groups import boundary_context, compact_groups, group_means
 from bora.classifier import NeighborContextClassifier
+from bora.classifier import FASTPLS_CORE_REVISION, FASTPLS_REVISION
+from bora._vendor.fastpls import PLS
 
 
 def test_context_weights_use_physical_shared_boundary_lengths():
@@ -49,8 +51,22 @@ def test_native_neighbor_context_artifact_roundtrip_is_identical(tmp_path):
     loaded = NeighborContextClassifier.load(path)
     np.testing.assert_array_equal(loaded.predict(x[:7]), expected)
     assert loaded.actual_components_ == 1 and meta["native_head_count"] == 1
+    assert meta["fastpls_revision"] == FASTPLS_REVISION
+    assert meta["fastpls_core_revision"] == FASTPLS_CORE_REVISION
     with pytest.raises(FileExistsError):
         model.save(path)
+
+
+def test_corrected_fastpls_lda_handles_wide_24_component_fit():
+    # Regression case from the upstream SIMPLS score-moment correction.
+    rng = np.random.default_rng(19)
+    x = np.asfortranarray(rng.normal(size=(40, 2560)))
+    y = np.tile([1, 3], 20)
+    model = PLS(n_components=24, method="simpls", classifier="lda",
+                scaling="autoscaling", backend="cpu", seed=314159).fit(x, y)
+    assert model.n_components_ == 24
+    assert np.isfinite(model.predict_scores(x)).all()
+    np.testing.assert_array_equal(model.predict(x), y)
 
 
 @pytest.mark.parametrize("mutate", ["nan", "columns", "single_class", "float_targets", "missing_name"])

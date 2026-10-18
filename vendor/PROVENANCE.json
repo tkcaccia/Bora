@@ -1,9 +1,9 @@
 {
   "binding_repository": "https://github.com/tkcaccia/fastPLS-py",
-  "binding_revision": "fc0c011969b754ee196aacc220a217783afeb05d",
+  "binding_revision": "b4ea261902244bfb84ad933a236d364d19f905ee",
   "core": {
     "repository": "https://github.com/tkcaccia/fastPLS",
-    "commit": "82bbc48a0d69e4bd0d7c261fdcc8e636694133b1",
+    "commit": "265108b6aa250c2534f98ec89037bb5cd001dca0",
     "package_version": "0.3",
     "source_path": "inst/include/fastpls",
     "license": "MIT"
@@ -12,7 +12,7 @@
   "source_modifications": "None; private Python namespace and Bora build/install destination only",
   "files_sha256": {
     "vendor/fastpls-bindings/LICENSE": "ec4f3e191539090208c7be34b032d8110f33a16292fcfe00e9425fce22a4977e",
-    "vendor/fastpls/UPSTREAM_CORE.json": "0d1a9c35cde48de2f1a320032aa8f884fe50c323511ccc5a6afb64346268a019",
+    "vendor/fastpls/UPSTREAM_CORE.json": "19cd06992d132ce2266d44f1acc8e8eefaa31594d3a46160319fa01492a7604c",
     "vendor/fastpls/LICENSE": "ec4f3e191539090208c7be34b032d8110f33a16292fcfe00e9425fce22a4977e",
     "vendor/fastpls-bindings/src/native_backend.cpp": "77ac92ab5c2c1473f78a124726888d0fd286a61e1e1cdc18a69145b7a80c3a5e",
     "vendor/fastpls-bindings/src/native_backend.hpp": "4cbaad05d27cce2240cf64105b3c7f3b0fa346285021ee599e79434b75bc99b6",
@@ -25,10 +25,10 @@
     "vendor/fastpls/include/fastpls/core/supervised.hpp": "9625669d5dacaa8b9dc8941d6eac4ead0934b70febb6760c0d87eb7964e44002",
     "vendor/fastpls/include/fastpls/core/classification.hpp": "ab2ff8767c5f1f1782260b22daaeadf0d0766abf3847db45030968041baeaa0a",
     "vendor/fastpls/include/fastpls/core/kernels.hpp": "d258b6bde628c67f9b76a94e43f8078e4723118b42ead6c5787ec6f98d9e1341",
-    "vendor/fastpls/include/fastpls/core/matrix.hpp": "157507072b3a31c8b9bfc9c1c27176ab9e58062e06f87127bb9eaf81509492d5",
+    "vendor/fastpls/include/fastpls/core/matrix.hpp": "3b6c01f91f2507a200ff397b7acb87d1c2db094651fec8b31f9484ff1296fe42",
     "vendor/fastpls/include/fastpls/core/kernelpls.hpp": "8abc96b800489e2a2ae594793953a867d03ee5075f72b47f475fc4d4063405d6",
     "vendor/fastpls/include/fastpls/core/lda.hpp": "cdc5f8ed2b4a4a5cdf60d628104f713db6cd6eaa105b9a3049e02f296e76e860",
-    "vendor/fastpls/include/fastpls/core/simpls.hpp": "6c4baec6b04df871e1c49e3681b31dab2c4fc58cc3ee4629cf5358237d46f068",
+    "vendor/fastpls/include/fastpls/core/simpls.hpp": "901874fa69159d28d70bdf87a4ee8e27c469620c9f517080981eff9e6210ef85",
     "vendor/fastpls/include/fastpls/core/statistics.hpp": "ebc61b50add7af1b8ba2afdf8891f64325f406d762d334e33626ee70f94ce050",
     "vendor/fastpls/include/fastpls/core/diagnostics.hpp": "6c07728406c45a564ffa383c21e7c116caa994ac21ba82bc536997b2d0b18b70",
     "vendor/fastpls/include/fastpls/core/opls.hpp": "1612714baf35b847eeaddae06745593978048646ba4119e238b207195cf2a98e",

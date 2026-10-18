@@ -580,7 +580,6 @@ SimplsModel<T> fit_simpls_preprocessed(
 
   std::size_t component = 0;
   while (component < maximum) {
-    const std::size_t block_start = component;
     const auto direction_started = Clock::now();
     const std::size_t block = std::min({
       std::max<std::size_t>(controls.maximum_block, 1),
@@ -709,7 +708,8 @@ SimplsModel<T> fit_simpls_preprocessed(
         model.score_gram(component, component) = T(1);
       }
       if (retain_score_moments && !controls.reorthogonalize) {
-        for (std::size_t previous = block_start;
+        // LDA needs the actual Gram matrix, including cross-block drift.
+        for (std::size_t previous = 0;
              previous < component; ++previous) {
           T value = T(0);
           for (std::size_t predictor = 0; predictor < p; ++predictor) {

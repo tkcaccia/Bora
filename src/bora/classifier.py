@@ -8,7 +8,8 @@ import numpy as np
 
 N_COMPONENTS = 24  # Fixed recipe for the 25-class benchmark.
 FORMAT = "bora-neighbor-context-v1"
-FASTPLS_REVISION = "fc0c011969b754ee196aacc220a217783afeb05d"
+FASTPLS_REVISION = "b4ea261902244bfb84ad933a236d364d19f905ee"
+FASTPLS_CORE_REVISION = "265108b6aa250c2534f98ec89037bb5cd001dca0"
 
 
 def class_names(value):
@@ -83,7 +84,8 @@ class NeighborContextClassifier:
         path.parent.mkdir(parents=True, exist_ok=True)
         metadata = dict(format=FORMAT, classifier="Neighbor context", components=N_COMPONENTS,
             actual_components=self.actual_components_, fastpls_version=self.fastpls_version_,
-            fastpls_revision=FASTPLS_REVISION, backend="cpu", classes=self.names_,
+            fastpls_revision=FASTPLS_REVISION, fastpls_core_revision=FASTPLS_CORE_REVISION,
+            backend="cpu", classes=self.names_,
             native_head_count=1, descriptor="1280 group means + 1280 physical boundary contrasts",
             load_refits_native_head=True, training_features_included=True)
         if training_provenance is not None:
@@ -107,6 +109,7 @@ class NeighborContextClassifier:
             if (info.get("format") != FORMAT or info.get("components") != N_COMPONENTS
                     or info.get("fastpls_version") != "0.3.0"
                     or info.get("fastpls_revision") != FASTPLS_REVISION
+                    or info.get("fastpls_core_revision") != FASTPLS_CORE_REVISION
                     or info.get("backend") != "cpu"):
                 raise ValueError("Incompatible Neighbor context artifact")
             return cls().fit(data["x"], data["y"], info["classes"])

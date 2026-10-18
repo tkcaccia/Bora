@@ -1,0 +1,19 @@
+{
+  "format": "bora-fastpls-correction-audit-v1",
+  "binding_revision": "b4ea261902244bfb84ad933a236d364d19f905ee",
+  "core_revision": "265108b6aa250c2534f98ec89037bb5cd001dca0",
+  "previous_binding_revision": "fc0c011969b754ee196aacc220a217783afeb05d",
+  "training_artifact_sha256": "d02f481c6aad80b7817d945c26820d6464f989d45272438dfc37c14712e0d8fa",
+  "saved_evaluation_results_sha256": "b579b40f72e3689fbcfdc99d6c443fdf6073aeb59586caa45b2fcf4d290e457c",
+  "training_matrix_shape": [967, 2560],
+  "training_matrix_dtype": "float64",
+  "represented_classes": 25,
+  "actual_components": 24,
+  "training_predictions_changed": 0,
+  "evaluation_fields_compared": 116,
+  "evaluation_groups_compared": 399,
+  "evaluation_predictions_changed": 0,
+  "feature_extraction_rerun": false,
+  "geometry_rerun": false,
+  "gpu_or_hpc_work": false
+}

@@ -138,14 +138,24 @@ using ConstMatrixView = BasicMatrixView<const T>;
 
 template<class T>
 class Matrix {
+ private:
+  static std::size_t storage_size(std::size_t rows,
+                                  std::size_t columns) {
+    if (columns != 0 &&
+        rows > std::numeric_limits<std::size_t>::max() / columns) {
+      throw std::bad_array_new_length();
+    }
+    return rows * columns;
+  }
+
  public:
   Matrix() = default;
 
   Matrix(std::size_t rows, std::size_t columns)
-      : values_(rows * columns), rows_(rows), columns_(columns) {}
+      : values_(storage_size(rows, columns)), rows_(rows), columns_(columns) {}
 
   void resize(std::size_t rows, std::size_t columns) {
-    values_.resize(rows * columns);
+    values_.resize(storage_size(rows, columns));
     rows_ = rows;
     columns_ = columns;
   }

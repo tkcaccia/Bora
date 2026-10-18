@@ -149,6 +149,13 @@ artifact therefore retains training descriptors and targets and refits the
 deterministic native head once on loading. It contains no pickle. Loading is
 a separate startup cost; reuse the loaded Python object for a batch. Training
 features in the artifact remain subject to the source data's sharing terms.
+Version 0.2.1 vendors the upstream SIMPLS–LDA score-moment correction and
+matrix allocation guard. Model artifacts made with the earlier fastPLS core
+are rejected because loading refits the native head; retrain or explicitly
+refit from the saved training descriptors and labels with this version. The
+reproducibility check found identical tissue predictions on all 116 saved
+evaluation fields (399 whole groups), so the published masks and scores do not
+change for that cohort. See [the correction audit](docs/FASTPLS_CORRECTION.md).
 
 ## Geometry and timing
 
