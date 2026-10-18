@@ -8,9 +8,12 @@ second per image. The explicit working policy is:
 
 Cycle8 expands prospectively to349 ROIs, retaining the original149 exactly and
 adding40 each from BCSS, TIGER, WSSS4LUAD, RINGS tumor and OCELOT. All inputs and
-1745 fixed RGB conversions are frozen and audited. The full349x22 run is active
-after16 actual pilot overview reviews and four native-label crops; it is not
-yet a completed cycle. See `CYCLE_EIGHT_EXECUTION.json`. Historical149 and new200
+1745 fixed RGB conversions are frozen and audited. The full349x22 run and
+posthoc audits are complete:7678 native masks,745 exact historical parent
+comparisons and660 constant-input contract checks pass.102 actual full-run
+overview sheets and14 native label crops have been reviewed;247 overviews
+remain before five survivors can be signed. Cycle8 is not yet complete.
+See `CYCLE_EIGHT_EXECUTION.json`. Historical149 and new200
 scores are reported separately. Unknown-resolution pixel-area summaries are
 separate from physical-area summaries. A common completed-coarse fallback
 prevents numerical class artifacts on30 constant-RGB inputs; no refinement
@@ -176,9 +179,9 @@ fits contain unfinished gaps. Engineering gains do not override anatomical
 regressions. See CYCLE_SEVEN_REVIEW.md for all20 decisions.
 
 All200 additional native/coarse/reference input sets are prepared and audited:
-40 each BCSS,TIGER,WSSS4LUAD,RINGS,OCELOT. The planned corpus is349 ROIs,
-retaining all149 historical cases. Future cycles must add unchanged conversions,
-single-class/task/calibration adapters and a manifest-based review gate.
+40 each BCSS,TIGER,WSSS4LUAD,RINGS,OCELOT. The corpus now contains349 ROIs,
+retaining all149 historical cases. Unchanged conversions, single-class/task/
+calibration adapters and the manifest-based review gate are in place.
 WSSS/RINGS remain uncalibrated pixel-only data. Historical subset scores stay
 separately comparable; all reused images are development data.
 Thirteen cycles and the final all-five-conversion evaluation remain.
@@ -189,5 +192,46 @@ calibration verified by a model-free audit.120 are calibrated and80 pixel-only.
 Thirty expose a single eligible training class (11 WSSS,19 RINGS), including
 three WSSS cases with other coarse labels outside eligible central summaries.
 No additional class is inferred from reference metadata. Shared encoder time
-is recorded separately from Bora timing. RGB conversions and expanded cycle8
-are not yet run; see ../bora_extension/FEATURE_EXECUTION.json.
+is recorded separately from Bora timing. All1745 RGB conversions and the
+expanded cycle8 inference/scoring/rendering are complete. The model snapshot
+remains ed1ad0d; reporting source b05e959 changes no predictions or scores.
+
+## Cycle8: complete computation, partial actual review
+
+J01 still leads adjusted utility at0.719806 (raw IoU0.720017,mean0.1997s).
+L06 has the highest raw IoU0.721213,only0.11966 percentage points above J01,
+but its mean1.9414s yields utility0.667355. L11 improves J07 by only0.01231
+percentage points on average. These are development comparisons; the higher
+349-case scores cannot be compared directly with earlier149-case means.
+
+L04's masks are byte-identical to K05 on all349 cases. All947 constrained fits
+terminate at the initial unconstrained solution with zero iterations: the
+new bounds add computation without changing this benchmark's predictions.
+The fifteen new objectives are implemented, but not every new hypothesis
+produces a useful or distinct output.
+
+Native TIGER23 confirms false grey necrosis fringes in L07/L08/L09/L12 where
+the reference contains green/purple tissue. Their complete palette inverses
+also differ in quantization/prior handling from C17's affine branch, so this
+is not an isolated loss-only ablation. Annotated BCSS25 confirms false gold
+interface bands in J01/K05 and their field children that palette inverses
+remove. L03 opens some real glass clefts, yet leaves other obvious cavities
+labelled. Reference-zero spaces stay unscored and positive labels remain
+scored even when removed as background. RINGS's non-target class is not an
+expert stroma label. Some constant-input single-class cases score perfectly
+while colouring white lumina; those scores do not establish anatomical detail.
+
+All349 sheets must actually be viewed before selection and cycle9 design.
+The last delivered selected-five viewer remains cycle7. See
+`CYCLE_EIGHT_REVIEW_PROGRESS.json` and `CYCLE_EIGHT_NATIVE_REVIEW.json` for the
+timestamped partial evidence. No cycle8 survivors have been chosen.
+
+Integrity passes do not imply convergence of every mathematical solver.
+The numerical-status report records61 L05 cases with an unfinished class
+fit,158 L09 cases with unfinished outer convergence,106 L13 unsuccessful
+optimizer terminations and48 for L11. L02 clips negative stochastic diagonal
+estimates and L06 clips covariance eigenvalues on all319 informative cases.
+These are explicit limitations of the tested estimates, not calibrated
+uncertainty or proof of invalid finite masks. Keep them in the selection
+tradeoffs; do not silently replace the frozen outputs or timings. See
+`CYCLE_EIGHT_NUMERICAL_STATUS.json` for per-case evidence and other methods.

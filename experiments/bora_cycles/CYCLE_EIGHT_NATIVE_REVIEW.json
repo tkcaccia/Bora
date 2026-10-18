@@ -1,0 +1,433 @@
+{
+  "cycle": 8,
+  "reviewed": {
+    "bcss_07/native-review/616-29-256-256": {
+      "case": "bcss_07",
+      "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-08-chiamaka/cases/bcss_07/native-review/616-29-256-256",
+      "observation": "Viewed all nine native mask panels. The H&E is almost entirely a bright cleft, with stained cells confined to the left/top. J01/K05/C17/J07/K13/L02/L06/L11 fill it grey/green except a tiny hole. L03 removes a substantial right-hand area and better matches the visible open space, though its left border remains stepped. Reference zero covers most of this cleft and is unscored, so this is background-display evidence rather than a measured class gain.",
+      "methods": [
+        "J01",
+        "K05",
+        "C17",
+        "J07",
+        "K13",
+        "L02",
+        "L03",
+        "L06",
+        "L11"
+      ],
+      "native_crop_xywh": [
+        616,
+        29,
+        256,
+        256
+      ],
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "labels_sha256": "d066297b39d50f60f5743e6658d332f0a27e358fc8afec5ce79fc7c157633e9e",
+      "provenance_sha256": "f490b957ad49bfe97fcfc7f93d6c40af80538e5b51d2fe137e979a879c122530",
+      "actual_view": "native-resolution label sheet; all nine displayed methods",
+      "overlays_exported_but_not_reviewed": true,
+      "reviewed_at_utc": "2026-10-18T00:35:41.363470+00:00"
+    },
+    "bcss_40/native-review/2210-2210-256-256": {
+      "case": "bcss_40",
+      "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-08-chiamaka/cases/bcss_40/native-review/2210-2210-256-256",
+      "observation": "Viewed all nine native mask panels. Pale H&E fat-like membranes/white spaces are almost entirely reference-zero in this crop; no expert fat accuracy conclusion can be drawn here. J01/K05/L02/L06 colour gold with green islands, C17/J07 add red, K13/L11 add pale-gold vessel-like areas. L03 deletes much of the bright open area but leaves gold fragments; it solves some colour-on-white without establishing whether a valid annotated fat class was removed.",
+      "methods": [
+        "J01",
+        "K05",
+        "C17",
+        "J07",
+        "K13",
+        "L02",
+        "L03",
+        "L06",
+        "L11"
+      ],
+      "native_crop_xywh": [
+        2210,
+        2210,
+        256,
+        256
+      ],
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "labels_sha256": "9f729cd0deb5ddfd2525e551b96bd1d3dbeebe094bb87e0fa44cde29f639fd8a",
+      "provenance_sha256": "677b2db09d45a66935c406a8d5191af063e80ed7c6856caea1bf1154f2fea189",
+      "actual_view": "native-resolution label sheet; all nine displayed methods",
+      "overlays_exported_but_not_reviewed": true,
+      "reviewed_at_utc": "2026-10-18T00:35:41.363470+00:00"
+    },
+    "bcss_11/native-review/1880-1680-256-256": {
+      "case": "bcss_11",
+      "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-08-chiamaka/cases/bcss_11/native-review/1880-1680-256-256",
+      "observation": "Viewed all nine native masks. Bright central H&E spaces between stained cells are labelled green in every method, including L03. The small upper red patch is enlarged relative to the scored reference fragment; some fast risks add small grey islands near the lower-right red edge. Reference zero covers most of the crop, so the coloured white spaces are a visual limitation rather than evidence of scored tissue error.",
+      "methods": [
+        "J01",
+        "K05",
+        "C17",
+        "J07",
+        "K13",
+        "L02",
+        "L03",
+        "L06",
+        "L11"
+      ],
+      "native_crop_xywh": [
+        1880,
+        1680,
+        256,
+        256
+      ],
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "labels_sha256": "aa35f4124f9ce45d76d42906b608e1b306590b9196e4cec2529bf1509bb1ff86",
+      "provenance_sha256": "f65105705e409c25786e7d64c9c19122a6fc3e73aec72ae54a2d34675a1bd97a",
+      "actual_view": "native-resolution label sheet; all nine displayed methods",
+      "overlays_exported_but_not_reviewed": true,
+      "reviewed_at_utc": "2026-10-18T00:36:03.946231+00:00"
+    },
+    "bcss_37/native-review/670-650-256-256": {
+      "case": "bcss_37",
+      "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-08-chiamaka/cases/bcss_37/native-review/670-650-256-256",
+      "observation": "Viewed all nine native masks. H&E is almost entirely bright open space with one small cell fragment, yet the fixed RGB and every prediction, including L03, are uniformly grey. Reference zero covers most of the crop with a grey crescent at right. No candidate resolves this obvious colour-on-white failure, and the annotated grey crescent must not be silently discarded from scoring.",
+      "methods": [
+        "J01",
+        "K05",
+        "C17",
+        "J07",
+        "K13",
+        "L02",
+        "L03",
+        "L06",
+        "L11"
+      ],
+      "native_crop_xywh": [
+        670,
+        650,
+        256,
+        256
+      ],
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "labels_sha256": "651bfe243246caca1f8d1536cd1f0088047aa77bc5a24af610a054c51a7a62f1",
+      "provenance_sha256": "2cf428d3d2654d6c50babb11074e5971d42341fbf2f9e63f050f50f5e3e16387",
+      "actual_view": "native-resolution label sheet; all nine displayed methods",
+      "overlays_exported_but_not_reviewed": true,
+      "reviewed_at_utc": "2026-10-18T00:36:03.946231+00:00"
+    },
+    "wsss4luad_01/native-review/40-40-256-256": {
+      "case": "wsss4luad_01",
+      "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-08-chiamaka/cases/wsss4luad_01/native-review/40-40-256-256",
+      "observation": "Viewed all nine native mask panels. The H&E and reference show multiple narrow papillary epithelial rims, green cores and white channels; every prediction turns these into a handful of broad solid red/green lobes. J01/L02/L03/L06 add a lower red ring around green, K05 has a different closed loop, and C17/fast risks give simpler solid islands. None opens the lumina or preserves the fine epithelium. No physical scale is assigned because MPP is unverified.",
+      "methods": [
+        "J01",
+        "K05",
+        "C17",
+        "J07",
+        "K13",
+        "L02",
+        "L03",
+        "L06",
+        "L11"
+      ],
+      "native_crop_xywh": [
+        40,
+        40,
+        256,
+        256
+      ],
+      "native_mpp_xy": null,
+      "labels_sha256": "d6f80e105b25105200c058a80ea0f7168fc22f36e406f30c0719f6ff6d754b96",
+      "provenance_sha256": "6d27ccdfd826ac3cf6ec2ffc890843219f625ad2ad9735fee24da6d47fad5e12",
+      "actual_view": "native-resolution label sheet; all nine displayed methods",
+      "overlays_exported_but_not_reviewed": true,
+      "reviewed_at_utc": "2026-10-18T00:36:31.010964+00:00"
+    },
+    "wsss4luad_19/native-review/70-0-128-128": {
+      "case": "wsss4luad_19",
+      "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-08-chiamaka/cases/wsss4luad_19/native-review/70-0-128-128",
+      "observation": "Viewed all nine native mask panels. A bright H&E channel runs between narrow epithelial strands. All fixed-RGB fallback masks are red except a short upper opening. L03 extends the white channel downward/right and is visibly closer to the open space, while leaving cell-containing sides labelled. Reference-zero covers that channel, so identical quality scores do not measure this visual improvement. MPP remains unknown.",
+      "methods": [
+        "J01",
+        "K05",
+        "C17",
+        "J07",
+        "K13",
+        "L02",
+        "L03",
+        "L06",
+        "L11"
+      ],
+      "native_crop_xywh": [
+        70,
+        0,
+        128,
+        128
+      ],
+      "native_mpp_xy": null,
+      "labels_sha256": "4c6aa55b88022a1725700c34a1a3f2e663f32bef8abb9d197052d8dc3984fa52",
+      "provenance_sha256": "508018fc9fad3a6ed0092110d46fdc226039093c356be6cb9b9103deecd942ec",
+      "actual_view": "native-resolution label sheet; all nine displayed methods",
+      "overlays_exported_but_not_reviewed": true,
+      "reviewed_at_utc": "2026-10-18T00:36:31.010964+00:00"
+    },
+    "rings-tumor_01/native-review/768-768-256-256": {
+      "case": "rings-tumor_01",
+      "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-08-chiamaka/cases/rings-tumor_01/native-review/768-768-256-256",
+      "observation": "Viewed all nine native mask panels. The expert tumour boundary lies near the middle, but every prediction places the red tumour border far to the right and misses much of the annotated red region. C17 adds a small false red island at left; J07/K13/L11 add a larger one. J01/K05/L02/L03/L06 avoid most of that island but do not restore the main margin. Green is outside tumour target, not expert stroma; MPP is unknown.",
+      "methods": [
+        "J01",
+        "K05",
+        "C17",
+        "J07",
+        "K13",
+        "L02",
+        "L03",
+        "L06",
+        "L11"
+      ],
+      "native_crop_xywh": [
+        768,
+        768,
+        256,
+        256
+      ],
+      "native_mpp_xy": null,
+      "labels_sha256": "b0bdeeddef68fb61b992644890166bd7132303fa929d1a352b8a715a59123176",
+      "provenance_sha256": "7c6db110dbd050ef541cefb52290a3dd2df5f43b39c568edd438b88f4cf38bff",
+      "actual_view": "native-resolution label sheet; all nine displayed methods",
+      "overlays_exported_but_not_reviewed": true,
+      "reviewed_at_utc": "2026-10-18T00:36:51.015407+00:00"
+    },
+    "ocelot_01/native-review/256-256-256-256": {
+      "case": "ocelot_01",
+      "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-08-chiamaka/cases/ocelot_01/native-review/256-256-256-256",
+      "observation": "Viewed all nine native masks. All methods truncate the long thin green reference non-cancer strand at left and join lower green reference regions across a thin red separator. C17 reduces the central green connection but leaves an additional small green fragment. J01/L02/L03 are nearly identical, K05/L06 thicken some green edges, and L11 shifts the vertical island slightly. No candidate reconstructs the fine annotated architecture.",
+      "methods": [
+        "J01",
+        "K05",
+        "C17",
+        "J07",
+        "K13",
+        "L02",
+        "L03",
+        "L06",
+        "L11"
+      ],
+      "native_crop_xywh": [
+        256,
+        256,
+        256,
+        256
+      ],
+      "native_mpp_xy": [
+        0.7778267408721149,
+        0.7778267408721149
+      ],
+      "labels_sha256": "ea295ed55ce32069b4a8c50ae3c98132237b26c98df248e23546d475c40f6bfa",
+      "provenance_sha256": "27e2032fbc572d64942b40c490649cb2dd2f68f5248b13a49745fdf7c8c55814",
+      "actual_view": "native-resolution label sheet; all nine displayed methods",
+      "overlays_exported_but_not_reviewed": true,
+      "reviewed_at_utc": "2026-10-18T00:36:51.015407+00:00"
+    },
+    "tiger_23/native-review/58-588-256-256": {
+      "case": "tiger_23",
+      "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-08-chiamaka/cases/tiger_23/native-review/58-588-256-256",
+      "observation": "Viewed all nine native mask panels. The reference green tumour-associated stromal wedge rises almost to the top of the cyan in-situ tumour field; every method loses most of that long upper tip. J01/K05/L02/L03 preserve two lower humps, J07/K13/L11 are similar, C17 truncates slightly more, and L06 raises one narrow right-hand spur without restoring the full wedge. Coarse/RGB smooth the same geometry, and no variant repairs the principal lost tissue.",
+      "methods": [
+        "J01",
+        "K05",
+        "C17",
+        "J07",
+        "K13",
+        "L02",
+        "L03",
+        "L06",
+        "L11"
+      ],
+      "native_crop_xywh": [
+        58,
+        588,
+        256,
+        256
+      ],
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "labels_sha256": "17a8a85690ec65dde38ee3c2ae330abb879588ccbab1440f7c263a30fd09f2cc",
+      "provenance_sha256": "99d8a0a3f87dccdbce20b1501243d18b81cb9b2295f0c0e6f8a444560abb2f08",
+      "actual_view": "native-resolution label sheet; all nine displayed methods",
+      "overlays_exported_but_not_reviewed": true,
+      "reviewed_at_utc": "2026-10-18T00:37:24.086389+00:00"
+    },
+    "tiger_23/native-review/60-588-256-256": {
+      "case": "tiger_23",
+      "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-08-chiamaka/cases/tiger_23/native-review/60-588-256-256",
+      "observation": "Viewed all nine panels of the additional palette-focused crop, overlapping the earlier stromal-wedge crop by254 pixels. L07/L08/L09 closely follow C17 and lose more of the wedge than J01, but all truncate its long reference tip. L12 has a block-like notch in the shortened tip, while L13 introduces an irregular small spur. This crop does not contain the grey fringe seen in the overview; that needs a separate location. It is not independent image evidence.",
+      "methods": [
+        "J01",
+        "C17",
+        "L07",
+        "L08",
+        "L09",
+        "J07",
+        "L11",
+        "L12",
+        "L13"
+      ],
+      "native_crop_xywh": [
+        60,
+        588,
+        256,
+        256
+      ],
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "labels_sha256": "7a376593b876fa6b9b24e5e6ac48c50f9050a48e53655400f4c4c9c0dbc02580",
+      "provenance_sha256": "f126f53d64c2ae2ef27051d046245ec2e5dd6d098bd15fb4e11c8a09f64969e0",
+      "actual_view": "native-resolution label sheet; all nine displayed methods",
+      "overlays_exported_but_not_reviewed": true,
+      "reviewed_at_utc": "2026-10-18T00:40:01.034435+00:00"
+    },
+    "bcss_25/native-review/1400-500-256-256": {
+      "case": "bcss_25",
+      "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-08-chiamaka/cases/bcss_25/native-review/1400-500-256-256",
+      "observation": "Viewed all nine native panels. Reference tumour is almost entirely red with small green corners, but every method invents several purple lymphocyte islands within it. L01 and bending methods shift island shapes, C17/L07/L09 produce smaller rounder islands, and L06 adds a tiny gold strip at lower left. None recovers the missing green corners. This crop reveals false class islands, not the overview's main yellow rim.",
+      "methods": [
+        "J01",
+        "K05",
+        "L01",
+        "L04",
+        "L05",
+        "L06",
+        "C17",
+        "L07",
+        "L09"
+      ],
+      "native_crop_xywh": [
+        1400,
+        500,
+        256,
+        256
+      ],
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "labels_sha256": "fc21cb341f54b706ab5e1fd2343b71b79bd9ef2120d7279905089eaa80d71ade",
+      "provenance_sha256": "c19cf1bea6d7c11576dda958a71b1bfe9e295f14255e7b931e77d4dcb6885d82",
+      "actual_view": "native-resolution label sheet; all nine displayed methods",
+      "overlays_exported_but_not_reviewed": true,
+      "reviewed_at_utc": "2026-10-18T00:40:01.034435+00:00"
+    },
+    "tiger_23/native-review/980-416-256-256": {
+      "case": "tiger_23",
+      "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-08-chiamaka/cases/tiger_23/native-review/980-416-256-256",
+      "observation": "Viewed all nine native panels at the output-disagreement crop selected after scoring without reference-based coordinates. L07/L08/L09 and L12 introduce a broad grey necrosis fringe between green and purple; reference contains only green/purple here. J01/C17/J07/L11/L13 avoid that false grey class, though all round the reference boundary and add a green hole within purple. This confirms a real false-class error of the complete palette-child implementations, not an isolated loss-only ablation.",
+      "methods": [
+        "J01",
+        "C17",
+        "L07",
+        "L08",
+        "L09",
+        "J07",
+        "L11",
+        "L12",
+        "L13"
+      ],
+      "native_crop_xywh": [
+        980,
+        416,
+        256,
+        256
+      ],
+      "native_mpp_xy": [
+        0.5,
+        0.5
+      ],
+      "labels_sha256": "c579384d07971bb756e8d808e1628e74766dfa1ee6a7f311e72dc2cb83791599",
+      "provenance_sha256": "abca52c20d941adc430690d7f376139d774c4cf3e472e4246e7f756dc1a4c383",
+      "actual_view": "native-resolution label sheet; all nine displayed methods",
+      "overlays_exported_but_not_reviewed": true,
+      "reviewed_at_utc": "2026-10-18T00:41:48.329907+00:00"
+    },
+    "bcss_25/native-review/1380-2252-256-256": {
+      "case": "bcss_25",
+      "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-08-chiamaka/cases/bcss_25/native-review/1380-2252-256-256",
+      "observation": "Viewed all nine native panels at the post-scoring colour-disagreement crop. J01/K05/L01/L04/L05/L06 create extensive gold between green/red/purple islands; C17/L07/L09 remove it. H&E shows cellular tissue rather than open glass, but this crop is entirely reference-zero, so it cannot establish a scored gold-class error or name a new tissue. It demonstrates the large colour-conversion inverse discrepancy; annotated examples are still needed for accuracy interpretation.",
+      "methods": [
+        "J01",
+        "K05",
+        "L01",
+        "L04",
+        "L05",
+        "L06",
+        "C17",
+        "L07",
+        "L09"
+      ],
+      "native_crop_xywh": [
+        1380,
+        2252,
+        256,
+        256
+      ],
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "labels_sha256": "ff3867a81303916012d17730d6b198499cebf5172d29e911cf7e7118d8b4a62a",
+      "provenance_sha256": "4db25aa6e26c785977a0f5fbd93cd41b17e26f4a239b5745d5e7e393575df096",
+      "actual_view": "native-resolution label sheet; all nine displayed methods",
+      "overlays_exported_but_not_reviewed": true,
+      "reviewed_at_utc": "2026-10-18T00:41:48.329907+00:00"
+    },
+    "bcss_25/native-review/1768-1792-256-256": {
+      "case": "bcss_25",
+      "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-08-chiamaka/cases/bcss_25/native-review/1768-1792-256-256",
+      "observation": "Viewed all nine native panels at the explicitly post-scoring scored-error crop. The annotated portion contains green stroma, purple lymphocytic tissue and red tumour, with no gold at the corresponding interfaces. J01/K05/L01/L04/L05/L06 introduce thick gold rims and alter the purple islands; C17/L07/L09 remove those false gold bands, though their boundaries still miss some reference green protrusions. The bottom reference-zero triangle is unscored. This confirms a false-class interface error on annotated pixels, unlike the earlier unannotated rim crop.",
+      "methods": [
+        "J01",
+        "K05",
+        "L01",
+        "L04",
+        "L05",
+        "L06",
+        "C17",
+        "L07",
+        "L09"
+      ],
+      "native_crop_xywh": [
+        1768,
+        1792,
+        256,
+        256
+      ],
+      "native_mpp_xy": [
+        0.25,
+        0.25
+      ],
+      "labels_sha256": "837c5834e91dc92dfe8e4e6a66d0166e5a79a1065e02bc0918c8e99cbc9bf32e",
+      "provenance_sha256": "7ee0bed8686e5897a202e1423e42778356bd656071f61a045d436257ab575b5f",
+      "actual_view": "native-resolution label sheet; all nine displayed methods",
+      "overlays_exported_but_not_reviewed": true,
+      "reviewed_at_utc": "2026-10-18T00:44:35.593650+00:00"
+    }
+  },
+  "predictions_modified": false,
+  "scores_modified": false,
+  "actual_native_crops": 14
+}
