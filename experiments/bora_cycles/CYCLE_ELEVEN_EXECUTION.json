@@ -1,7 +1,7 @@
 {
   "cycle": 11,
-  "status": "all_predictions_frozen_scoring_running",
-  "completed_cycles": 10,
+  "status": "cycle_reviewed_selected_viewer_published",
+  "completed_cycles": 11,
   "complete_goal": false,
   "prediction_commit": "5a255e0",
   "mathematical_implementation_commit": "149a7bb",
@@ -44,8 +44,14 @@
   "full_remote": "/mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-11",
   "full_pid": 2495071,
   "full_native_crops_planned": 25,
-  "full_actual_reviews": 0,
-  "selected_survivors": null,
+  "full_actual_reviews": 469,
+  "selected_survivors": [
+    "P11",
+    "N08",
+    "M04",
+    "J01",
+    "C17"
+  ],
   "parent_native_parity_expected": 1345,
   "expected_native_and_display_masks": 10787,
   "unresolved_datasets": {
@@ -53,13 +59,13 @@
     "orca": "32 eligible fields from9 cases; quota40 unmet"
   },
   "numerical_limitations": {
-    "P01": "All17 finite ADMM runs report non-convergence; feasible iterates are not claimed optimal",
-    "P13": "All17 finite120-step TV runs report non-convergence; about13.2s mean runtime remains penalized",
-    "P14": "Five17 runs miss projected stationarity tolerance"
+    "P01": "All469 finite ADMM runs miss convergence; maximum gradient0.0296121",
+    "P13": "All469 finite120-step TV runs miss convergence; maximum projected residual0.0243154; mean14.556s",
+    "P14": "136/469 finite runs miss projected stationarity; maximum0.00837574"
   },
   "scoring_notice": "All current parents/children share the prospective scoring policy. OCELOT white-only broad negatives are rescored; signed historical masks/scores unchanged. No corpus-composition or scoring-contract change is an algorithm gain.",
-  "next_action": "Finish existing scoring/render process and PID-bound posthoc/crop pipeline. Audit all10787 native/display masks, parent parity and pilot/full repeatability;actually inspect469 overview sheets and25 native crops. Then select five and open their viewer;continue cycles12\u201320 and final fixed-conversion benchmark.",
-  "at_utc": "2026-10-18T09:52:34.388507+00:00",
+  "next_action": "Design15 distinct mathematical children, three per signed cycle11 survivor, for prospective cycle12. Preserve all469 calibrated inputs and five fixed RGB formulas. Run/review/select every cycle through20, then complete final all5-conversion benchmark.",
+  "at_utc": "2026-10-18T12:26:32.862293+00:00",
   "full_prediction_freeze_sha256": "d8072c83f0f40706100ce3f1df29792fa981d6bf30c545aeb70b5fa43b1038ad",
   "full_prediction_stage_check": {
     "receipt": "cycle11-prediction-freeze-check-v1.json",
@@ -72,5 +78,20 @@
     "all_input_manifest_identities_verified": true,
     "fine_references_read_by_check": false,
     "per_mask_raster_audit": "Pending full score/render completion and posthoc pipeline"
+  },
+  "full_actual_preplanned_native_reviews": 25,
+  "full_actual_posthoc_native_reviews": 2,
+  "selection_sha256": "3ac9c167b8a3089efd1c90a71e82112f4ac478b3fba59995009ebf14adae6b6c",
+  "full_results_sha256": "d776a128f8c5097d238f6c6c72af9851e26da0c3601531ff9ed3c17397b2fc37",
+  "full_actual_review_sha256": "02657378667f3a72ec624cdd492b64614d95431d885772f8026c8b0ac00c2f7d",
+  "viewer_ready_sha256": "4bfb82b9093a79d57be2b913226e16e7cc01a9da6daa19fba6a1e429d75a48cf",
+  "publication_code_snapshot": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-cycles-2026-10-17/cycle11-publication-review469-v1",
+  "publication_viewer_source_sha256": "ebee47d6db5a404346327ddbc2e274ba2622fdd649fc14927d710b957d4ca2ab",
+  "final_review_report_sha256": "9e8f72038575db6885acfedeb73f8e2d82a55065d720a15bca97188175416c90",
+  "selection_editorial_revision": {
+    "previous_selection_sha256": "bb208c9c0f209708eedb9493be0542c696718ae5d6290f382ce2e09a16f7ea43",
+    "previous_file": "SELECTION.initial-v1.json",
+    "reason": "Correct P04 noise description: independent local isotropic Gaussian draws after whitening, not full-matrix covariance transport (P07). Survivors, decisions, predictions and scores unchanged.",
+    "at_utc": "2026-10-18T12:28:24.697186+00:00"
   }
 }

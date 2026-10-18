@@ -104,9 +104,25 @@ def publish_selected(root):
     if protocol != json.loads((root/"PROTOCOL.json").read_text()):
         raise ValueError("Result protocol differs from signed protocol")
     policy = active_policy(protocol) or DEFAULT_POLICY
-    ranks = [row for row in runtime_ranking(result, policy) if row["method"] in selected]
+    all_ranks = runtime_ranking(result, policy)
+    ranks = [row for row in all_ranks if row["method"] in selected]
     if len(ranks) != 5 or any(not row["complete"] for row in ranks):
         raise ValueError("Selected methods need complete scores")
+    selection_notes = ('<p><a href="SELECTION.json">Selection and rejection reasons for all twenty candidates</a>. '
+        'The five survivors reflect accuracy, runtime and visual review; they need not be the five highest numerical scores.</p>')
+    if selection.get('tradeoffs'):
+        selection_notes += ('<details><summary>Benefits and limitations of these five</summary><ul>'
+            + ''.join('<li><strong>'+escape(row['method'])+'</strong>: '
+                      +escape(selection['tradeoffs'][row['method']])+'</li>' for row in ranks)
+            +'</ul></details>')
+    controls = [row for row in all_ranks if row['method'] not in protocol['roster'] and row['complete']]
+    if controls and controls[0]['runtime_adjusted_score'] > ranks[0]['runtime_adjusted_score']:
+        control = controls[0]
+        selection_notes += ('<p class="note"><strong>Control comparison:</strong> '
+            +escape(control['method'])+' is a diagnostic control outside the selectable roster. '
+            +'Its mean IoU '+number(control['mean_iou'])+' and adjusted score '
+            +number(control['runtime_adjusted_score'])+' exceed all five survivors. '
+            +'These results do not show an improvement over that control.</p>')
     # Use the same aggregate runtime-adjusted order across every displayed case.
     order = [row["method"] for row in ranks]
     options, sections, records,layer_records = [], [], [], []
@@ -201,6 +217,7 @@ def publish_selected(root):
             f'<h1>Cycle {selection["cycle"]}: the selected five</h1>'
             f'<p>{len(records)} benchmark ROIs · {selection["cycle"]}/20 cycles completed · '
             'fixed #9 + #19 RGB. Only the five selected algorithms are displayed.</p>'
+            +selection_notes+
             '<p><strong>Runtime-adjusted ranking:</strong> average of '
             'IoU − 0.05 × max(seconds − 1, 0), calculated per image. '
             'Five IoU percentage points per excess second; no bonus below one second. '

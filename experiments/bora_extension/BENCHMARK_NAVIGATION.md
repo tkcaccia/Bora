@@ -1,7 +1,10 @@
 # Expanded Bora benchmark: navigation and interpretation
 
-**Cycle11 is running on a frozen469-image calibrated cohort.** Ten of20
-improvement cycles are signed; the five cycle10 survivors are J01,M04,N08,N10,C17.
+**Cycle11 is signed on a frozen469-image calibrated cohort.** Eleven of20
+improvement cycles are complete; the five survivors are P11,N08,M04,J01,C17.
+All469 all23-method overview sheets and25 planned plus2 posthoc native label
+sheets were actually reviewed. P11 leads candidate utility but B23 control
+still scores higher; native-support glass filling remains unresolved.
 The input root is `results/bora-calibrated-tissues-inputs-2026-10-18-v1`,
 with PLAN SHA256
 `3b23ea5d0f6d6e16679d6a2cfe216ea3934731ba06e0b902ca4204ee96ac3a8d`.
@@ -80,7 +83,7 @@ Chiamaka's data base is `/mnt/sata_ssd/Bora-benchmark`.
 | `results/bora-cycles-2026-10-17/cycle-10` |Signed349-image cycle10; survivors J01,M04,N08,N10,C17 |
 | `results/bora-calibrated-tissues-inputs-2026-10-18-v1` |Active immutable469-image input freeze:132 BCSS,80 TIGER,40 OCELOT,10 BEETLE,7 CAMELYON16,40 each IGNITE/PESO/GCSS/PUMA/GleasonXAI |
 | `results/bora-cycles-2026-10-17/cycle-11-pilot-v1` |Reviewed17-image engineering pilot; not a completed cycle |
-| `results/bora-cycles-2026-10-17/cycle-11` |Full469-case/23-method run; require completed audits, actual469 overview/25 native crop reviews, then signed selection |
+| `results/bora-cycles-2026-10-17/cycle-11` |Signed469-case/23-method run; all audits and actual reviews complete; survivors P11,N08,M04,J01,C17; selected.html shows these five |
 | `experiments/bora-extension-2026-10-18` |Immutable executed source snapshots, launch logs and acquisition/input audits |
 
 Local outputs use `/Users/stefano/Documents/ChatGPT/Bora/benchmark/results`.
@@ -194,9 +197,9 @@ subset. Do not treat source groups as automatically independent patients.
 ## Result files and workflow
 
 `experiments/bora_cycles` contains candidate registries, mathematical manifests,
-implementations, tests, run/review tools and execution reports. Cycle10 is
-signed: read `CYCLE_TEN_REVIEW.md` and `CYCLE_TEN_SELECTION.json`. For active
-cycle11, read `eleven_manifest.py`, `cycle_eleven.py`, `eleven_appearance.py`,
+implementations, tests, run/review tools and execution reports. Cycle11 is
+signed: read `CYCLE_ELEVEN_REVIEW.md` and `CYCLE_ELEVEN_SELECTION.json`. Its
+implementation is in `eleven_manifest.py`, `cycle_eleven.py`, `eleven_appearance.py`,
 `native_eleven.py` and `CYCLE_ELEVEN_EXECUTION.json`. The descriptive
 `METHOD_CATALOGUE.json` indexes registered mechanisms and parent lineage;
 an entry proves neither execution nor mathematical novelty. Source snapshots

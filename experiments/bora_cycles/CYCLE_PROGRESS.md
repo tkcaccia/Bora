@@ -1,11 +1,14 @@
 # Accuracy, speed and the new one-second penalty
 
-Cycle11 is running on469 frozen calibrated ROIs:269 previously qualified
-fields plus40 each IGNITE,PESO,GCSS,PUMA,GleasonXAI. Its17-case engineering
-pilot was actually reviewed; the full run still requires all469 overview
-reviews and25 planned native crops before selection. Ten cycles are signed.
+Cycle11 is signed on469 frozen calibrated ROIs:269 previously qualified
+fields plus40 each IGNITE,PESO,GCSS,PUMA,GleasonXAI. All469 all23-method overview
+sheets,25 planned and2 posthoc native label sheets were actually reviewed.
+All10,787 native/display mask audits pass. Selected five: P11,N08,M04,J01,C17.
+P11 leads candidate utility but B23 control remains higher; P11 still fills
+real glass. P10/P12 are rejected for geometric foreground artifacts despite
+high overlap scores. See CYCLE_ELEVEN_REVIEW.md for all20 tradeoffs.
 Read CYCLE_ELEVEN_EXECUTION.json and the results-base CURRENT_RUN.json for
-execution hashes and live state; a running experiment is not a completed cycle.
+execution hashes and live state. Nine cycles and the final five-conversion run remain.
 
 Prospective user steering after cycle10 excludes single-group images and
 fields with too few real tiles. The score-blind size/group audit qualifies299/349
@@ -19,8 +22,8 @@ Do not use arbitrary pixel rescaling or objective magnification to qualify them.
 See `../bora_extension/ELIGIBILITY_AND_SAMPLING.md` and the two versioned
 eligibility/calibration policies. No earlier signed score or selection changed.
 
-Ten of twenty cycles are complete: cycles1–7 use149 repeatedly reused development
-ROIs and cycles8–10 use349. The user requests penalizing algorithms that take longer than one
+Eleven of twenty cycles are complete: cycles1–7 use149 repeatedly reused development
+ROIs, cycles8–10 use349 and cycle11 uses469 calibrated ROIs. The user requests penalizing algorithms that take longer than one
 second per image. The explicit working policy is:
 
     adjusted utility = mean_i[macro_IoU_i - 0.05 * max(seconds_i - 1, 0)]

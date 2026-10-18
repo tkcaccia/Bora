@@ -1,20 +1,21 @@
 # Twenty review-gated Bora improvement cycles
 
-Current verified status: **ten of twenty cycles complete**. Cycle ten has
-349 actual all-method overview reviews,15 full-run native label crop reviews,
-7,678 audited masks and a signed selection: **J01, M04, N08, N10, C17**.
-J01 remains the runtime-adjusted leader. N10 replaces M11 with a tissue envelope;
-N08 replaces K05 as an explicit raw-accuracy/variance tradeoff despite lower
-utility and worse mean small-region recall. These are not the five highest
-utility ranks. See [CYCLE_TEN_REVIEW.md](CYCLE_TEN_REVIEW.md) for all20 decisions.
-
-Cycle11 is running on **469 frozen calibrated ROIs**. Its17-case engineering
-pilot passed and was actually inspected, but neither a pilot nor a partially
-computed run completes a cycle. The full run uses20 candidates and3 diagnostic
-controls. [CYCLE_ELEVEN_EXECUTION.json](CYCLE_ELEVEN_EXECUTION.json) records
-source/input hashes; the results-base `CURRENT_RUN.json` identifies live state.
-The completed selected-five viewer still represents cycle10's historical349
-images until the next full review and signed selection exist.
+Current verified status: **eleven of twenty cycles complete**. Cycle11 has
+469 actual all23-method overview reviews,25 planned plus2 posthoc native label
+reviews,10,787 audited masks and a signed selection: **P11,N08,M04,J01,C17**.
+All469 ROIs have verified physical sampling and meet the group/tile/size gates.
+P11 leads selectable runtime-adjusted utility, but the B23 diagnostic control
+still scores higher. P11 also fills real glass in several cases; it is an
+unresolved native-support branch, not validated background removal.
+P10/P12 are rejected for foreground geometry artifacts despite high scores.
+These are not the five highest numerical utility ranks. The viewer exposes
+all469 cases, transparent reference/coarse/final layers, physical scale bars,
+scores, speed penalties and selection limitations.
+See [CYCLE_ELEVEN_REVIEW.md](CYCLE_ELEVEN_REVIEW.md) for all20 decisions and
+[CYCLE_ELEVEN_SELECTION.json](CYCLE_ELEVEN_SELECTION.json) for signed evidence.
+[CYCLE_ELEVEN_EXECUTION.json](CYCLE_ELEVEN_EXECUTION.json) records source/input
+hashes; the results-base `CURRENT_RUN.json` identifies the current state.
+Nine cycles and the final all-five-fixed-conversion evaluation remain.
 
 Cycle ten has computed, scored, rendered and audited the same 349 frozen ROIs after its 13-image pilot,
 357 checks and actual inspection of all pilot overviews plus three native
