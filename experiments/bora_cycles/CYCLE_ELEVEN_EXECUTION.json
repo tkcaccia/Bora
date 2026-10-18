@@ -1,6 +1,6 @@
 {
   "cycle": 11,
-  "status": "full_calibrated_prediction_running",
+  "status": "all_predictions_frozen_scoring_running",
   "completed_cycles": 10,
   "complete_goal": false,
   "prediction_commit": "5a255e0",
@@ -58,6 +58,19 @@
     "P14": "Five17 runs miss projected stationarity tolerance"
   },
   "scoring_notice": "All current parents/children share the prospective scoring policy. OCELOT white-only broad negatives are rescored; signed historical masks/scores unchanged. No corpus-composition or scoring-contract change is an algorithm gain.",
-  "next_action": "Freeze all469 predictions before scoring, audit all masks and parent parity, inspect all469 contacts and25 native crops, then select five and open only their viewer.",
-  "at_utc": "2026-10-18T08:42:16.828015+00:00"
+  "next_action": "Finish existing scoring/render process and PID-bound posthoc/crop pipeline. Audit all10787 native/display masks, parent parity and pilot/full repeatability;actually inspect469 overview sheets and25 native crops. Then select five and open their viewer;continue cycles12\u201320 and final fixed-conversion benchmark.",
+  "at_utc": "2026-10-18T09:52:34.388507+00:00",
+  "full_prediction_freeze_sha256": "d8072c83f0f40706100ce3f1df29792fa981d6bf30c545aeb70b5fa43b1038ad",
+  "full_prediction_stage_check": {
+    "receipt": "cycle11-prediction-freeze-check-v1.json",
+    "receipt_sha256": "e5ce0ebcb22f9c8975fe8769765f8f6a1799ea927d2e3f110c6639c581045ca2",
+    "cases": 469,
+    "successful_method_records": 10787,
+    "parent_native_parity_flags": 1345,
+    "owned_support_files_declared": 1876,
+    "all_prediction_manifest_hashes_verified": true,
+    "all_input_manifest_identities_verified": true,
+    "fine_references_read_by_check": false,
+    "per_mask_raster_audit": "Pending full score/render completion and posthoc pipeline"
+  }
 }
