@@ -15,7 +15,7 @@ from .run import digest,save,verify
 
 
 REPORT_ONLY={'experiments/bora_cycles/'+name for name in (
-    'posthoc_calibrated.py','selected_viewer.py','publish_diagnostics.py',
+    'posthoc_calibrated.py','selected_viewer.py','selected_assets.py','publish_diagnostics.py',
     'numerical_nine.py','export_planned_crops.py','audit_repeatability.py','finish_calibrated.py')}
 
 

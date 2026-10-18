@@ -19,6 +19,9 @@ figure{margin:0;background:white;padding:10px;border:1px solid #d8e0e5;border-ra
 figcaption{min-height:46px;font-size:13px;line-height:1.5}.raster{display:block;position:relative;background:#fafafa}
 .raster img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .raster .mask{opacity:var(--mask-alpha,.55)}.links{font-size:12px;margin-top:7px}
+.scale-bar{position:absolute;left:9px;bottom:9px;z-index:2;color:#111;font-size:11px;
+background:rgba(255,255,255,.88);padding:0;white-space:nowrap;text-align:left;text-shadow:0 0 2px white}
+.scale-bar i{display:block;border-top:3px solid #111;margin-top:2px}
 section[hidden]{display:none}.legend{display:flex;gap:12px;flex-wrap:wrap;padding:10px 0}
 .swatch{display:inline-block;width:12px;height:12px;margin-right:5px;border:1px solid #999}
 @media(max-width:800px){.inputs{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -67,7 +70,7 @@ def summary(entry):
                 annotated_unassigned_pixels=score["annotated_unassigned_pixels"])
 
 
-def panel(case, title, name, ratio, overlay=False, native=None):
+def panel(case, title, name, ratio, overlay=False, native=None,scale_percent=None):
     prefix = "cases/"+case+"/"
     url = escape(prefix+name, quote=True)
     base = (f'<img loading="lazy" alt="Original H&amp;E beneath mask" '
@@ -75,7 +78,9 @@ def panel(case, title, name, ratio, overlay=False, native=None):
     return (f'<figure><figcaption>{title}</figcaption>'
             f'<a class="raster" style="aspect-ratio:{ratio}" href="{url}" target="_blank">'
             +base+f'<img loading="lazy" class="{"mask" if overlay else "image"}" '
-            f'alt="{escape(name, quote=True)}" src="{url}"></a>'
+            f'alt="{escape(name, quote=True)}" src="{url}">'
+            +(f'<span class="scale-bar" style="width:{scale_percent:.6g}%" aria-label="100 micrometres">100 µm<i></i></span>'
+              if scale_percent is not None else '')+'</a>'
             f'<div class="links"><a href="{url}" target="_blank">Full raster</a>'
             +(f' · <a href="{escape(prefix+native, quote=True)}">Native labels TIFF</a>' if native else "")
             +'</div></figure>')
@@ -104,17 +109,27 @@ def publish_selected(root):
         raise ValueError("Selected methods need complete scores")
     # Use the same aggregate runtime-adjusted order across every displayed case.
     order = [row["method"] for row in ranks]
-    options, sections, records = [], [], []
+    options, sections, records,layer_records = [], [], [], []
     for row in result["cases"]:
         case, sample = row["case"], row["sample"]
         options.append(f'<option value="{escape(case, quote=True)}">{escape(case)}</option>')
         height, width = sample["native_shape_yx"]
         ratio = f'{width}/{height}'
-        inputs = ''.join(panel(case, title, name, ratio, overlay) for title, name, overlay in (
-            ("Original H&amp;E", "original-he.jpg", False),
-            ("Reference annotation", "reference.jpg", True),
-            ("Input tile mask", "coarse.jpg", True),
-            ("Fixed converted RGB: #9 + #19", "converted.jpg", False)))
+        physical=None;scale_percent=None
+        if calibrated:
+            from experiments.bora_extension.calibration import require
+            physical=require(sample)
+            scale_percent=10000/physical['physical_field_um_xy'][0]
+        layers={}
+        if calibrated:
+            from .selected_assets import layers as exact_layers
+            paths,layer_record=exact_layers(protocol['source'],root,dict(sample,case=case),order)
+            layers=paths;layer_records.append(layer_record)
+        inputs = ''.join(panel(case, title, layers.get(key,name), ratio, overlay,scale_percent=scale_percent) for title, key,name, overlay in (
+            ("Original H&amp;E", "original", "original-he.jpg", False),
+            ("Reference annotation", "reference", "reference.jpg", True),
+            ("Input tile mask", "coarse", "coarse.jpg", True),
+            ("Fixed converted RGB: #9 + #19", "converted", "converted.jpg", False)))
         outputs, entries = [], {}
         for key in order:
             entry = row["methods"][key]
@@ -128,7 +143,7 @@ def publish_selected(root):
                      f' · adjusted {number(info["runtime_adjusted_score"])}'
                      f'<br>Small-region recall (≤400 {info["small_units"]}) {number(info["small_recall"],3)}'
                      f' · fully missed {info["completely_missed_small"]}')
-            outputs.append(panel(case, title, key+"/mask.png", ratio, True, key+"/native.tif"))
+            outputs.append(panel(case, title, layers.get(key,key+"/mask.png"), ratio, True, key+"/native.tif",scale_percent=scale_percent))
         legend = ''.join(
             f'<span><i class="swatch" style="background:rgb({",".join(map(str,color))})"></i>'
             f'{escape(sample["class_names"].get(str(i),str(i)))}</span>'
@@ -138,8 +153,6 @@ def publish_selected(root):
                    'Microscopy pixel spacing unknown; numerical scales and area scores are in pixels')
         calibration_note=''
         if calibrated:
-            from experiments.bora_extension.calibration import require
-            physical=require(sample)
             working=' × '.join(number(v,5) for v in physical['working_mpp_xy'])
             windows='; '.join(' × '.join(number(v,1) for v in physical['scales'][str(scale)]['window_um_xy'])+' µm'
                 for scale in (1,2,4))
@@ -161,7 +174,8 @@ def publish_selected(root):
              if row['dataset'] == 'rings-tumor' else '')+
             f'<div class="inputs">{inputs}</div><div class="legend">{legend}</div>'
             f'<div class="outputs">{"".join(outputs)}</div></section>')
-        records.append(dict(case=case,dataset=row["dataset"],methods=entries))
+        records.append(dict(case=case,dataset=row["dataset"],methods=entries,
+            physical_sampling=physical,display_scale_bar_um=100 if calibrated else None))
     table = ''.join(
         f'<tr><td>{escape(r["method"])} · {escape(protocol["roster"][r["method"]]["title"])}</td>'
         f'<td>{number(r["mean_iou"])}</td><td>{number(r["mean_dice"])}</td>'
@@ -211,10 +225,15 @@ def publish_selected(root):
             f'</tr>{table}</table></div>'+''.join(sections)
             +f'<script>{SCRIPT}</script></main></html>')
     (root/"selected.html").write_text(html)
+    if layer_records:
+        save(root/'SELECTED_VIEW_ASSETS.json',dict(cases=layer_records,
+            reference_zero='Transparent ignored annotation',coarse_zero='Transparent unobserved tile region',
+            prediction_zero='Transparent removed support',predictions_modified=False,scores_modified=False))
     save(root/"SELECTED_RESULTS.json", dict(cycle=selection["cycle"],methods=order,
         selection_sha256=digest(root/"SELECTION.json"), ranking=ranks,cases=records,
         predictions_modified=False,scores_modified=False, derived_runtime_scores_added=True,
-        runtime_penalty_policy=policy, historical_selection_unchanged=True))
+        runtime_penalty_policy=policy, historical_selection_unchanged=True,
+        transparent_view_assets_sha256=digest(root/'SELECTED_VIEW_ASSETS.json') if layer_records else None))
     return dict(selected_gallery="selected.html",selected_gallery_sha256=digest(root/"selected.html"),
                 selected_viewer_source_sha256=digest(Path(__file__)),
                 selected_results_sha256=digest(root/"SELECTED_RESULTS.json"),

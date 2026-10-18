@@ -107,11 +107,14 @@ def test_completed_viewer_refuses_changed_scored_evidence(tmp_path):
         publish_selection_status(tmp_path)
 
 
-def test_selected_calibrated_viewer_uses_new_cohort_labels_and_physical_windows(tmp_path):
+def test_selected_calibrated_viewer_uses_new_cohort_labels_and_physical_windows(tmp_path,monkeypatch):
     from experiments.bora_cycles.selected_viewer import publish_selected
+    from experiments.bora_cycles import selected_assets
+    monkeypatch.setattr(selected_assets,'layers',lambda source,root,sample,methods:
+        ({'reference':'selected-view/reference.png','coarse':'selected-view/coarse.png'},dict(case=sample['case'])))
     report_fixture(tmp_path)
     protocol=json.loads((tmp_path/'PROTOCOL.json').read_text())
-    protocol.update(cycle=11,benchmark_scope=dict(version='calibrated-tissues-v1'))
+    protocol.update(cycle=11,source='unused-in-this-html-test',benchmark_scope=dict(version='calibrated-tissues-v1'))
     save(tmp_path/'PROTOCOL.json',protocol)
     result=json.loads((tmp_path/'RESULTS.json').read_text());result['protocol']=protocol
     result['cases'][0]['sample'].update(native_shape_yx=[2560,2560],working_shape_yx=[1280,1280],
@@ -127,3 +130,4 @@ def test_selected_calibrated_viewer_uses_new_cohort_labels_and_physical_windows(
     assert 'Previous cohort IoU' in html and 'New tissue datasets IoU' in html
     assert 'Original149 IoU' not in html
     assert '112.0 × 112.0 µm; 224.0 × 224.0 µm; 448.0 × 448.0 µm' in html
+    assert html.count('class="scale-bar"')==9 and html.count('width:15.625%')==9
