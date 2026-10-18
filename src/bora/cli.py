@@ -6,9 +6,11 @@ from pathlib import Path
 import tempfile
 import cv2
 import numpy as np
+import tifffile
 from threadpoolctl import threadpool_limits
 from . import __version__
 from .classifier import NeighborContextClassifier
+from .annotations import read_annotation, group_targets, _class_map
 from .pipeline import load_case, prepare, run, json_file, digest, _mask
 
 
@@ -55,7 +57,8 @@ def train_file(manifest_path, output):
     spec = json.loads(manifest_path.read_text())
     if spec.get("format") != "bora-training-v1" or not spec.get("cases"):
         raise ValueError("A nonempty bora-training-v1 manifest is required")
-    xs, ys, seen = [], [], set()
+    names = {int(k): v for k, v in spec["classes"].items()}
+    xs, ys, seen, records = [], [], set(), []
     for row in spec["cases"]:
         if row.get("split") != "train" or not row.get("source_group"):
             raise ValueError("Every descriptor file needs split=train and a source_group identity")
@@ -68,15 +71,49 @@ def train_file(manifest_path, output):
             meta = json.loads(str(data["metadata"].item()))
             if meta.get("format") != "bora-neighbor-context-descriptors-v1":
                 raise ValueError("Use descriptors produced by bora prepare")
-            labels = row["labels"]
-            if set(labels) != set(map(str, data["group_ids"].tolist())):
-                raise ValueError("Supply one tissue target for every whole anonymous group")
-            target = np.asarray([labels[str(int(g))] for g in data["group_ids"]])
-            xs.append(data["x"].copy()); ys.append(target)
+            ids = data["group_ids"].copy()
+            if ("labels" in row) == ("annotation" in row):
+                raise ValueError("Supply either explicit labels or a training annotation, not both")
+            if "labels" in row:
+                labels = row["labels"]
+                if set(labels) != set(map(str, ids.tolist())):
+                    raise ValueError("Supply one tissue target for every whole anonymous group")
+                target = np.asarray([labels[str(int(g))] for g in ids])
+                keep = np.ones(len(ids), bool)
+                excluded = []
+                annotation_sha = None
+                groups_sha = None
+            else:
+                groups_path = (manifest_path.parent / row["groups"]).resolve()
+                annotation_path = (manifest_path.parent / row["annotation"]).resolve()
+                groups_sha, annotation_sha = digest(groups_path), digest(annotation_path)
+                if (row.get("groups_sha256", groups_sha) != groups_sha or
+                        row.get("annotation_sha256", annotation_sha) != annotation_sha):
+                    raise ValueError("Changed training groups or annotation")
+                groups = tifffile.imread(groups_path)
+                mapping = _class_map(row["annotation_values"], names)
+                annotated = read_annotation(annotation_path, groups.shape, mapping,
+                    field=row.get("annotation_field", "value"),
+                    ignore_values=row.get("ignore_values", ["0"]),
+                    coordinate_space=row.get("annotation_coordinate_space"))
+                retained, target, excluded = group_targets(groups, ids, annotated,
+                    min_coverage=float(row.get("min_coverage", .5)),
+                    min_purity=float(row.get("min_purity", .8)))
+                keep = np.isin(ids, retained)
+                if not np.array_equal(ids[keep], retained):
+                    raise ValueError("Training group IDs changed order")
+            xs.append(data["x"][keep].copy()); ys.append(target)
+            records.append(dict(source_group=row["source_group"], descriptor_sha256=sha,
+                groups_sha256=groups_sha, annotation_sha256=annotation_sha,
+                training_groups=int(np.count_nonzero(keep)),
+                excluded_groups=excluded))
+    if not any(len(x) for x in xs):
+        raise ValueError("No sufficiently annotated training groups remain")
     model = NeighborContextClassifier().fit(np.concatenate(xs), np.concatenate(ys), spec["classes"])
-    meta = model.save(output)
+    meta = model.save(output, training_provenance=dict(manifest_sha256=digest(manifest_path), cases=records))
     return dict(output=str(output), training_groups=len(model.y_), model=meta,
-                fit_seconds=model.fit_seconds_, training_manifest_sha256=digest(manifest_path))
+                fit_seconds=model.fit_seconds_, training_manifest_sha256=digest(manifest_path),
+                excluded_groups=sum(len(r["excluded_groups"]) for r in records))
 
 
 def main(argv=None):

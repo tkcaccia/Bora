@@ -74,7 +74,7 @@ class NeighborContextClassifier:
         x = predictors(x)
         return np.asarray(self.model_.predict(x), dtype=np.uint8).reshape(-1)
 
-    def save(self, path):
+    def save(self, path, training_provenance=None):
         if not hasattr(self, "model_"):
             raise RuntimeError("Fit the classifier before saving")
         path = Path(path)
@@ -86,6 +86,8 @@ class NeighborContextClassifier:
             fastpls_revision=FASTPLS_REVISION, backend="cpu", classes=self.names_,
             native_head_count=1, descriptor="1280 group means + 1280 physical boundary contrasts",
             load_refits_native_head=True, training_features_included=True)
+        if training_provenance is not None:
+            metadata["training_provenance"] = training_provenance
         with tempfile.NamedTemporaryFile(dir=path.parent, suffix=".npz", delete=False) as f:
             temp = Path(f.name)
         try:

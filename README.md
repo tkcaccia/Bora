@@ -1,7 +1,9 @@
 # Bora
 
-Bora converts a coarse tissue-group map into a refined, named tissue mask and
-compact GeoJSON. There is one supported pipeline:
+Bora takes an H&E image, anonymous tile-cluster labels, calibrated Virchow2
+spatial features and a user-trained fastPLS tissue classifier. It returns a
+refined, classified tissue mask and compact GeoJSON whose regions carry the
+predicted tissue names. There is one supported pipeline:
 
 **Virchow2 spatial tokens → fixed Virchow2 RGB evidence → Bora-AF → Neighbor context → GeoJSON.**
 
@@ -81,17 +83,26 @@ with their `selected_dimensions` indices. A mismatched selection fails. The
 conversion averages #9 and #19 class probabilities before RGB quantization;
 the formulas and their within-image fits are unchanged.
 
+`coarse` may be an expanded categorical TIFF, or supply a two-dimensional
+`tile_labels` NumPy array and `tile_size_yx` (for example `[90, 90]`) instead.
+The tile grid is expanded from the top-left image edge and cropped at the
+right/bottom edges. Cluster IDs are anonymous integers in 1..255; zero is
+unassigned. These IDs are **not** tissue class IDs. See the
+[complete training and inference guide](docs/WORKFLOW.md).
+
 ## Prepare, train and refine
 
-Prepare geometry/descriptors for each annotated training field:
+Prepare geometry/descriptors for each annotated training field. Its case file
+contains the image, tile clusters and Virchow2 tokens, **not** the expert mask:
 
 ```bash
 bora prepare training-case.json --output prepared/training-case
 ```
 
-The output contains `groups.ome.tif`, `descriptors.npz`, and provenance. Assign
-one expert tissue target to each original anonymous group ID in a training
-manifest. These are group targets, not independently classified fragments.
+The output contains `groups.ome.tif`, `descriptors.npz`, and provenance. The
+training manifest can supply an aligned expert integer mask or GeoJSON for each
+prepared image. Bora determines one tissue target for each sufficiently covered,
+unambiguous whole group. The training annotation is never accepted by `refine`.
 
 ```json
 {
@@ -99,12 +110,23 @@ manifest. These are group targets, not independently classified fragments.
   "classes": {"1": "tumor", "2": "stroma"},
   "cases": [{
     "descriptors": "prepared/training-case/descriptors.npz",
+    "groups": "prepared/training-case/groups.ome.tif",
+    "annotation": "training-case/expert.tif",
+    "annotation_values": {"10": 1, "20": 2},
     "source_group": "patient-A",
-    "split": "train",
-    "labels": {"1": 1, "2": 2}
+    "split": "train"
   }]
 }
 ```
+
+The mapping is from **expert mask value** to **model class ID**; here 10 means
+tumor and 20 means stroma. Zero is ignored unless explicitly mapped to a class.
+For GeoJSON, use `annotation_field` (for example `classification.name`) and
+declare `annotation_coordinate_space: native_image_pixel_edges`. Regions with
+less than 50% annotated coverage or less than 80% dominant-class purity are
+excluded by default; both thresholds can be set per case. An existing manual
+`labels` mapping remains available when its whole-group targets have already
+been independently adjudicated. See the guide for both complete examples.
 
 Use sufficient independent training groups for the intended vocabulary. Keep
 patients/institutions used for final evaluation out of training and model

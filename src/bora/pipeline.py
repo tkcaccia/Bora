@@ -52,6 +52,21 @@ def _image(path):
     return data
 
 
+def expand_tile_labels(labels, image_shape_yx, tile_size_yx):
+    """Expand a top-left-aligned categorical tile grid to the working image."""
+    labels = np.asarray(labels)
+    size = np.asarray(tile_size_yx)
+    if (labels.ndim != 2 or labels.dtype.kind not in "iu" or np.any(labels < 0)
+            or np.any(labels > 255) or size.shape != (2,) or size.dtype.kind not in "iu"
+            or np.any(size <= 0)):
+        raise ValueError("Use a 2D integer tile grid in 0..255 and positive integer tile_size_yx")
+    expected = tuple((np.asarray(image_shape_yx) + size - 1) // size)
+    if labels.shape != expected:
+        raise ValueError("Tile grid shape does not cover the declared working image")
+    return np.repeat(np.repeat(labels, int(size[0]), axis=0), int(size[1]), axis=1)[
+        :image_shape_yx[0], :image_shape_yx[1]].astype(np.uint8, copy=False)
+
+
 @dataclass
 class Case:
     image: np.ndarray
@@ -102,10 +117,14 @@ def load_case(path):
     """Read only declared predictors. Fine annotation paths are not accepted."""
     path = Path(path).resolve()
     spec = json.loads(path.read_text())
-    allowed = {"case", "image", "coarse", "tissue", "tokens", "mpp_xy", "native_mpp_xy",
+    allowed = {"case", "image", "coarse", "tile_labels", "tile_size_yx", "tissue", "tokens", "mpp_xy", "native_mpp_xy",
                "native_tissue", "evidence_rgb", "palette", "variants", "encoder_revision", "encoder_sha256"}
     if set(spec) - allowed:
         raise ValueError("Unknown case fields: " + ", ".join(sorted(set(spec) - allowed)))
+    if ("coarse" in spec) == ("tile_labels" in spec):
+        raise ValueError("Supply exactly one coarse raster or tile_labels grid")
+    if ("tile_labels" in spec) != ("tile_size_yx" in spec):
+        raise ValueError("tile_labels requires tile_size_yx, and tile_size_yx requires tile_labels")
     if spec.get("encoder_revision") != ENCODER_REVISION or spec.get("encoder_sha256") != ENCODER_SHA256:
         raise ValueError("Declare the audited Virchow2 revision and checkpoint SHA256")
     hashes = {"case_manifest": digest(path)}
@@ -118,7 +137,11 @@ def load_case(path):
         hashes[name] = actual
         return p
     image = _image(file(spec["image"], "image"))
-    coarse = tifffile.imread(file(spec["coarse"], "coarse"))
+    if "coarse" in spec:
+        coarse = tifffile.imread(file(spec["coarse"], "coarse"))
+    else:
+        labels = np.load(file(spec["tile_labels"], "tile_labels"), allow_pickle=False)
+        coarse = expand_tile_labels(labels, image.shape[:2], spec["tile_size_yx"])
     tissue = tifffile.imread(file(spec["tissue"], "tissue")) > 0
     tokens = np.load(file(spec["tokens"], "tokens"), mmap_mode="r", allow_pickle=False)
     native = (tifffile.imread(file(spec["native_tissue"], "native_tissue")) > 0

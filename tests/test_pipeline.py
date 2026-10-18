@@ -2,8 +2,9 @@ import json
 import numpy as np
 import pytest
 import tifffile
+from PIL import Image
 from rasterio.features import rasterize
-from bora.pipeline import Case, prepare, run, load_case, ENCODER_REVISION, ENCODER_SHA256
+from bora.pipeline import Case, prepare, run, load_case, expand_tile_labels, ENCODER_REVISION, ENCODER_SHA256
 from bora.classifier import NeighborContextClassifier
 from bora.cli import parser, train_file
 
@@ -67,3 +68,30 @@ def test_cli_has_one_pipeline_and_no_classifier_selector():
     p = parser()
     assert "Neighbor context" in p.description
     with pytest.raises(SystemExit): p.parse_args(["refine", "case.json", "--model", "m.npz", "--output", "result", "--classifier", "opls"])
+
+
+def test_tile_grid_expands_without_changing_anonymous_group_ids():
+    grid = np.array([[1, 2], [3, 0], [3, 0]], np.uint8)
+    coarse = expand_tile_labels(grid, (181, 179), [90, 90])
+    assert coarse.shape == (181, 179)
+    assert coarse[0, 0] == 1 and coarse[0, 100] == 2
+    assert coarse[100, 0] == 3 and coarse[180, 178] == 0
+    with pytest.raises(ValueError, match="grid shape"):
+        expand_tile_labels(grid, (271, 179), [90, 90])
+
+
+def test_case_manifest_accepts_tile_grid_and_preserves_calibration(tmp_path):
+    original = case()
+    Image.fromarray(original.image).save(tmp_path / "he.png")
+    Image.fromarray(original.rgb).save(tmp_path / "evidence.png")
+    tifffile.imwrite(tmp_path / "tissue.tif", original.tissue.astype(np.uint8))
+    np.save(tmp_path / "tokens.npy", original.tokens)
+    np.save(tmp_path / "clusters.npy", np.tile([1, 1, 2, 2], (4, 1)).astype(np.uint8))
+    spec = dict(image="he.png", tile_labels="clusters.npy", tile_size_yx=[90, 90],
+        tissue="tissue.tif", tokens="tokens.npy", evidence_rgb="evidence.png",
+        mpp_xy=[.5, .5], encoder_revision=ENCODER_REVISION, encoder_sha256=ENCODER_SHA256)
+    path = tmp_path / "case.json"
+    path.write_text(json.dumps(spec))
+    loaded = load_case(path)
+    np.testing.assert_array_equal(loaded.coarse, original.coarse)
+    assert len(prepare(loaded)["group_ids"]) == 2
