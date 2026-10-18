@@ -1,8 +1,14 @@
 # Expanded Bora benchmark: navigation and interpretation
 
-**Cycle11's combined cohort is not frozen yet.** Ten of20 improvement cycles
-are signed; the five cycle10 survivors are J01,M04,N08,N10,C17. The latest
-source of execution state is `CURRENT_RUN.json`, not an older inventory count.
+**Cycle11 is running on a frozen469-image calibrated cohort.** Ten of20
+improvement cycles are signed; the five cycle10 survivors are J01,M04,N08,N10,C17.
+The input root is `results/bora-calibrated-tissues-inputs-2026-10-18-v1`,
+with PLAN SHA256
+`3b23ea5d0f6d6e16679d6a2cfe216ea3934731ba06e0b902ca4204ee96ac3a8d`.
+Its `ALL_INPUTS_FROZEN.json`, passing `COHORT_AUDIT.json` and
+`SAMPLING_REVIEW.json` identify the eligible fields and physical windows.
+The latest source of execution state is `CURRENT_RUN.json`, not an older
+inventory count. Do not restart a live run or treat its pilot as a completed cycle.
 
 The original349-image inventory is historical for cycles8–10. The size/group
 gate admitted299; physical calibration subsequently clears269 of those. The
@@ -11,8 +17,8 @@ new inference. Do not launch from the unfiltered349 or the old299 plan.
 
 The corrected new acquisition audit has200 calibrated fields:40 each from
 IGNITE, PESO, GCSS, PUMA and GleasonXAI. The five-dataset review snapshot is
-`results/bora-tissue-acquisition-2026-10-18-v4`. A later snapshot can include
-Histo-Seg40 as acquisition inventory only: its MPP is unknown. ORCA currently
+`results/bora-tissue-acquisition-2026-10-18-v5`; it also includes
+Histo-Seg40 as acquisition inventory only because its MPP is unknown. ORCA currently
 has32 calibrated disjoint fields from9 cases/cores, below the40-field quota.
 These are ROI development images, not full-WSI or independent-patient tests.
 
@@ -37,18 +43,22 @@ receipt `results/bora-tissue-path-correction-2026-10-18-v1.json`.
 
 `results/bora-tissue-features-160-2026-10-18-v1` contains the first four datasets'
 480 frozen tensors and a passing full-corpus `FEATURE_AUDIT.json`.
-`results/bora-puma-features-40-2026-10-18-v1` is the separate PUMA batch; verify
-its global freeze and audit before conversion. These logical roots link to
+`results/bora-puma-features-40-2026-10-18-v1` contains the separate120 PUMA
+tensors with its own passing freeze and audit. All200 calibrated acquisitions
+have been encoded and converted using the unchanged five formulae. These logical roots link to
 computed caches in `/home/chiamaka/Bora-benchmark-compute` on NVMe. Provider
 images and native image/reference fields remain on the SATA SSD. The fixed
 RGB09/10/15/19/equal09+19 conversion formulae remain unchanged.
 
-Cycle11 has15 new callable models plus the five parents, with a separately
-labelled support ablation control. Its native-support execution/scoring/audit
-contracts have focused tests. A new calibrated combined input freeze, complete
-CLI/cohort validation and an engineering pilot are still required. No full
-cycle11 result or selection exists. The remaining historical349 navigation
-below documents signed earlier work; its counts are not the next denominator.
+Cycle11 has15 new callable models plus the five parents, with three separately
+labelled controls including a full-support ablation. Its17-case engineering
+pilot passed mask, parent-parity and reporting audits; all17 overviews and17
+native label crops were actually inspected. The full469-case run uses an
+immutable source snapshot, three nice12 workers and two numerical threads per
+worker. No full cycle11 selection exists yet. Candidate time excludes cached
+Virchow2 encoding/conversion; it is not end-to-end pipeline latency.
+The remaining historical349 navigation below documents signed earlier work;
+its counts are not the current denominator.
 
 ## Locations
 
@@ -61,13 +71,16 @@ Chiamaka's data base is `/mnt/sata_ssd/Bora-benchmark`.
 | `results/bora-extension-inputs-2026-10-18-v1` |160 newly selected BCSS/TIGER/WSSS4LUAD/RINGS image/coarse/reference triples |
 | `results/bora-ocelot-inputs-2026-10-18-v1` |40 selected OCELOT training tissue triples |
 | `results/bora-extension-features-2026-10-18-v1` |600 frozen feature arrays across the200 additions, plus scale/coverage/calibration metadata |
-| `results/bora-expanded-349-inputs-2026-10-18-v1` |Authoritative combined349-image input freeze; all five fixed RGB conversions |
+| `results/bora-expanded-349-inputs-2026-10-18-v1` |Historical349-image input freeze for signed cycles8–10; all five fixed RGB conversions |
 | `results/bora-eligibility-2026-10-18-v1` |Frozen score-blind decisions for all349, per-group tile counts, sampling review and included/diagnostic viewer |
 | `results/bora-qualified-inputs-2026-10-18-v1` |Prospective299-image PLAN and input symlinks;50 excluded inputs separately under diagnostics/ |
 | `results/bora-cycles-2026-10-17/cycle-08` |Signed, fully reviewed349-image cycle8 |
 | `results/bora-cycles-2026-10-17/cycle-09` |Signed, fully reviewed349-image cycle9; survivors J01,M04,K05,M11,C17 |
 | `results/bora-cycles-2026-10-17/cycle-10-pilot-v1` |Reviewed13-image engineering pilot; not a completed cycle |
 | `results/bora-cycles-2026-10-17/cycle-10` |Signed349-image cycle10; survivors J01,M04,N08,N10,C17 |
+| `results/bora-calibrated-tissues-inputs-2026-10-18-v1` |Active immutable469-image input freeze:132 BCSS,80 TIGER,40 OCELOT,10 BEETLE,7 CAMELYON16,40 each IGNITE/PESO/GCSS/PUMA/GleasonXAI |
+| `results/bora-cycles-2026-10-17/cycle-11-pilot-v1` |Reviewed17-image engineering pilot; not a completed cycle |
+| `results/bora-cycles-2026-10-17/cycle-11` |Full469-case/23-method run; require completed audits, actual469 overview/25 native crop reviews, then signed selection |
 | `experiments/bora-extension-2026-10-18` |Immutable executed source snapshots, launch logs and acquisition/input audits |
 
 Local outputs use `/Users/stefano/Documents/ChatGPT/Bora/benchmark/results`.
@@ -76,10 +89,12 @@ Remote cycle08/09/10 correspond to local `cycle-08-chiamaka`,
 the active process, exact source snapshot, input freeze, last delivered viewer
 and completed-cycle count. Read it before launching another job.
 
-All200 new original input triples have local copies in the separate160/40
-folders above. The local combined349 input folder contains metadata and input
-review sheets, not the full feature/raster tree. Feature arrays remain on
-Chiamaka. Do not infer missing local data from the presence of a local plan.
+The historical 160/40 additions have local input triples in the separate
+folders above. The new five-dataset expansion has two local example pairs per
+dataset under `benchmark/examples/tissue-expansion-2026-10-18-v2`; its complete
+200 source fields and encoder tensors remain on Chiamaka. Local combined-input
+folders can contain metadata and review sheets without the full raster tree.
+Do not infer a complete local dataset from the presence of a local plan.
 
 The older acquisition code and examples are in the main local workspace at
 `/Users/stefano/Documents/ChatGPT/Bora/benchmark`; its `DATASETS.md`,
@@ -112,7 +127,7 @@ Within a case:
   exactly constant RGB. This fallback preserves existing coarse observations;
   it is not successful fine-boundary recovery.
 
-The combined plan SHA256 is
+For the historical 349-image freeze only, the plan SHA256 is
 `7aff79d91f5bd8b301f939dc83bc7892eda388bf7f33e4476f6f2dc8cb9c8957`.
 The all-input freeze SHA256 is
 `52667d5a4e903b69e7666e8c1decfd74e4adfa604d99d14417f418b18ae0bcc9`.
@@ -122,10 +137,15 @@ input manifests are byte-identical to their earlier versions.
 ## Resolution, labels and quality scoring
 
 Verified axis spacing is reported in micrometres per pixel, not inferred from
-objective magnification. All80 WSSS4LUAD/RINGS additions lack verified MPP and
-remain pixel-only exploratory inputs. Do not silently assign0.5µm/pixel or
-report physical areas for them. OCELOT uses the provider's distributed tissue
-image resized-axis spacing, not its cell patch or underlying slide spacing.
+objective magnification. The 80 WSSS4LUAD/RINGS additions remain historical
+pixel-only exploratory inputs; none enters the calibrated cycle11 scope.
+Do not assign them 0.5µm/pixel or report physical areas. Histo-Seg's 40 acquired
+fields also remain outside inference while MPP is unresolved. OCELOT uses the
+provider's distributed tissue-image resized-axis spacing, not its cell patch
+or underlying slide spacing. Each current input records native/working axes,
+physical field size, actual resize and any upscaling. A 224-pixel Virchow2
+window spans approximately 112,224,448µm at the three target scales
+0.5,1,2µm/pixel; rounding and real complete-window counts are recorded.
 
 Read each case's `class_names`, `palette` and raw-to-compact mapping rather than
 assuming red always denotes tumor or green always denotes stroma. BCSS/TIGER
@@ -138,9 +158,14 @@ meaning: for RINGS it is a valid negative mapped to a positive compact ID.
 All supported tissue, including unannotated tissue, is analyzed. Every positive
 reference counts, including classes missing from the coarse mask and tumor
 deleted by support/glass removal. Saved output0 means removed/unassigned
-background. RINGS scoring alone maps that output0 to its valid negative target;
-deleted tumor still counts as an error. Other tasks retain output0 as an error
-on positive references. White-looking tissue is not automatically ignored.
+background. Historical RINGS scoring maps that output0 to its valid negative
+target; deleted tumor still counts as an error. In the calibrated scope,
+PESO and OCELOT declare broad negative categories: only photometrically white
+prediction0 pixels map to that negative category for scoring. Non-white
+unassigned pixels remain errors, as do deleted true epithelial/cancer pixels.
+The saved masks are unchanged. This is our task adapter, not a provider metric.
+Other tasks retain output0 as an error on positive references. White-looking
+tissue is not automatically ignored. A broad negative is not a stroma annotation.
 
 In the historical349-image inventory, thirty inputs have exactly constant converted RGB:11 WSSS4LUAD and19 RINGS.
 Three WSSS inputs contain extra coarse labels outside eligible tile summaries.
@@ -155,7 +180,10 @@ Accuracy is equal-per-image native macro IoU. Primary selection utility is
 per image before averaging. Raw accuracy, elapsed time and penalty remain
 separate. Shared encoder preparation is excluded from Bora runtime and must
 be reported separately. Physical and pixel-based small-region statistics are
-separate. Use original149 matched-cohort scores for cross-expansion comparisons.
+separate. Compare methods on the same current cohort and scoring policy.
+Cycle11 checks unchanged native parent masks for269 shared fields; scores
+retain the earlier ontology on229, while40 OCELOT cases are prospectively
+rescored. A new cohort mean or changed scoring convention is not an algorithm gain.
 
 These images are repeatedly reused development data. TIGER source-group reuse,
 unverified RINGS patient identity and reused provider splits prevent claiming
@@ -166,10 +194,13 @@ subset. Do not treat source groups as automatically independent patients.
 ## Result files and workflow
 
 `experiments/bora_cycles` contains candidate registries, mathematical manifests,
-implementations, tests, run/review tools and execution reports. Cycle9 is
-signed: read `CYCLE_NINE_REVIEW.md` and `CYCLE_NINE_SELECTION.json`. For active
-cycle10, read `CYCLE_TEN_PROPOSAL.md`, `ten_manifest.py`, `cycle_ten.py`,
-`CYCLE_TEN_PILOT_REVIEW.json` and `CYCLE_TEN_EXECUTION.json`.
+implementations, tests, run/review tools and execution reports. Cycle10 is
+signed: read `CYCLE_TEN_REVIEW.md` and `CYCLE_TEN_SELECTION.json`. For active
+cycle11, read `eleven_manifest.py`, `cycle_eleven.py`, `eleven_appearance.py`,
+`native_eleven.py` and `CYCLE_ELEVEN_EXECUTION.json`. The descriptive
+`METHOD_CATALOGUE.json` indexes registered mechanisms and parent lineage;
+an entry proves neither execution nor mathematical novelty. Source snapshots
+in launch receipts identify the code actually used by each run.
 
 Each result root has `PROTOCOL.json`, case prediction manifests, timed method
 details and `ALL_PREDICTIONS_FROZEN.json` before fine-reference scoring starts.

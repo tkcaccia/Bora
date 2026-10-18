@@ -8,6 +8,14 @@ N08 replaces K05 as an explicit raw-accuracy/variance tradeoff despite lower
 utility and worse mean small-region recall. These are not the five highest
 utility ranks. See [CYCLE_TEN_REVIEW.md](CYCLE_TEN_REVIEW.md) for all20 decisions.
 
+Cycle11 is running on **469 frozen calibrated ROIs**. Its17-case engineering
+pilot passed and was actually inspected, but neither a pilot nor a partially
+computed run completes a cycle. The full run uses20 candidates and3 diagnostic
+controls. [CYCLE_ELEVEN_EXECUTION.json](CYCLE_ELEVEN_EXECUTION.json) records
+source/input hashes; the results-base `CURRENT_RUN.json` identifies live state.
+The completed selected-five viewer still represents cycle10's historical349
+images until the next full review and signed selection exist.
+
 Cycle ten has computed, scored, rendered and audited the same 349 frozen ROIs after its 13-image pilot,
 357 checks and actual inspection of all pilot overviews plus three native
 crops. Its prospective mathematics are in
@@ -29,7 +37,8 @@ viewer also shows this policy as a labelled posthoc comparison for cycles1–4,
 without changing their signed selections. See [CYCLE_PROGRESS.md](CYCLE_PROGRESS.md).
 
 The requested endpoint is **twenty completed cycles**, each testing twenty
-algorithms on all frozen ROIs: 149 in cycles 1–7 and 349 from cycle 8 onward.
+algorithms on all frozen ROIs:149 in cycles1–7,349 in cycles8–10, and469
+calibrated ROIs in cycle11's prospective scope.
 A pilot or a completed prediction job is not
 a completed cycle. Each cycle must be scored, rendered and actually inspected
 before five survivors are selected. Subsequent cycles retain those five and
@@ -47,18 +56,31 @@ compiled kernels; the other candidates can use compiled class scoring.
 
 ## Input and resolution policy
 
-The active input root is the immutable
-`/mnt/sata_ssd/Bora-benchmark/results/bora-expanded-349-inputs-2026-10-18-v1`.
-It retains all 149 historical cases and adds 40 each BCSS, TIGER, WSSS4LUAD,
-RINGS and OCELOT. All five RGB conversions and encoder arrays are frozen.
-Every cycle uses fixed equal #9+#19 RGB for its primary comparison. See the
-[benchmark navigation guide](../bora_extension/BENCHMARK_NAVIGATION.md).
+The active cycle11 input root is the immutable
+`/mnt/sata_ssd/Bora-benchmark/results/bora-calibrated-tissues-inputs-2026-10-18-v1`.
+Its PLAN SHA256 is
+`3b23ea5d0f6d6e16679d6a2cfe216ea3934731ba06e0b902ca4204ee96ac3a8d`.
+It contains132 BCSS,80 TIGER,40 OCELOT,10 BEETLE,7 CAMELYON16 fields,
+and40 each IGNITE,PESO,GCSS,PUMA,GleasonXAI:469 ROIs in total.
+All five fixed RGB conversions are frozen:09,10,15,19,equal09+19.
+The primary comparison uses equal09+19 without changing its formula.
+See the [benchmark navigation guide](../bora_extension/BENCHMARK_NAVIGATION.md).
 
-Most calibrated methods analyse at 1 µm/pixel; historical C19 evaluates an
-adaptive classifier at 0.5 µm/pixel. Actual per-axis spacing is saved. The 80
-WSSS/RINGS additions lack verified MPP and remain pixel-only, with separate
-pixel-area scores. Numerical coordinate units are not invented physical
-spacing. Projection back to native pixels adds no optical information.
+Eligibility requires at least two coarse groups and two observed feature-selection
+groups,16 usable coarse tiles, and real4×4 base encoder-field capacity. Physical
+calibration also requires a native field of at least448µm on each axis.
+Per-axis native and working µm/pixel, actual resize dimensions and upscaling
+are recorded. Encoder windows are224 pixels at approximately0.5,1,2µm/pixel:
+112,224,448µm fields, with actual rounded dimensions recorded. Most Bora
+variants then analyse at1µm/pixel. Interpolation supplies no additional optical
+detail, and objective magnification alone does not establish pixel spacing.
+The physical and eligibility policies are versioned separately.
+
+The80 historical WSSS/RINGS fields and40 acquired Histo-Seg fields are outside
+the prospective benchmark because of size/group or unresolved-calibration
+decisions. ORCA's32 eligible fields have not met the40-field acquisition quota.
+They remain documented acquisition/diagnostic material, outside cycle11's
+quality and runtime denominators. Historical349-image scores remain unchanged.
 
 Fine reference masks are unavailable to the prediction functions. The runner
 hashes all predictions before starting any scoring. Repeated selection uses
@@ -83,7 +105,11 @@ semantic identity**. They do not establish new named biological classes.
 The scorer includes every reference class, even if absent from coarse labels,
 and every connected reference component. It reports completely missed regions,
 correct-coverage recall at 50%, and physical area strata <=400, 400–2500 and
->2500 um². Annotation-0 pixels are always unscored. Empty strata are null.
+>2500 um². Reference0 pixels are always unscored. Empty strata are null.
+The calibrated scope's broad-negative task adapter maps only photometrically
+white prediction0 pixels to a declared negative category for scoring; non-white
+unassigned pixels remain errors. OCELOT uses this prospective rule without
+altering historical scores or saved masks. Non-cancer is not a stroma annotation.
 
 ## Execution
 
@@ -104,6 +130,8 @@ threads each. Each candidate's time includes its own preparation, inference,
 background policy and native projection. Shared disk loading, scoring,
 compression and rendering are excluded. Novelty diagnostics have separate
 timings. Do not give later algorithms free unrecorded preprocessing.
+Virchow2 encoding and fixed RGB conversion are cached inputs, timed separately.
+Reported candidate time is Bora processing time, not end-to-end pipeline latency.
 
     PYTHONPATH=src:. OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 \
       nice -n 12 python -m experiments.bora_cycles.run \
@@ -116,7 +144,7 @@ cycle or select survivors. The pilot.sh script checks one case from each of
 the four dataset groups. Changed source/protocol requires a fresh output
 folder; executed source and compiled library hashes are archived.
 
-The runner implements cycles one through ten. The following are historical
+The runner implements cycles one through eleven. The following are historical
 checkpoints. Cycle one has 149 actual contact
 sheet reviews, additional native crop reviews, and a signed five-survivor
 selection. Cycle two retains C18/C17/C01/C03/C15 unchanged and implements
@@ -158,7 +186,8 @@ numerical and visual evidence remains available, including failures.
 
 At the user's updated request, open `selected.html` after every completed
 cycle. This viewer shows only the five signed survivors, their aggregate and
-per-image scores, and all 149 original/reference/coarse/converted input views.
+per-image scores, and every case's original/reference/coarse/converted views
+within that cycle's signed scope.
 Masks overlay the H&E with adjustable opacity. Selection publishes it from
 signed evidence without changing predictions or scores, and records its
 hash and displayed methods in VIEWER_READY.json. The all-candidate gallery

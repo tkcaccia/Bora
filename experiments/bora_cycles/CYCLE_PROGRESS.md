@@ -1,14 +1,23 @@
 # Accuracy, speed and the new one-second penalty
 
+Cycle11 is running on469 frozen calibrated ROIs:269 previously qualified
+fields plus40 each IGNITE,PESO,GCSS,PUMA,GleasonXAI. Its17-case engineering
+pilot was actually reviewed; the full run still requires all469 overview
+reviews and25 planned native crops before selection. Ten cycles are signed.
+Read CYCLE_ELEVEN_EXECUTION.json and the results-base CURRENT_RUN.json for
+execution hashes and live state; a running experiment is not a completed cycle.
+
 Prospective user steering after cycle10 excludes single-group images and
-fields with too few real tiles. The new score-blind audit qualifies299/349
-inputs and keeps50 exclusions outside the future benchmark. Its frozen rule
-requires two input/feature-selection groups, a real4×4 encoder-field capacity
-and16 usable coarse tiles. Cycle11's scope gate rejects an unaudited349-image
-source. The remaining WSSS nominal2.5× context mismatch is still under
-investigation before a new inference run. See
-`../bora_extension/ELIGIBILITY_AND_SAMPLING.md`; no earlier signed score or
-selection changed and no new cycle is claimed complete.
+fields with too few real tiles. The score-blind size/group audit qualifies299/349
+historical inputs; physical calibration subsequently admits269. Its frozen rule
+requires two input and observed feature-selection groups, real4×4 base encoder-field
+capacity,16 usable coarse tiles, verified per-axis pixel spacing, and a native
+field of at least448µm per axis. The remaining9 WSSS and21 RINGS fields have
+unresolved MPP. Together with the50 size/group exclusions and40 uncalibrated
+Histo-Seg acquisitions they remain outside the new benchmark denominator.
+Do not use arbitrary pixel rescaling or objective magnification to qualify them.
+See `../bora_extension/ELIGIBILITY_AND_SAMPLING.md` and the two versioned
+eligibility/calibration policies. No earlier signed score or selection changed.
 
 Ten of twenty cycles are complete: cycles1–7 use149 repeatedly reused development
 ROIs and cycles8–10 use349. The user requests penalizing algorithms that take longer than one
