@@ -5,7 +5,6 @@ from pathlib import Path
 
 from .audit_cycle import audit
 from .benchmark_scope import requires_parent_parity,validate_scope
-from .eleven_manifest import CHILDREN
 from .input_limits import audit_inputs
 from .numerical_nine import summarize
 from .paired_eight import SCORE_CORE,delta_summary
@@ -17,8 +16,9 @@ from .small_region_atlas import export
 
 def paired(result,previous,audited):
     protocol=result['protocol'];validate_scope(protocol,pilot=protocol['pilot'])
-    if protocol['cycle']!=11 or protocol['benchmark_scope']['version']!='calibrated-tissues-v1':
-        raise ValueError('This prospective comparison is specific to calibrated cycle11')
+    cycle=protocol['cycle']
+    if cycle<11 or protocol['benchmark_scope']['version']!='calibrated-tissues-v1':
+        raise ValueError('A prospective calibrated tissue cycle is required')
     if audited['cases']!=len(protocol['cases']) or audited['methods']!=len(protocol['methods']):
         raise ValueError('Integrity audit scope differs from paired comparison')
     old={r['case']:r for r in previous['cases']};same=changed=0;changes=[]
@@ -30,7 +30,7 @@ def paired(result,previous,audited):
             a,b=row['methods'][method],old[case]['methods'][method]
             if a['status']!=b['status'] or a['status']!='ok':raise ValueError('Matched parent failed')
             different=[k for k in SCORE_CORE if a['score'][k]!=b['score'][k]]
-            if row['dataset']=='ocelot':
+            if cycle==11 and row['dataset']=='ocelot':
                 changed+=1
                 changes.append(dict(case=case,method=method,changed_fields=different,
                     previous_iou=b['score']['macro_iou'],current_iou=a['score']['macro_iou']))
@@ -42,18 +42,22 @@ def paired(result,previous,audited):
     groups=dict(all_calibrated=rows,previous_cohort=[r for r in rows if r['historical_subset']],
         new_tissue_datasets=[r for r in rows if not r['historical_subset']])
     children={}
-    for spec in CHILDREN:
+    specs=protocol['lineage']['children']
+    if len(specs)!=15 or {r['id'] for r in specs}!=set(protocol['roster'])-set(parents):
+        raise ValueError('Frozen child lineage differs from this twenty-candidate roster')
+    for spec in specs:
         child,parent=spec['id'],spec['parent']
         children[child]=dict(parent=parent,title=spec['title'],
             cohorts={k:delta_summary(v,child,parent,policy) for k,v in groups.items()},
             datasets={d:delta_summary([r for r in rows if r['dataset']==d],child,parent,policy)
                 for d in sorted({r['dataset'] for r in rows})})
-    return dict(cycle=11,pilot=protocol['pilot'],cases=len(rows),children=children,
+    return dict(cycle=cycle,pilot=protocol['pilot'],cases=len(rows),children=children,
         parent_native_parity_comparisons=audited['unchanged_survivor_comparisons'],
         unchanged_ontology_parent_score_comparisons=same,
         prospective_ocelot_rescored_comparisons=changed,ocelot_score_changes=changes,
         interpretation='Current-cohort paired development differences, not independent validation or statistical significance. '
-            'OCELOT is prospectively rescored with white-only broad negatives. No historical mean change or cross-cycle timing difference is an algorithm gain.',
+            +('Cycle11 prospectively rescored OCELOT white-only broad negatives. ' if cycle==11 else 'Every retained-parent accuracy core must exactly match the preceding calibrated cycle. ')
+            +'No historical mean change or cross-cycle timing difference is an algorithm gain.',
         predictions_modified=False,scores_modified=False,visual_reviews_created=False,survivors_selected=False)
 
 
@@ -65,8 +69,8 @@ def main():
     parser.add_argument('--pilot',action='store_true')
     args=parser.parse_args();root=args.root
     protocol=json.loads((root/'PROTOCOL.json').read_text());validate_scope(protocol,pilot=args.pilot)
-    if protocol['pilot']!=args.pilot or protocol['cycle']!=11 or (root/'SELECTION.json').exists():
-        raise ValueError('Unselected cycle11 with matching explicit pilot status required')
+    if protocol['pilot']!=args.pilot or protocol['cycle']<11 or (root/'SELECTION.json').exists():
+        raise ValueError('Unselected calibrated cycle with matching explicit pilot status required')
     state=json.loads((root/'STAGE.json').read_text())
     if state['state']!=('pilot_complete' if args.pilot else 'awaiting_visual_review') or state['cases']!=len(protocol['cases']):
         raise ValueError('Wait for the whole prediction, score and render process')
@@ -86,12 +90,12 @@ def main():
     if digest(args.previous/'RESULTS.json')!=selection['results_sha256']:raise ValueError('Signed parent scores changed')
     save(root/names[3],paired(result,old,checked));save(root/names[4],summarize(root))
     names.append('diagnostics-v2/MANIFEST.json')
-    save(root/'POSTHOC_COMPLETE.json',dict(cycle=11,pilot=args.pilot,cases=len(protocol['cases']),
+    save(root/'POSTHOC_COMPLETE.json',dict(cycle=protocol['cycle'],pilot=args.pilot,cases=len(protocol['cases']),
         native_masks=checked['native_masks'],report_sha256={n:digest(root/n) for n in names},
         reporting_source_sha256={p.name:digest(p) for p in Path(__file__).parent.glob('*.py')},
         primary_protocol_sha256=digest(root/'PROTOCOL.json'),primary_results_sha256=digest(root/'RESULTS.json'),
         actual_reviews_required=len(protocol['cases']),automated_audits_are_not_visual_review=True,
-        visual_reviews_created=False,survivors_selected=False,completed_cycles=10,complete_goal=False))
+        visual_reviews_created=False,survivors_selected=False,completed_cycles=protocol['cycle']-1,complete_goal=False))
     print(json.dumps(dict(posthoc='complete',pilot=args.pilot,cases=len(protocol['cases']),awaiting_actual_visual_review=True)),flush=True)
 
 

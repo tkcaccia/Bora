@@ -1,6 +1,6 @@
 {
   "cycle": 12,
-  "status": "implemented_targeted_tests_passed_pilot_pending",
+  "status": "pilot_prediction_score_render_complete_audit_pending",
   "completed_cycles": 11,
   "complete_goal": false,
   "parents": [
@@ -61,9 +61,23 @@
   ],
   "nonwhite_removal_only": "Q01; annotated removed pixels remain scored",
   "pilot_cases": 24,
-  "pilot_completed": false,
+  "pilot_completed": true,
   "full_run_launched": false,
   "new_output_storage": "/home/chiamaka/Bora-benchmark-compute (NVMe)",
   "microscopy_calibration_and_rgb_unchanged": true,
-  "timestamp_utc": "2026-10-18T13:00:33.302802+00:00"
+  "timestamp_utc": "2026-10-18T13:00:33.302802+00:00",
+  "prediction_commit": "be54524",
+  "source_archive_sha256": "4ad5ae2d6949b33a0c87993a583d88a0aa20df82c4cfa33d97e3984b4da711b8",
+  "code_snapshot": "/home/chiamaka/Bora-benchmark-compute/cycle12-code-be54524",
+  "pilot_pid": 3069906,
+  "pilot_start_ticks": "457183554",
+  "pilot_root": "/mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-12-pilot-v1",
+  "pilot_physical_root": "/home/chiamaka/Bora-benchmark-compute/cycle12-pilot-be54524-v1",
+  "pilot_log": "/home/chiamaka/Bora-benchmark-compute/cycle12-preflight-be54524-v1.log",
+  "archived_preflight_tests_passed": 111,
+  "pilot_terminal_normal": true,
+  "pilot_prediction_cases": 24,
+  "pilot_scored_cases": 24,
+  "pilot_rendered_cases": 24,
+  "pilot_actual_visual_reviews": 0
 }

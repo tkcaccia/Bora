@@ -9,7 +9,9 @@ CHECKS = ('linear_system_max_residual', 'kkt_max_residual', 'equality_max_residu
           'primal_residual', 'dual_residual', 'lagrangian_projected_residual',
           'primal_projected_residual','dual_fixed_point_residual','projected_stationarity',
           'order_constraint_violation','projection_change','log_variance_system_residual',
-          'simplex_sum_residual')
+          'simplex_sum_residual','mean_equation_residual','scale_equation_residual',
+          'variance_equation_residual','negative_scale_residual','positive_scale_residual',
+          'sandwich_probe_equation_residual','constant_reproduction_residual','dual_projected_residual')
 
 
 def nested(value):
