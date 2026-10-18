@@ -28,19 +28,51 @@ optical detail or establish an acquired microscope magnification.
 
 ## Acquired and audited fields
 
-The first acquisition audit contains160 physically calibrated fields:40 each
-from IGNITE, PESO, GCSS and GleasonXAI. Original file hashes, paired native and
+The first acquisition audit contains200 physically calibrated fields:40 each
+from IGNITE, PESO, GCSS, PUMA and GleasonXAI. Original file hashes, paired native and
 working grids, all fine classes, observed coarse groups and physical window
 sizes were checked. This is an acquisition inventory; a combined inference
 cohort and new segmentation scores have not yet been frozen.
 
 The local review page is
-[the acquisition viewer](http://127.0.0.1:64889/bora-tissue-acquisition-2026-10-18-v1/index.html).
+[the acquisition viewer](http://127.0.0.1:64889/bora-tissue-acquisition-2026-10-18-v4/index.html).
 Each original/reference/coarse preview has a100µm scale bar. The viewer states
 the actual native/working axes and any interpolation. Two aligned native
 image/mask examples per completed dataset are copied under
-`benchmark/examples/tissue-expansion-2026-10-18-v1/`, with individual JSON
+`benchmark/examples/tissue-expansion-2026-10-18-v2/`, with individual JSON
 provenance and separately named working grids. Source data remain outside Git.
+
+## Calibration and acquisition status
+
+The corrected PUMA, Histo-Seg and ORCA roots are versioned separately. The
+first preparation commands accidentally supplied a dataset suffix twice;
+completed directories were renamed to `bora-tissue-expansion-inputs-2026-10-18-v6/`
+without changing case bytes or plan hashes. The remote correction receipt is
+`results/bora-tissue-path-correction-2026-10-18-v1.json`. Earlier partial journals
+and viewer snapshots are preserved. Preparation now rejects a duplicated output
+suffix; supply the parent output root to the download/preparation wrapper.
+
+The audit then caught five entirely white Histo-Seg crops (four also repeated
+the first crop's pixel bytes) despite positive labels in their source masks.
+They were not used for inference. A new40-field version7 was prepared with
+explicit all-white and duplicate-native-field rejection. Exact MPP is still
+unverified, so the Histo-Seg fields remain acquisition inventory only.
+
+ORCA's available validation source cores were traced to native TCGA headers:
+actual spacings are0.2472 or0.252µm/px, not a guessed0.25 from40x. The current
+32 eligible non-overlapping fields come from9 cases/cores and do not meet the
+40-field quota. The original test masks are available, but the scanned source
+RGB download links failed; no login/quota bypass was attempted. ORCA remains
+outside the admitted benchmark until the quota can be met with genuine fields.
+Expert carcinoma contours and the provider's image-derived tissue extent are
+distinguished in its metadata.
+
+Virchow2 extraction and its independent audit are complete for the first160
+fields:480 float16 arrays, all finite, with full original-field coverage and
+frozen selected dimensions. PUMA's40-field extraction is a separate batch.
+Computed caches use Chiamaka's NVMe drive through documented links under the
+benchmark results directory; original source images remain on the SATA SSD.
+The fixed conversion formulae have not changed, and no new Bora score is claimed.
 
 ## Sources being acquired
 

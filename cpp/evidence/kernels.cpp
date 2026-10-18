@@ -10,6 +10,29 @@
 #include <omp.h>
 #endif
 
+// Sorted-edge internal-contrast segmentation; no additional size merge pass.
+extern "C" int bora_contrast_components(const int32_t* a,const int32_t* b,
+        const double* cost,int32_t* output,int n,int m,double area,double scale) {
+    if(n<1||m<0||area<=0||scale<=0)return 1;
+    std::vector<int> parent(n),size(n,1),compact(n,-1);
+    std::vector<double> internal(n,0.);
+    for(int i=0;i<n;++i)parent[i]=i;
+    auto root=[&](int v){while(parent[v]!=v){parent[v]=parent[parent[v]];v=parent[v];}return v;};
+    for(int e=0;e<m;++e){
+        if(a[e]<0||a[e]>=n||b[e]<0||b[e]>=n||!std::isfinite(cost[e])||cost[e]<0||
+           (e>0&&cost[e]<cost[e-1]))return 2;
+        int x=root(a[e]),y=root(b[e]);if(x==y)continue;
+        double threshold=std::min(internal[x]+scale/(area*size[x]),internal[y]+scale/(area*size[y]));
+        if(cost[e]<=threshold){
+            if(size[x]<size[y]||(size[x]==size[y]&&x>y))std::swap(x,y);
+            parent[y]=x;size[x]+=size[y];internal[x]=std::max(cost[e],std::max(internal[x],internal[y]));
+        }
+    }
+    int count=0;
+    for(int i=0;i<n;++i){int r=root(i);if(compact[r]<0)compact[r]=count++;output[i]=compact[r];}
+    return 0;
+}
+
 static void cheb_simplex(std::vector<double>& q, std::vector<double>& ordered) {
     ordered=q; std::sort(ordered.begin(),ordered.end(),std::greater<double>());
     double sum=0,threshold=0;

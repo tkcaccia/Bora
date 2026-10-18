@@ -4,6 +4,21 @@ import pytest
 from experiments.bora_extension.task_adapter import geometry, report_units, scoring_prediction
 
 
+@pytest.mark.parametrize('dataset,raw,positive',[('peso',1,2),('orca',127,255)])
+def test_new_negative_targets_only_forgive_removed_white_not_missing_stained_tissue(dataset,raw,positive):
+    sample=dict(dataset=dataset,valid_negative_raw_label=raw,raw_to_compact={str(raw):1,str(positive):2})
+    saved=np.array([[0,0,2]],np.uint8);white=np.array([[True,False,True]])
+    scored,policy=scoring_prediction(sample,saved,zero_is_removed_background=True,white=white)
+    np.testing.assert_array_equal(scored,[[1,0,2]])
+    np.testing.assert_array_equal(saved,[[0,0,2]])
+    assert policy['converted_pixels']==1 and not policy['saved_prediction_modified']
+    # If the white deleted pixel is positive tumour/epithelium, negative1
+    # still disagrees with positive2; it is not removed from evaluation.
+    assert scored[0,0]!=2
+    with pytest.raises(ValueError,match='RGB-only white'):
+        scoring_prediction(sample,saved,zero_is_removed_background=True)
+
+
 def test_unknown_calibration_requires_explicit_pixel_only_contract():
     with pytest.raises(ValueError, match="explicitly"):
         geometry(dict(working_mpp_xy=None))

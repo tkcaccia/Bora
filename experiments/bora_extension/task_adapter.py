@@ -44,7 +44,7 @@ def report_units(value, units):
     return value
 
 
-def scoring_prediction(sample, prediction, *, zero_is_removed_background):
+def scoring_prediction(sample, prediction, *, zero_is_removed_background, white=None):
     """RINGS raw0 is a valid negative target, including glass/lumina.
 
     Final saved masks still have background zero. For RINGS scoring only, map
@@ -52,6 +52,20 @@ def scoring_prediction(sample, prediction, *, zero_is_removed_background):
     while correct glass exclusion is not called an unassigned tissue error.
     All other datasets retain zero as an incorrect prediction on positive GT.
     """
+    targets={'peso':(1,'non-epithelial target'),'orca':(127,'non-carcinoma tissue target')}
+    if sample['dataset'] in targets:
+        raw,name=targets[sample['dataset']]
+        mapping={str(k):int(v) for k,v in sample['raw_to_compact'].items()}
+        if sample.get('valid_negative_raw_label')!=raw or str(raw) not in mapping:
+            raise ValueError('Binary target lacks the declared negative-class contract')
+        if not zero_is_removed_background or white is None or np.asarray(white).shape!=prediction.shape:
+            raise ValueError('Binary background scoring requires the RGB-only white mask and support invariant')
+        result=np.array(prediction,copy=True);selected=(result==0)&np.asarray(white,bool)
+        result[selected]=mapping[str(raw)]
+        return result,dict(prediction_modified_for_scoring=True,saved_prediction_modified=False,
+            scoring_only_zero_to_class=mapping[str(raw)],converted_pixels=int(selected.sum()),
+            task=name,conversion_scope='Only photometrically white saved-zero pixels; non-white unassigned pixels remain errors',
+            positive_tumour_or_epithelium_deleted_remains_false_negative=True)
     if sample["dataset"] != "rings-tumor":
         return prediction, dict(prediction_modified_for_scoring=False,
             policy="All positive reference pixels scored; prediction zero remains incorrect")

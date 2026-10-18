@@ -1,9 +1,35 @@
 import numpy as np
+import pytest
 
-from experiments.bora_extension.tissue_fields import choose_field
+from experiments.bora_extension.tissue_fields import choose_field,FieldWriter
 
 
 CATALOG=dict(labels={1:'other tissue',2:'tumor',3:'rare tissue'},ignore=[0],task='fixture')
+
+
+def test_output_root_cannot_silently_nest_a_second_dataset_directory(tmp_path):
+    with pytest.raises(ValueError,match='dataset subfolder'):
+        FieldWriter(tmp_path,tmp_path/'puma','puma',CATALOG)
+    assert not (tmp_path/'puma').exists()
+    writer=FieldWriter(tmp_path,tmp_path/'new-output','puma',CATALOG)
+    assert writer.root==tmp_path/'new-output'/'puma'
+
+
+def test_two_label_mask_cannot_qualify_an_entirely_white_image():
+    raw=np.ones((1280,1280),np.uint8);raw[:,640:]=2
+    selected,reason=choose_field(np.full((1280,1280,3),255,np.uint8),raw,CATALOG,None)
+    assert selected is None and reason['window_failure_counts']['no_visible_nonwhite_tissue']>0
+
+
+def test_same_native_pixels_cannot_fill_the_quota_under_two_source_names(tmp_path):
+    raw=np.ones((896,896),np.uint8);raw[:,450:]=2
+    rgb=np.full((896,896,3),[180,100,150],np.uint8)
+    catalog=dict(CATALOG,annotation_provenance='Synthetic contract fixture, not research data')
+    writer=FieldWriter(tmp_path,tmp_path/'output','fixture',catalog,quota=2)
+    assert writer.consider(rgb,raw,dict(id='first',group_id='a'),[.5,.5])
+    assert not writer.consider(rgb,raw,dict(id='second',group_id='b'),[.5,.5])
+    assert len(writer.rows)==1 and writer.excluded[-1]['reason']=='duplicate_native_field'
+    assert not (writer.root/'cases/fixture_02').exists()
 
 
 def test_unknown_mpp_small_image_cannot_be_resized_to_qualify():

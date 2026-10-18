@@ -107,6 +107,7 @@ def audit(source, root, previous=None, executed_code=None):
             constant_expected[~support] = 0
         allowed = set(np.unique(coarse)) | {0}
         mask_paths = {}
+        owned_supports={};native_white=None
         for method in methods:
             saved, executed = row["methods"][method], prediction["methods"][method]
             if any(saved[field] != value for field, value in executed.items()):
@@ -120,9 +121,24 @@ def audit(source, root, previous=None, executed_code=None):
             mask = tifffile.imread(path)
             if mask.shape != tuple(sample["native_shape_yx"]) or mask.shape != support.shape:
                 raise ValueError("Native geometry changed: "+case+"/"+method)
-            if not set(np.unique(mask)) <= allowed or np.any(mask[~support] != 0):
+            from .expanded_metrics import owns_native_support
+            actual_support=support
+            if owns_native_support(method,saved['details']):
+                if method+'/support.native.tif' not in prediction['files_sha256']:
+                    raise ValueError('Owned support is absent from frozen predictions')
+                actual_support=tifffile.imread(out/method/'support.native.tif')>0
+                if native_white is None:
+                    from .diagnostics import white_regions
+                    native_white=white_regions(np.array(Image.open(src/'original.native.png').convert('RGB')))[0]
+                if actual_support.shape!=support.shape or np.any((~native_white)&~actual_support):
+                    raise ValueError('Native support changed geometry or removed non-white tissue')
+                if saved['details']['native_support']['saved_support_sha256']!=prediction['files_sha256'][method+'/support.native.tif']:
+                    raise ValueError('Reported native support hash differs from frozen raster')
+                owned_supports[method]=actual_support
+                counts['owned_native_support_contracts']+=1
+            if not set(np.unique(mask)) <= allowed or np.any(mask[~actual_support] != 0):
                 raise ValueError("Class IDs/background clipping violated: "+case+"/"+method)
-            if method not in ("C20", "D12", "F03", "G03", "H03", "J03", "L03", "M10", "M11", "M12", "N10", "N11", "N12") and np.any(mask[support] == 0):
+            if method not in ("C20", "D12", "F03", "G03", "H03", "J03", "L03", "M10", "M11", "M12", "N10", "N11", "N12") and np.any(mask[actual_support] == 0):
                 raise ValueError("Unexpected unassigned tissue: "+case+"/"+method)
             with Image.open(out/method/"mask.png") as display:
                 if display.mode != "P" or not np.array_equal(np.asarray(display), mask):
@@ -158,6 +174,16 @@ def audit(source, root, previous=None, executed_code=None):
                 if not detail["unchanged_survivor_native_parity"] or not np.array_equal(mask, tifffile.imread(old)):
                     raise ValueError("Unchanged survivor prediction differs: "+case+"/"+method)
                 counts["unchanged_survivor_comparisons"] += 1
+        if 'J01' in mask_paths:
+            parent=tifffile.imread(mask_paths['J01'])
+            for child_id,own in owned_supports.items():
+                child=tifffile.imread(mask_paths[child_id]);overlap=(parent>0)&own
+                if not np.array_equal(child[overlap],parent[overlap]):
+                    raise ValueError('Support-only hypothesis changed parent tissue labels')
+                glass.append(dict(case=case,child=child_id,parent='J01',own_native_support=True,
+                    restored_outside_common_support_pixels=int((own&~support).sum()),
+                    removed_inside_common_support_pixels=int((support&~own).sum()),
+                    overlapping_assigned_labels_unchanged=True))
         for child_id, parent_id in (("F03", "D10"), ("G03", "F01"), ("H03", "F01"), ("J03", "H02"), ("L03", "J01"), ("M10", "J01"), ("M11", "J01"), ("M12", "J01"), ("N10", "J01"), ("N11", "J01"), ("N12", "J01")):
             if child_id not in mask_paths or parent_id not in mask_paths:
                 continue

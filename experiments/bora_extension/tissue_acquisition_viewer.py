@@ -19,7 +19,7 @@ from .eligibility import inspect,POLICY_PATH
 from .tissue_fields import sha
 from .calibration import evaluate as physical_calibration,POLICY_PATH as CALIBRATION_POLICY_PATH
 
-SOURCES={'ignite':'v1','peso':'v2','gcss':'v3','orca':'v3','puma':'v2','histoseg':'v4','gleasonxai':'v4'}
+SOURCES={'ignite':'v1','peso':'v2','gcss':'v3','orca':'v6','puma':'v6','histoseg':'v7','gleasonxai':'v4'}
 
 
 def preview(folder,row,out):
@@ -44,6 +44,8 @@ def audit(folder,row,policy):
         if sha(folder/name)!=expected:raise ValueError('Acquired file hash changed: '+str(folder/name))
     native=np.array(Image.open(folder/'original.native.png'))
     work=np.array(Image.open(folder/'original.png'))
+    if np.all((native.min(axis=2)>=230)&(np.ptp(native.astype(np.int16),axis=2)<=20)):
+        raise ValueError('No visible non-white tissue in acquired field')
     ref=tifffile.imread(folder/'reference.native.tif');cm=tifffile.imread(folder/'coarse.tif')
     if native.shape!=(*ref.shape,3) or list(work.shape[:2])!=row['working_shape_yx'] or cm.shape!=work.shape[:2]:raise ValueError('Native/working geometry changed')
     if min(ref.shape)<896 or min(work.shape[:2])<896:raise ValueError('Synthetic or insufficient real source capacity')

@@ -30,7 +30,8 @@ from .registry import (candidates, roster, CHILDREN_TWO, CYCLE_TWO_SURVIVORS,
                        CHILDREN_SEVEN, CYCLE_SEVEN_SURVIVORS,
                        CHILDREN_EIGHT, CYCLE_EIGHT_SURVIVORS,
                        CHILDREN_NINE, CYCLE_NINE_SURVIVORS,
-                       CHILDREN_TEN, CYCLE_TEN_SURVIVORS)
+                       CHILDREN_TEN, CYCLE_TEN_SURVIVORS,
+                       CHILDREN_ELEVEN, CYCLE_ELEVEN_SURVIVORS)
 from .diagnostics import novelty, white_regions, mask_diagnostics
 from .runtime_policy import active_policy, runtime_ranking
 from .benchmark_scope import load_scope, validate_scope, requires_parent_parity
@@ -112,6 +113,9 @@ def freeze_case(args):
     support = tifffile.imread(src/"tissue.working.tif") > 0
     native_support = tifffile.imread(src/"tissue.native.tif") > 0
     protocol = json.loads((root/"PROTOCOL.json").read_text())
+    from .eleven_manifest import SUPPORT_METHODS
+    owned_keys=set(keys)&SUPPORT_METHODS if protocol.get('cycle',0)>=11 else set()
+    native_he=(np.array(Image.open(src/'original.native.png').convert('RGB')) if owned_keys else None)
     lineage = protocol.get("lineage")
     coordinates = geometry(sample)
     spacing = coordinates["algorithm_spacing_xy"]
@@ -125,7 +129,12 @@ def freeze_case(args):
                 previous = None
                 for repeat in range(repeats):
                     started = time.perf_counter()
-                    if constant_input:
+                    candidate_support=native_support
+                    if key in owned_keys:
+                        from .cycle_eleven import predict_native
+                        native,candidate_support,details=predict_native(key,rgb,coarse,support,spacing,
+                            sample['palette'],he,native_he,geometry(sample,native=True)['algorithm_spacing_xy'])
+                    elif constant_input:
                         from .expanded_prediction import constant_evidence_fallback
                         analysis, details = constant_evidence_fallback(
                             key, rgb, coarse, completed, support, spacing, he)
@@ -138,16 +147,17 @@ def freeze_case(args):
                         analysis, details = predict(
                             key, rgb, coarse, support, spacing,
                             palette=sample["palette"], he=he)
-                    native = resize(analysis, sample["native_shape_yx"], True)
-                    native[~native_support] = 0
+                    if key not in owned_keys:
+                        native = resize(analysis, sample["native_shape_yx"], True)
+                        native[~native_support] = 0
                     seconds.append(time.perf_counter()-started)
                     if previous is not None and not np.array_equal(previous, native):
                         raise RuntimeError("Non-deterministic candidate")
                     previous = native
                 assert native.shape == tuple(sample["native_shape_yx"])
                 if key not in ("C20", "D12", "F03", "G03", "H03", "J03", "L03", "M10", "M11", "M12", "N10", "N11", "N12"):
-                    assert np.all(native[native_support] > 0)
-                assert np.all(native[~native_support] == 0)
+                    assert np.all(native[candidate_support] > 0)
+                assert np.all(native[~candidate_support] == 0)
                 assert set(np.unique(native)) <= set(np.unique(coarse)) | {0}
                 if lineage and key in lineage["unchanged_survivors"] and requires_parent_parity(protocol, sample["case"]):
                     old_path = Path(lineage["previous"])/"cases"/sample["case"]/key/"native.tif"
@@ -160,6 +170,10 @@ def freeze_case(args):
                     details["coordinate_geometry"] = coordinates
                 tifffile.imwrite(target/"native.tif", native, compression="deflate")
                 files[key+"/native.tif"] = digest(target/"native.tif")
+                if key in owned_keys:
+                    tifffile.imwrite(target/'support.native.tif',candidate_support.astype(np.uint8),compression='deflate')
+                    files[key+'/support.native.tif']=digest(target/'support.native.tif')
+                    details['native_support']['saved_support_sha256']=files[key+'/support.native.tif']
                 records[key] = dict(
                     status="ok", seconds=seconds, median_seconds=float(np.median(seconds)),
                     details=details)

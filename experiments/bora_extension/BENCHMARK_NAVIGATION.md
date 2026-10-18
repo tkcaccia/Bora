@@ -1,26 +1,54 @@
 # Expanded Bora benchmark: navigation and interpretation
 
-**Current prospective benchmark:299 images.** The original349-image inventory
-below is preserved for cycles8–10. The user's new group/tile rules exclude30
-single-usable-group images and31 undersized fields, with11 overlapping:
-50 separate diagnostics. Accepted counts are132 BCSS,80 TIGER,9 WSSS,21 RINGS,
-40 OCELOT,10 BEETLE and7 CAMELYON16. Start future runs from
-`results/bora-qualified-inputs-2026-10-18-v1/PLAN.json`, not the unfiltered349
-plan. See [eligibility and sampling](ELIGIBILITY_AND_SAMPLING.md); the remaining
-WSSS context-scale investigation must finish before cycle11 inference.
+**Cycle11's combined cohort is not frozen yet.** Ten of20 improvement cycles
+are signed; the five cycle10 survivors are J01,M04,N08,N10,C17. The latest
+source of execution state is `CURRENT_RUN.json`, not an older inventory count.
 
-The development corpus contains **349 ROI images**:132 BCSS,80 TIGER,40
-WSSS4LUAD,40 RINGS tumor,40 OCELOT,10 BEETLE and7 CAMELYON16 windows. It retains
-all149 original images and adds200,40 each from BCSS,TIGER,WSSS4LUAD,RINGS and
-OCELOT. A source dataset may contain full WSIs; none of these349 analysis
-images is a full WSI. This is a selected benchmark, not the complete contents
-of every downloaded dataset.
+The original349-image inventory is historical for cycles8–10. The size/group
+gate admitted299; physical calibration subsequently clears269 of those. The
+remaining9 WSSS4LUAD and21 RINGS fields have unresolved MPP and cannot enter
+new inference. Do not launch from the unfiltered349 or the old299 plan.
 
-Ten of the requested20 improvement cycles are signed. Cycle10 completed
-all349 overview reviews and15 native crops; its selected five are
-J01,M04,N08,N10,C17. No new segmentation has run for the299-image scope yet.
-Check `CURRENT_RUN.json`, execution reports and signed selection files before
-launching another job.
+The corrected new acquisition audit has200 calibrated fields:40 each from
+IGNITE, PESO, GCSS, PUMA and GleasonXAI. The five-dataset review snapshot is
+`results/bora-tissue-acquisition-2026-10-18-v4`. A later snapshot can include
+Histo-Seg40 as acquisition inventory only: its MPP is unknown. ORCA currently
+has32 calibrated disjoint fields from9 cases/cores, below the40-field quota.
+These are ROI development images, not full-WSI or independent-patient tests.
+
+Additional source roots are versioned per dataset:
+
+| Dataset | Relative source-field root under `results/` |
+| --- | --- |
+| IGNITE | `bora-tissue-expansion-inputs-2026-10-18-v1/ignite` |
+| PESO | `bora-tissue-expansion-inputs-2026-10-18-v2/peso` |
+| GCSS | `bora-tissue-expansion-inputs-2026-10-18-v3/gcss` |
+| GleasonXAI | `bora-tissue-expansion-inputs-2026-10-18-v4/gleasonxai` |
+| PUMA | `bora-tissue-expansion-inputs-2026-10-18-v6/puma` |
+| ORCA, quota not met | `bora-tissue-expansion-inputs-2026-10-18-v6/orca` |
+| Histo-Seg, calibration pending | `bora-tissue-expansion-inputs-2026-10-18-v7/histoseg` |
+
+The version6 move corrected accidentally nested output directories without
+changing source pixels or plan hashes. An older Histo-Seg40 inventory had five
+entirely white fields and was never encoded; version7 rejects blank and exact
+duplicate fields. Keep the older inventories as diagnostics, not benchmark
+inputs. See `benchmark/TISSUE_DATASET_EXPANSION.md` and the remote correction
+receipt `results/bora-tissue-path-correction-2026-10-18-v1.json`.
+
+`results/bora-tissue-features-160-2026-10-18-v1` contains the first four datasets'
+480 frozen tensors and a passing full-corpus `FEATURE_AUDIT.json`.
+`results/bora-puma-features-40-2026-10-18-v1` is the separate PUMA batch; verify
+its global freeze and audit before conversion. These logical roots link to
+computed caches in `/home/chiamaka/Bora-benchmark-compute` on NVMe. Provider
+images and native image/reference fields remain on the SATA SSD. The fixed
+RGB09/10/15/19/equal09+19 conversion formulae remain unchanged.
+
+Cycle11 has15 new callable models plus the five parents, with a separately
+labelled support ablation control. Its native-support execution/scoring/audit
+contracts have focused tests. A new calibrated combined input freeze, complete
+CLI/cohort validation and an engineering pilot are still required. No full
+cycle11 result or selection exists. The remaining historical349 navigation
+below documents signed earlier work; its counts are not the next denominator.
 
 ## Locations
 

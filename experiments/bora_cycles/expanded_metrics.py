@@ -18,12 +18,19 @@ def glass_only_method(key, detail):
     return key in expected and detail.get('mechanism') == expected[key]
 
 
-def native_score(sample, truth, mask, backend="numpy", *, evaluator=None):
+def owns_native_support(key,detail):
+    from .eleven_manifest import CHILDREN,SUPPORT_METHODS,SUPPORT_CONTROL
+    mechanisms={r['id']:r['intervention'] for r in CHILDREN if r['id'] in SUPPORT_METHODS}
+    mechanisms['B23']=SUPPORT_CONTROL['mechanism']
+    return key in mechanisms and detail.get('mechanism')==mechanisms[key] and detail.get('native_support',{}).get('own_native_support') is True
+
+
+def native_score(sample, truth, mask, backend="numpy", *, evaluator=None,white=None):
     from .metrics import RegionEvaluator
     coordinates = geometry(sample, native=True)
     if evaluator is None:
         evaluator = RegionEvaluator(truth, coordinates["algorithm_spacing_xy"])
-    scored, policy = scoring_prediction(sample, mask, zero_is_removed_background=True)
+    scored, policy = scoring_prediction(sample, mask, zero_is_removed_background=True,white=white)
     result = report_units(evaluator.score(scored, backend=backend), coordinates["units"])
     result["saved_mask_annotated_unassigned_pixels"] = int(((truth > 0) & (mask == 0)).sum())
     result["coordinate_units"] = coordinates["units"]
@@ -73,11 +80,25 @@ def score_case(args):
                 mask = tifffile.imread(out/key/"native.tif")
                 # This is required by the RINGS scoring-only zero semantics.
                 glass_only = glass_only_method(key, entry['details'])
-                if np.any(mask[~support]) or (not glass_only and np.any(mask[support] == 0)):
+                owned=owns_native_support(key,entry['details'])
+                actual_support=support
+                if owned:
+                    if key+'/support.native.tif' not in record['files_sha256']:
+                        raise ValueError('Native support is not included in prediction freeze')
+                    actual_support=tifffile.imread(out/key/'support.native.tif')>0
+                    if actual_support.shape!=support.shape or np.any((~white)&~actual_support):
+                        raise ValueError('Native support removed non-white tissue or changed geometry')
+                elif entry['details'].get('native_support',{}).get('own_native_support'):
+                    raise ValueError('Unregistered native-support contract')
+                if np.any(mask[~actual_support]) or (not glass_only and np.any(mask[actual_support] == 0)):
                     raise ValueError("The full-supported-tissue invariant is violated")
-                entry["score"], _ = native_score(sample, truth, mask, backend, evaluator=evaluator)
+                entry["score"], _ = native_score(sample, truth, mask, backend, evaluator=evaluator,white=white)
                 entry["background"] = report_units(mask_diagnostics(mask, support, white, exterior,
                     coordinates["algorithm_spacing_xy"], backend=backend), coordinates["units"])
+                if owned:
+                    entry['background']['restored_outside_common_support_pixels']=int((actual_support&~support).sum())
+                    entry['background']['removed_inside_common_support_pixels']=int((support&~actual_support).sum())
+                    entry['background']['support_contract']='Own frozen native H&E support; common-support differences are diagnostics, not an invariant violation'
             row["methods"][key] = entry
     regions = np.load(out/"NOVELTY.npz")["regions"]
     row["novelty"] = discovery_score(resize(regions, truth.shape, True), truth)

@@ -6,6 +6,7 @@ boundary-containing fields. They must not be read by later prediction stages.
 from collections import Counter
 import colorsys
 import hashlib
+import io
 import json
 from pathlib import Path
 
@@ -66,6 +67,9 @@ def choose_field(rgb,raw,catalog,spacing):
         crop=rgb[y:y+ch,x:x+cw]
         he=cv2.resize(crop,tuple(shape[::-1]),interpolation=cv2.INTER_AREA if ch>=shape[0] and cw>=shape[1] else cv2.INTER_LINEAR)
         white=(he.min(axis=2)>=230)&(np.ptp(he.astype(np.int16),axis=2)<=20)
+        if white.all():
+            failures['no_visible_nonwhite_tissue']+=1
+            continue
         observed=Counter()
         negative= mapping.get(catalog.get('valid_negative_raw_label'))
         for tile in check['coarse_observations']:
@@ -99,6 +103,8 @@ def choose_field(rgb,raw,catalog,spacing):
 class FieldWriter:
     def __init__(self,data,output,dataset,catalog,quota=40):
         self.data,self.output,self.dataset,self.catalog,self.quota=Path(data),Path(output),dataset,catalog,quota
+        if self.output.name==dataset:
+            raise ValueError('Pass the acquisition output root, not the dataset subfolder; '+dataset+' is appended automatically')
         self.root=self.output/dataset
         self.root.mkdir(parents=True,exist_ok=True)
         if (self.root/'PLAN.json').exists():raise FileExistsError('Dataset fields already frozen')
@@ -121,10 +127,16 @@ class FieldWriter:
         selected,reason=choose_field(rgb,raw,self.catalog,spacing)
         if selected is None:
             self.excluded.append(dict(source=source,**reason));self.checkpoint();return False
+        encoded=io.BytesIO();Image.fromarray(selected['native']).save(encoded,format='PNG')
+        payload=encoded.getvalue();native_digest=hashlib.sha256(payload).hexdigest()
+        duplicate=next((r['case'] for r in self.rows if r['files_sha256']['original.native.png']==native_digest),None)
+        if duplicate is not None:
+            self.excluded.append(dict(source=source,reason='duplicate_native_field',duplicate_of=duplicate))
+            self.checkpoint();return False
         case=f'{self.dataset}_{len(self.rows)+1:02d}'
         folder=self.root/'cases'/case
         folder.mkdir(parents=True,exist_ok=True)
-        Image.fromarray(selected['native']).save(folder/'original.native.png')
+        (folder/'original.native.png').write_bytes(payload)
         Image.fromarray(selected['working']).save(folder/'original.png')
         tifffile.imwrite(folder/'reference.native.tif',selected['reference'],compression='deflate')
         tifffile.imwrite(folder/'coarse.tif',selected['coarse'],compression='deflate')
