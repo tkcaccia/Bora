@@ -1,5 +1,5 @@
 {
-  "stage": "full_inference_running",
+  "stage": "full_predictions_scored_awaiting_actual_visual_review",
   "completed_cycles": 8,
   "active_cycle": 9,
   "source_commit": "ea8ce72608f172d53350e3ee1aee354406c25a12",
@@ -17,18 +17,18 @@
   "expected_full_cases": 349,
   "expected_full_methods": 22,
   "complete_goal": false,
-  "checkpoint_utc": "2026-10-18T01:49:07.243391+00:00",
+  "checkpoint_utc": "2026-10-18T02:31:13.752678+00:00",
   "superseded_pilot_report": "experiments/bora_cycles/CYCLE_NINE_SUPERSEDED_PILOTS.json",
   "pilot_process_terminal": true,
   "pilot_decision_sha256": "54b9079ce5d9068975fa618f29866f35df92635145ed462989150112fc8b6334",
   "pilot_audit_sha256": "33f9baeee4951e5b6e831e6209368aa71a608ec87d220cea3892a56ad156bf7c",
   "main_pid": 1686483,
-  "main_process_terminal": false,
+  "main_process_terminal": true,
   "remote_root": "/mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-09",
   "local_root": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-09-chiamaka",
   "main_log": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-extension-2026-10-18/cycle-nine-full-v4.log",
-  "actual_full_overviews": 0,
-  "actual_full_native_crops": 0,
+  "actual_full_overviews": 60,
+  "actual_full_native_crops": 9,
   "survivors_selected": false,
   "full_launch": {
     "pid": 1686483,
@@ -45,5 +45,36 @@
     "completed_cycles": 8,
     "cycle_complete": false,
     "log": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-extension-2026-10-18/cycle-nine-full-v4.log"
+  },
+  "full_protocol_sha256": "95ce33c979e32187df67d16718f32f0f77bbe5184a06f605071f80237f495d63",
+  "global_prediction_freeze_sha256": "64c255b92545139a4ed5cc3c783b61beba7997ef4937f05209fb01e29299133e",
+  "last_verified_full_status": {
+    "pid": 1686483,
+    "live": false,
+    "predicted_cases": 349,
+    "successful_masks": 7678,
+    "failed_predictions": [],
+    "unchanged_parent_native_checks": 1745,
+    "global_prediction_freeze": true,
+    "scored_cases": 349,
+    "rendered_cases": 349
+  },
+  "posthoc_process_terminal": true,
+  "posthoc_complete": true,
+  "posthoc_evidence": {
+    "posthoc_complete_sha256": "2bf259838ad9be77e4e7f2357c5d772811c5f919ff0fd4ac7fedbc79a922410a",
+    "reports": {
+      "INPUT_LIMITS.json": "1e2be687750fb91cc8ba7e945ec578c3340f13bd8746c2ac31de65ddebcfeae0",
+      "SMALL_REGION_ATLAS.json": "51b081c762ac253773014ac45cbbfab394048e8f79f6ba8354d3bca6cd9a410b",
+      "FULL_AUDIT.json": "16bcaafed8e92a70515bcc1057cef8c109937bfc72baf8bf7f9f2ac3626a0ec9",
+      "PAIRED_ANALYSIS.json": "df11f4b75d6de247ba6af39c244b770784e62e7c5b40345417543d4775fe24e5",
+      "NUMERICAL_STATUS.json": "b29a084a6a374959fcd399f3ceab0ec501a2e4c4ee20f9d70fe78e629286e5eb",
+      "diagnostics-v2/MANIFEST.json": "86f1c5af65aace7debff50ee06f1265a929671dc00b1d5a14184f781b6cefef9"
+    },
+    "native_masks": 7678,
+    "exact_display_rasters": 7678,
+    "unchanged_survivor_comparisons": 1745,
+    "constant_evidence_comparisons": 660,
+    "failed_methods": {}
   }
 }
