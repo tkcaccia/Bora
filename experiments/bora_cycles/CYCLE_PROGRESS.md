@@ -13,6 +13,15 @@ and OCELOT. Selected five: J01,L02,K05,L03,C17. All7678 native masks,
 leads adjusted utility; no child improves it. Eight of twenty cycles are complete.
 See `CYCLE_EIGHT_REVIEW.md` and the signed selection.
 
+Cycle9 is running the same349 frozen inputs on Chiamaka: unchanged J01,L02,
+K05,L03,C17 plus15 prospective children M01–M15. Its final13-case pilot passed
+327 checks,286 mask/display audits,65 parent-mask and65 parent-score comparisons
+and44 constant-input checks; all13 overviews and3 native crops were actually
+viewed. Three earlier engineering snapshots remain preserved. The full run
+uses source `ea8ce72`,3 nice12 workers and2 numerical threads each. This is
+not a completed ninth cycle or a new selection. See `CYCLE_NINE_PROPOSAL.md`,
+`CYCLE_NINE_PILOT_REVIEW.json` and `CYCLE_NINE_EXECUTION.json`.
+
 This subtracts five IoU percentage points per excess second, with no bonus
 below one second. Calculate excess on each image before averaging: a method
 whose mean time is below one second can still incur a penalty on slow cases.
