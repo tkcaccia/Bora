@@ -1,0 +1,93 @@
+{
+  "version": "additional-tissue-2026-10-18-v1",
+  "quota_per_dataset": 40,
+  "datasets": {
+    "gcss": {
+      "record": "https://zenodo.org/records/8176354",
+      "license": "cc-by-4.0",
+      "files": [
+        {
+          "name": "GCSS.zip",
+          "url": "https://zenodo.org/api/records/8176354/files/GCSS.zip/content",
+          "bytes": 455770911,
+          "md5": "a1dfe099ca66475bef4229ad76434112",
+          "extract": true
+        }
+      ]
+    },
+    "peso": {
+      "record": "https://zenodo.org/records/5137717",
+      "license": "cc-by-nc-sa-4.0",
+      "files": [
+        {
+          "name": "peso_testset_png.zip",
+          "url": "https://zenodo.org/api/records/5137717/files/peso_testset_png.zip/content",
+          "bytes": 205182659,
+          "md5": "c212aa96a7f79eb177ce1e4bfedb1ac1",
+          "extract": true
+        },
+        {
+          "name": "peso_testset_groundtruth_masks.zip",
+          "url": "https://zenodo.org/api/records/5137717/files/peso_testset_groundtruth_masks.zip/content",
+          "bytes": 103744439,
+          "md5": "b7048c6c0d445091c951bf4a979eef65",
+          "extract": true
+        },
+        {
+          "name": "peso_testset_mapping.csv",
+          "url": "https://zenodo.org/api/records/5137717/files/peso_testset_mapping.csv/content",
+          "bytes": 2981,
+          "md5": "c267372ed522e1d15b8b550f3f3a8454",
+          "extract": false
+        },
+        {
+          "name": "peso_testset_regions.zip",
+          "url": "https://zenodo.org/api/records/5137717/files/peso_testset_regions.zip/content",
+          "bytes": 17147,
+          "md5": "9ec87b07fec0f1df7a17cf2de86aff99",
+          "extract": true
+        }
+      ]
+    },
+    "ignite": {
+      "record": "https://zenodo.org/records/17735903",
+      "license": "cc-by-nc-sa-4.0",
+      "files": [
+        {
+          "name": "annotations.zip",
+          "url": "https://zenodo.org/api/records/17735903/files/annotations.zip/content",
+          "bytes": 31361386,
+          "md5": "6997755c000eadcd8f0a435223b66300",
+          "extract": true
+        },
+        {
+          "name": "data_overview.csv",
+          "url": "https://zenodo.org/api/records/17735903/files/data_overview.csv/content",
+          "bytes": 257883,
+          "md5": "9e89b88ab155de558657c7e51691b61e",
+          "extract": false
+        },
+        {
+          "name": "he_label_map.json",
+          "url": "https://zenodo.org/api/records/17735903/files/he_label_map.json/content",
+          "bytes": 413,
+          "md5": "a3dad19173c194cd6be569515a97078c",
+          "extract": false
+        }
+      ]
+    },
+    "puma": {
+      "record": "https://zenodo.org/records/15050523",
+      "license": "cc-zero",
+      "files": [
+        {
+          "name": "01_training_dataset_geojson_tissue.zip",
+          "url": "https://zenodo.org/api/records/15050523/files/01_training_dataset_geojson_tissue.zip/content",
+          "bytes": 3070756,
+          "md5": "d9a1d94f078068ed26687cca28b24baf",
+          "extract": true
+        }
+      ]
+    }
+  }
+}
