@@ -4,6 +4,17 @@ import numpy as np
 from experiments.bora_extension.task_adapter import geometry, report_units, scoring_prediction
 
 
+def glass_only_method(key, detail):
+    """Only declared glass-only mechanisms may leave supported pixels zero."""
+    expected = {
+        'L03': 'white-space-exterior-bottleneck-connectivity',
+        'M10': 'exterior-shortest-integrated-stain-cost',
+        'M11': 'eight-ray-unobstructed-white-exterior-visibility',
+        'M12': 'binary-he-glass-unary-perimeter-mincut',
+    }
+    return key in expected and detail.get('mechanism') == expected[key]
+
+
 def native_score(sample, truth, mask, backend="numpy", *, evaluator=None):
     from .metrics import RegionEvaluator
     coordinates = geometry(sample, native=True)
@@ -58,7 +69,7 @@ def score_case(args):
             if entry["status"] == "ok":
                 mask = tifffile.imread(out/key/"native.tif")
                 # This is required by the RINGS scoring-only zero semantics.
-                glass_only = key == 'L03' and entry['details']['mechanism'] == 'white-space-exterior-bottleneck-connectivity'
+                glass_only = glass_only_method(key, entry['details'])
                 if np.any(mask[~support]) or (not glass_only and np.any(mask[support] == 0)):
                     raise ValueError("The full-supported-tissue invariant is violated")
                 entry["score"], _ = native_score(sample, truth, mask, backend, evaluator=evaluator)

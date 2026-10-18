@@ -14,6 +14,8 @@ from experiments.bora_cycles.cycle_nine import (
 from experiments.bora_cycles.methods import predict
 from experiments.bora_cycles.registry import CHILDREN_NINE, CYCLE_NINE_SURVIVORS, candidates
 from experiments.bora_cycles.review import validate_children
+from experiments.bora_cycles.expanded_metrics import glass_only_method
+from experiments.bora_cycles.expanded_prediction import constant_evidence_fallback
 
 
 @pytest.mark.parametrize('key', [v['id'] for v in CHILDREN_NINE])
@@ -42,6 +44,23 @@ def test_prospective_lineage_and_unique_model_interventions():
     assert validate_children(dict(survivors=list(CYCLE_NINE_SURVIVORS)), CHILDREN_NINE)
     old = {v.mechanism for cycle in range(1, 9) for v in candidates(cycle).values()}
     assert not old.intersection(v['intervention'] for v in CHILDREN_NINE)
+
+
+@pytest.mark.parametrize('key', ['M10', 'M11', 'M12'])
+def test_only_explicit_glass_children_can_remove_supported_constant_rgb(key):
+    he = np.full((24, 30, 3), [130, 40, 90], np.uint8)
+    he[:, :8] = 255
+    coarse = np.ones((24, 30), np.uint8); coarse[:, 15:] = 2; coarse[:4, 10:15] = 0
+    complete = np.where(coarse > 0, coarse, 1).astype(np.uint8)
+    rgb = np.full((*coarse.shape, 3), 80, np.uint8)
+    labels, detail = constant_evidence_fallback(key, rgb, coarse, complete,
+        np.ones_like(coarse, bool), [1., 1.], he)
+    assert np.any(labels == 0)
+    assert np.all((labels == complete) | (labels == 0))
+    assert glass_only_method(key, detail)
+    assert not glass_only_method('J01', detail)
+    assert not glass_only_method(key, dict(mechanism='unregistered'))
+    assert not detail['refinement_performed']
 
 
 def test_schur_field_equals_independent_augmented_kkt_solve():
