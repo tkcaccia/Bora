@@ -1,6 +1,6 @@
 {
-  "registered_cycles": 11,
-  "unique_registered_models": 170,
+  "registered_cycles": 12,
+  "unique_registered_models": 185,
   "cycle_rosters": {
     "1": [
       "C01",
@@ -243,6 +243,28 @@
       "P13",
       "P14",
       "P15"
+    ],
+    "12": [
+      "P11",
+      "N08",
+      "M04",
+      "J01",
+      "C17",
+      "Q01",
+      "Q02",
+      "Q03",
+      "Q04",
+      "Q05",
+      "Q06",
+      "Q07",
+      "Q08",
+      "Q09",
+      "Q10",
+      "Q11",
+      "Q12",
+      "Q13",
+      "Q14",
+      "Q15"
     ]
   },
   "cycle_lineage": {
@@ -552,6 +574,34 @@
       ],
       "registered_only": true,
       "completed_or_selected_not_inferred": true
+    },
+    "12": {
+      "retained": [
+        "C17",
+        "J01",
+        "M04",
+        "N08",
+        "P11"
+      ],
+      "introduced": [
+        "Q01",
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q05",
+        "Q06",
+        "Q07",
+        "Q08",
+        "Q09",
+        "Q10",
+        "Q11",
+        "Q12",
+        "Q13",
+        "Q14",
+        "Q15"
+      ],
+      "registered_only": true,
+      "completed_or_selected_not_inferred": true
     }
   },
   "models": {
@@ -818,7 +868,8 @@
         8,
         9,
         10,
-        11
+        11,
+        12
       ],
       "lineage_root": "C17",
       "specification": {
@@ -1795,7 +1846,8 @@
         8,
         9,
         10,
-        11
+        11,
+        12
       ],
       "lineage_root": "C03",
       "specification": {
@@ -2525,7 +2577,8 @@
       "present_in_cycles": [
         9,
         10,
-        11
+        11,
+        12
       ],
       "lineage_root": "C03",
       "specification": {
@@ -2812,7 +2865,8 @@
       "introduced_cycle": 10,
       "present_in_cycles": [
         10,
-        11
+        11,
+        12
       ],
       "lineage_root": "C03",
       "specification": {
@@ -3083,7 +3137,8 @@
     "P11": {
       "introduced_cycle": 11,
       "present_in_cycles": [
-        11
+        11,
+        12
       ],
       "lineage_root": "C03",
       "specification": {
@@ -3154,16 +3209,242 @@
         "implemented": true,
         "parent": "C17"
       }
+    },
+    "Q01": {
+      "introduced_cycle": 12,
+      "present_in_cycles": [
+        12
+      ],
+      "lineage_root": "C03",
+      "specification": {
+        "title": "Illumination-calibrated glass",
+        "mechanism": "native-affine-blank-plane-standardized-stain-occupancy",
+        "hypothesis": "Estimate an affine RGB blank plane from bright neutral border samples by Huber regression. Replace the fixed white predicate by a three-channel standardized blank residual (squared distance<=16, channel range<=24); retain exactly the parent Beta-binomial occupancy decision on this stain definition.",
+        "risk": "The border may contain tissue rather than glass, and a blank illumination plane can misclassify pale tissue. An insufficient border sample triggers the explicitly reported original photometric predicate.",
+        "implemented": true,
+        "parent": "P11"
+      }
+    },
+    "Q02": {
+      "introduced_cycle": 12,
+      "present_in_cycles": [
+        12
+      ],
+      "lineage_root": "C03",
+      "specification": {
+        "title": "Local stain enclosure depth",
+        "mechanism": "native-local-halfspace-stained-mass-depth",
+        "hypothesis": "On a4 micrometre grid compute the stained fraction in each of eight oriented half-disks of radius64 micrometres. Keep every nonwhite pixel and white pixels whose minimum oriented half-disk stained fraction exceeds0.025; lift the scalar depth bilinearly to native pixels.",
+        "risk": "Open adipose edges lack surrounding stain and may be cut; scattered debris can falsely enclose glass. Eight orientations only approximate continuous halfspace depth.",
+        "implemented": true,
+        "parent": "P11"
+      }
+    },
+    "Q03": {
+      "introduced_cycle": 12,
+      "present_in_cycles": [
+        12
+      ],
+      "lineage_root": "C03",
+      "specification": {
+        "title": "Texture-versus-blank evidence",
+        "mechanism": "native-rank-one-local-texture-bic-support",
+        "hypothesis": "Estimate blank noise variance from adjacent neutral border RGB differences on a4 micrometre grid. In each64 micrometre square compare an isotropic blank covariance against a rank-one texture covariance. Keep white where n/2*(r-1-log(r)) >1.5log(n), r=max(1,lambda_max/noise), and retain all nonwhite. Strength and two directions give three extra parameters with globally fixed blank noise.",
+        "risk": "Spatial correlation makes the nominal patch sample size optimistic. Scanner texture and compression can look like tissue; unstained fat may have insufficient texture.",
+        "implemented": true,
+        "parent": "P11"
+      }
+    },
+    "Q04": {
+      "introduced_cycle": 12,
+      "present_in_cycles": [
+        12
+      ],
+      "lineage_root": "C03",
+      "specification": {
+        "title": "Wasserstein scale transport",
+        "mechanism": "positive-standard-deviation-bures-field",
+        "hypothesis": "Keep the parent bending means and residual variance targets. Transport their positive standard deviations, using a screened first-order M-matrix and a unit prior, then square the lifted field for normalized diagonal Gaussian likelihood.",
+        "risk": "A different variance geometry can overbroaden classes. The variance transport uses a positive first-order operator because the bending inverse does not obey a maximum principle.",
+        "implemented": true,
+        "parent": "N08"
+      }
+    },
+    "Q05": {
+      "introduced_cycle": 12,
+      "present_in_cycles": [
+        12
+      ],
+      "lineage_root": "C03",
+      "specification": {
+        "title": "Asymmetric residual appearance",
+        "mechanism": "two-piece-normal-positive-negative-scale-fields",
+        "hypothesis": "Keep parent bending means. Fit separate positive/negative residual second-moment targets for each whitened channel, transport their logarithms with the same bending solve, and use the normalized two-piece normal score -sum(log(s_plus+s_minus)+delta\u00b2/(2*s_sign\u00b2)).",
+        "risk": "Small coarse classes may poorly estimate one residual side; a two-piece normal is a model of synthetic RGB rather than a biological measurement.",
+        "implemented": true,
+        "parent": "N08"
+      }
+    },
+    "Q06": {
+      "introduced_cycle": 12,
+      "present_in_cycles": [
+        12
+      ],
+      "lineage_root": "C03",
+      "specification": {
+        "title": "Conditional residual innovations",
+        "mechanism": "classwise-spatial-ar-colour-innovation-likelihood",
+        "hypothesis": "Keep parent bending mean and log-variance fields. Standardize residuals, estimate each class/channel four-neighbour autoregression rho in[-0.8,0.8] by original coarse weighted least squares with0.015 ridge, and score normalized Gaussian innovations z-rho*neighbour_mean(z), including fitted innovation variance and the original variance determinant.",
+        "risk": "Conditional scores are a pseudolikelihood, not a normalized joint image distribution. Coarse contamination and wrong neighbours can reward an incorrect class.",
+        "implemented": true,
+        "parent": "N08"
+      }
+    },
+    "Q07": {
+      "introduced_cycle": 12,
+      "present_in_cycles": [
+        12
+      ],
+      "lineage_root": "C03",
+      "specification": {
+        "title": "Credible-ball appearance risk",
+        "mechanism": "gaussian-prototype-credible-radius-minimax-colour-distance",
+        "hypothesis": "Keep exactly the parent whitened means and positive sampling variance. Choose the class minimizing (norm(x-mu)+sqrt(7.814727903*v))\u00b2, the worst distance over its95 percent three-dimensional Gaussian prototype credible ball.",
+        "risk": "A conservative uncertainty penalty can remove a correctly rare class. The sampling variance is not expert calibrated and the nominal95 percent level is only a model statement.",
+        "implemented": true,
+        "parent": "M04"
+      }
+    },
+    "Q08": {
+      "introduced_cycle": 12,
+      "present_in_cycles": [
+        12
+      ],
+      "lineage_root": "C03",
+      "specification": {
+        "title": "Tolerance-ball prototype probability",
+        "mechanism": "noncentral-gaussian-finite-ball-acceptance-probability",
+        "hypothesis": "Keep parent means and sampling variance. Score the analytic probability that a Gaussian prototype lies within a unit-radius ball of the query in whitened RGB; use parent predictive density only to break finite-precision ties.",
+        "risk": "A unit whitened tolerance is an engineering decision. Tiny prototype variance can saturate probabilities and make tie decisions important.",
+        "implemented": true,
+        "parent": "M04"
+      }
+    },
+    "Q09": {
+      "introduced_cycle": 12,
+      "present_in_cycles": [
+        12
+      ],
+      "lineage_root": "C03",
+      "specification": {
+        "title": "Residual sandwich uncertainty",
+        "mechanism": "heteroscedastic-residual-influence-sandwich-field-covariance",
+        "hypothesis": "Keep the parent H&E-conducted means. Propagate16 fixed Rademacher probes multiplied by per-node, per-channel fitted residuals through each screened field system. Their positive outer-product average, scaled0.015, is a full3x3 sampling covariance; score N(mu,I+V).",
+        "risk": "Residuals aggregated at field nodes underestimate within-node variation. The16-probe sandwich is an approximation and may be costly for many classes.",
+        "implemented": true,
+        "parent": "M04"
+      }
+    },
+    "Q10": {
+      "introduced_cycle": 12,
+      "present_in_cycles": [
+        12
+      ],
+      "lineage_root": "C03",
+      "specification": {
+        "title": "Stain-contour advection",
+        "mechanism": "directed-upwind-contour-appearance-transport",
+        "hypothesis": "Replace the symmetric parent transport operator by its sum with an upwind directed graph generated by the rotated spatial gradient of H&E optical density. Solve the resulting screened M-matrix for each class; report equation residuals and constant reproduction.",
+        "risk": "Contour circulation can transport appearance along an irrelevant microscopic stain contour. Directed transport is not an anatomical flow measurement.",
+        "implemented": true,
+        "parent": "J01"
+      }
+    },
+    "Q11": {
+      "introduced_cycle": 12,
+      "present_in_cycles": [
+        12
+      ],
+      "lineage_root": "C03",
+      "specification": {
+        "title": "Shared skew colour field",
+        "mechanism": "joint-spatial-infinitesimal-colour-rotation-normal-system",
+        "hypothesis": "Fit one shared three-component field omega(s) under the observation x=mu_g+omega(s) cross (mu_g-barycentre), with the parent H&E Laplacian and0.015 zero anchor. Solve one joint sparse quadratic normal system; compare queries against these locally coupled prototypes.",
+        "risk": "A skew linear sensor field cannot express all local changes and large rotations are only a first-order approximation. Degenerate class colours leave some directions prior-determined.",
+        "implemented": true,
+        "parent": "J01"
+      }
+    },
+    "Q12": {
+      "introduced_cycle": 12,
+      "present_in_cycles": [
+        12
+      ],
+      "lineage_root": "C03",
+      "specification": {
+        "title": "Fuzzy tissue connectivity",
+        "mechanism": "per-class-gray-ceiling-geodesic-reconstruction",
+        "hypothesis": "On a4 micrometre grid take parent class probabilities as gray ceilings. Seed each class at original coarse interior observations whose continuous weight exceeds0.8. Compute the exact maximum over paths of the minimum ceiling/seed value, separately per class, using C++ priority queues; normalize and lift these connectivity evidences.",
+        "risk": "A small true island without a coarse seed can disappear; a weak bridge can still connect a false region. This is a seeded connectivity model, not discovery of an absent class.",
+        "implemented": true,
+        "parent": "J01"
+      }
+    },
+    "Q13": {
+      "introduced_cycle": 12,
+      "present_in_cycles": [
+        12
+      ],
+      "lineage_root": "C17",
+      "specification": {
+        "title": "Tile-integral plurality projection",
+        "mechanism": "soft-tile-mean-dominance-kl-projection",
+        "hypothesis": "Keep parent palette probabilities. On a4 micrometre quadrature grid minimize mean KL(q||p)+sum_tiles sum_rivals max(mean(q_rival-q_observed),0)\u00b2. Solve the nonnegative smooth dual by L-BFGS-B, at most100 iterations; lift each tile logit offset without freezing any pixel and report projected dual residual.",
+        "risk": "An incorrect coarse winner can be reinforced and quadrature only approximates full-pixel tile integrals. The bounded optimizer may fail stationarity or exceed one second.",
+        "implemented": true,
+        "parent": "C17"
+      }
+    },
+    "Q14": {
+      "introduced_cycle": 12,
+      "present_in_cycles": [
+        12
+      ],
+      "lineage_root": "C17",
+      "specification": {
+        "title": "Censored channel inverse",
+        "mechanism": "tobit-boundary-channel-palette-simplex-inverse",
+        "hypothesis": "At occupied colour nodes minimize the fixed palette squared error for interior channels and sigma\u00b2 times negative Gaussian log-tail probability for RGB channels within one byte of0/255, with sigma0.05 and the parent0.006 prior ridge. Use projected gradient on the simplex, at most160 steps, and report projected stationarity.",
+        "risk": "The converted RGB may not arise from a censored Gaussian sensor. A finite optimizer can miss tolerance, and changing the observation model can spoil a useful exact linear mixture.",
+        "implemented": true,
+        "parent": "C17"
+      }
+    },
+    "Q15": {
+      "introduced_cycle": 12,
+      "present_in_cycles": [
+        12
+      ],
+      "lineage_root": "C17",
+      "specification": {
+        "title": "Bayesian contiguous regions",
+        "mechanism": "greedy-log-evidence-adjacent-class-region-agglomeration",
+        "hypothesis": "On a4 micrometre grid sum log parent palette probabilities per cell. A region has log evidence logsumexp(class log scores)-log(K). Repeatedly merge adjacent regions with the largest positive log Bayes factor for a shared class, update neighbours, and label by its pooled posterior. C++ implements the deterministic greedy graph operation.",
+        "risk": "Correlated probability cells overstate evidence and a greedy merge is not a globally optimal partition. Narrow channels can merge away and weak evidence can promote excessive pooling.",
+        "implemented": true,
+        "parent": "C17"
+      }
     }
   },
   "source_sha256": {
     "method_catalogue.py": "bb52134d5e3f3eb3507835fdaeb5911137a71905aaf1ba53ab2e296e907b2aaf",
-    "registry.py": "5a9d66c1c09c02901f6ef484a10940865f59b5446805c5671f4d8f4a418420f7",
+    "registry.py": "d23544ffdf3ab4dd5f65474d1381b66a4a9f186edba9939dca9c306085fca151",
     "eight_manifest.py": "40c447baff962edd235d6f14d6bcf739b9a9e05620bb75a477bc7e750e444476",
     "eleven_manifest.py": "233adf367e59e0555028a588e7d01d5aff890986a83dba087c156f9dbd6e0aa2",
     "nine_manifest.py": "7b7eb59f0de9d2cd36108a114a210a9c90757f45604e886040ba882b4e7f94e1",
     "seven_manifest.py": "cc7c801425af8c65316c4fa77d644a93e8030e44371045738f10ce8c79c31e8a",
-    "ten_manifest.py": "ecb5079822e35c82dde28f28de2574c37788873eee4ab7a98b76a6d0c7193c40"
+    "ten_manifest.py": "ecb5079822e35c82dde28f28de2574c37788873eee4ab7a98b76a6d0c7193c40",
+    "twelve_manifest.py": "9d32a969f554ee7b2aca6801f0970cd0bc90ca1867acd23b2a28c564a10e465c"
   },
   "scores_read": false,
   "predictions_read": false,

@@ -22,7 +22,18 @@ def owns_native_support(key,detail):
     from .eleven_manifest import CHILDREN,SUPPORT_METHODS,SUPPORT_CONTROL
     mechanisms={r['id']:r['intervention'] for r in CHILDREN if r['id'] in SUPPORT_METHODS}
     mechanisms['B23']=SUPPORT_CONTROL['mechanism']
+    from .twelve_manifest import CHILDREN as CHILDREN_TWELVE,NATIVE_CHILDREN
+    mechanisms.update({r['id']:r['intervention'] for r in CHILDREN_TWELVE if r['id'] in NATIVE_CHILDREN})
     return key in mechanisms and detail.get('mechanism')==mechanisms[key] and detail.get('native_support',{}).get('own_native_support') is True
+
+
+def may_remove_nonwhite(key,detail):
+    """Prospective exact mechanism, never permission from an arbitrary flag."""
+    from .twelve_manifest import CHILDREN
+    spec=next(r for r in CHILDREN if r['id']=='Q01')
+    return (key=='Q01' and owns_native_support(key,detail)
+        and detail.get('mechanism')==spec['intervention']
+        and detail['native_support'].get('photometrically_nonwhite_can_be_removed') is True)
 
 
 def native_score(sample, truth, mask, backend="numpy", *, evaluator=None,white=None,ocelot_white_negative=False):
@@ -87,7 +98,7 @@ def score_case(args):
                     if key+'/support.native.tif' not in record['files_sha256']:
                         raise ValueError('Native support is not included in prediction freeze')
                     actual_support=tifffile.imread(out/key/'support.native.tif')>0
-                    if actual_support.shape!=support.shape or np.any((~white)&~actual_support):
+                    if actual_support.shape!=support.shape or (not may_remove_nonwhite(key,entry['details']) and np.any((~white)&~actual_support)):
                         raise ValueError('Native support removed non-white tissue or changed geometry')
                 elif entry['details'].get('native_support',{}).get('own_native_support'):
                     raise ValueError('Unregistered native-support contract')

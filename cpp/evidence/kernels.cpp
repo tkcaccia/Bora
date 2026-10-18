@@ -5,10 +5,86 @@
 #include <cstdint>
 #include <functional>
 #include <limits>
+#include <queue>
+#include <set>
+#include <tuple>
 #include <vector>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+
+// Gray-level geodesic reconstruction: exact widest-path closure under a ceiling.
+// Classes are independent; use at most the caller's two OpenMP threads.
+extern "C" int bora_gray_reconstruction(const double* ceiling,const double* marker,
+        double* output,int h,int w,int k,int threads) {
+    if(h<1||w<1||k<1||threads<1)return 1;
+    const int n=h*w;
+    for(int i=0;i<n*k;++i)if(!std::isfinite(ceiling[i])||!std::isfinite(marker[i])||
+        ceiling[i]<0||marker[i]<0||marker[i]>ceiling[i]+1e-12)return 2;
+    #pragma omp parallel for num_threads(threads) schedule(static)
+    for(int g=0;g<k;++g) {
+        std::priority_queue<std::pair<double,int>> queue;
+        for(int v=0;v<n;++v){output[v*k+g]=marker[v*k+g];if(marker[v*k+g]>0)queue.emplace(marker[v*k+g],v);}
+        while(!queue.empty()) {
+            auto item=queue.top();queue.pop();double value=item.first;int v=item.second;
+            if(value<output[v*k+g])continue;
+            int x=v%w,y=v/w;
+            const int adjacent[4]={x>0?v-1:-1,x+1<w?v+1:-1,y>0?v-w:-1,y+1<h?v+w:-1};
+            for(int u:adjacent)if(u>=0) {
+                double next=std::min(value,ceiling[u*k+g]);
+                if(next>output[u*k+g]){output[u*k+g]=next;queue.emplace(next,u);}
+            }
+        }
+    }
+    return 0;
+}
+
+// Greedy positive shared-class Bayes factors. This certifies the specified
+// greedy operation, not global partition optimality or independent cells.
+extern "C" int bora_bayes_regions(const double* log_probability,const uint8_t* support,
+        int32_t* output,int h,int w,int k,double* diagnostics) {
+    if(h<1||w<1||k<2)return 1;
+    int n=h*w;std::vector<int> parent(n),size(n,1),version(n,0),compact(n,-1);
+    std::vector<double> sums(log_probability,log_probability+n*k),evidence(n,0.);
+    std::vector<std::set<int>> neighbours(n);
+    for(int i=0;i<n*k;++i)if(!std::isfinite(sums[i]))return 2;
+    for(int v=0;v<n;++v)parent[v]=v;
+    auto root=[&](int v){while(parent[v]!=v){parent[v]=parent[parent[v]];v=parent[v];}return v;};
+    auto log_evidence=[&](int a,int b) {
+        double maximum=-INFINITY;
+        for(int g=0;g<k;++g)maximum=std::max(maximum,sums[a*k+g]+(b<0?0:sums[b*k+g]));
+        double total=0.;for(int g=0;g<k;++g)total+=std::exp(sums[a*k+g]+(b<0?0:sums[b*k+g])-maximum);
+        return maximum+std::log(total)-std::log(static_cast<double>(k));
+    };
+    for(int v=0;v<n;++v)evidence[v]=log_evidence(v,-1);
+    // score, negative roots, versions: equal scores prefer lower root IDs.
+    using Entry=std::tuple<double,int,int,int,int>;
+    std::priority_queue<Entry> queue;
+    auto offer=[&](int a,int b){if(a>b)std::swap(a,b);if(a==b)return;
+        double gain=log_evidence(a,b)-evidence[a]-evidence[b];
+        if(gain>1e-12)queue.emplace(gain,-a,-b,version[a],version[b]);};
+    for(int y=0;y<h;++y)for(int x=0;x<w;++x){int a=y*w+x;if(!support[a])continue;
+        if(x+1<w&&support[a+1]){neighbours[a].insert(a+1);neighbours[a+1].insert(a);offer(a,a+1);}
+        if(y+1<h&&support[a+w]){neighbours[a].insert(a+w);neighbours[a+w].insert(a);offer(a,a+w);}}
+    int merges=0;double total_gain=0.;
+    while(!queue.empty()) {
+        auto item=queue.top();queue.pop();int a=-std::get<1>(item),b=-std::get<2>(item);
+        if(parent[a]!=a||parent[b]!=b||version[a]!=std::get<3>(item)||version[b]!=std::get<4>(item))continue;
+        double gain=log_evidence(a,b)-evidence[a]-evidence[b];if(gain<=1e-12)continue;
+        if(size[a]<size[b]||(size[a]==size[b]&&a>b))std::swap(a,b);
+        parent[b]=a;size[a]+=size[b];++version[a];++version[b];++merges;total_gain+=gain;
+        for(int g=0;g<k;++g)sums[a*k+g]+=sums[b*k+g];evidence[a]=log_evidence(a,-1);
+        std::set<int> joined;
+        for(int v:neighbours[a]){int r=root(v);if(r!=a)joined.insert(r);}
+        for(int v:neighbours[b]){int r=root(v);if(r!=a)joined.insert(r);}
+        neighbours[a].swap(joined);neighbours[b].clear();
+        for(int v:neighbours[a]){neighbours[v].erase(b);neighbours[v].erase(a);neighbours[v].insert(a);offer(a,v);}
+    }
+    int count=0;
+    for(int v=0;v<n;++v){int r=root(v);if(compact[r]<0)compact[r]=count++;output[v]=compact[r];}
+    diagnostics[0]=merges;diagnostics[1]=count;diagnostics[2]=total_gain;
+    return 0;
+}
 
 // Sorted-edge internal-contrast segmentation; no additional size merge pass.
 extern "C" int bora_contrast_components(const int32_t* a,const int32_t* b,

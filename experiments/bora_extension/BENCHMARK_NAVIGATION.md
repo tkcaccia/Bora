@@ -58,7 +58,12 @@ labelled controls including a full-support ablation. Its17-case engineering
 pilot passed mask, parent-parity and reporting audits; all17 overviews and17
 native label crops were actually inspected. The full469-case run uses an
 immutable source snapshot, three nice12 workers and two numerical threads per
-worker. No full cycle11 selection exists yet. Candidate time excludes cached
+worker. The completed full run is reviewed and signed as described above.
+Cycle12's15 prospective children are implemented in `twelve_manifest.py`,
+`cycle_twelve.py`, `twelve_appearance.py`, `twelve_support.py`, `twelve_regions.py`
+and `native_twelve.py`; their equations and limitations are in
+`CYCLE_TWELVE_PROPOSAL.md`. Read CURRENT_RUN.json for its engineering pilot;
+it is not a completed cycle or a new signed selection. Candidate time excludes cached
 Virchow2 encoding/conversion; it is not end-to-end pipeline latency.
 The remaining historical349 navigation below documents signed earlier work;
 its counts are not the current denominator.

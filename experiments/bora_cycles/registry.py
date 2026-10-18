@@ -535,13 +535,19 @@ CYCLE_ELEVEN.update({item['id']: Candidate(item['title'],item['intervention'],
     item['equation_or_rule'],item['failure_hypothesis'],True,item['parent'])
     for item in CHILDREN_ELEVEN})
 
+from .twelve_manifest import SURVIVORS as CYCLE_TWELVE_SURVIVORS, CHILDREN as CHILDREN_TWELVE
+CYCLE_TWELVE={key:CYCLE_ELEVEN[key] for key in CYCLE_TWELVE_SURVIVORS}
+CYCLE_TWELVE.update({item['id']:Candidate(item['title'],item['intervention'],
+    item['equation_or_rule'],item['failure_hypothesis'],True,item['parent'])
+    for item in CHILDREN_TWELVE})
+
 
 def candidates(cycle=1):
-    if cycle not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11):
+    if cycle not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12):
         raise ValueError("This cycle has no implemented, reviewed lineage")
     return {1: CYCLE_ONE, 2: CYCLE_TWO, 3: CYCLE_THREE, 4: CYCLE_FOUR,
             5: CYCLE_FIVE, 6: CYCLE_SIX, 7: CYCLE_SEVEN, 8: CYCLE_EIGHT,
-            9: CYCLE_NINE, 10: CYCLE_TEN, 11: CYCLE_ELEVEN}[cycle]
+            9: CYCLE_NINE, 10: CYCLE_TEN, 11: CYCLE_ELEVEN,12:CYCLE_TWELVE}[cycle]
 
 
 def roster(cycle=1):

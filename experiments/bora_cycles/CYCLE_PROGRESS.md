@@ -10,6 +10,13 @@ high overlap scores. See CYCLE_ELEVEN_REVIEW.md for all20 tradeoffs.
 Read CYCLE_ELEVEN_EXECUTION.json and the results-base CURRENT_RUN.json for
 execution hashes and live state. Nine cycles and the final five-conversion run remain.
 
+Cycle12 introduces Q01–Q15, three interventions per signed parent. The proposal
+records native blank calibration, local enclosure, covariance support evidence,
+new likelihood/uncertainty/transport laws and palette/region decisions. Local
+and Chiamaka targeted checks pass99 tests; no cycle12 full-run selection is
+inferred from those tests. The24-case engineering pilot must pass its own
+prediction, scoring, geometry, parent parity and actual visual review gates.
+
 Prospective user steering after cycle10 excludes single-group images and
 fields with too few real tiles. The score-blind size/group audit qualifies299/349
 historical inputs; physical calibration subsequently admits269. Its frozen rule

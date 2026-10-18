@@ -31,7 +31,8 @@ from .registry import (candidates, roster, CHILDREN_TWO, CYCLE_TWO_SURVIVORS,
                        CHILDREN_EIGHT, CYCLE_EIGHT_SURVIVORS,
                        CHILDREN_NINE, CYCLE_NINE_SURVIVORS,
                        CHILDREN_TEN, CYCLE_TEN_SURVIVORS,
-                       CHILDREN_ELEVEN, CYCLE_ELEVEN_SURVIVORS)
+                       CHILDREN_ELEVEN, CYCLE_ELEVEN_SURVIVORS,
+                       CHILDREN_TWELVE, CYCLE_TWELVE_SURVIVORS)
 from .diagnostics import novelty, white_regions, mask_diagnostics,rare_colors
 from .runtime_policy import active_policy, runtime_ranking
 from .benchmark_scope import load_scope, validate_scope, requires_parent_parity
@@ -116,6 +117,9 @@ def freeze_case(args):
     protocol = json.loads((root/"PROTOCOL.json").read_text())
     from .eleven_manifest import SUPPORT_METHODS
     owned_keys=set(keys)&SUPPORT_METHODS if protocol.get('cycle',0)>=11 else set()
+    if protocol.get('cycle',0)>=12:
+        from .twelve_manifest import NATIVE_CHILDREN
+        owned_keys|=set(keys)&NATIVE_CHILDREN
     native_he=(np.array(Image.open(src/'original.native.png').convert('RGB')) if owned_keys else None)
     lineage = protocol.get("lineage")
     coordinates = geometry(sample)
@@ -132,7 +136,10 @@ def freeze_case(args):
                     started = time.perf_counter()
                     candidate_support=native_support
                     if key in owned_keys:
-                        from .cycle_eleven import predict_native
+                        if key.startswith('Q'):
+                            from .cycle_twelve import predict_native
+                        else:
+                            from .cycle_eleven import predict_native
                         native,candidate_support,details=predict_native(key,rgb,coarse,support,spacing,
                             sample['palette'],he,native_he,geometry(sample,native=True)['algorithm_spacing_xy'])
                     elif constant_input:
@@ -422,7 +429,7 @@ def main():
     parser.add_argument("--keys", nargs="+")
     parser.add_argument("--workers", type=int, choices=(1, 2, 3), default=3)
     parser.add_argument("--repeats", type=int, default=1)
-    parser.add_argument("--cycle", type=int, choices=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), default=1)
+    parser.add_argument("--cycle", type=int, choices=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), default=1)
     parser.add_argument("--previous", type=Path)
     parser.add_argument("--metric-backend", choices=("numpy", "cpp"), default="cpp")
     args = parser.parse_args()
@@ -448,7 +455,8 @@ def main():
                                8: (CYCLE_EIGHT_SURVIVORS, CHILDREN_EIGHT),
                                9: (CYCLE_NINE_SURVIVORS, CHILDREN_NINE),
                                10: (CYCLE_TEN_SURVIVORS, CHILDREN_TEN),
-                               11: (CYCLE_ELEVEN_SURVIVORS, CHILDREN_ELEVEN)}[args.cycle]
+                               11: (CYCLE_ELEVEN_SURVIVORS, CHILDREN_ELEVEN),
+                               12: (CYCLE_TWELVE_SURVIVORS, CHILDREN_TWELVE)}[args.cycle]
         if previous["cycle"] != args.cycle-1 or selection["survivors"] != list(survivors):
             parser.error("Implemented children do not match the actual reviewed survivors")
         if digest(args.previous/"VISUAL_REVIEW.json") != selection["review_sha256"]:
@@ -499,6 +507,8 @@ def main():
                 degenerate_evidence_policy='At least two observed groups are required; single-group and uncalibrated cases remain outside the input plan and every score/runtime denominator.',
                 support_policy='P10/P11/P12/B23 own a separately frozen native H&E support raster; all other methods retain inherited support. Every annotated reference pixel is scored.',
                 selection='Review every admitted image and all23 outputs, then select five of the20 candidates using the fixed excess-one-second penalty. Controls cannot survive.')
+            if args.cycle>=12:
+                protocol['study_protocol']['support_policy']='P11/B23 and Q01/Q02/Q03 own frozen native H&E support; other methods retain common support. Only Q01 may remove original nonwhite pixels under its registered affine blank model. Every annotated reference pixel still counts.'
     validate_scope(protocol, pilot=args.pilot)
     if (args.root/"PROTOCOL.json").exists():
         if json.loads((args.root/"PROTOCOL.json").read_text()) != protocol:

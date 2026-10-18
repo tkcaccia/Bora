@@ -17,6 +17,14 @@ See [CYCLE_ELEVEN_REVIEW.md](CYCLE_ELEVEN_REVIEW.md) for all20 decisions and
 hashes; the results-base `CURRENT_RUN.json` identifies the current state.
 Nine cycles and the final all-five-fixed-conversion evaluation remain.
 
+Cycle12 now has15 prospective implementations, three per signed survivor.
+[CYCLE_TWELVE_PROPOSAL.md](CYCLE_TWELVE_PROPOSAL.md) gives every equation,
+failure hypothesis and distinction from earlier mechanisms. Q01 explicitly
+tests calibrated gray-glass removal; annotated pixels remain in scoring.
+Q12/Q15 have compiled graph primitives; a port is not counted as an innovation.
+Engineering checks and a24-case pilot precede any full469-case launch or
+cycle12 selection. Read CURRENT_RUN.json for live execution state.
+
 Cycle ten has computed, scored, rendered and audited the same 349 frozen ROIs after its 13-image pilot,
 357 checks and actual inspection of all pilot overviews plus three native
 crops. Its prospective mathematics are in

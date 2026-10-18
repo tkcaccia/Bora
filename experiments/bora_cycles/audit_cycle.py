@@ -121,7 +121,7 @@ def audit(source, root, previous=None, executed_code=None):
             mask = tifffile.imread(path)
             if mask.shape != tuple(sample["native_shape_yx"]) or mask.shape != support.shape:
                 raise ValueError("Native geometry changed: "+case+"/"+method)
-            from .expanded_metrics import owns_native_support
+            from .expanded_metrics import owns_native_support,may_remove_nonwhite
             actual_support=support
             if owns_native_support(method,saved['details']):
                 if method+'/support.native.tif' not in prediction['files_sha256']:
@@ -130,7 +130,7 @@ def audit(source, root, previous=None, executed_code=None):
                 if native_white is None:
                     from .diagnostics import white_regions
                     native_white=white_regions(np.array(Image.open(src/'original.native.png').convert('RGB')))[0]
-                if actual_support.shape!=support.shape or np.any((~native_white)&~actual_support):
+                if actual_support.shape!=support.shape or (not may_remove_nonwhite(method,saved['details']) and np.any((~native_white)&~actual_support)):
                     raise ValueError('Native support changed geometry or removed non-white tissue')
                 if saved['details']['native_support']['saved_support_sha256']!=prediction['files_sha256'][method+'/support.native.tif']:
                     raise ValueError('Reported native support hash differs from frozen raster')

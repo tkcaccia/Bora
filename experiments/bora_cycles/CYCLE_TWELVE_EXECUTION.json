@@ -1,0 +1,69 @@
+{
+  "cycle": 12,
+  "status": "implemented_targeted_tests_passed_pilot_pending",
+  "completed_cycles": 11,
+  "complete_goal": false,
+  "parents": [
+    "P11",
+    "N08",
+    "M04",
+    "J01",
+    "C17"
+  ],
+  "children": [
+    "Q01",
+    "Q02",
+    "Q03",
+    "Q04",
+    "Q05",
+    "Q06",
+    "Q07",
+    "Q08",
+    "Q09",
+    "Q10",
+    "Q11",
+    "Q12",
+    "Q13",
+    "Q14",
+    "Q15"
+  ],
+  "benchmark_cases": 469,
+  "input_plan_sha256": "3b23ea5d0f6d6e16679d6a2cfe216ea3934731ba06e0b902ca4204ee96ac3a8d",
+  "previous_selection_sha256": "3ac9c167b8a3089efd1c90a71e82112f4ac478b3fba59995009ebf14adae6b6c",
+  "controls": [
+    "B21",
+    "B22",
+    "B23"
+  ],
+  "primary_conversion": "ensemble, fixed equal09+19",
+  "targeted_validation": {
+    "local_tests": 99,
+    "local_passed": 99,
+    "chiamaka_tests": 99,
+    "chiamaka_passed": 99,
+    "independent_checks": [
+      "Gaussian ball probability versus noncentral chi-square",
+      "directed M-matrix and constant reproduction",
+      "skew field versus independent dense least squares",
+      "max-min graph closure versus all paths",
+      "Bayes queue versus exhaustive greedy graph search",
+      "plurality finite differences and primal-dual gap",
+      "censored-tail likelihood and finite differences",
+      "gray-blank support and native geometry",
+      "prediction freeze with unreadable fine reference",
+      "rank-one BIC versus full Gaussian covariance likelihood, three extra parameters"
+    ]
+  },
+  "native_support_children": [
+    "Q01",
+    "Q02",
+    "Q03"
+  ],
+  "nonwhite_removal_only": "Q01; annotated removed pixels remain scored",
+  "pilot_cases": 24,
+  "pilot_completed": false,
+  "full_run_launched": false,
+  "new_output_storage": "/home/chiamaka/Bora-benchmark-compute (NVMe)",
+  "microscopy_calibration_and_rgb_unchanged": true,
+  "timestamp_utc": "2026-10-18T13:00:33.302802+00:00"
+}
