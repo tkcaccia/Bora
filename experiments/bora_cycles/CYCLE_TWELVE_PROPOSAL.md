@@ -174,3 +174,26 @@ accuracy, time, small-region misses, residuals, benefits and failures. Select
 five only after all469 case overviews have actually been inspected; publish
 only their selected viewer for the user. Cycles13–20 and the final all-five-RGB
 comparison remain outstanding after this proposal.
+
+## Engineering revision after the first pilot
+
+The immutable be54524 pilot finished all24 cases, passed552 native-mask checks,
+120 parent-native comparisons and120 parent-score comparisons. Every overview
+and eight targeted native label crops were actually inspected. No five were
+selected and no full run was released from that pilot.
+
+Native PUMA11 exposed Q12's zero-ceiling fallback: a4µm support cell can miss a
+thin real tissue fragment. Normalizing its zero class vector gave a uniform
+tie and an artificial lowest-ID class fringe. A failing regression test
+reproduced this independently. The corrected implementation restores the
+parent's nonzero class evidence in unseeded cells before fine-grid lifting;
+zero graph ceilings still block propagation through excluded cells. This is
+an implementation repair of the declared parent fallback, not a new hypothesis.
+
+Q15's C++ neighbour sets now use hash tables. The Bayes-factor objective,
+priority ordering and merge law are unchanged; a port is not an extra model.
+Q13/Q15 now retain parent palette-fit metadata under an explicit field rather
+than overwrite it with the lineage parent ID. A fresh pilot must check output
+parity for all22 unchanged methods, all native supports, Q12's repaired crop,
+and the measured speed of Q15 before the469-case run can start. The first
+pilot remains preserved as engineering evidence, including its errors.

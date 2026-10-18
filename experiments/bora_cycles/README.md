@@ -22,8 +22,10 @@ Cycle12 now has15 prospective implementations, three per signed survivor.
 failure hypothesis and distinction from earlier mechanisms. Q01 explicitly
 tests calibrated gray-glass removal; annotated pixels remain in scoring.
 Q12/Q15 have compiled graph primitives; a port is not counted as an innovation.
-Engineering checks and a24-case pilot precede any full469-case launch or
-cycle12 selection. Read CURRENT_RUN.json for live execution state.
+The first24-case pilot was fully audited and actually reviewed, exposing an
+empty-grid fallback artifact in Q12. Its repair requires a fresh pilot before
+the469-case launch. See [CYCLE_TWELVE_PILOT_REVIEW.md](CYCLE_TWELVE_PILOT_REVIEW.md)
+and CURRENT_RUN.json for observed limitations and live execution state.
 
 Cycle ten has computed, scored, rendered and audited the same 349 frozen ROIs after its 13-image pilot,
 357 checks and actual inspection of all pilot overviews plus three native

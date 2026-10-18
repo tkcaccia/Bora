@@ -21,6 +21,7 @@ def nested(value):
         for key in ('fits',):
             for item in value.get(key, []):
                 yield from nested(item)
+        if isinstance(value.get('palette_fit'),dict):yield from nested(value['palette_fit'])
 
 
 def summarize(root):

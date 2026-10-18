@@ -17,6 +17,7 @@ nice -n 12 "$task_python" -m pytest -q \
   tests/test_bora_calibrated_cohort.py tests/test_bora_calibrated_scope.py \
   tests/test_bora_expanded_scope_metrics.py tests/test_bora_extension_task_adapter.py \
   tests/test_bora_small_region_atlas.py tests/test_bora_input_limits.py \
+  tests/test_bora_calibrated_paired_lineage.py tests/test_bora_cycle_repeatability.py \
   tests/test_bora_cycle_review.py tests/test_bora_cycle_publish.py tests/test_bora_cycle_audit.py
 # Engineering pilot: all23 methods,24 cases spanning all10 datasets, the nine
 # requested focus cases, and documented native glass / thin-channel failures.

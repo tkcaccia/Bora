@@ -1,6 +1,6 @@
 {
   "cycle": 12,
-  "status": "pilot_prediction_score_render_complete_audit_pending",
+  "status": "pilot_v1_reviewed_requires_Q12_repair_then_v2",
   "completed_cycles": 11,
   "complete_goal": false,
   "parents": [
@@ -79,5 +79,10 @@
   "pilot_prediction_cases": 24,
   "pilot_scored_cases": 24,
   "pilot_rendered_cases": 24,
-  "pilot_actual_visual_reviews": 0
+  "pilot_actual_visual_reviews": 24,
+  "pilot_actual_native_reviews": 8,
+  "pilot_v1_decision_sha256": "6a32d478927bfe9678d200698f695195cd882b218184f81283b07653724e01e3",
+  "pilot_v1_release_to_full": false,
+  "revised_targeted_tests_local": 111,
+  "revised_targeted_tests_chiamaka": 111
 }

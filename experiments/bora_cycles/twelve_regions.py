@@ -16,7 +16,8 @@ from .native_twelve import reconstruct,bayes_regions
 def fuzzy_regions(c,palette,he):
     q,report=edge_appearance(c,palette,he)
     shape,spacing=grid_geometry(c.shape,c.mpp,4.)
-    ceiling=resize_field(q,shape)
+    parent_grid=resize_field(q,shape)
+    ceiling=parent_grid.copy()
     supported=cv2.resize(c.support.astype(np.uint8),shape[::-1],interpolation=cv2.INTER_NEAREST)>0
     ceiling*=supported[...,None]
     label=cv2.resize(c.labels.astype(np.uint8),shape[::-1],interpolation=cv2.INTER_NEAREST)
@@ -24,11 +25,15 @@ def fuzzy_regions(c,palette,he):
     marker=ceiling*(np.eye(c.k)[label]*(trust>.8)[...,None])
     closure=reconstruct(ceiling,marker)
     no_seed=closure.sum(-1)==0
-    closure[no_seed]=ceiling[no_seed]
+    # A4um support cell can miss a thin real native tissue fragment. Its zero
+    # graph ceiling is a propagation barrier, not evidence of equal classes.
+    # Retain the parent's nonzero evidence there before lifting to finer pixels.
+    closure[no_seed]=parent_grid[no_seed]
     q=normalize(resize_field(closure,c.shape,cv2.INTER_LINEAR))
     report.update(model='class gray-ceiling geodesic reconstruction',connectivity_grid_mpp_xy=spacing.tolist(),
         seeded_cells_per_class=np.count_nonzero(marker,axis=(0,1)).tolist(),
         no_connected_seed_cells=int(no_seed.sum()),unseeded_fallback='original parent class probabilities',
+        unsupported_quadrature_cells=int((~supported).sum()),
         primitive='C++ maximum-priority widest paths',primitive_threads=2)
     return q,report
 
@@ -70,7 +75,7 @@ def tile_plurality(c,palette,he):
     grad=objective(result.x)[1].reshape(t,c.k)
     projected=offsets-np.maximum(offsets-grad,0);projected[~valid]=0;projected[np.arange(t),winner]=0
     residual=float(np.max(np.abs(projected)))
-    return final,dict(model='soft tile-integral plurality KL projection',parent=parent,
+    return final,dict(model='soft tile-integral plurality KL projection',palette_fit=parent,
         quadrature_mpp_xy=spacing.tolist(),observed_tiles=int(valid.sum()),
         unsampled_partial_tiles=len(np.unique(full_ids[~sampled])),
         unsampled_partial_tile_rule='Keep parent probabilities without a tile offset',
@@ -118,6 +123,6 @@ def bayesian_regions(c,palette,he):
     pooled=np.stack([np.bincount(regions.ravel(),weights=logp[...,g].ravel(),minlength=n) for g in range(c.k)],-1)
     posterior=softmax(pooled,axis=-1)[regions]
     lifted=resize_field(posterior,c.shape,cv2.INTER_NEAREST)
-    return lifted,dict(report,model='integrated shared-class region evidence',parent=parent,
+    return lifted,dict(report,model='integrated shared-class region evidence',palette_fit=parent,
         region_grid_mpp_xy=spacing.tolist(),greedy_partition_is_global_optimum=False,
         independent_probability_cells_assumed=True,primitive='C++ deterministic Bayes-factor priority queue')

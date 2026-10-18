@@ -6,7 +6,7 @@
 #include <functional>
 #include <limits>
 #include <queue>
-#include <set>
+#include <unordered_set>
 #include <tuple>
 #include <vector>
 #ifdef _OPENMP
@@ -46,7 +46,7 @@ extern "C" int bora_bayes_regions(const double* log_probability,const uint8_t* s
     if(h<1||w<1||k<2)return 1;
     int n=h*w;std::vector<int> parent(n),size(n,1),version(n,0),compact(n,-1);
     std::vector<double> sums(log_probability,log_probability+n*k),evidence(n,0.);
-    std::vector<std::set<int>> neighbours(n);
+    std::vector<std::unordered_set<int>> neighbours(n);
     for(int i=0;i<n*k;++i)if(!std::isfinite(sums[i]))return 2;
     for(int v=0;v<n;++v)parent[v]=v;
     auto root=[&](int v){while(parent[v]!=v){parent[v]=parent[parent[v]];v=parent[v];}return v;};
@@ -74,7 +74,7 @@ extern "C" int bora_bayes_regions(const double* log_probability,const uint8_t* s
         if(size[a]<size[b]||(size[a]==size[b]&&a>b))std::swap(a,b);
         parent[b]=a;size[a]+=size[b];++version[a];++version[b];++merges;total_gain+=gain;
         for(int g=0;g<k;++g)sums[a*k+g]+=sums[b*k+g];evidence[a]=log_evidence(a,-1);
-        std::set<int> joined;
+        std::unordered_set<int> joined;
         for(int v:neighbours[a]){int r=root(v);if(r!=a)joined.insert(r);}
         for(int v:neighbours[b]){int r=root(v);if(r!=a)joined.insert(r);}
         neighbours[a].swap(joined);neighbours[b].clear();

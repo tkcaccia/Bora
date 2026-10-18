@@ -12,10 +12,15 @@ execution hashes and live state. Nine cycles and the final five-conversion run r
 
 Cycle12 introduces Q01–Q15, three interventions per signed parent. The proposal
 records native blank calibration, local enclosure, covariance support evidence,
-new likelihood/uncertainty/transport laws and palette/region decisions. Local
-and Chiamaka targeted checks pass99 tests; no cycle12 full-run selection is
-inferred from those tests. The24-case engineering pilot must pass its own
-prediction, scoring, geometry, parent parity and actual visual review gates.
+new likelihood/uncertainty/transport laws and palette/region decisions. Its
+first24-case pilot passed552 mask checks and120 each parent-native/accuracy
+comparisons; all24 overviews and eight native label crops were actually
+inspected. Q12's empty-grid fallback created a false class fringe, so that
+pilot is preserved without a full-run release. The repair and a Q15 C++
+hash-set port pass111 targeted checks on both hosts; a fresh second pilot must
+verify unchanged-method parity, corrected geometry and runtime. No cycle12
+full-run selection is inferred. Read CYCLE_TWELVE_PILOT_REVIEW.md and the
+version1 decision receipt for the actual findings and gate.
 
 Prospective user steering after cycle10 excludes single-group images and
 fields with too few real tiles. The score-blind size/group audit qualifies299/349

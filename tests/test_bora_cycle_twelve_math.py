@@ -150,3 +150,17 @@ def test_texture_bic_matches_full_gaussian_covariance_likelihood_and_parameter_c
     # Rank-one strength plus a direction on the two-dimensional unit sphere.
     expected=likelihood(alternative)-likelihood(blank)-3/2*np.log(count)
     np.testing.assert_allclose(rank_one_bic(4.,1.,count),expected,atol=1e-13)
+
+
+def test_unseeded_quadrature_cells_retain_parent_evidence_instead_of_uniform_class_tie(monkeypatch):
+    from types import SimpleNamespace
+    from experiments.bora_cycles import twelve_regions as module
+    shape=(16,16);q=np.broadcast_to([.1,.9],(*shape,2)).copy()
+    c=SimpleNamespace(shape=shape,mpp=np.array([1.,1.]),k=2,
+        support=np.zeros(shape,bool),labels=np.zeros(shape,np.uint8),weight=np.zeros(shape))
+    # A thin real tissue point is missed by nearest4um support sampling.
+    c.support[15,15]=True
+    monkeypatch.setattr(module,'edge_appearance',lambda *a:(q.copy(),{}))
+    fitted,report=module.fuzzy_regions(c,None,None)
+    assert np.all(fitted.argmax(-1)==1)
+    np.testing.assert_allclose(fitted,q,atol=1e-7)
