@@ -105,3 +105,25 @@ def test_completed_viewer_refuses_changed_scored_evidence(tmp_path):
     save(tmp_path/"RESULTS.json", dict(cases=["changed"]))
     with pytest.raises(ValueError, match="changed signed"):
         publish_selection_status(tmp_path)
+
+
+def test_selected_calibrated_viewer_uses_new_cohort_labels_and_physical_windows(tmp_path):
+    from experiments.bora_cycles.selected_viewer import publish_selected
+    report_fixture(tmp_path)
+    protocol=json.loads((tmp_path/'PROTOCOL.json').read_text())
+    protocol.update(cycle=11,benchmark_scope=dict(version='calibrated-tissues-v1'))
+    save(tmp_path/'PROTOCOL.json',protocol)
+    result=json.loads((tmp_path/'RESULTS.json').read_text());result['protocol']=protocol
+    result['cases'][0]['sample'].update(native_shape_yx=[2560,2560],working_shape_yx=[1280,1280],
+        native_mpp_xy=[.25,.25],working_mpp_xy=[.5,.5])
+    for row in result['ranking']:
+        row['strata']=dict(previous_cohort=dict(mean_iou=.6),new_tissue_datasets=dict(mean_iou=None))
+    save(tmp_path/'RESULTS.json',result)
+    selection=json.loads((tmp_path/'SELECTION.json').read_text());selection.update(cycle=11,
+        results_sha256=digest(tmp_path/'RESULTS.json'),protocol_sha256=digest(tmp_path/'PROTOCOL.json'))
+    save(tmp_path/'SELECTION.json',selection)
+    publish_selected(tmp_path)
+    html=(tmp_path/'selected.html').read_text()
+    assert 'Previous cohort IoU' in html and 'New tissue datasets IoU' in html
+    assert 'Original149 IoU' not in html
+    assert '112.0 × 112.0 µm; 224.0 × 224.0 µm; 448.0 × 448.0 µm' in html

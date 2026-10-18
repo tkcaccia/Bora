@@ -59,6 +59,8 @@ def publish(source, root):
         record = root/"cases"/case/"PREDICTIONS.json"
         if digest(record) != frozen["manifests"][case]:
             raise RuntimeError("Prediction provenance changed")
+        prediction=json.loads(record.read_text())
+        verify(root/'cases'/case,prediction['files_sha256'])
         rgb = np.array(Image.open(src/"ensemble/representation.png").convert("RGB"))
         he = np.array(Image.open(src/"original.native.png").convert("RGB"))
         support = tifffile.imread(src/"tissue.working.tif") > 0
@@ -69,7 +71,13 @@ def publish(source, root):
         palette_image(native_coarse, samples[case]["palette"]).save(preview/"coarse.jpg", quality=90)
         coordinates = geometry(samples[case])
         native_coordinates = geometry(samples[case], native=True)
-        rarity, rare_regions, detail = rare_colors(rgb, support, coordinates["algorithm_spacing_xy"])
+        if 'RARITY.npz' in prediction['files_sha256']:
+            frozen_rare=np.load(root/'cases'/case/'RARITY.npz')
+            rarity,rare_regions=frozen_rare['score'],frozen_rare['regions']
+            detail=json.loads((root/'cases'/case/'RARITY.json').read_text())
+            detail['frozen_proposal_sha256']=prediction['files_sha256']['RARITY.npz']
+        else:
+            rarity, rare_regions, detail = rare_colors(rgb, support, coordinates["algorithm_spacing_xy"])
         detail = report_units(detail, coordinates["units"])
         detail['coordinate_geometry'] = coordinates
         novelty_regions = np.load(root/"cases"/case/"NOVELTY.npz")["regions"]

@@ -16,8 +16,10 @@ def main():
     protocol = json.loads((root/'PROTOCOL.json').read_text())
     posthoc = json.loads((root/'POSTHOC_COMPLETE.json').read_text())
     plan = json.loads(args.plan.read_text())
+    from .benchmark_scope import validate_scope
+    validate_scope(protocol)
     if (protocol['pilot'] or protocol['cycle'] != plan['cycle']
-            or len(protocol['cases']) != 349
+            or (plan.get('input_plan_sha256') is not None and plan['input_plan_sha256']!=protocol['input_plan_sha256'])
             or digest(args.source/'PLAN.json') != protocol['input_plan_sha256']
             or posthoc['primary_protocol_sha256'] != digest(root/'PROTOCOL.json')
             or posthoc['primary_results_sha256'] != digest(root/'RESULTS.json')):

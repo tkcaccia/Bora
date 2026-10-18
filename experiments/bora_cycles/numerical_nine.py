@@ -6,7 +6,10 @@ from .run import digest
 
 CHECKS = ('linear_system_max_residual', 'kkt_max_residual', 'equality_max_residual',
           'max_kkt_residual', 'gradient_infinity_norm', 'projected_gradient_residual',
-          'primal_residual', 'dual_residual', 'lagrangian_projected_residual')
+          'primal_residual', 'dual_residual', 'lagrangian_projected_residual',
+          'primal_projected_residual','dual_fixed_point_residual','projected_stationarity',
+          'order_constraint_violation','projection_change','log_variance_system_residual',
+          'simplex_sum_residual')
 
 
 def nested(value):

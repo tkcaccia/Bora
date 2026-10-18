@@ -94,6 +94,8 @@ def publish_selected(root):
         raise ValueError("Selected viewer needs exactly five survivors")
     result = json.loads((root/"RESULTS.json").read_text())
     protocol = result["protocol"]
+    calibrated=protocol.get('benchmark_scope',{}).get('version')=='calibrated-tissues-v1'
+    strata=('previous_cohort','new_tissue_datasets') if calibrated else ('historical149','additional200')
     if protocol != json.loads((root/"PROTOCOL.json").read_text()):
         raise ValueError("Result protocol differs from signed protocol")
     policy = active_policy(protocol) or DEFAULT_POLICY
@@ -134,6 +136,16 @@ def publish_selected(root):
         spacing = (' × '.join(number(v,3) for v in sample['native_mpp_xy'])+' µm/pixel'
                    if sample['native_mpp_xy'] is not None else
                    'Microscopy pixel spacing unknown; numerical scales and area scores are in pixels')
+        calibration_note=''
+        if calibrated:
+            from experiments.bora_extension.calibration import require
+            physical=require(sample)
+            working=' × '.join(number(v,5) for v in physical['working_mpp_xy'])
+            windows='; '.join(' × '.join(number(v,1) for v in physical['scales'][str(scale)]['window_um_xy'])+' µm'
+                for scale in (1,2,4))
+            calibration_note=f'<p class="note">Working sampling: {working} µm/pixel. Virchow2 224px windows: {windows}. Resampling does not restore source optical detail. See the frozen input plan for axis calibration and source provenance.</p>'
+            if row['dataset'] in ('peso','ocelot','orca'):
+                calibration_note+='<p class="note">Broad negative target, not expert stroma. For scoring only, saved-zero on RGB-white pixels represents the declared negative. Deleted positive target pixels and non-white unassigned pixels remain errors.</p>'
         omitted = row.get('reference_classes_absent_from_coarse', [])
         omitted_note = ('<p class="note">Input tile labels omit these reference classes: '
                         +escape(', '.join(sample['class_names'].get(str(i),str(i)) for i in omitted))
@@ -142,7 +154,7 @@ def publish_selected(root):
             f'<section data-case="{escape(case,quote=True)}" hidden><h2>{escape(case)}</h2>'
             f'<p class="note">{escape(row["dataset"])} · {escape(sample["source_region_type"])} · '
             f'{width} × {height} native pixels · {spacing}. '
-            'Pixel spacing is not optical resolving power.</p>'+omitted_note+
+            'Pixel spacing is not optical resolving power.</p>'+calibration_note+omitted_note+
             ('<p class="note">Single eligible coarse class: converted RGB is constant. Every method uses the common completed-coarse fallback; an explicit H&amp;E glass rule may still remove background. No RGB refinement is claimed.</p>'
              if row.get('single_eligible_class') else '')+
             ('<p class="note">RINGS is tumor versus outside-tumor, including glass/lumina. Outside-tumor is not expert stroma. Saved background0 is scored as outside-tumor; deleted tumor is still wrong.</p>'
@@ -161,8 +173,8 @@ def publish_selected(root):
         f'<td>{r["completely_missed_small_regions"]}</td>'
         +(f'<td>{number(r.get("pixel_small_region_recall"),3)}</td>'
           f'<td>{r.get("pixel_completely_missed_small_regions",0)}</td>'
-          f'<td>{number(r["strata"]["historical149"]["mean_iou"])}</td>'
-          f'<td>{number(r["strata"]["additional200"]["mean_iou"])}</td>'
+          f'<td>{number(r["strata"][strata[0]]["mean_iou"])}</td>'
+          f'<td>{number(r["strata"][strata[1]]["mean_iou"])}</td>'
           if protocol.get('benchmark_scope') else '')+'</tr>' for r in ranks)
     html = ('<!doctype html><html lang="en"><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1">'
@@ -191,7 +203,8 @@ def publish_selected(root):
             '<div class="scores"><table><tr><th>Selected algorithm</th><th>Mean IoU</th>'
             '<th>Mean Dice</th><th>Mean seconds</th><th>Images &gt;1s</th>'
             '<th>Mean penalty</th><th>Adjusted score</th><th>Small recall</th><th>Small fully missed</th>'
-            +('<th>Pixel-small recall</th><th>Pixel-small missed</th><th>Original149 IoU</th><th>Additional200 IoU</th>'
+            +('<th>Pixel-small recall</th><th>Pixel-small missed</th>'
+              +('<th>Previous cohort IoU</th><th>New tissue datasets IoU</th>' if calibrated else '<th>Original149 IoU</th><th>Additional200 IoU</th>')
               if protocol.get('benchmark_scope') else '')+
             f'</tr>{table}</table></div>'+''.join(sections)
             +f'<script>{SCRIPT}</script></main></html>')
