@@ -1,7 +1,7 @@
 {
-  "stage": "full_predictions_scored_awaiting_actual_visual_review",
-  "completed_cycles": 8,
-  "active_cycle": 9,
+  "stage": "cycle_reviewed_and_selected",
+  "completed_cycles": 9,
+  "active_cycle": null,
   "source_commit": "ea8ce72608f172d53350e3ee1aee354406c25a12",
   "source_snapshot": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-extension-2026-10-18/cycle-nine-code-v4-ea8ce72",
   "archive_sha256": "a4e211f1106083b2eefbdb66a971db0669f91b70d9a6fac7e7c771f348717c94",
@@ -17,7 +17,7 @@
   "expected_full_cases": 349,
   "expected_full_methods": 22,
   "complete_goal": false,
-  "checkpoint_utc": "2026-10-18T02:31:13.752678+00:00",
+  "checkpoint_utc": "2026-10-18T03:15:42.069658+00:00",
   "superseded_pilot_report": "experiments/bora_cycles/CYCLE_NINE_SUPERSEDED_PILOTS.json",
   "pilot_process_terminal": true,
   "pilot_decision_sha256": "54b9079ce5d9068975fa618f29866f35df92635145ed462989150112fc8b6334",
@@ -27,9 +27,9 @@
   "remote_root": "/mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-09",
   "local_root": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-09-chiamaka",
   "main_log": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-extension-2026-10-18/cycle-nine-full-v4.log",
-  "actual_full_overviews": 60,
+  "actual_full_overviews": 349,
   "actual_full_native_crops": 9,
-  "survivors_selected": false,
+  "survivors_selected": true,
   "full_launch": {
     "pid": 1686483,
     "source_commit": "ea8ce72608f172d53350e3ee1aee354406c25a12",
@@ -76,5 +76,17 @@
     "unchanged_survivor_comparisons": 1745,
     "constant_evidence_comparisons": 660,
     "failed_methods": {}
-  }
+  },
+  "survivors": [
+    "J01",
+    "M04",
+    "K05",
+    "M11",
+    "C17"
+  ],
+  "selection_sha256": "7a75cc4a19016b718c067eaf22cdd4c99e69fd374afd5bf258e9d049f29f1704",
+  "results_sha256": "67c8743960008385101c1853995c62f13b889e7d57459528d6b4a7ad6d65807d",
+  "visual_review_sha256": "54d58fdc7c1f389a509f873632994a5cf7035ac6416917ac72b4bbe39f9d26fd",
+  "native_review_sha256": "96cb1aa467a43799c7f0157c4fc91667992063e49b61a47c1a5efbd0131025b3",
+  "viewer": "cycle-09-chiamaka/selected.html"
 }

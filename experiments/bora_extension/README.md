@@ -4,10 +4,12 @@ The user requested continuing the 20-cycle study and adding images alongside
 the current 149. **200 additional image/coarse/reference triples are prepared
 and pass a native-source/overlap audit.** Full encoder inference is also complete:
 all600 arrays across200 additions pass the independent feature audit. Expanded
-Bora cycle8 is signed after349 actual all-method overview inspections and14
-native label crops. Eight of twenty cycles are complete. Cycle9 is running
-the same349 frozen inputs after a separately reviewed13-image engineering
-pilot. Its full scoring, review and five-survivor selection are pending.
+Bora cycle9 is signed after349 actual all-method overview inspections and9
+native label crops. Nine of twenty cycles are complete. Its selected five are
+J01,M04,K05,M11,C17. J01 remains the runtime-adjusted leader; the other four
+retain distinct uncertainty,bending,background and palette mechanisms, with
+explicit tradeoffs rather than a claim that they are the five highest numeric
+utility ranks. See `../bora_cycles/CYCLE_NINE_REVIEW.md` for every decision.
 
 | Dataset | Existing | Added | Frozen total | Added representation |
 | --- | ---: | ---: | ---: | --- |

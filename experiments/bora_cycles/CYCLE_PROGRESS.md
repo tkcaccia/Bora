@@ -1,7 +1,7 @@
 # Accuracy, speed and the new one-second penalty
 
-Eight of twenty cycles are complete: cycles1–7 use149 repeatedly reused development
-ROIs and cycle8 uses349. The user now requests penalizing algorithms that take longer than one
+Nine of twenty cycles are complete: cycles1–7 use149 repeatedly reused development
+ROIs and cycles8–9 use349. The user requests penalizing algorithms that take longer than one
 second per image. The explicit working policy is:
 
     adjusted utility = mean_i[macro_IoU_i - 0.05 * max(seconds_i - 1, 0)]
@@ -13,14 +13,20 @@ and OCELOT. Selected five: J01,L02,K05,L03,C17. All7678 native masks,
 leads adjusted utility; no child improves it. Eight of twenty cycles are complete.
 See `CYCLE_EIGHT_REVIEW.md` and the signed selection.
 
-Cycle9 is running the same349 frozen inputs on Chiamaka: unchanged J01,L02,
+Cycle9 completed the same349 frozen inputs on Chiamaka: unchanged J01,L02,
 K05,L03,C17 plus15 prospective children M01–M15. Its final13-case pilot passed
 327 checks,286 mask/display audits,65 parent-mask and65 parent-score comparisons
 and44 constant-input checks; all13 overviews and3 native crops were actually
 viewed. Three earlier engineering snapshots remain preserved. The full run
-uses source `ea8ce72`,3 nice12 workers and2 numerical threads each. This is
-not a completed ninth cycle or a new selection. See `CYCLE_NINE_PROPOSAL.md`,
-`CYCLE_NINE_PILOT_REVIEW.json` and `CYCLE_NINE_EXECUTION.json`.
+uses source `ea8ce72`,3 nice12 workers and2 numerical threads each. All349
+all-method overviews and9 native crops were actually inspected after all7678
+native/display checks,1745 parent-mask checks and1745 parent-score checks passed.
+Selected five: J01,M04,K05,M11,C17. J01 remains the mandatory utility leader.
+M04 replaces L02 with positive sampling variance; M11 replaces L03 with an
+explicit tissue-preservation tradeoff, despite many individual regressions.
+The five preserve distinct mechanisms and are not the five highest numeric
+utility ranks. M09's highest raw IoU is rejected because90 images exceed one
+second. See `CYCLE_NINE_REVIEW.md` and the signed selection for all20 decisions.
 
 This subtracts five IoU percentage points per excess second, with no bonus
 below one second. Calculate excess on each image before averaging: a method
