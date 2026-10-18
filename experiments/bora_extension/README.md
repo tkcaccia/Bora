@@ -165,7 +165,8 @@ copies contain metadata, while all200 original input triples are local.
 Shared feature preparation averages1.753 seconds per new image, excluding model
 loading. This is separate from Bora refinements' runtime and is not an
 end-to-end subsecond claim. Cycle8 expanded scoring and review are complete;
-cycle9 is running against the identical frozen inputs.
+cycle9 is signed against the identical frozen inputs; cycle10 is now running
+all349 after its actually reviewed13-image pilot.
 
 `task_adapter.py` prepares the expanded runner's unit and RINGS semantics
 contract. Uncalibrated numerical coordinates are unit pixels, with physical
@@ -175,7 +176,7 @@ and deleted true tumor remains incorrect. Other datasets retain prediction
 zero as an error on positive reference. Four checks cover calibration
 contradictions, honest pixel reporting, deleted-tumor errors and all-tumor
 crops. The cycle-eight runner executed these helpers and passed the full7678-mask
-audit; cycle9 uses the same unit and scoring contract.
+audit; cycles9–10 use the same unit and scoring contract.
 
 ## Completed conversion stage
 
@@ -219,3 +220,6 @@ See `../bora_cycles/CYCLE_NINE_EXECUTION.json` for its current execution state.
 
 The navigation guide in `../../benchmark/EXTENDED_BENCHMARK.md` distinguishes
 raw downloads, frozen input triples, features, converted RGB and scored results.
+
+The versioned [benchmark navigation guide](BENCHMARK_NAVIGATION.md) documents
+the349-image layout, resolution, label semantics, input files and review workflow.

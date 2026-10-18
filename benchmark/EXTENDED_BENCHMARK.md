@@ -7,9 +7,10 @@ OCELOT. A source dataset may contain full WSIs; none of these349 analysis
 images is a full WSI. This is a selected benchmark, not the complete contents
 of every downloaded dataset.
 
-Eight of the requested20 improvement cycles are signed. Cycle9 is currently
-running; its13-image pilot was actually reviewed but does not complete a
-cycle. Check the execution JSON and signed selection files for newer status.
+Nine of the requested20 improvement cycles are signed. Cycle10 is currently
+running on all349 cases; its13-image pilot and3 native label crops were
+actually reviewed but do not complete a cycle. Check `CURRENT_RUN.json`,
+execution reports and signed selection files for newer status.
 
 ## Locations
 
@@ -24,12 +25,14 @@ Chiamaka's data base is `/mnt/sata_ssd/Bora-benchmark`.
 | `results/bora-extension-features-2026-10-18-v1` |600 frozen feature arrays across the200 additions, plus scale/coverage/calibration metadata |
 | `results/bora-expanded-349-inputs-2026-10-18-v1` |Authoritative combined349-image input freeze; all five fixed RGB conversions |
 | `results/bora-cycles-2026-10-17/cycle-08` |Signed, fully reviewed349-image cycle8 |
-| `results/bora-cycles-2026-10-17/cycle-09` |Running full cycle9; not yet reviewed or selected |
+| `results/bora-cycles-2026-10-17/cycle-09` |Signed, fully reviewed349-image cycle9; survivors J01,M04,K05,M11,C17 |
+| `results/bora-cycles-2026-10-17/cycle-10-pilot-v1` |Reviewed13-image engineering pilot; not a completed cycle |
+| `results/bora-cycles-2026-10-17/cycle-10` |Running349-image cycle10; no visual selection yet |
 | `experiments/bora-extension-2026-10-18` |Immutable executed source snapshots, launch logs and acquisition/input audits |
 
 Local outputs use `/Users/stefano/Documents/ChatGPT/Bora/benchmark/results`.
-Remote cycle08/09 correspond to local `cycle-08-chiamaka` and
-`cycle-09-chiamaka`. `CURRENT_RUN.json` in that local results base identifies
+Remote cycle08/09/10 correspond to local `cycle-08-chiamaka`,
+`cycle-09-chiamaka` and `cycle-10-chiamaka`. `CURRENT_RUN.json` in that local results base identifies
 the active process, exact source snapshot, input freeze, last delivered viewer
 and completed-cycle count. Read it before launching another job.
 
@@ -121,9 +124,10 @@ subset. Do not treat source groups as automatically independent patients.
 ## Result files and workflow
 
 `experiments/bora_cycles` contains candidate registries, mathematical manifests,
-implementations, tests, run/review tools and execution reports. For cycle9,
-read `CYCLE_NINE_PROPOSAL.md`, `nine_manifest.py`, `cycle_nine.py`,
-`CYCLE_NINE_PILOT_REVIEW.json` and `CYCLE_NINE_EXECUTION.json`.
+implementations, tests, run/review tools and execution reports. Cycle9 is
+signed: read `CYCLE_NINE_REVIEW.md` and `CYCLE_NINE_SELECTION.json`. For active
+cycle10, read `CYCLE_TEN_PROPOSAL.md`, `ten_manifest.py`, `cycle_ten.py`,
+`CYCLE_TEN_PILOT_REVIEW.json` and `CYCLE_TEN_EXECUTION.json`.
 
 Each result root has `PROTOCOL.json`, case prediction manifests, timed method
 details and `ALL_PREDICTIONS_FROZEN.json` before fine-reference scoring starts.

@@ -18,7 +18,7 @@
   "expected_full_cases": 349,
   "expected_full_methods": 22,
   "complete_goal": false,
-  "checkpoint_utc": "2026-10-18T03:40:20.342867+00:00",
+  "checkpoint_utc": "2026-10-18T03:42:28.759837+00:00",
   "pilot_process_terminal": true,
   "pilot_decision_sha256": "53aa9a36a315f1634d068d32be7b1bd7f9931f149c6316ddbedf3ed5f4df304f",
   "remote_frozen_preflight_checks": 357,
@@ -31,5 +31,10 @@
   "local_full_result": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-10-chiamaka",
   "actual_full_overviews": 0,
   "actual_full_native_crops": 0,
-  "survivors_selected": false
+  "survivors_selected": false,
+  "posthoc_waiter_pid": 2044266,
+  "posthoc_log": "/mnt/sata_ssd/Bora-benchmark/experiments/bora-extension-2026-10-18/cycle-ten-posthoc-v1.log",
+  "posthoc_requires_all349_prediction_freeze_scoring_rendering": true,
+  "posthoc_creates_visual_reviews": false,
+  "posthoc_selects_survivors": false
 }
