@@ -28,4 +28,10 @@ def constant_evidence_fallback(key, rgb, coarse, completed, support, spacing, he
         detail.update(glass, mechanism='white-space-exterior-bottleneck-connectivity',
             proposed_glass_pixels=int((excluded & support).sum()),
             independent_he_glass_rule_applied=True)
+    if key in ('M10', 'M11', 'M12'):
+        from .cycle_nine import GLASS_MODES, glass_exclusion
+        excluded, glass = glass_exclusion(he, spacing, GLASS_MODES[key])
+        labels[excluded] = 0
+        detail.update(glass, independent_he_glass_rule_applied=True,
+            proposed_glass_pixels=int((excluded & support).sum()))
     return labels, detail

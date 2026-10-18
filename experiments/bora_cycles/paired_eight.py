@@ -1,4 +1,4 @@
-"""Paired, cohort-explicit analysis of frozen cycle-eight scores only."""
+"""Paired, cohort-explicit analysis of frozen expanded-cycle scores only."""
 import json
 from pathlib import Path
 
@@ -59,8 +59,13 @@ def analyze(root, previous, audit_path):
     result = json.loads((root/'RESULTS.json').read_text())
     protocol = result['protocol']
     validate_scope(protocol)
-    if protocol['cycle'] != 8 or protocol['pilot']:
-        raise ValueError('Full cycle-eight results required')
+    cycle = protocol['cycle']
+    if cycle not in (8, 9) or protocol['pilot']:
+        raise ValueError('Full expanded cycle-eight/nine results required')
+    if cycle == 9:
+        from .nine_manifest import CHILDREN as children_specs
+    else:
+        children_specs = CHILDREN
     audit = json.loads(audit_path.read_text())
     if (audit['results_sha256'] != digest(root/'RESULTS.json')
             or audit['protocol_sha256'] != digest(root/'PROTOCOL.json')
@@ -71,7 +76,8 @@ def analyze(root, previous, audit_path):
             or digest(previous/'RESULTS.json') != old_selection['results_sha256']):
         raise ValueError('Historical signed parent results changed')
     old_result = json.loads((previous/'RESULTS.json').read_text())
-    historical = protocol['benchmark_scope']['historical_cases']
+    historical = (protocol['benchmark_scope']['historical_cases'] if cycle == 8
+                  else protocol['cases'])
     parents = protocol['lineage']['unchanged_survivors']
     checked = parent_score_parity(result['cases'], old_result['cases'], historical, parents)
     policy = active_policy(protocol)
@@ -91,7 +97,7 @@ def analyze(root, previous, audit_path):
     if len(cohorts['affine_palette'])+len(cohorts['ambiguous_palette']) != 319:
         raise ValueError('Nonconstant parent palette branch is undocumented')
     children = {}
-    for item in CHILDREN:
+    for item in children_specs:
         child, parent = item['id'], item['parent']
         per_case = []
         for row in rows:
@@ -104,12 +110,12 @@ def analyze(root, previous, audit_path):
             cohorts={name:delta_summary(cases,child,parent,policy) for name,cases in cohorts.items()},
             datasets={d:delta_summary([r for r in rows if r['dataset']==d],child,parent,policy)
                       for d in sorted({r['dataset'] for r in rows})}, per_case=per_case)
-    return dict(cycle=8, cases=349, historical_parent_score_comparisons=checked,
+    return dict(cycle=cycle, cases=349, historical_parent_score_comparisons=checked,
         historical_score_fields_exact=list(SCORE_CORE),
         historical_accuracy_definition_unchanged=True, children=children,
         palette_branch_cases={k:len(cohorts[k]) for k in ('affine_palette','ambiguous_palette')},
         palette_child_interpretation='C17 uses a direct pixel affine inverse when identifiable. '
-            'L07/L08/L09 instead use24-bin occupied-colour nodes and a prior-regularized objective '
+            'Palette children instead use24-bin occupied-colour nodes and their stated decision objective '
             'on those cases. These are comparisons of complete implementations, not isolated '
             'likelihood ablations; affine and ambiguous cohorts are reported separately.',
         protocol_sha256=digest(root/'PROTOCOL.json'), results_sha256=digest(root/'RESULTS.json'),
