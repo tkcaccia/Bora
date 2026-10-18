@@ -197,6 +197,8 @@ def publish_selected(root):
               'Cycle 5 onward uses the penalty as its selection objective.</p>'
               if active_policy(protocol) is None else '')+
             '<p class="note">All images are development data in this repeated-selection study. '
+            'Times measure Bora from cached converted RGB, including its internal preparation and native projection; '
+            'Virchow2 extraction, RGB conversion, file loading and rendering are excluded. '
             'Scores count all positive reference pixels; reference 0 is unscored. '
             'Small-region recalls use separate ≤400 µm² and ≤400 pixel² strata when resolution is unknown; recall requires ≥50% correct class coverage. '
             'Opacity affects the display only. Click a panel for its full raster.</p>'

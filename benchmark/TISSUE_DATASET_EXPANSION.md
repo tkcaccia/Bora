@@ -27,6 +27,16 @@ before GPU loading and before admitting inputs to cycle11 onward. Resampling is
 explicit: interpolation can match a physical field but cannot restore missing
 optical detail or establish an acquired microscope magnification.
 
+The [official Virchow2 model card](https://huggingface.co/paige-ai/Virchow2)
+reports pretraining at0.25,0.5,1 and2µm/px with224px inputs and14px spatial
+tokens. Our fixed0.5/1/2µm/px sampling therefore uses documented training scales.
+These physical scales describe the resampled input; they do not assert the
+original scanner acquired the image at the same optical detail. This matters
+for GCSS exports near1µm/px and OCELOT's distributed downsampled tissue ROIs:
+their0.5µm/px working grid contains interpolated pixels, explicitly recorded.
+Encoder/conversion preparation is cached and reported separately from Bora's
+per-image timing; it is not an end-to-end subsecond pipeline claim.
+
 ## Acquired and audited fields
 
 The completed acquisition audit contains200 physically calibrated fields:40 each
