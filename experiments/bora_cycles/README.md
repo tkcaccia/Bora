@@ -1,12 +1,20 @@
 # Twenty review-gated Bora improvement cycles
 
-Current verified status: **six of twenty cycles complete**. Cycle six has
-149 actual all-method overview reviews, six full-run native crop reviews,
-3,278 audited masks and a signed five-survivor selection: **J01, H02, C17,
-J07 and H10**. J01 improves H02 by 0.27685 IoU percentage points at approximately
-0.19 seconds per ROI, with important documented regressions. See
-[CYCLE_SIX_REVIEW.md](CYCLE_SIX_REVIEW.md). Earlier checkpoints below describe
-their historical stages. Cycle seven passed numerical checks and its reviewed pilot. Its full 149-ROI run is active; full review and selection are still pending.
+Current verified status: **nine of twenty cycles complete**. Cycle nine has
+349 actual all-method overview reviews, nine full-run native crop reviews,
+7,678 audited masks and a signed selection: **J01, M04, K05, M11, C17**.
+J01 remains the runtime-adjusted leader; the other four preserve distinct
+mechanisms with explicit accuracy, speed and tissue-preservation tradeoffs.
+See [CYCLE_NINE_REVIEW.md](CYCLE_NINE_REVIEW.md).
+
+Cycle ten is running on the same 349 frozen ROIs after its 13-image pilot,
+357 checks and actual inspection of all pilot overviews plus three native
+crops. Its prospective mathematics are in
+[CYCLE_TEN_PROPOSAL.md](CYCLE_TEN_PROPOSAL.md); pilot behavior and finite-solver
+limitations are in [CYCLE_TEN_PILOT_REVIEW.md](CYCLE_TEN_PILOT_REVIEW.md).
+No tenth selection is claimed. Read execution JSON and the signed selections
+for newer status. Historical checkpoints later in this document describe
+earlier stages, not the current completion count.
 
 The user now requests a runtime penalty above one second per image. From
 cycle5 the primary selection utility is the image-average of
@@ -15,13 +23,16 @@ viewer also shows this policy as a labelled posthoc comparison for cycles1–4,
 without changing their signed selections. See [CYCLE_PROGRESS.md](CYCLE_PROGRESS.md).
 
 The requested endpoint is **twenty completed cycles**, each testing twenty
-algorithms on all 149 frozen ROIs. A pilot or a completed prediction job is not
+algorithms on all frozen ROIs: 149 in cycles 1–7 and 349 from cycle 8 onward.
+A pilot or a completed prediction job is not
 a completed cycle. Each cycle must be scored, rendered and actually inspected
 before five survivors are selected. Subsequent cycles retain those five and
 implement three distinct mathematical interventions per survivor, for fifteen
 new implementations. Historical rejections remain recorded.
 
-The protocol.json file preserves the complete objective and evaluation rules.
+The protocol.json file preserves the original objective and evaluation rules.
+Its historical 149-case scope is prospectively extended by benchmark_scope.py
+and the active per-cycle PROTOCOL.json; do not rewrite signed earlier scopes.
 The registry.py file gives twenty hypotheses, individual risks and explicit
 implementation status. Their implementations are in methods.py; C++ is in
 cpp/evidence/kernels.cpp. Numerical kernels and ports are not counted as
@@ -30,19 +41,22 @@ compiled kernels; the other candidates can use compiled class scoring.
 
 ## Input and resolution policy
 
-Use the existing immutable virchow2-expanded-inputs-2026-10-17 directory.
-All 149 cases and dataset groups are included, not only the nine previous
-development cases. Every cycle uses fixed equal #9+#19 RGB for its primary
-comparison. All five original RGB conversions remain unchanged.
-No new Virchow2 inference is needed.
+The active input root is the immutable
+`/mnt/sata_ssd/Bora-benchmark/results/bora-expanded-349-inputs-2026-10-18-v1`.
+It retains all 149 historical cases and adds 40 each BCSS, TIGER, WSSS4LUAD,
+RINGS and OCELOT. All five RGB conversions and encoder arrays are frozen.
+Every cycle uses fixed equal #9+#19 RGB for its primary comparison. See the
+[benchmark navigation guide](../bora_extension/BENCHMARK_NAVIGATION.md).
 
-Most methods analyse at 1 um/pixel; C19 evaluates an adaptive classifier at
-0.5 um/pixel. Actual per-axis analysis/native spacing is saved. Projection
-back to native pixels adds no optical information.
+Most calibrated methods analyse at 1 µm/pixel; historical C19 evaluates an
+adaptive classifier at 0.5 µm/pixel. Actual per-axis spacing is saved. The 80
+WSSS/RINGS additions lack verified MPP and remain pixel-only, with separate
+pixel-area scores. Numerical coordinate units are not invented physical
+spacing. Projection back to native pixels adds no optical information.
 
 Fine reference masks are unavailable to the prediction functions. The runner
 hashes all predictions before starting any scoring. Repeated selection uses
-all 149 cases; this is an exploratory development benchmark, not independent
+all active cases; this is an exploratory development benchmark, not independent
 test-set or clinical performance.
 
 Original known coarse tissue supplies semantic supervision. Predictions of
@@ -96,7 +110,8 @@ cycle or select survivors. The pilot.sh script checks one case from each of
 the four dataset groups. Changed source/protocol requires a fresh output
 folder; executed source and compiled library hashes are archived.
 
-The runner implements cycles one, two, three and four. Cycle one has 149 actual contact
+The runner implements cycles one through ten. The following are historical
+checkpoints. Cycle one has 149 actual contact
 sheet reviews, additional native crop reviews, and a signed five-survivor
 selection. Cycle two retains C18/C17/C01/C03/C15 unchanged and implements
 fifteen distinct children. Its mathematical changes and risks are described
