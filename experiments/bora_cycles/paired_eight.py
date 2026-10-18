@@ -60,9 +60,11 @@ def analyze(root, previous, audit_path):
     protocol = result['protocol']
     validate_scope(protocol)
     cycle = protocol['cycle']
-    if cycle not in (8, 9) or protocol['pilot']:
-        raise ValueError('Full expanded cycle-eight/nine results required')
-    if cycle == 9:
+    if cycle not in (8, 9, 10) or protocol['pilot']:
+        raise ValueError('Full expanded cycle-eight/nine/ten results required')
+    if cycle == 10:
+        from .ten_manifest import CHILDREN as children_specs
+    elif cycle == 9:
         from .nine_manifest import CHILDREN as children_specs
     else:
         children_specs = CHILDREN
@@ -114,10 +116,14 @@ def analyze(root, previous, audit_path):
         historical_score_fields_exact=list(SCORE_CORE),
         historical_accuracy_definition_unchanged=True, children=children,
         palette_branch_cases={k:len(cohorts[k]) for k in ('affine_palette','ambiguous_palette')},
-        palette_child_interpretation='C17 uses a direct pixel affine inverse when identifiable. '
+        palette_child_interpretation=('C17 uses a direct pixel affine inverse when identifiable. '
+            'N13 instead decodes categorical codewords densely; N14/N15 use occupied24-bin '
+            'colour averages and a coarse prior under their stated alternative forward models. '
+            'These are complete implementations, not isolated loss ablations.' if cycle == 10 else
+            'C17 uses a direct pixel affine inverse when identifiable. '
             'Palette children instead use24-bin occupied-colour nodes and their stated decision objective '
             'on those cases. These are comparisons of complete implementations, not isolated '
-            'likelihood ablations; affine and ambiguous cohorts are reported separately.',
+            'likelihood ablations; affine and ambiguous cohorts are reported separately.'),
         protocol_sha256=digest(root/'PROTOCOL.json'), results_sha256=digest(root/'RESULTS.json'),
         previous_results_sha256=digest(previous/'RESULTS.json'), audit_sha256=digest(audit_path),
         analysis_source_sha256=digest(Path(__file__)), runtime_policy=policy,

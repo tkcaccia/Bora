@@ -36,4 +36,12 @@ def constant_evidence_fallback(key, rgb, coarse, completed, support, spacing, he
         detail.update(glass, mechanism=CYCLE_NINE[key].mechanism,
             independent_he_glass_rule_applied=True,
             proposed_glass_pixels=int((excluded & support).sum()))
+    if key in ('N10', 'N11', 'N12'):
+        from .cycle_ten import GLASS_MODES, topological_glass
+        from .registry import CYCLE_TEN
+        excluded, glass = topological_glass(he, spacing, GLASS_MODES[key])
+        labels[excluded] = 0
+        detail.update(glass, mechanism=CYCLE_TEN[key].mechanism,
+            independent_he_glass_rule_applied=True,
+            proposed_glass_pixels=int((excluded & support).sum()))
     return labels, detail

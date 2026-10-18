@@ -11,6 +11,9 @@ def glass_only_method(key, detail):
         'M10': 'exterior-shortest-integrated-stain-cost',
         'M11': 'eight-ray-unobstructed-white-exterior-visibility',
         'M12': 'binary-he-glass-unary-perimeter-mincut',
+        'N10': 'global-stained-tissue-convex-envelope-glass-state',
+        'N11': 'he-marker-constrained-minimum-spanning-forest-glass',
+        'N12': 'white-graph-root-biconnected-exterior-state',
     }
     return key in expected and detail.get('mechanism') == expected[key]
 

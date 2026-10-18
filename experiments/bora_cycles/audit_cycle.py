@@ -122,7 +122,7 @@ def audit(source, root, previous=None, executed_code=None):
                 raise ValueError("Native geometry changed: "+case+"/"+method)
             if not set(np.unique(mask)) <= allowed or np.any(mask[~support] != 0):
                 raise ValueError("Class IDs/background clipping violated: "+case+"/"+method)
-            if method not in ("C20", "D12", "F03", "G03", "H03", "J03", "L03", "M10", "M11", "M12") and np.any(mask[support] == 0):
+            if method not in ("C20", "D12", "F03", "G03", "H03", "J03", "L03", "M10", "M11", "M12", "N10", "N11", "N12") and np.any(mask[support] == 0):
                 raise ValueError("Unexpected unassigned tissue: "+case+"/"+method)
             with Image.open(out/method/"mask.png") as display:
                 if display.mode != "P" or not np.array_equal(np.asarray(display), mask):
@@ -138,7 +138,7 @@ def audit(source, root, previous=None, executed_code=None):
                 if (detail.get('input_contract_fallback') != 'constant-evidence-coarse-completion-v1'
                         or detail.get('refinement_performed') is not False):
                     raise ValueError('Constant RGB incorrectly claims refinement: '+case+'/'+method)
-                if method in ('L03', 'M10', 'M11', 'M12'):
+                if method in ('L03', 'M10', 'M11', 'M12', 'N10', 'N11', 'N12'):
                     glass_changes(constant_expected, mask)
                 elif not np.array_equal(mask, constant_expected):
                     raise ValueError('Constant-evidence fallback changed coarse completion: '+case+'/'+method)
@@ -158,7 +158,7 @@ def audit(source, root, previous=None, executed_code=None):
                 if not detail["unchanged_survivor_native_parity"] or not np.array_equal(mask, tifffile.imread(old)):
                     raise ValueError("Unchanged survivor prediction differs: "+case+"/"+method)
                 counts["unchanged_survivor_comparisons"] += 1
-        for child_id, parent_id in (("F03", "D10"), ("G03", "F01"), ("H03", "F01"), ("J03", "H02"), ("L03", "J01"), ("M10", "J01"), ("M11", "J01"), ("M12", "J01")):
+        for child_id, parent_id in (("F03", "D10"), ("G03", "F01"), ("H03", "F01"), ("J03", "H02"), ("L03", "J01"), ("M10", "J01"), ("M11", "J01"), ("M12", "J01"), ("N10", "J01"), ("N11", "J01"), ("N12", "J01")):
             if child_id not in mask_paths or parent_id not in mask_paths:
                 continue
             removed = glass_changes(tifffile.imread(mask_paths[parent_id]),

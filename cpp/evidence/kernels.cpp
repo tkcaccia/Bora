@@ -735,3 +735,97 @@ extern "C" int bora_white_diversity(const uint16_t* labels,const int64_t* points
     }
     return 0;
 }
+
+// Exact Potts dynamic program on a supplied rooted tree, O(nodes*classes).
+extern "C" int bora_tree_potts(const int32_t* parent,const int32_t* order,
+    const double* unary,const double* penalty,int32_t* labels,double* energy,int n,int k) {
+    if(n<1||k<1) return -1;
+    std::vector<double> dp(unary,unary+static_cast<int64_t>(n)*k);
+    for(int t=n-1;t>0;--t) {
+        int v=order[t],p=parent[v];
+        if(v<0||v>=n||p<0||p>=n||penalty[v]<0) return -2;
+        double least=*std::min_element(&dp[v*k],&dp[(v+1)*k]);
+        for(int c=0;c<k;++c) dp[p*k+c]+=std::min(dp[v*k+c],least+penalty[v]);
+    }
+    int root=order[0];
+    labels[root]=std::min_element(&dp[root*k],&dp[(root+1)*k])-&dp[root*k];
+    energy[0]=dp[root*k+labels[root]];
+    for(int t=1;t<n;++t) {
+        int v=order[t],p=parent[v],best=0;double score=INFINITY;
+        for(int c=0;c<k;++c) {
+            double value=dp[v*k+c]+(c==labels[p]?0:penalty[v]);
+            if(value<score){score=value;best=c;}
+        }
+        labels[v]=best;
+    }
+    double actual=0;
+    for(int v=0;v<n;++v) actual+=unary[v*k+labels[v]];
+    for(int t=1;t<n;++t) {
+        int v=order[t];if(labels[v]!=labels[parent[v]])actual+=penalty[v];
+    }
+    energy[1]=actual;return 0;
+}
+
+// Kruskal forest under fixed competing seed identities. Sorted edge order is
+// part of the input; ties are resolved by the caller's lexicographic edge IDs.
+extern "C" int bora_seeded_forest(const int32_t* a,const int32_t* b,
+    const int32_t* seeds,int32_t* labels,int n,int edges) {
+    if(n<1||edges<0)return -1;
+    std::vector<int> parent(n),size(n,1),seed(seeds,seeds+n);
+    for(int i=0;i<n;++i)parent[i]=i;
+    auto find=[&](int x){while(parent[x]!=x){parent[x]=parent[parent[x]];x=parent[x];}return x;};
+    for(int e=0;e<edges;++e) {
+        if(a[e]<0||a[e]>=n||b[e]<0||b[e]>=n)return -2;
+        int x=find(a[e]),y=find(b[e]);if(x==y)continue;
+        if(seed[x]&&seed[y]&&seed[x]!=seed[y])continue;
+        if(size[x]<size[y])std::swap(x,y);
+        parent[y]=x;size[x]+=size[y];seed[x]=std::max(seed[x],seed[y]);
+    }
+    for(int i=0;i<n;++i)labels[i]=seed[find(i)];return 0;
+}
+
+// Iterative Tarjan decomposition avoids recursion depth on long white paths.
+// White border pixels join one exterior root. Only nontrivial root blocks give
+// two independent escape routes; border pixels themselves are always exterior.
+extern "C" int bora_biconnected_white(const uint8_t* white,uint8_t* result,int h,int w) {
+    if(h<1||w<1)return -1;
+    int n=h*w,root=n;
+    std::vector<std::vector<int>> adj(n+1);
+    std::fill(result,result+n,0);
+    auto edge=[&](int a,int b){adj[a].push_back(b);adj[b].push_back(a);};
+    for(int y=0;y<h;++y)for(int x=0;x<w;++x) {
+        int v=y*w+x;if(!white[v])continue;
+        if(x+1<w&&white[v+1])edge(v,v+1);
+        if(y+1<h&&white[v+w])edge(v,v+w);
+        if(y==0||y==h-1||x==0||x==w-1){edge(root,v);result[v]=1;}
+    }
+    std::vector<int> disc(n+1,0),low(n+1,0),parent(n+1,-1),next(n+1,0),stack(1,root);
+    std::vector<std::pair<int,int>> edges;
+    int clock=1;disc[root]=low[root]=clock;
+    while(!stack.empty()) {
+        int v=stack.back();
+        if(next[v]<static_cast<int>(adj[v].size())) {
+            int u=adj[v][next[v]++];
+            if(!disc[u]) {
+                parent[u]=v;edges.emplace_back(v,u);disc[u]=low[u]=++clock;stack.push_back(u);
+            } else if(u!=parent[v]&&disc[u]<disc[v]) {
+                low[v]=std::min(low[v],disc[u]);edges.emplace_back(v,u);
+            }
+        } else {
+            stack.pop_back();int p=parent[v];if(p<0)continue;
+            low[p]=std::min(low[p],low[v]);
+            if(low[v]>=disc[p]) {
+                std::vector<int> block;bool has_root=false;
+                while(!edges.empty()) {
+                    auto e=edges.back();edges.pop_back();
+                    block.push_back(e.first);block.push_back(e.second);
+                    has_root|=e.first==root||e.second==root;
+                    if(e.first==p&&e.second==v)break;
+                }
+                // At least three vertices are required; a bridge is not redundant.
+                if(has_root&&block.size()>=6)for(int u:block)if(u<n)result[u]=1;
+            }
+        }
+    }
+    return 0;
+}
