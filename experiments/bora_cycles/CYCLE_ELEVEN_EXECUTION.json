@@ -1,0 +1,63 @@
+{
+  "cycle": 11,
+  "status": "full_calibrated_prediction_running",
+  "completed_cycles": 10,
+  "complete_goal": false,
+  "prediction_commit": "5a255e0",
+  "mathematical_implementation_commit": "149a7bb",
+  "calibrated_input_integration_commit": "c2fea54",
+  "benchmark_scope": "calibrated-tissues-v1",
+  "cases": 469,
+  "methods": 23,
+  "candidates": 20,
+  "controls": [
+    "B21",
+    "B22",
+    "B23"
+  ],
+  "input_plan_sha256": "3b23ea5d0f6d6e16679d6a2cfe216ea3934731ba06e0b902ca4204ee96ac3a8d",
+  "primary_conversion": "equal09+19, formulas unchanged",
+  "new_calibrated_datasets": {
+    "ignite": 40,
+    "peso": 40,
+    "gcss": 40,
+    "puma": 40,
+    "gleasonxai": 40
+  },
+  "prior_calibrated_cases": 269,
+  "feature_arrays_audited_new": 600,
+  "pilot": {
+    "cases": 17,
+    "methods": 23,
+    "actual_overview_reviews": 17,
+    "actual_native_label_reviews": 17,
+    "decision_sha256": "b0fd3047e35b7470e1ad4a39b8d4ff460aacd5abef3901b11c4a4f1b18185b26",
+    "PROTOCOL.json": "ee7bc9998a37f2def8138bfd016eef8c5b66a17151c143a3f5dda2909bc756f9",
+    "RESULTS.json": "cf680ee4fb586516659881317b8071b5e89c8a052f1bbcba48b504902f741034",
+    "FULL_AUDIT.json": "8faf50f3b897a386ba70b1325bb92e449ed0e2dc74c7f8f1dcde3589a36e628d",
+    "VISUAL_REVIEW.json": "3d1d5e959191ca18fffd3f4c0f018c8ba772e4045ddf83706d57c3be6c61acf4",
+    "PILOT_NATIVE_REVIEW.json": "b68dc92911d64578548ccaabfc63fa01e300ce083935e776089bd32ba945ffae",
+    "POSTHOC_COMPLETE.json": "26b7f7e4120a1b7f1c5a1b903953be26530bc89ac2907123b0dd9503b1a51b35"
+  },
+  "full_protocol_sha256": "18f7eda3bc3a8990a9bb357a0c8ac6a659d2d209c7cf8b95a4aabd9785495a08",
+  "full_native_plan_sha256": "7ad3082a2423d1d40845144887b45d1867111c056d464a8fec9feb9e15d6d32a",
+  "full_remote": "/mnt/sata_ssd/Bora-benchmark/results/bora-cycles-2026-10-17/cycle-11",
+  "full_pid": 2495071,
+  "full_native_crops_planned": 25,
+  "full_actual_reviews": 0,
+  "selected_survivors": null,
+  "parent_native_parity_expected": 1345,
+  "expected_native_and_display_masks": 10787,
+  "unresolved_datasets": {
+    "histoseg": "40 acquired; MPP unknown, no inference",
+    "orca": "32 eligible fields from9 cases; quota40 unmet"
+  },
+  "numerical_limitations": {
+    "P01": "All17 finite ADMM runs report non-convergence; feasible iterates are not claimed optimal",
+    "P13": "All17 finite120-step TV runs report non-convergence; about13.2s mean runtime remains penalized",
+    "P14": "Five17 runs miss projected stationarity tolerance"
+  },
+  "scoring_notice": "All current parents/children share the prospective scoring policy. OCELOT white-only broad negatives are rescored; signed historical masks/scores unchanged. No corpus-composition or scoring-contract change is an algorithm gain.",
+  "next_action": "Freeze all469 predictions before scoring, audit all masks and parent parity, inspect all469 contacts and25 native crops, then select five and open only their viewer.",
+  "at_utc": "2026-10-18T08:42:16.828015+00:00"
+}
