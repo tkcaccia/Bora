@@ -83,8 +83,13 @@ def analyze(root, previous, audit_path):
         additional200=[r for r in rows if not r['historical_subset']],
         informative319=[r for r in rows if not r['single_eligible_class']],
         constant30=[r for r in rows if r['single_eligible_class']])
-    if [len(cohorts[k]) for k in cohorts] != [349,149,200,319,30]:
+    if [len(cohorts[k]) for k in ('all349','historical149','additional200','informative319','constant30')] != [349,149,200,319,30]:
         raise ValueError('Documented expansion/degeneracy cohorts changed')
+    for name, active_set in (('affine_palette',False),('ambiguous_palette',True)):
+        cohorts[name] = [r for r in rows if not r['single_eligible_class'] and
+                        r['methods']['C17'].get('details',{}).get('active_set_required') is active_set]
+    if len(cohorts['affine_palette'])+len(cohorts['ambiguous_palette']) != 319:
+        raise ValueError('Nonconstant parent palette branch is undocumented')
     children = {}
     for item in CHILDREN:
         child, parent = item['id'], item['parent']
@@ -102,6 +107,11 @@ def analyze(root, previous, audit_path):
     return dict(cycle=8, cases=349, historical_parent_score_comparisons=checked,
         historical_score_fields_exact=list(SCORE_CORE),
         historical_accuracy_definition_unchanged=True, children=children,
+        palette_branch_cases={k:len(cohorts[k]) for k in ('affine_palette','ambiguous_palette')},
+        palette_child_interpretation='C17 uses a direct pixel affine inverse when identifiable. '
+            'L07/L08/L09 instead use24-bin occupied-colour nodes and a prior-regularized objective '
+            'on those cases. These are comparisons of complete implementations, not isolated '
+            'likelihood ablations; affine and ambiguous cohorts are reported separately.',
         protocol_sha256=digest(root/'PROTOCOL.json'), results_sha256=digest(root/'RESULTS.json'),
         previous_results_sha256=digest(previous/'RESULTS.json'), audit_sha256=digest(audit_path),
         analysis_source_sha256=digest(Path(__file__)), runtime_policy=policy,
