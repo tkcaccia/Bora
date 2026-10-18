@@ -59,3 +59,12 @@ against it. Thus that ranking collapses to minimum expected distance. The final
 M06 implements this exact, simpler Gaussian quadratic-risk rule directly and
 checks it against independent six-point Gaussian quadratic integration. These
 are engineering snapshots of one cycle, not additional completed cycles.
+
+Real-input numerical checks of the third pilot, before actual visual review,
+found M09 gradient residual0.263 and M15 projected residual0.0156. The finite
+solvers were inadequate. M09 now uses sparse quadratic majorization with a
+proven global upper curvature bound for its repulsion, reusing factorizations.
+M15 now solves its unsmoothed convex minimax energy using exact simplex
+quadratics and an exact two-norm proximal map, with explicit ADMM primal,
+dual and projected Lagrangian residuals. Independent solvers verify both small
+optima; no numerical correction is counted as an additional model or cycle.

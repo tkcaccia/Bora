@@ -36,7 +36,7 @@ _SPECS = [
   'Gradients reuse the same measurements and can encode tissue mixtures as appearance drift; this is a Hermite fitting energy, not an independent-data likelihood.',
   'Observe local derivatives as well as values, instead of changing the field regularizer or adding output-mask smoothing.'),
  ('M09','K05','Noncollapsing class appearance','repulsive-cross-class-biharmonic-prototype-energy',
-  'In whitened RGB fit all class fields jointly with the parent quadratic energy plus 0.015 sum over nodes and class pairs exp(-||u_g-u_h||^2/2). Use finite L-BFGS and report the original energy and gradient.',
+  'In whitened RGB fit all class fields jointly with the parent quadratic energy plus 0.015 sum over nodes and class pairs exp(-||u_g-u_h||^2/2). Use up to80 sparse quadratic majorization steps with a0.015*K curvature bound and report the original energy and gradient.',
   'Repulsion can invent separation between genuinely overlapping appearances and the nonconvex solve may be slow or stop before stationarity.',
   'Prevent class prototypes collapsing together through a single cross-class interaction, rather than smooth channels independently or combine output masks.'),
  ('M10','L03','Accumulated-stain glass access','exterior-shortest-integrated-stain-cost',
@@ -60,7 +60,7 @@ _SPECS = [
   'A palette vertex inside the hull of its rivals is never necessary; necessity is not a calibrated tissue probability and quantized nodes can hide small colours.',
   'Ask whether a class is required to explain the colour, rather than select its largest fitted mixture fraction or enforce a hard two-class mixture.'),
  ('M15','C17','Robust palette calibration','joint-frobenius-endmember-error-minimax-inverse',
-  'Minimize half (||qP-RGB||_2+0.03||q||_2)^2 plus0.006 squared prior distance on the simplex; this is the exact worst-case residual for a shared palette perturbation of Frobenius norm at most0.03. Smooth norms with1e-12 and report projected stationarity.',
+  'Minimize half (||qP-RGB||_2+0.03||q||_2)^2 plus0.006 squared prior distance on the simplex; this is the exact worst-case residual for a shared palette perturbation of Frobenius norm at most0.03. Use up to600 ADMM steps, exact simplex quadratics and the exact two-norm prox; start rho0.1 and balance primal/dual residuals every20 steps by factors of two at ratio10. Report primal, dual and Lagrangian stationarity residuals.',
   'The uncertainty radius is fixed rather than empirically calibrated and robustness can overmix a real rare class; finite optimization remains.',
   'Protect against adversarial joint endmember calibration error, instead of change the residual distribution, sparsify fractions or integrate a learned-palette covariance.'),
 ]

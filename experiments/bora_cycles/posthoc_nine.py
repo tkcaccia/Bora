@@ -9,6 +9,7 @@ from .paired_eight import analyze
 from .publish_diagnostics import publish
 from .run import digest, save
 from .small_region_atlas import export
+from .numerical_nine import summarize
 
 
 def main():
@@ -38,6 +39,11 @@ def main():
             or checked['constant_evidence_contract_comparisons'] != 660):
         raise ValueError('Full mask/parity/constant-evidence audit incomplete')
     save(reports[3], analyze(root, args.previous, reports[2]))
+    numerical = root/'NUMERICAL_STATUS.json'
+    if numerical.exists():
+        raise ValueError('Existing numerical report requires explicit inspection')
+    save(numerical, summarize(root))
+    reports.append(numerical)
     reports.append(root/'diagnostics-v2/MANIFEST.json')
     save(root/'POSTHOC_COMPLETE.json', dict(cycle=9, cases=349, native_masks=7678,
         report_sha256={str(p.relative_to(root)):digest(p) for p in reports},

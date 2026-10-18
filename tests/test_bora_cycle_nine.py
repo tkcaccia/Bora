@@ -9,8 +9,9 @@ from scipy.sparse.linalg import spsolve
 from experiments.bora_cycles.cycle_nine import (
     binary_cut_glass, expected_distance_scores, interval_objective,
     moment_constrained_system, necessity_scores, projected_inverse, ray_glass,
-    repulsion_objective, robust_palette_objective, sampling_variance,
-    series_laplacian, stain_access, thin_plate)
+    repulsion_objective, repulsive_system, robust_palette_objective,
+    robust_palette_admm, sampling_variance, series_laplacian, stain_access,
+    thin_plate, two_norm_prox)
 from experiments.bora_cycles.methods import predict
 from experiments.bora_cycles.registry import CHILDREN_NINE, CYCLE_NINE_SURVIVORS, candidates
 from experiments.bora_cycles.review import validate_children
@@ -128,6 +129,48 @@ def test_repulsive_energy_analytic_gradient_and_class_permutation():
     perm = [2, 0, 1]
     other = repulsion_objective(flat.reshape(shape)[:, perm].ravel(), shape, lap, mass[:, perm], sums[:, perm], means[perm])
     assert abs(other[0]-f(flat)[0]) < 1e-10
+
+
+def test_repulsive_majorization_decreases_original_energy_to_stationarity():
+    rng = np.random.default_rng(915)
+    shape = (8, 3, 3)
+    lap = sparse.diags(np.arange(1., 9.))
+    mass = rng.uniform(.1, 1, (8, 3)); sums = rng.normal(size=shape); means = rng.normal(size=(3, 3))
+    initial = np.stack([spsolve((lap+sparse.diags(mass[:, g]+.015)).tocsc(), sums[:, g]+.015*means[g]) for g in range(3)], 1)
+    fitted, report = repulsive_system(initial, lap, mass, sums, means)
+    assert report['gradient_infinity_norm'] < 1e-6
+    assert max(np.diff(report['objective_path'])) < 1e-10
+    reference = minimize(lambda a:repulsion_objective(a, shape, lap, mass, sums, means),
+        initial.ravel(), jac=True, method='BFGS', options=dict(gtol=1e-8))
+    actual = repulsion_objective(fitted.ravel(), shape, lap, mass, sums, means)[0]
+    assert abs(actual-reference.fun) < 1e-8
+
+
+def test_two_norm_prox_against_independent_radial_quadratic():
+    rng = np.random.default_rng(916)
+    a, b = rng.normal(size=(20, 3)), rng.normal(size=(20, 5))
+    a[0] = 0; b[1] = 0; a[2] *= .001
+    actual_a, actual_b = two_norm_prox(a, b, .1)
+    for i in range(len(a)):
+        ra, rb = np.linalg.norm(a[i]), np.linalg.norm(b[i])
+        fun = lambda t:.05*((t[0]-ra)**2+(t[1]-rb)**2)+.5*(t[0]+.03*t[1])**2
+        ref = minimize(fun, [ra, rb], bounds=[(0, None)]*2, method='SLSQP', options=dict(ftol=1e-13, maxiter=200))
+        actual = [np.linalg.norm(actual_a[i]), np.linalg.norm(actual_b[i])]
+        assert abs(fun(actual)-ref.fun) < 1e-10
+
+
+def test_robust_admm_matches_independent_unsmoothed_convex_optimum():
+    rng = np.random.default_rng(917)
+    colors, x, prior = rng.random((4, 3)), rng.random((3, 3)), rng.dirichlet(np.ones(4), 3)
+    q, report = robust_palette_admm(x, prior, colors, iterations=3000)
+    def f(flat):
+        p = flat.reshape(3, 4)
+        return .5*np.sum((np.linalg.norm(p@colors-x, axis=1)+.03*np.linalg.norm(p, axis=1))**2)+.006*np.sum((p-prior)**2)
+    ref = minimize(f, prior.ravel(), method='SLSQP', bounds=[(0, 1)]*12,
+        constraints=[dict(type='eq', fun=lambda a:a.reshape(3, 4).sum(1)-1)],
+        options=dict(ftol=1e-12, maxiter=500))
+    assert ref.success and abs(f(q.ravel())-ref.fun) < 1e-7
+    assert max(report['primal_residual'], report['dual_residual'], report['lagrangian_projected_residual']) < 1e-6
 
 
 def test_ray_access_preserves_enclosed_cavity_and_curved_cleft():

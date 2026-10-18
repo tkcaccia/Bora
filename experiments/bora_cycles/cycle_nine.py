@@ -2,16 +2,15 @@
 import cv2
 import numpy as np
 from scipy import ndimage as ndi, sparse
-from scipy.optimize import minimize
 from scipy.sparse.csgraph import breadth_first_order, dijkstra, maximum_flow
 from scipy.sparse.linalg import splu, spsolve
-from scipy.special import expit, gammaln, logsumexp, softmax
+from scipy.special import gammaln, logsumexp, softmax
 
 from bora.evidence import Evidence, project_simplex
 from . import native
 from .methods import correct_coarse, fit_linear
 from .cycle_two import colour_nodes
-from .cycle_five import field_laplacian, optimizer_report
+from .cycle_five import field_laplacian
 from .cycle_six import edge_appearance, field_geometry, guide_laplacian
 from .cycle_seven import graph_from_edges
 from .cycle_eight import class_statistics, field_inputs, inverse_diagonal
@@ -252,6 +251,33 @@ def repulsion_objective(flat, shape, lap, mass, sums, means, strength=.015):
     return float(value), gradient.ravel()
 
 
+def repulsive_system(fields, lap, mass, sums, means, iterations=80):
+    """Quadratic majorization with a global upper Hessian bound.
+
+    Pair positive curvature is at most2*exp(-1.5)*strength; the complete-class
+    graph's largest eigenvalue is K. strength*K I is a conservative bound.
+    """
+    factors = [splu((lap+sparse.diags(mass[:, g]+.015+.015*fields.shape[1])).tocsc())
+               for g in range(fields.shape[1])]
+    objective = lambda flat: repulsion_objective(flat, fields.shape, lap, mass, sums, means)
+    value, gradient = objective(fields.ravel())
+    history = [value]
+    for used in range(iterations):
+        gradient = gradient.reshape(fields.shape)
+        if np.max(np.abs(gradient)) < 1e-6:
+            break
+        step = np.stack([factor.solve(gradient[:, g]) for g, factor in enumerate(factors)], 1)
+        fields = fields-step
+        value, gradient = objective(fields.ravel())
+        if value > history[-1]+1e-8*max(1., abs(history[-1])):
+            raise RuntimeError('Repulsive majorization increased original energy')
+        history.append(value)
+    residual = float(np.max(np.abs(gradient)))
+    return fields, dict(iterations=used+1, objective_path=history,
+        gradient_infinity_norm=residual, converged=residual < 1e-6,
+        nonconvex_local_solution=True, curvature_majorizer=.015*fields.shape[1])
+
+
 def bending_child(c, palette, he, mode):
     _, _, means, covariance = fit_linear(c)
     shape, spacing = field_geometry(c)
@@ -280,13 +306,8 @@ def bending_child(c, palette, he, mode):
         fields.append(fitted); reports.append(report)
     fields = np.stack(fields, 1)
     if mode == 'repulsion':
-        objective = lambda flat: repulsion_objective(flat, fields.shape, lap, mass, sums, means)
-        initial = objective(fields.ravel())[0]
-        fit = minimize(objective, fields.ravel(), jac=True, method='L-BFGS-B',
-                       options=dict(maxiter=30, ftol=1e-10, gtol=1e-6, maxcor=5))
-        fields = fit.x.reshape(fields.shape)
-        reports.append(dict(initial_objective=initial, **optimizer_report(fit, objective),
-                            nonconvex_local_solution=True))
+        fields, detail = repulsive_system(fields, lap, mass, sums, means)
+        reports.append(detail)
     scores = []
     for g in range(c.k):
         surface = upsample(fields[:, g], c.shape, shape)
@@ -419,6 +440,7 @@ def interval_objective(q, x, prior, colors):
 
 
 def robust_palette_objective(q, x, prior, colors, radius=.03):
+    """Smooth reference for derivative/optimum tests; main ADMM is unsmoothed."""
     residual = q@colors-x
     error = np.sqrt(np.sum(residual**2, -1)+1e-12)
     fraction = np.sqrt(np.sum(q*q, -1)+1e-12)
@@ -426,6 +448,59 @@ def robust_palette_objective(q, x, prior, colors, radius=.03):
     gradient = (worst/error)[:, None]*(residual@colors.T)
     gradient += (radius*worst/fraction)[:, None]*q+.012*(q-prior)
     return float(.5*np.sum(worst**2)+.006*np.sum((q-prior)**2)), gradient
+
+
+def two_norm_prox(a, b, rho, radius=.03):
+    """Exact rowwise prox of0.5*(||a||+radius*||b||)^2 / rho."""
+    ra, rb = np.linalg.norm(a, axis=1), np.linalg.norm(b, axis=1)
+    threshold = (ra+radius*rb)/(rho+1+radius**2)
+    only_b = ra <= threshold
+    threshold[only_b] = radius*rb[only_b]/(rho+radius**2)
+    only_a = rb <= radius*threshold
+    threshold[only_a] = ra[only_a]/(rho+1)
+    return (a*np.maximum(1-threshold/np.maximum(ra, 1e-30), 0)[:, None],
+            b*np.maximum(1-radius*threshold/np.maximum(rb, 1e-30), 0)[:, None])
+
+
+def robust_palette_admm(x, prior, colors, iterations=600, rho=.1):
+    """Simplex quadratic plus exact two-norm prox; explicit finite residuals."""
+    q = np.asarray(prior, float).copy()
+    u, v = q@colors-x, q.copy()
+    du, dv = np.zeros_like(u), np.zeros_like(v)
+    hessian = rho*(colors@colors.T)+(rho+.012)*np.eye(len(colors))
+    maximum_kkt, history, rho_changes = 0., [], []
+    for used in range(iterations):
+        linear = rho*((x+u-du)@colors.T+v-dv)+.012*prior
+        q, report = native.quadratic_simplex(hessian, linear, q)
+        maximum_kkt = max(maximum_kkt, report['max_kkt_residual'])
+        old_u, old_v = u, v
+        observed = q@colors-x
+        u, v = two_norm_prox(observed+du, q+dv, rho)
+        du, dv = du+observed-u, dv+q-v
+        primal = float(max(np.max(np.abs(observed-u)), np.max(np.abs(q-v))))
+        dual = float(np.max(np.abs(rho*((u-old_u)@colors.T+v-old_v))))
+        gradient = .012*(q-prior)+rho*(du@colors.T+dv)
+        stationarity = float(np.max(np.abs(q-project_simplex(q-gradient))))
+        if used % 20 == 0 or used == iterations-1:
+            energy = .5*np.sum((np.linalg.norm(observed, axis=1)+.03*np.linalg.norm(q, axis=1))**2)+.006*np.sum((q-prior)**2)
+            history.append(dict(iteration=used+1, objective=float(energy),
+                primal_residual=primal, dual_residual=dual,
+                lagrangian_projected_residual=stationarity, rho=rho))
+        if max(primal, dual, stationarity) < 1e-6:
+            break
+        if used % 20 == 19:
+            new_rho = rho*(2 if primal > 10*dual else .5 if dual > 10*primal else 1)
+            new_rho = float(np.clip(new_rho, 1e-4, 1e4))
+            if new_rho != rho:
+                du, dv = du*(rho/new_rho), dv*(rho/new_rho)
+                rho_changes.append(dict(iteration=used+1, old=rho, new=new_rho))
+                rho = new_rho
+                hessian = rho*(colors@colors.T)+(rho+.012)*np.eye(len(colors))
+    return q, dict(iterations=used+1, residual_history=history,
+        primal_residual=primal, dual_residual=dual,
+        lagrangian_projected_residual=stationarity,
+        max_kkt_residual=maximum_kkt, converged=max(primal, dual, stationarity) < 1e-6,
+        rho=rho, rho_changes=rho_changes, exact_unsmoothed_norm_objective=True)
 
 
 def projected_inverse(objective, prior, iterations=180):
@@ -477,9 +552,10 @@ def palette_child(c, palette, he, mode):
         # Prior already serves only as a tie break in the counterfactual score;
         # a second coarse correction would change the stated decision rule.
     else:
-        objective = lambda q: (interval_objective(q, x, prior, colors) if mode == 'interval'
-                               else robust_palette_objective(q, x, prior, colors))
-        solved, detail = projected_inverse(objective, prior)
+        if mode == 'interval':
+            solved, detail = projected_inverse(lambda q: interval_objective(q, x, prior, colors), prior)
+        else:
+            solved, detail = robust_palette_admm(x, prior, colors)
         q = correct_coarse(solved[index], c)
     return q, dict(detail, model=mode+' palette observation', occupied_colour_nodes=len(x),
         branch_difference='All occupied24-bin nodes use an averaged coarse prior; the affine parent uses a direct pixel inverse, so this is not an isolated loss ablation.')

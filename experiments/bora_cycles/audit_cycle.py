@@ -147,7 +147,8 @@ def audit(source, root, previous=None, executed_code=None):
                 "optimizer_success", "iterations", "termination", "objective",
                 "gradient_infinity_norm", "projected_gradient_residual",
                 "max_kkt_residual", "missing_known_bag_class", "converged",
-                "relative_mass_error", "fixed_point_change", "message", "fits") if key in detail}
+                "relative_mass_error", "fixed_point_change", "message", "fits",
+                "primal_residual", "dual_residual", "lagrangian_projected_residual") if key in detail}
             if numerical:
                 optimizer.setdefault(method, []).append(dict(case=case, **numerical))
             if method in survivors and requires_parent_parity(protocol, case):
