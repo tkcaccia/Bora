@@ -47,13 +47,15 @@ def main():
         found=value['data']['hits']
         if {r['file_name'] for r in found}!=set(names) or any(r['access']!='open' for r in found):raise ValueError('Not every GCSS source slide has open GDC metadata')
         output.write_text(json.dumps(value,indent=2)+'\n')
-    output=data/'metadata/orca-provider-validation-list-v1.json'
-    if not output.exists():
-        import gdown
-        files=gdown.download_folder(url='https://drive.google.com/drive/folders/1XfplgYK5JWzzYWXQhrPUQujXNKUDK-WR',quiet=True,use_cookies=False,skip_download=True)
-        value=[dict(id=f.id,path=f.path) for f in files]
-        if len(value)!=200:raise ValueError('Original ORCA validation folder inventory changed; inspect before acquisition')
-        output.write_text(json.dumps(value,indent=2)+'\n')
+    from .acquire_orca import FOLDERS
+    for split,url in FOLDERS.items():
+        output=data/'metadata'/('orca-provider-validation-list-v1.json' if split=='validation' else 'orca-test-folder-original-files-v1.json')
+        if not output.exists():
+            import gdown
+            files=gdown.download_folder(url=url,quiet=True,use_cookies=False,skip_download=True)
+            value=[dict(id=f.id,path=f.path) for f in files]
+            if len(value)!=200:raise ValueError('Original ORCA '+split+' folder inventory changed; inspect before acquisition')
+            output.write_text(json.dumps(value,indent=2)+'\n')
     print('Public source inventories ready. No encoder or Bora inference.')
 
 

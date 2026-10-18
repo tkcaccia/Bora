@@ -189,7 +189,7 @@ def main():
     pending = [(s, r) for s, r in samples if r["case"] in wanted]
     # Reject unknown/incorrect physical sampling before importing GPU packages.
     from .calibration import require
-    for _, sample in pending:
+    for _, sample in samples:
         require(sample)
     # Import GPU packages only in the executable inference path.
     import torch
@@ -209,7 +209,7 @@ def main():
                 requested_completed=index+1, requested_total=len(pending),
                 seconds=record["seconds"], sampling=record["sampling"]["status"])), flush=True)
     if all((root/"cases"/r["case"]/"FEATURES_FROZEN.json").exists() for _, r in samples):
-        records = [verify_case(root/"cases"/r["case"], r) for _, r in samples]
+        records = [verify_case(root/"cases"/r["case"], r, calibration=require(r)) for _, r in samples]
         save_json(root/"ALL_FEATURES_FROZEN.json", dict(cases=len(records),
             protocol_sha256=digest(root/"PROTOCOL.json"),
             case_manifest_sha256={r["case"]: digest(root/"cases"/r["case"]/"FEATURES_FROZEN.json") for r in records},

@@ -1,4 +1,5 @@
 import pytest
+import json
 
 from experiments.bora_extension.calibration import evaluate,require
 
@@ -53,3 +54,23 @@ def test_unknown_calibration_is_rejected_before_loading_or_encoding(tmp_path):
 def test_invalid_or_contradictory_physical_metadata_fails_closed(change):
     sample=calibrated();sample.update(change)
     assert not evaluate(sample)['eligible']
+
+
+def test_partial_request_cannot_sign_a_plan_containing_uncalibrated_caches(tmp_path,monkeypatch):
+    import builtins
+    import sys
+    from experiments.bora_extension import features
+    source=tmp_path/'source';source.mkdir();model=tmp_path/'model';model.mkdir()
+    (model/'config.json').write_text('{}')
+    known=calibrated();unknown=dict(known,case='unknown',native_mpp_xy=None,working_mpp_xy=None)
+    (source/'PLAN.json').write_text(json.dumps(dict(samples=[known,unknown])))
+    monkeypatch.setattr(sys,'argv',['features','--sources',str(source),'--root',str(tmp_path/'out'),
+        '--model-dir',str(model),'--cases',known['case']])
+    original_import=builtins.__import__
+    def no_gpu(name,*args,**kwargs):
+        if name=='torch':raise AssertionError('Uncalibrated plan reached GPU import')
+        return original_import(name,*args,**kwargs)
+    monkeypatch.setattr(builtins,'__import__',no_gpu)
+    with pytest.raises(ValueError,match='physical calibration required for unknown'):
+        features.main()
+    assert not (tmp_path/'out/ALL_FEATURES_FROZEN.json').exists()
