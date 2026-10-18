@@ -1,5 +1,5 @@
 {
-  "stage": "full349_running",
+  "stage": "all349_predictions_frozen_scoring_and_rendering",
   "completed_cycles": 9,
   "active_cycle": 10,
   "source_commit": "2f25e218a173265c15923e16eab2571bcf8fa2db",
@@ -18,7 +18,7 @@
   "expected_full_cases": 349,
   "expected_full_methods": 22,
   "complete_goal": false,
-  "checkpoint_utc": "2026-10-18T03:54:07.202971+00:00",
+  "checkpoint_utc": "2026-10-18T03:57:48.372051+00:00",
   "pilot_process_terminal": true,
   "pilot_decision_sha256": "53aa9a36a315f1634d068d32be7b1bd7f9931f149c6316ddbedf3ed5f4df304f",
   "remote_frozen_preflight_checks": 357,
@@ -43,5 +43,11 @@
   "local_ssh_forward_pid": 80890,
   "remote_viewer_verified_against_cycle9_sha256": true,
   "planned_native_crops": 15,
-  "native_crop_plan": "experiments/bora_cycles/CYCLE_TEN_NATIVE_PLAN.json"
+  "native_crop_plan": "experiments/bora_cycles/CYCLE_TEN_NATIVE_PLAN.json",
+  "global_prediction_freeze_sha256": "b27e0b9ebcc877be6400cab25754acc6b2ddda44027c8d44f97987397ba7a59f",
+  "full_protocol_sha256": "74c3e8093e408794c8ac6a861352c556dd4faa6e15146372f955678ebd63e547",
+  "successful_predictions": 7678,
+  "failed_predictions": 0,
+  "previous_goal_turn_classification": "verified_wait",
+  "current_goal_turn_classification": "progress"
 }
