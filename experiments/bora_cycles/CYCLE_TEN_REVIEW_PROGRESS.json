@@ -363,7 +363,7 @@
   "results_sha256": "8b71d33b30b71a1449114646a5d03a84f49e34d9b0b89dc2060b1b811bf63588",
   "review_journal": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/review-journals/cycle-10-chiamaka-full.json",
   "survivors_selected": true,
-  "next_action": "Publish and inspect selected-five viewer, then prospectively propose cycle11.",
+  "next_action": "Develop fifteen prospective cycle11 innovations from signed J01/M04/N08/N10/C17; preserve fixed RGB, all349 cases and the existing timing penalty. No cycle11 implementation or run yet.",
   "checkpoint_utc": "2026-10-18T04:55:53.553290+00:00",
   "native_review_sha256": "2170a67d028e9bf131ed0cbb37ca66bf433f8e1043a1b1321568d5579de1f9ec",
   "posthoc_complete": true,
@@ -374,5 +374,7 @@
     "N10",
     "C17"
   ],
-  "selection_sha256": "b07ec34dede9b2187e41707799ff64e8e1d5d3a48836c186ecd47dbecdf28197"
+  "selection_sha256": "b07ec34dede9b2187e41707799ff64e8e1d5d3a48836c186ecd47dbecdf28197",
+  "viewer_delivered": true,
+  "viewer_url": "http://127.0.0.1:64889/bora-cycles-2026-10-17/cycle-10/selected.html#tiger_32"
 }

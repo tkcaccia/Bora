@@ -69,7 +69,7 @@
     "N07": 319,
     "N14": 25
   },
-  "next_action": "Publish and inspect selected-five viewer, then prospectively propose cycle11.",
+  "next_action": "Develop fifteen prospective cycle11 innovations from signed J01/M04/N08/N10/C17; preserve fixed RGB, all349 cases and the existing timing penalty. No cycle11 implementation or run yet.",
   "survivors": [
     "J01",
     "M04",
@@ -77,5 +77,7 @@
     "N10",
     "C17"
   ],
-  "selection_sha256": "b07ec34dede9b2187e41707799ff64e8e1d5d3a48836c186ecd47dbecdf28197"
+  "selection_sha256": "b07ec34dede9b2187e41707799ff64e8e1d5d3a48836c186ecd47dbecdf28197",
+  "viewer_delivered": true,
+  "viewer_url": "http://127.0.0.1:64889/bora-cycles-2026-10-17/cycle-10/selected.html#tiger_32"
 }
