@@ -1,28 +1,24 @@
 [build-system]
-requires = ["setuptools>=69", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["scikit-build-core>=0.10", "pybind11>=2.13", "numpy==2.2.6"]
+build-backend = "scikit_build_core.build"
 
 [project]
 name = "bora-segmentation"
-version = "0.1.0"
-description = "Boundary-aware refinement of coarse tissue segmentations"
+version = "0.2.0"
+description = "Bora-AF refinement and native fastPLS Neighbor context tissue identification"
 readme = "README.md"
-requires-python = ">=3.10"
-dependencies = ["numpy>=1.24", "scipy>=1.10", "scikit-image>=0.21", "tifffile>=2023.7.10", "shapely>=2.1", "Pillow>=9.1", "rasterio>=1.3"]
+requires-python = ">=3.10,<3.14"
+dependencies = ["numpy==2.2.6", "scipy==1.15.3", "scikit-image==0.25.2", "tifffile==2025.5.10", "shapely==2.1.2", "Pillow==12.3.0", "rasterio==1.4.4", "opencv-python-headless==5.0.0.93", "threadpoolctl==3.7.0", "scikit-learn==1.7.2"]
 
 [project.optional-dependencies]
-evidence = ["opencv-python>=4.8"]
-medsam = ["torch>=2.0", "segment-anything>=1.0"]
-cuda-geojson = ["cupy-cuda13x>=14.0"]
 test = ["pytest>=7.4"]
-wsi = ["pyvips>=2.2"]
-curated = ["scikit-learn>=1.4", "joblib>=1.3", "pyvips>=2.2"]
 
 [project.scripts]
 bora = "bora.cli:main"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.scikit-build]
+cmake.build-type = "Release"
+wheel.packages = ["src/bora"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

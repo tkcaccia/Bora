@@ -1,283 +1,170 @@
 # Bora
 
-Bora refines coarse tile-level tissue labels into pixel-level masks. It accepts
-an OME-TIFF image and aligned TIFF label mask, then writes a refined OME-TIFF
-and GeoJSON. Label IDs are preserved without a fixed segment-count limit.
+Bora converts a coarse tissue-group map into a refined, named tissue mask and
+compact GeoJSON. There is one supported pipeline:
 
-The default chain first applies CellPhenotyper's deterministic annealed-wand
-multiclass competition near interfaces (64-pixel native radius, 4x working
-downsample), then marker-controlled watershed at native image resolution. For
-every positive label, Bora creates a protected interior core and editable
-boundary band. MedSAM can be appended as an optional box-prompted stage.
-Overlaps are resolved by confidence.
+**Virchow2 spatial tokens → fixed Virchow2 RGB evidence → Bora-AF → Neighbor context → GeoJSON.**
 
-The design is adapted from the `medsam-refine` step in
-[`tkcaccia/CellPhenotyper`](https://github.com/tkcaccia/CellPhenotyper). The
-exact annealed-wand v2 and post-refinement GeoJSON source snapshots are
-retained under `reference/CellPhenotyper/`, with provenance documented
-alongside them. CellPhenotyper's converter remains available with
-`--geojson-backend cellphenotyper`. The default `multicpu` backend uses four CPU workers,
-coverage-aware simplification (so shared label boundaries remain coincident),
-and one dissolved feature per label. The `accurate`, `balanced`, and `fast`
-profiles expose measured fidelity/complexity tradeoffs; `accurate` is the
-default and polygonizes native resolution in four memory-bounded strips.
-`balanced` retains native polygonization with stronger simplification, while
-`fast` uses pyramid level 3. CUDA is optional. The `cuda` backend uses CuPy for
-connected-component labeling and area filtering, then uses Rasterio/Shapely on
-CPU for polygonization and topology operations. It records the accelerator and
-device in the run report and falls back safely to `multicpu` unless
-`--no-geojson-cuda-fallback` is supplied.
+Neighbor context pools all 1280 token channels over each complete anonymous group, including
+disconnected pieces. It concatenates that mean with its difference from
+neighbouring group means, weighted by shared boundary length in micrometres.
+One native CPU fastPLS SIMPLS-LDA head predicts one tissue identity per group.
+The audited 25-class model uses 24 components; smaller training vocabularies
+are capped at their class-discriminant dimension. No classifier selector or
+automatic algorithm search is installed.
 
-### Validated GeoJSON profiles
+Benchmark acquisition, historical research, figures and the public viewer live
+in [Bora-Analysis](https://github.com/tkcaccia/Bora-Analysis).
+[Open the benchmark viewer](https://tkcaccia.github.io/Bora-Analysis/).
 
-The profiles were measured by rasterizing the result back across all
-1,733,311,788 level-0 pixels of the supplied Bora mask. Each emits three
-top-level features—one per observed foreground label.
+## Install
 
-| Profile | Pixel accuracy | Macro label IoU | Polygon parts | Size | Conversion |
-|---|---:|---:|---:|---:|---:|
-| accurate (default) | 99.909% | 0.9981 | 2,267 | 39.9 MB | 54.0 s |
-| balanced | 99.807% | 0.9960 | 2,267 | 17.8 MB | 49.0 s |
-| fast | 98.617%* | 0.9713* | 1,927 | 10.5 MB | 5.0 s |
-
-`*` The fast profile was evaluated at pyramid level 2; accurate and balanced
-were exhaustively evaluated at level 0.
-
-The CUDA backend was exercised on the four-label lymph-node output at pyramid
-level 3: it labeled 922 components on an RTX 5060 Ti, removed 505 components
-below the configured 10,000-pixel level-0 area, and emitted four valid class
-features in 7.8 seconds. GPU startup and transfer overhead can make small masks
-slower than the CPU backend; CUDA is intended for large component-filtering
-workloads rather than as an unconditional speedup.
-
-## Install and run
+Use Python 3.10–3.13 and a C++17 compiler. Linux also needs BLAS/LAPACK development
+libraries (`libopenblas-dev liblapack-dev` on Ubuntu); macOS uses Accelerate.
+The MIT-licensed fastPLS C++ core and Python bindings are copied into Bora at
+their audited revisions, with licenses and source hashes in `vendor/`. No
+separate fastPLS installation or Git dependency is required. Scientific
+dependencies are pinned to the benchmark runtime.
 
 ```bash
+git clone https://github.com/tkcaccia/Bora.git
+cd Bora
+python -m venv .venv
+source .venv/bin/activate
 python -m pip install -e '.[test]'
-bora refine tissue.ome.tif coarse-mask.tif \
-  --output refined-mask.ome.tif --geojson refined-mask.geojson \
-  --backend watershed
-pytest
+pytest -q
+bora --help
 ```
 
-For CUDA-assisted mask conversion on CUDA 13, install
-`python -m pip install -e '.[cuda-geojson]'` and select
-`--geojson-backend cuda`. CUDA 12 installations should install the matching
-`cupy-cuda12x` package instead of the CUDA 13 extra.
+## Inputs and calibration
 
-Use `--watershed-resolution accelerated --watershed-max-side 256` for an
-explicitly approximate watershed run. Native resolution is the default.
-Annealed competition can be tuned with `--wand-*` options or disabled with
-`--no-annealed-wand`. `pathsegmentor` is reserved until an explicit mapping
-from numeric labels to text prompts is supplied; Bora fails clearly rather
-than silently substituting another model.
+Bora consumes encoder features; it does not download a model or launch GPU/HPC
+work. Supply the full, **unselected 1280-channel Virchow2 spatial-token grid**
+from the declared checkpoint. The encoder must cover all image tissue,
+independently of annotation coverage. Never infer microscopy resolution from
+pixel dimensions or a magnification label alone.
 
-Pyramidal, tiled OME-TIFF output is enabled by default. Pyramid construction
-uses lossless `SIMPLE` downsampling for categorical labels and requires
-`bioformats2raw` and `raw2ometiff` on `PATH`. Use `--no-pyramid` only when a
-flat intermediate TIFF is explicitly required.
-
-For MedSAM, install `.[medsam]`, provide the official repository if necessary,
-and run with `--backend medsam --checkpoint /path/medsam_vit_b.pth`.
-
-PathSegmentor is available as a text-prompted alternative. Install its official
-environment (including its pinned custom Detectron2 build), clone the repository,
-download `model_state_dict.pt`, and
-provide a JSON mapping for every non-zero mask label:
+Each `case.json` declares an aligned H&E working image, categorical coarse mask,
+independent tissue support, features and actual per-axis pixel spacing. Working
+sampling must be approximately 0.5 µm/px. Encoder windows are 224 pixels and
+spatial tokens have a 14-pixel stride; padded edge tokens must keep their original
+coordinates. At least 16 substantial 90-pixel coarse tiles and two observed
+groups are required. Every group must have an eligible tile observation.
 
 ```json
 {
-  "1": "tissue-level tumor in breast pathology",
-  "2": "tissue-level stroma in breast pathology"
+  "image": "he.png",
+  "coarse": "coarse.tif",
+  "tissue": "tissue.tif",
+  "tokens": "base.npy",
+  "mpp_xy": [0.5, 0.5],
+  "native_mpp_xy": [0.25, 0.25],
+  "native_tissue": "tissue.native.tif",
+  "evidence_rgb": "rgb9-plus-19.png",
+  "encoder_revision": "3158645804b69e3f3bc4439d4116edddf0840a72",
+  "encoder_sha256": "8d6cea947eb2418c3b0dff48cfb9b238e47744ab0dfca21b2b0637b140769b4b"
 }
 ```
 
-```bash
-bora refine image.ome.tif mask.tif --output refined.ome.tif \
-  --geojson refined.geojson --backend pathsegmentor \
-  --repo-dir /path/to/PathSegmentor --checkpoint /path/to/model_state_dict.pt \
-  --label-map labels.json --device cuda
-```
+Paths are relative to the JSON file. A path can instead be an object containing
+`path` and `sha256`; a mismatch fails before inference. All consumed input hashes
+are recorded. Native and working dimensions must describe the same physical
+field. Without a different output grid, omit `native_tissue` and
+`native_mpp_xy`. Pixel spacing does not establish optical resolving power.
 
-The spelling `--backend pathsegmentator` is accepted as an alias. PathSegmentor
-operates on 1024-pixel pathology patches; Bora restores predictions to native
-resolution and restricts changes to the configured boundary envelope while
-preserving eroded label cores.
+The example reuses a trusted, checksum-recorded RGB9+19 cache. For direct RGB
+conversion, omit `evidence_rgb` and supply a `palette` array indexed by coarse
+ID minus one, plus `variants.scale_1` and `variants.scale_2`. Each variant has
+`features`, `shape_yx`, and actual `mpp_xy` for approximately 1 and 2 µm/px.
+Variant arrays may contain all 1280 channels, or the exact 64 selected channels
+with their `selected_dimensions` indices. A mismatched selection fails. The
+conversion averages #9 and #19 class probabilities before RGB quantization;
+the formulas and their within-image fits are unchanged.
 
-The adapter has been checkpoint-tested with official PathSegmentor commit
-`e67763ab835b3ef184cb6791eb2cd059ec8b9f9a`, an RTX 5060 Ti, and CUDA 13.0.
-Modern PyTorch requires replacing `value.type()` with `value.scalar_type()` in
-the two `AT_DISPATCH_FLOATING_TYPES` calls in PathSegmentor's
-`ms_deform_attn_cuda.cu` before compiling the extension. Single-process
-inference does not use MPI; on systems without a system MPI library, make the
-repository's `mpi4py` import optional.
-Full installation and compilation instructions are in
-[`docs/pathsegmentor_install.md`](docs/pathsegmentor_install.md); the exact
-modern-PyTorch compatibility patch is retained under `compat/`.
+## Prepare, train and refine
 
-The six-tissue, 56-pixel technical benchmark draft is available as Markdown,
-DOCX, and PDF under `docs/` and `output/pdf/`. A separate
-[`Medical Image Analysis` manuscript draft](docs/Bora_manuscript_Medical_Image_Analysis_draft.docx)
-and [highlights](docs/Bora_highlights_Medical_Image_Analysis.docx) follow that
-journal's submission format. The latter draft still requires verified results,
-author declarations, and other submission materials. Neither draft includes
-the ongoing regenerated multi-size benchmark.
-
-## Multi-image GeoJSON benchmark pipeline
-
-The `benchmark` command runs the complete experiment for every matched TIFF
-and GeoJSON pair in a directory:
-
-1. `tiling-mask` rasterizes the original GeoJSON and produces a majority-vote
-   tile grid. Its `mask_pixel.tif` is retained as the pixel-level reference.
-2. Bora uses a full-resolution categorical tile mask directly, or expands a
-   compact tile index grid to the original dimensions without interpolation,
-   then refines that coarse mask against the original image.
-3. Both the unrefined baseline and Bora result are compared with the reference.
-   Per-class and aggregate Dice, IoU, and accuracy are written to
-   `comparison.json`, `summary.json`, and `summary.csv`.
-
-Install both repositories into the same environment:
+Prepare geometry/descriptors for each annotated training field:
 
 ```bash
-git clone https://github.com/tkcaccia/tiling-mask.git
-python -m pip install -e ./tiling-mask
-python -m pip install -e ./Bora
+bora prepare training-case.json --output prepared/training-case
 ```
 
-Image and annotation names are paired by sample stem. The CellPhenotyper
-suffix `_standard_grown_mask_smooth_class.geojson` is removed automatically,
-so `sample.btf` pairs with
-`sample_standard_grown_mask_smooth_class.geojson`.
+The output contains `groups.ome.tif`, `descriptors.npz`, and provenance. Assign
+one expert tissue target to each original anonymous group ID in a training
+manifest. These are group targets, not independently classified fragments.
+
+```json
+{
+  "format": "bora-training-v1",
+  "classes": {"1": "tumor", "2": "stroma"},
+  "cases": [{
+    "descriptors": "prepared/training-case/descriptors.npz",
+    "source_group": "patient-A",
+    "split": "train",
+    "labels": {"1": 1, "2": 2}
+  }]
+}
+```
+
+Use sufficient independent training groups for the intended vocabulary. Keep
+patients/institutions used for final evaluation out of training and model
+selection. Class names must match represented training targets; a missing class
+cannot be invented by the classifier.
 
 ```bash
-bora benchmark /mnt/sata_ssd/benchmarks/Bora \
-  --output /mnt/sata_ssd/benchmarks/Bora_results \
-  --tile-size 224 --backend watershed --workers 4
+bora train training.json --output neighbor-context.npz
+bora refine target-case.json --model neighbor-context.npz --output results/target
 ```
 
-If images and GeoJSON files live in different directories, add
-`--image-dir /path/to/images`; matching is still performed by sample stem.
+The inference command accepts no fine annotation or reference-mask path.
+Outputs include the converted RGB, anonymous groups, classified mask before
+export, final `mask.ome.tif`, `mask.geojson`, and `report.json`. The final TIFF
+is rasterized from the actual final GeoJSON. New output paths are required;
+completed results are not silently overwritten.
 
-The default is native-resolution watershed with annealed-wand competition and
-pyramidal output. Runs are resumable by default. Use `--no-resume` to rebuild
-completed stages, `--coordinates world` for geospatial GeoJSON, or
-`--class-property classification.name` to select an explicit class field.
-MedSAM and PathSegmentor accept the same `--backend`, `--checkpoint`,
-`--repo-dir`, and `--device` options as `bora refine`. Extra refine options can
-be repeated as `--bora-arg=--option` (and `--bora-arg=value` where needed).
-For the native implementation, pass `--tiling-mask-backend cpp` together with
-`--tiling-mask-command /path/to/tiling-mask-cpp`. The native backend supports
-pixel-coordinate GeoJSON and its standard automatic QuPath class properties.
+fastPLS 0.3 does not expose portable fitted-state serialization. The safe NPZ
+artifact therefore retains training descriptors and targets and refits the
+deterministic native head once on loading. It contains no pickle. Loading is
+a separate startup cost; reuse the loaded Python object for a batch. Training
+features in the artifact remain subject to the source data's sharing terms.
 
-## 216-pixel image-guided boundary study
+## Geometry and timing
 
-The 216-pixel experiment reuses the existing full-resolution
-`mask_tile_grid_216x216_cpp.tif` files. Bora's `adaptive-wand` backend uses
-seeded GrabCut for tissue-background edges and a balanced local-color wand
-for every interface between foreground tissue classes. The wand estimates
-each class's nearby LAB distribution from protected interior pixels, lets
-adjacent classes compete symmetrically within a tile-scale band, and removes
-detached class islands. MedSAM and PathSegmentor are not used here.
+Bora-AF lets groups compete throughout supported tissue, without fixed boundary
+margins or hard seeds. Glass is removed after refinement. The published native
+coverage converter is retained unchanged (accurate profile: initial component
+filter 500 native pixels, simplification 2 pixels). This initial filter is
+separate from the final cleanup rule: polygon parts and enclosed holes strictly
+below **20 native pixels of area** are removed/filled; exactly 20 is retained
+by that cleanup. Isolated tiny specks become background.
 
-```bash
-PYTHONPATH=src python scripts/run_adaptive_boundary_benchmark.py \
-  --images /mnt/sata_ssd/benchmarks/Bora/input \
-  --tiles /mnt/sata_ssd/benchmarks/Bora/output-tilling-mask \
-  --output /mnt/sata_ssd/benchmarks/Bora/output-bora-cycle-06 \
-  --tile-size 216 --block-size 2048
-```
+Shared boundaries are fitted once as straight/diagonal arcs, using at most
+3 µm tolerance, at least 97% per-class agreement with the preceding predicted
+geometry and at most 1.5% tissue-area change. Guards use predictions, never
+expert masks. Coordinates are local native image pixel edges, with per-axis
+spacing in metadata. The vectorization is intentionally approximate.
 
-Every sample directory contains `bora_refined.geojson`, a pyramidal OME-TIFF,
-and a comparison JSON. The GeoJSON carries the original tiling-mask class
-names and colors as wsiTools annotation metadata. A new experimental cycle
-gets a new numbered output folder. Cycles 01-05 were removed at the user's
-request after visual review showed unchanged tile steps at internal borders.
+Reports separate conversion, refinement, pooling/context, classifier, model
+startup and export costs. The encoder is upstream and excluded. The existing
+116-image benchmark is a development evaluation with adaptively reused data;
+it does not establish untouched-test accuracy or complete-WSI throughput.
 
-Accuracy is evaluated from the final GeoJSON rasterized at native resolution.
-The primary gate compares only fixed 64-pixel bands around ground-truth or
-original tile-mask borders. Internal tissue-class borders and the
-tissue-background border are reported separately, along with 8-pixel
-boundary F1 and the number of pixels that switch between foreground classes.
-Pancreas has one tissue class, so only its exterior border is scored. A candidate is accepted only
-when border macro IoU and border pixel accuracy do not fall for any tissue,
-at least one measure rises, and all ground-truth classes remain represented.
-The whole-mask scores remain available in each `comparison.json` as secondary
-diagnostics. Use `scripts/score_bora_geojson.py`,
-`scripts/score_216_borders.py`, and `scripts/evaluate_216_cycle.py` to
-reproduce the decision from saved outputs.
+## Scope and migration
 
-## Experimental C++ triangular-mesh refinement
+Version 0.2 replaces the previous experimental CLI. Watershed, MedSAM,
+PathSegmentor, earlier evidence solvers, alternative classifiers and evolution
+launchers are removed from the application. Historical source/evidence is
+preserved in Bora-Analysis and Git history. No background research cycle is
+started by installation, import or command execution.
 
-The newer contour stage regularizes a categorical mask on a triangular mesh,
-then optionally rounds the mesh corners. It edits only internal tissue-class
-boundaries; external tissue/background contours remain the responsibility of
-the preceding image-guided Bora stage. Mesh support grows in locally ambiguous
-color regions and stays narrower where nearby tissue classes have distinct
-RGB distributions. The kernel uses OpenMP, and the streaming wrapper processes
-WSI blocks in multiple worker processes.
-
-```bash
-cmake -S cpp -B cpp/build
-cmake --build cpp/build -j 4
-PYTHONPATH=src python scripts/run_tri_mesh_cycle.py \
-  --source-root /path/to/pre-strong-bora-output \
-  --output /path/to/numbered-cycle \
-  --tiling-root /path/to/regenerated-tile-masks \
-  --images /path/to/original-images \
-  --adaptive-by-tile-size --mesh-spacing 64 --support-radius 112 \
-  --band-radius 216 --color-weight 0.2 --post-smooth-radius 16
-```
-
-The regenerated four-slide, three-size benchmark and the planned 200 numbered
-cycles are documented in [the experiment protocol](docs/tri_mesh_200_cycle_protocol.md).
-Every full cycle must export 12 GeoJSONs and is scored on internal-border
-macro IoU, accuracy, 8/16/32-pixel contour F1, ASSD, HD95, false tile-edge
-pixels, retained classes, and measured processing time. The current input
-GeoJSONs differ from the older 216-pixel benchmark annotations, so their
-scores are kept in a separate versioned benchmark directory.
-
-Tissue-mask dataset acquisition, benchmark, figure, table, and manuscript
-generation code is maintained in [Bora-extra](https://github.com/tkcaccia/Bora-extra).
-The acquisition workflow inventories public tissue image/mask pairs. Local
-dataset files and benchmark outputs remain outside Git.
+This implementation processes aligned fields in memory. Full-slide tiling,
+cross-field identity reconciliation and the proposed source-WSI transfer study
+require separate validation; native-coordinate output alone is not proof of
+whole-slide scalability.
 
 ## License
 
-No license has yet been selected.
-
-## Retained-strategy Virchow2 benchmark
-
-The expanded experiment retains eight Bora strategies (B02, B03, B05, B08,
-B09, B10, B12, B19) and five RGB inputs (#9, #10, #15, #19, 9+19). Rejected
-benchmark implementations are removed. B19 now combines only retained solvers.
-The 149-ROI scope includes 100 additional TIGER/BCSS groups. See
-[the protocol and commands](experiments/bora_strategies/README.md). Historical
-20-strategy outputs remain archives; the active viewer is
-`benchmark/results/bora-retained-expanded-2026-10-17/gallery.html`.
-
-
-## Whole-field refinement of converted evidence RGB
-
-The `bora evidence` command uses a fixed converted RGB image and original coarse
-labels, allowing every tissue pixel to change without a fixed boundary margin
-or hard seed points. `simplex` interprets the known RGB conversion palette;
-`linear` uses a fast shared-covariance classifier. These methods are developed
-for ROI refinement with reference-derived coarse labels; benchmark results do
-not establish independent classifier generalization or full-WSI performance.
-
-Install the optional `evidence` dependency. Provide independent tissue support,
-actual input pixel spacing and the original coarse tile width. The simplex
-palette must be the exact palette used by the RGB conversion, indexed by label
-ID minus one. More than four affine-dependent classes cannot be uniquely
-recovered from RGB; the simplex method uses coarse-trained regularization.
-
-```bash
-bora evidence converted.png coarse.tif --tissue-mask tissue.tif \
-  --method simplex --palette palette.json --mpp-x 0.5 --mpp-y 0.5 \
-  --source-tile-size 90 --output refined.ome.tif --report details.json
-```
-
-The output preserves input geometry, removes pixels outside tissue support and
-records pixel spacing. Pixel spacing does not determine optical resolving power.
-Experimental protocol and development history: `experiments/bora_elegant/`.
+The vendored fastPLS core and bindings retain their MIT license, including
+Stefano Cacciatore's copyright notice. No new overall project license is
+selected by this release. Upstream libraries,
+datasets and reference materials retain their respective licenses.

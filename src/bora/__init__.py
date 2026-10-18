@@ -1,2 +1,2 @@
-"""Coarse-to-pixel tissue segmentation refinement."""
-__version__ = "0.1.0"
+"""Bora-AF refinement and native fastPLS Neighbor context identification."""
+__version__ = "0.2.0"
