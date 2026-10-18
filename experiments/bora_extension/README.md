@@ -4,11 +4,12 @@ The user requested continuing the 20-cycle study and adding images alongside
 the current 149. **200 additional image/coarse/reference triples are prepared
 and pass a native-source/overlap audit.** Full encoder inference is also complete:
 all600 arrays across200 additions pass the independent feature audit. Expanded
-Bora cycle8 is now running on all349 inputs after a reviewed engineering pilot.
-Full scoring, review and selection are pending. Cycle seven is signed after149 actual overview inspections and
-eight native label crops; seven of twenty cycles are complete.
+Bora cycle8 is signed after349 actual all-method overview inspections and14
+native label crops. Eight of twenty cycles are complete. Cycle9 is running
+the same349 frozen inputs after a separately reviewed13-image engineering
+pilot. Its full scoring, review and five-survivor selection are pending.
 
-| Dataset | Existing | Added | Planned total | Added representation |
+| Dataset | Existing | Added | Frozen total | Added representation |
 | --- | ---: | ---: | ---: | --- |
 | BCSS |92|40|132|ROI window; documented spacing |
 | TIGER |40|40|80|Non-TCGA ROI window; documented spacing |
@@ -20,11 +21,11 @@ eight native label crops; seven of twenty cycles are complete.
 | **Total** |**149**|**200**|**349**|All analysis images are ROIs, not full WSIs |
 
 Cycle seven's 149-image protocol and predictions were frozen before this
-request and remain unchanged. The 349-image corpus is intended for subsequent
-cycles, preserving 149-image scores for historical comparisons. No cycle-eight
-algorithm is designed before cycle-seven selection. The expanded prediction,
-scoring and review gates must be implemented before an expanded cycle can
-be called complete.
+request and remain unchanged. The349-image corpus is used prospectively from
+cycle8, preserving149-image scores for matched historical comparisons.
+Expanded prediction, scoring and review gates have executed. A running job
+is not a completed cycle; every full all-method overview must actually be
+inspected before five are signed.
 
 ## Sampling and source integrity
 
@@ -93,8 +94,8 @@ raw 0 is a valid outside-tumor target, 1 tumor; this is not tumor/stroma ground
 truth. Planning maps valid categories to positive compact IDs and reserves
 compact 0 for source ignore. RINGS negatives can include glass/lumina:
 task-specific foreground/background scoring must be explicit and retain errors
-from deleted true tumor. The149-image scorer is not yet asserted to be a
-correct adapter for every new task. No expanded score has been produced.
+from deleted true tumor. The expanded scorer implements this task adapter prospectively from cycle8;
+historical parent scores retain their original definitions exactly.
 
 Fine references are used by planning and post-prediction scoring only. Every
 tissue pixel, including unannotated tissue, needs encoder coverage. Conversion
@@ -161,7 +162,8 @@ feature and audit processes are terminal. Arrays remain on Chiamaka; local
 copies contain metadata, while all200 original input triples are local.
 Shared feature preparation averages1.753 seconds per new image, excluding model
 loading. This is separate from Bora refinements' runtime and is not an
-end-to-end subsecond claim. Expanded Bora scoring is pending.
+end-to-end subsecond claim. Cycle8 expanded scoring and review are complete;
+cycle9 is running against the identical frozen inputs.
 
 `task_adapter.py` prepares the expanded runner's unit and RINGS semantics
 contract. Uncalibrated numerical coordinates are unit pixels, with physical
@@ -170,8 +172,8 @@ background zero to the valid outside-tumor target; saved masks stay unchanged,
 and deleted true tumor remains incorrect. Other datasets retain prediction
 zero as an error on positive reference. Four checks cover calibration
 contradictions, honest pixel reporting, deleted-tumor errors and all-tumor
-crops. The prospective cycle-eight runner now integrates these helpers;
-expanded prediction/scoring must still execute before results can be claimed.
+crops. The cycle-eight runner executed these helpers and passed the full7678-mask
+audit; cycle9 uses the same unit and scoring contract.
 
 ## Completed conversion stage
 
@@ -205,5 +207,13 @@ coarse fallback for every candidate/control, with only independent H&E glass
 handling retained. No refinement is claimed on constant evidence. A fresh
 16-image pilot passes293 remote checks and the352-mask audit, including110
 explicit fallback comparisons. Four native-label crops were actually inspected.
-`../bora_cycles/CYCLE_EIGHT_EXECUTION.json` records the full-run launch and its
-current incomplete status; no cycle8 survivor has been selected.
+`../bora_cycles/CYCLE_EIGHT_EXECUTION.json` records the completed349-image
+run, full audit and signed selection J01,L02,K05,L03,C17 after349 actually
+viewed overviews and14 native crops. Cycle9 retains those exact five and adds
+M01–M15; its327-check final pilot includes286 mask/display audits,65 parent
+mask and65 parent-score comparisons,44 constant-input checks,13 actually
+viewed overviews and3 native crops. Its full349-image run is in progress.
+See `../bora_cycles/CYCLE_NINE_EXECUTION.json` for its current execution state.
+
+The navigation guide in `../../benchmark/EXTENDED_BENCHMARK.md` distinguishes
+raw downloads, frozen input triples, features, converted RGB and scored results.
