@@ -1,0 +1,780 @@
+{
+  "decision": {
+    "decision": "proceed_with_unchanged_frozen_v1_to_full349",
+    "cycle": 10,
+    "engineering_only": true,
+    "completed_cycles": 9,
+    "actual_overviews": 13,
+    "actual_native_crops": 3,
+    "parent_native_parity_checks": 65,
+    "parent_score_parity_checks": 65,
+    "constant_contract_checks": 44,
+    "audit_sha256": "228f880b204c3a2c2f42918235c515b090575d7a95e787fe7f05c3b1022fede6",
+    "results_sha256": "f66a7f3268525cb77046c6725f32886df5c7692b005c570d0a80006261a2b999",
+    "visual_review_sha256": "e921786b875e9e79a2e382cbac70ab5c9a9bb5d37c1a22561ca5dccf665d81af",
+    "native_review_sha256": "88bb660d4895b0f06ea8b5399b2c82475f843a1870b7309f42212267ce26a188",
+    "numerical_status_sha256": "2f53905e51515d237a855364fc40d5c4af7f7113e6f3e5dfdcc1cedd6002ef1e",
+    "source_commit": "2f25e218a173265c15923e16eab2571bcf8fa2db",
+    "limitations": [
+      "N07 finite 60-step ADMM failed stationarity criterion on all 11 informative pilot cases; retain only as budgeted approximate output, never an optimum claim.",
+      "N14 two pilot cases above 1e-5 projected-gradient threshold; disclose finite stationarity.",
+      "N11 removes real adipose interior; N03 categorical grid is visibly blocky.",
+      "RINGS negative is not stroma. Reference-unannotated tissue cannot establish anatomical accuracy.",
+      "No pilot ranking determines the full-cycle survivors."
+    ],
+    "full_expected_cases": 349,
+    "full_expected_methods": 22,
+    "workers": 3,
+    "numerical_threads": 2,
+    "nice": 12,
+    "selection_created": false,
+    "complete_goal": false,
+    "at_utc": "2026-10-18T03:39:25.233019+00:00"
+  },
+  "overviews": {
+    "reviewed": {
+      "bcss_18": {
+        "sheet_sha256": "742383f1af242374cdc0eee38ec9f65c40cec72def3e9c3224f0da48aab6fb0c",
+        "observed_methods": [
+          "B21",
+          "B22",
+          "J01",
+          "M04",
+          "K05",
+          "M11",
+          "C17",
+          "N01",
+          "N02",
+          "N03",
+          "N04",
+          "N05",
+          "N06",
+          "N07",
+          "N08",
+          "N09",
+          "N10",
+          "N11",
+          "N12",
+          "N13",
+          "N14",
+          "N15"
+        ],
+        "observation": "All 22 overview masks inspected against H&E, reference, coarse and RGB. Long green stromal bands persist; most methods bridge the narrow white clefts. N11 restores more branched white clefts, N12 fewer, M11 exposes peripheral cuts; this is also deletion risk. N03 has visibly stepped edges and small granules; N02 shifts broad red-green borders. N13 resembles controls; none restores all annotated lumina.",
+        "reviewed_at_utc": "2026-10-18T03:37:06.379685+00:00",
+        "review_scope": "contact-sheet overview; native-resolution zooms must be noted separately"
+      },
+      "bcss_45": {
+        "sheet_sha256": "cdbbe9626ef497ebcc40e046d34283552def96fb3b85c8fa9418ade5da55838f",
+        "observed_methods": [
+          "B21",
+          "B22",
+          "J01",
+          "M04",
+          "K05",
+          "M11",
+          "C17",
+          "N01",
+          "N02",
+          "N03",
+          "N04",
+          "N05",
+          "N06",
+          "N07",
+          "N08",
+          "N09",
+          "N10",
+          "N11",
+          "N12",
+          "N13",
+          "N14",
+          "N15"
+        ],
+        "observation": "All 22 overview masks inspected. Gold adipose left, green separator, violet immune stripe and red right largely preserved. C17 and N14 suppress small gold intrusions within violet more than K05/N07/N09. N01 and N02 broaden or distort intermediate strips; N03 edges are stepped. M11 exposes large fat spaces, N11 produces a conspicuous white lattice through gold adipose, N12 deletes less; N10 looks like J01. Unannotated upper-left tissue is still analyzed.",
+        "reviewed_at_utc": "2026-10-18T03:37:06.380936+00:00",
+        "review_scope": "contact-sheet overview; native-resolution zooms must be noted separately"
+      },
+      "bcss_53": {
+        "sheet_sha256": "43ef0a00fcfa9868dfdd9df264ad58e830ba3f6e88d618b0bea14c35655a0acb",
+        "observed_methods": [
+          "B21",
+          "B22",
+          "J01",
+          "M04",
+          "K05",
+          "M11",
+          "C17",
+          "N01",
+          "N02",
+          "N03",
+          "N04",
+          "N05",
+          "N06",
+          "N07",
+          "N08",
+          "N09",
+          "N10",
+          "N11",
+          "N12",
+          "N13",
+          "N14",
+          "N15"
+        ],
+        "observation": "All 22 overview masks inspected. Multiple dispersed red nests sit in green; the central-right red connection is too solid in several outputs. K05/N08/N09 and N01 fragment that connection somewhat while N02/N13 keep larger blocks; N03 adds stepped margins. N10/N11/N12 make little visible change on this dense tissue. No algorithm recreates every thin annotated green separation.",
+        "reviewed_at_utc": "2026-10-18T03:37:06.382171+00:00",
+        "review_scope": "contact-sheet overview; native-resolution zooms must be noted separately"
+      },
+      "bcss_87": {
+        "sheet_sha256": "48d62fa56e0b25cc2c3cb637964e07b8afbaf2c161274cc076f507c8b822c1d4",
+        "observed_methods": [
+          "B21",
+          "B22",
+          "J01",
+          "M04",
+          "K05",
+          "M11",
+          "C17",
+          "N01",
+          "N02",
+          "N03",
+          "N04",
+          "N05",
+          "N06",
+          "N07",
+          "N08",
+          "N09",
+          "N10",
+          "N11",
+          "N12",
+          "N13",
+          "N14",
+          "N15"
+        ],
+        "observation": "All 22 overview masks inspected. Original small red and gold islands are blurred in RGB; every method leaves too much contiguous violet at upper right and misses the intricate green network. C17/N14 have fewer gold fringes and a larger connected green centre. N03 has granular stair-step contours; N01/N07/N09 produce scattered violet extensions rather than the reference network. Glass children look effectively unchanged in this dense field.",
+        "reviewed_at_utc": "2026-10-18T03:37:23.239610+00:00",
+        "review_scope": "contact-sheet overview; native-resolution zooms must be noted separately"
+      },
+      "tiger_23": {
+        "sheet_sha256": "45fe2e6bdc8dd03862fd0381303d47947ce8e5301898cc575fc6bdd731c363ab",
+        "observed_methods": [
+          "B21",
+          "B22",
+          "J01",
+          "M04",
+          "K05",
+          "M11",
+          "C17",
+          "N01",
+          "N02",
+          "N03",
+          "N04",
+          "N05",
+          "N06",
+          "N07",
+          "N08",
+          "N09",
+          "N10",
+          "N11",
+          "N12",
+          "N13",
+          "N14",
+          "N15"
+        ],
+        "observation": "All 22 overview masks inspected. Cyan left, grey top right, green middle and violet bottom right. N13 markedly expands grey far into violet and loses the green divider; N14 and N15 partly share that shift. N03 is stepped. J01/M04/N04/N05/N06 retain a clearer green separator; K05/N07/N08/N09 change its thin branches. Shared lower-right white slits persist, glass variants add little.",
+        "reviewed_at_utc": "2026-10-18T03:37:23.240752+00:00",
+        "review_scope": "contact-sheet overview; native-resolution zooms must be noted separately"
+      },
+      "tiger_32": {
+        "sheet_sha256": "a39e39fb23cc1b12bc6228027337bda8e0f22cf2c9b3c0451ddad5d32cd92aeb",
+        "observed_methods": [
+          "B21",
+          "B22",
+          "J01",
+          "M04",
+          "K05",
+          "M11",
+          "C17",
+          "N01",
+          "N02",
+          "N03",
+          "N04",
+          "N05",
+          "N06",
+          "N07",
+          "N08",
+          "N09",
+          "N10",
+          "N11",
+          "N12",
+          "N13",
+          "N14",
+          "N15"
+        ],
+        "observation": "All 22 overview masks inspected. Gold fat left, diagonal small red nests in green, blue top-right. Every method misses or merges many reference thin red strands; N07/N09 enlarge some red islands, N02 and N15 create thicker red connections. C17/N13 preserve broad control geometry. White removal remains mainly peripheral; no clear inner-fat deletion in this image. N03 diagonal boundary shows visible steps.",
+        "reviewed_at_utc": "2026-10-18T03:37:23.242075+00:00",
+        "review_scope": "contact-sheet overview; native-resolution zooms must be noted separately"
+      },
+      "rings-tumor_01": {
+        "sheet_sha256": "2af1dea3200ecf8083890784a257511e67f9affb0ab0bd2c69764efc3f5e6bb5",
+        "observed_methods": [
+          "B21",
+          "B22",
+          "J01",
+          "M04",
+          "K05",
+          "M11",
+          "C17",
+          "N01",
+          "N02",
+          "N03",
+          "N04",
+          "N05",
+          "N06",
+          "N07",
+          "N08",
+          "N09",
+          "N10",
+          "N11",
+          "N12",
+          "N13",
+          "N14",
+          "N15"
+        ],
+        "observation": "All 22 overview masks inspected. Binary tumour boundary is confined to the right; green means outside tumour, not expert stroma. J01/M04/N04/N05/N06 keep the right red body comparatively clean, K05/N01/N07/N09 produce extra central red specks and some red-border holes. N13/N14/N15 show stronger central false red. Shared lower-left lumen deletion remains; N11 adds another white left-border pocket. N10 resembles J01.",
+        "reviewed_at_utc": "2026-10-18T03:37:40.531576+00:00",
+        "review_scope": "contact-sheet overview; native-resolution zooms must be noted separately"
+      },
+      "rings-tumor_03": {
+        "sheet_sha256": "0ce78e2041f19ee4abae31c6ce8a17c417cd27e5f47ab82404f766dda03ca7ff",
+        "observed_methods": [
+          "B21",
+          "B22",
+          "J01",
+          "M04",
+          "K05",
+          "M11",
+          "C17",
+          "N01",
+          "N02",
+          "N03",
+          "N04",
+          "N05",
+          "N06",
+          "N07",
+          "N08",
+          "N09",
+          "N10",
+          "N11",
+          "N12",
+          "N13",
+          "N14",
+          "N15"
+        ],
+        "observation": "All 22 overview masks inspected. The frozen RGB and coarse mask are constant green although original H&E has complex glands. All methods retain the same single-class coarse fallback, apart from white support/removal details. N11 expands the top white cleft and N12 differs slightly at border. A perfect binary score here demonstrates an outside-tumour example, not architectural reconstruction or newly discovered gland classes.",
+        "reviewed_at_utc": "2026-10-18T03:37:40.532737+00:00",
+        "review_scope": "contact-sheet overview; native-resolution zooms must be noted separately"
+      },
+      "wsss4luad_01": {
+        "sheet_sha256": "831e1d14b1ed76e4b0461224f4f9327db85bbfc54f71a447022eff107b9a1847",
+        "observed_methods": [
+          "B21",
+          "B22",
+          "J01",
+          "M04",
+          "K05",
+          "M11",
+          "C17",
+          "N01",
+          "N02",
+          "N03",
+          "N04",
+          "N05",
+          "N06",
+          "N07",
+          "N08",
+          "N09",
+          "N10",
+          "N11",
+          "N12",
+          "N13",
+          "N14",
+          "N15"
+        ],
+        "observation": "All 22 overview masks inspected. Red epithelial masses and green connective areas are much smoother than reference thin rims around lumina. Most white lumina are filled by class predictions; this reference white is ignored, not necessarily algorithmic background error. N01/K05/N07/N09 break a few middle-right red-green connections; N03 is blocky with jagged steps. N02/N13 are closer to broad hard-colour control regions. Glass children cannot recover fine internal gaps absent shared support.",
+        "reviewed_at_utc": "2026-10-18T03:37:40.534159+00:00",
+        "review_scope": "contact-sheet overview; native-resolution zooms must be noted separately"
+      },
+      "wsss4luad_04": {
+        "sheet_sha256": "363c742d99a7ee86334d0bd54e52759fc5163241b43b058205f8db82035ba811",
+        "observed_methods": [
+          "B21",
+          "B22",
+          "J01",
+          "M04",
+          "K05",
+          "M11",
+          "C17",
+          "N01",
+          "N02",
+          "N03",
+          "N04",
+          "N05",
+          "N06",
+          "N07",
+          "N08",
+          "N09",
+          "N10",
+          "N11",
+          "N12",
+          "N13",
+          "N14",
+          "N15"
+        ],
+        "observation": "All 22 overview masks inspected. Constant red converted RGB activates the common frozen fallback: the small coarse green corner is retained, all other pixels red. No method resolves the white gland spaces or the true curved green lower-left border. This is explicitly a no-information example; identical masks are not new successful refinement.",
+        "reviewed_at_utc": "2026-10-18T03:37:59.837270+00:00",
+        "review_scope": "contact-sheet overview; native-resolution zooms must be noted separately"
+      },
+      "ocelot_01": {
+        "sheet_sha256": "1c09b826aa212d9b105df6ac07392caa03dea42bedbc4bdc54c0bea15da08cb4",
+        "observed_methods": [
+          "B21",
+          "B22",
+          "J01",
+          "M04",
+          "K05",
+          "M11",
+          "C17",
+          "N01",
+          "N02",
+          "N03",
+          "N04",
+          "N05",
+          "N06",
+          "N07",
+          "N08",
+          "N09",
+          "N10",
+          "N11",
+          "N12",
+          "N13",
+          "N14",
+          "N15"
+        ],
+        "observation": "All 22 overview masks inspected. Green connective branches between red glands are too sparse compared with reference; most outputs merge the upper-centre red glands. N01/N08/K05/N09 expand several green islands slightly. N02 and N13 form broader green pockets but still miss long thin strands. N03 produces stepped strands. No visible white-removal gain from N10/N11/N12 on this dense tissue.",
+        "reviewed_at_utc": "2026-10-18T03:37:59.840376+00:00",
+        "review_scope": "contact-sheet overview; native-resolution zooms must be noted separately"
+      },
+      "beetle_01": {
+        "sheet_sha256": "35634c863479bb39ef13fa5b0d511bdc44303fa713c959b3e2382f20ce6b7b5a",
+        "observed_methods": [
+          "B21",
+          "B22",
+          "J01",
+          "M04",
+          "K05",
+          "M11",
+          "C17",
+          "N01",
+          "N02",
+          "N03",
+          "N04",
+          "N05",
+          "N06",
+          "N07",
+          "N08",
+          "N09",
+          "N10",
+          "N11",
+          "N12",
+          "N13",
+          "N14",
+          "N15"
+        ],
+        "observation": "All 22 overview masks inspected. Fine reference covers only a central small island plus lower strip; whole tissue is still predicted. Grey regions outside the reference cannot be validated here. K05/N08/N09 split grey and red more than J01/M04; N13 expands grey locally, N03 is visibly angular. All methods leave most internal H&E lumina assigned red or grey; peripheral original background is excluded.",
+        "reviewed_at_utc": "2026-10-18T03:37:59.842131+00:00",
+        "review_scope": "contact-sheet overview; native-resolution zooms must be noted separately"
+      },
+      "camelyon16-subset_01": {
+        "sheet_sha256": "0c344b9f7b86492e13c6287278403797e8671bdd44a5854edb85c77641e0fa98",
+        "observed_methods": [
+          "B21",
+          "B22",
+          "J01",
+          "M04",
+          "K05",
+          "M11",
+          "C17",
+          "N01",
+          "N02",
+          "N03",
+          "N04",
+          "N05",
+          "N06",
+          "N07",
+          "N08",
+          "N09",
+          "N10",
+          "N11",
+          "N12",
+          "N13",
+          "N14",
+          "N15"
+        ],
+        "observation": "All 22 overview masks inspected. Small red tumour masses lie top and bottom; the broad green outside-tumour territory contains much fat. C17/N14/N15 keep more compact red shapes. N11 creates extensive new white holes through adipose at upper-right and left, beyond the shared peripheral holes; N12 removes less but still changes some edge spaces. N10 matches J01 broad support; none restores expert smooth tumour contours fully.",
+        "reviewed_at_utc": "2026-10-18T03:37:59.843747+00:00",
+        "review_scope": "contact-sheet overview; native-resolution zooms must be noted separately"
+      }
+    },
+    "required_cases": [
+      "camelyon16-subset_01",
+      "beetle_01",
+      "tiger_23",
+      "tiger_32",
+      "bcss_18",
+      "bcss_45",
+      "bcss_53",
+      "bcss_87",
+      "wsss4luad_01",
+      "wsss4luad_04",
+      "rings-tumor_01",
+      "rings-tumor_03",
+      "ocelot_01"
+    ],
+    "automated_checks_are_not_visual_review": true
+  },
+  "native": {
+    "cycle": 10,
+    "reviewed": {
+      "bcss_45/native-review/0-0-256-256": {
+        "case": "bcss_45",
+        "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-10-pilot-v1/cases/bcss_45/native-review/0-0-256-256",
+        "observation": "All 22 native-crop label panels inspected. Fine reference is absent here. H&E shows fat-cell walls; shared support leaves a lace of gold crossing cell interiors rather than faithfully tracing all walls. M11/N11/N12 replace much of this with coarse white voids and simple gold struts. N10 does not restore common lost support. Neither morphology can be judged correct from absent reference.",
+        "methods": [
+          "B21",
+          "B22",
+          "J01",
+          "M04",
+          "K05",
+          "M11",
+          "C17",
+          "N01",
+          "N02",
+          "N03",
+          "N04",
+          "N05",
+          "N06",
+          "N07",
+          "N08",
+          "N09",
+          "N10",
+          "N11",
+          "N12",
+          "N13",
+          "N14",
+          "N15"
+        ],
+        "native_crop_xywh": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "native_mpp_xy": [
+          0.25,
+          0.25
+        ],
+        "labels_sha256": "5bb81d72e2f6ab6ac5de206256d15affc2b43278ba9ab24507a6bc66f1f2b943",
+        "provenance_sha256": "7fd8e0e407d27b30ec329da035bac0bcf638ec32691cf05776dbf15f51cb8bf4",
+        "actual_view": "Native-resolution label crop sheet; every displayed method",
+        "overlays_exported_but_not_reviewed": true,
+        "reviewed_at_utc": "2026-10-18T03:39:25.227032+00:00"
+      },
+      "tiger_23/native-review/640-640-256-256": {
+        "case": "tiger_23",
+        "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-10-pilot-v1/cases/tiger_23/native-review/640-640-256-256",
+        "observation": "All 22 native-crop labels inspected. Reference green centre and violet wedge right; N13 adds a broad false grey field with two disconnected grey islands, N14/N15 add grey rims. J01/M04/N04/N05/N06 retain the green-violet interface with no grey band. K05/N07/N08/N09 move the wedge left. N03 creates sharp cell-sized block steps and a vertical isolated violet sliver.",
+        "methods": [
+          "B21",
+          "B22",
+          "J01",
+          "M04",
+          "K05",
+          "M11",
+          "C17",
+          "N01",
+          "N02",
+          "N03",
+          "N04",
+          "N05",
+          "N06",
+          "N07",
+          "N08",
+          "N09",
+          "N10",
+          "N11",
+          "N12",
+          "N13",
+          "N14",
+          "N15"
+        ],
+        "native_crop_xywh": [
+          640,
+          640,
+          256,
+          256
+        ],
+        "native_mpp_xy": [
+          0.5,
+          0.5
+        ],
+        "labels_sha256": "0738807388385ada8ad52db2d0289fa963f99a916fc52c61f61e220e961fda76",
+        "provenance_sha256": "3f1ba7adab13918db9f590e1695f1ed7237a7d1426ef2d19fbdea8eec9948fee",
+        "actual_view": "Native-resolution label crop sheet; every displayed method",
+        "overlays_exported_but_not_reviewed": true,
+        "reviewed_at_utc": "2026-10-18T03:39:25.227837+00:00"
+      },
+      "rings-tumor_01/native-review/640-640-256-256": {
+        "case": "rings-tumor_01",
+        "folder": "/Users/stefano/Documents/ChatGPT/Bora/benchmark/results/bora-cycles-2026-10-17/cycle-10-pilot-v1/cases/rings-tumor_01/native-review/640-640-256-256",
+        "observation": "All 22 native-crop labels inspected. Reference is valid negative throughout this window, although glands are present. C17/N13/N14/N15 and B21/B22 create multiple sizable false red islands; N01/K05/N07/N08/N09 leave smaller red islands. J01/M04/N04/N05/N06/M11/N10/N11/N12 largely suppress the false detections. This is binary tumour specificity, not proof of stroma identity.",
+        "methods": [
+          "B21",
+          "B22",
+          "J01",
+          "M04",
+          "K05",
+          "M11",
+          "C17",
+          "N01",
+          "N02",
+          "N03",
+          "N04",
+          "N05",
+          "N06",
+          "N07",
+          "N08",
+          "N09",
+          "N10",
+          "N11",
+          "N12",
+          "N13",
+          "N14",
+          "N15"
+        ],
+        "native_crop_xywh": [
+          640,
+          640,
+          256,
+          256
+        ],
+        "native_mpp_xy": null,
+        "labels_sha256": "28828584f1f0f63c78a9900cc44b43b40d2477b0fd9a813baa769d6ac7c18bc2",
+        "provenance_sha256": "34f8ed5b3a78564257889479a7f2993546c9678cfb45a9ec34b7c11d5d5db5f1",
+        "actual_view": "Native-resolution label crop sheet; every displayed method",
+        "overlays_exported_but_not_reviewed": true,
+        "reviewed_at_utc": "2026-10-18T03:39:25.228493+00:00"
+      }
+    },
+    "predictions_modified": false,
+    "scores_modified": false,
+    "actual_native_crops": 3
+  },
+  "numerical_status": {
+    "cycle": 10,
+    "cases": 13,
+    "methods": {
+      "B21": {
+        "maximum_reported_residuals": {},
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "B22": {
+        "maximum_reported_residuals": {},
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "J01": {
+        "maximum_reported_residuals": {
+          "linear_system_max_residual": 1.6257828416854636e-14
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "M04": {
+        "maximum_reported_residuals": {
+          "linear_system_max_residual": 1.6257828416854636e-14
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "K05": {
+        "maximum_reported_residuals": {
+          "linear_system_max_residual": 6.807592684010544e-13
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "M11": {
+        "maximum_reported_residuals": {
+          "linear_system_max_residual": 1.6257828416854636e-14
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "C17": {
+        "maximum_reported_residuals": {
+          "max_kkt_residual": 5.134781488891349e-16
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "N01": {
+        "maximum_reported_residuals": {
+          "linear_system_max_residual": 1.3496148643099559e-14
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "N02": {
+        "maximum_reported_residuals": {
+          "linear_system_max_residual": 1.2753686995381486e-14
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "N03": {
+        "maximum_reported_residuals": {
+          "linear_system_max_residual": 1.6257828416854636e-14
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "N04": {
+        "maximum_reported_residuals": {
+          "linear_system_max_residual": 8.597567102697212e-13
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "N05": {
+        "maximum_reported_residuals": {
+          "linear_system_max_residual": 8.597567102697212e-13
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "N06": {
+        "maximum_reported_residuals": {
+          "linear_system_max_residual": 8.597567102697212e-13
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "N07": {
+        "maximum_reported_residuals": {
+          "gradient_infinity_norm": 1.1770570270151985,
+          "primal_residual": 0.025122082646284127,
+          "dual_residual": 1.1770570270154652
+        },
+        "explicitly_not_converged_cases": [
+          "camelyon16-subset_01",
+          "beetle_01",
+          "tiger_23",
+          "tiger_32",
+          "bcss_18",
+          "bcss_45",
+          "bcss_53",
+          "bcss_87",
+          "wsss4luad_01",
+          "rings-tumor_01",
+          "ocelot_01"
+        ],
+        "explicitly_not_converged_count": 11,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "N08": {
+        "maximum_reported_residuals": {
+          "linear_system_max_residual": 4.951061782776378e-11
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "N09": {
+        "maximum_reported_residuals": {
+          "linear_system_max_residual": 4.951061782776378e-11
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "N10": {
+        "maximum_reported_residuals": {
+          "linear_system_max_residual": 1.6257828416854636e-14
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "N11": {
+        "maximum_reported_residuals": {
+          "linear_system_max_residual": 1.6257828416854636e-14
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "N12": {
+        "maximum_reported_residuals": {
+          "linear_system_max_residual": 1.6257828416854636e-14
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "N13": {
+        "maximum_reported_residuals": {},
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "N14": {
+        "maximum_reported_residuals": {
+          "projected_gradient_residual": 1.2661587079687564e-05
+        },
+        "explicitly_not_converged_cases": [
+          "tiger_23",
+          "tiger_32"
+        ],
+        "explicitly_not_converged_count": 2,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      },
+      "N15": {
+        "maximum_reported_residuals": {
+          "max_kkt_residual": 2.248201624865942e-15
+        },
+        "explicitly_not_converged_cases": [],
+        "explicitly_not_converged_count": 0,
+        "caveat": "No convergence flag is not proof of convergence. Linear residual, stochastic uncertainty error, biological accuracy and finite nonlinear stationarity are different checks."
+      }
+    },
+    "results_sha256": "f66a7f3268525cb77046c6725f32886df5c7692b005c570d0a80006261a2b999",
+    "source_sha256": "cb5d236a69a26c25e1988c2544c839f8b30c598e5e412e3a6790cd2145fb6c19",
+    "predictions_modified": false,
+    "scores_modified": false,
+    "visual_review_created": false,
+    "selection_created": false
+  }
+}

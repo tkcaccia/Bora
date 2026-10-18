@@ -28,6 +28,17 @@ The five preserve distinct mechanisms and are not the five highest numeric
 utility ranks. M09's highest raw IoU is rejected because90 images exceed one
 second. See `CYCLE_NINE_REVIEW.md` and the signed selection for all20 decisions.
 
+Cycle10 is implemented prospectively after the signed ninth selection. Its fifteen
+N-series models and numerical limits are described in `CYCLE_TEN_PROPOSAL.md`.
+The357 local and remote regression checks passed. All13 pilot overviews and
+3 native label crops were actually inspected;286 mask/display checks,65 parent
+mask and65 parent-score comparisons and44 constant-input checks passed.
+The unchanged frozen source2f25e21 is now running all349 cases on Chiamaka,
+3 nice12 workers and2 numerical threads each. N07 remains a visibly labelled
+finite-budget approximate solver with unfinished stationarity; N14 has two
+pilot stationarity flags. No tenth-cycle visual selection is claimed yet.
+See `CYCLE_TEN_PILOT_REVIEW.json` and `CYCLE_TEN_EXECUTION.json`.
+
 This subtracts five IoU percentage points per excess second, with no bonus
 below one second. Calculate excess on each image before averaging: a method
 whose mean time is below one second can still incur a penalty on slow cases.
@@ -193,7 +204,7 @@ retaining all149 historical cases. Unchanged conversions, single-class/task/
 calibration adapters and the manifest-based review gate are in place.
 WSSS/RINGS remain uncalibrated pixel-only data. Historical subset scores stay
 separately comparable; all reused images are development data.
-Thirteen cycles and the final all-five-conversion evaluation remain.
+Eleven cycles and the final all-five-conversion evaluation remain.
 
 Expanded-input update: all200 additions now have600 pinned Virchow2 arrays,
 with full-field coverage, source/cache integrity, finite values and per-scale
@@ -205,7 +216,7 @@ is recorded separately from Bora timing. All1745 RGB conversions and the
 expanded cycle8 inference/scoring/rendering are complete. The model snapshot
 remains ed1ad0d; reporting source b05e959 changes no predictions or scores.
 
-## Cycle8: complete computation, partial actual review
+## Cycle8: completed review and explicit numerical limitations
 
 J01 still leads adjusted utility at0.719806 (raw IoU0.720017,mean0.1997s).
 L06 has the highest raw IoU0.721213,only0.11966 percentage points above J01,
@@ -230,10 +241,11 @@ scored even when removed as background. RINGS's non-target class is not an
 expert stroma label. Some constant-input single-class cases score perfectly
 while colouring white lumina; those scores do not establish anatomical detail.
 
-All349 sheets must actually be viewed before selection and cycle9 design.
-The last delivered selected-five viewer remains cycle7. See
-`CYCLE_EIGHT_REVIEW_PROGRESS.json` and `CYCLE_EIGHT_NATIVE_REVIEW.json` for the
-timestamped partial evidence. No cycle8 survivors have been chosen.
+All349 cycle8 sheets and14 native label crops were actually viewed before
+selection and cycle9 design. The signed cycle8 survivors were J01,L02,K05,L03,C17.
+See `CYCLE_EIGHT_REVIEW_PROGRESS.json`, `CYCLE_EIGHT_NATIVE_REVIEW.json` and
+`CYCLE_EIGHT_SELECTION.json` for the complete evidence. Cycle9 subsequently
+finished as described above; its selected-five viewer is the current delivery.
 
 Integrity passes do not imply convergence of every mathematical solver.
 The numerical-status report records61 L05 cases with an unfinished class
