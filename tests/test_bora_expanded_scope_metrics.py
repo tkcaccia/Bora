@@ -72,6 +72,38 @@ def test_nonrings_support_deletions_and_absent_classes_stay_in_accuracy():
     assert score["regions"]["small_le_400_um2"]["completely_missed"] == 1
 
 
+def test_prospective_ocelot_binary_background_keeps_deleted_cancer_and_stained_tissue_errors():
+    sample=dict(dataset='ocelot',native_mpp_xy=[.5,.6],source=dict(source_version='1.0.1'),raw_to_compact={'1':1,'2':2})
+    truth=np.array([[1,1,2],[0,1,2]],np.uint8);saved=np.array([[0,0,0],[2,1,2]],np.uint8)
+    white=np.array([[True,False,True],[False,False,False]])
+    score,_=native_score(sample,truth,saved,white=white,ocelot_white_negative=True)
+    assert score['valid_pixels']==5 and score['macro_iou']==pytest.approx(.5)
+    assert score['per_class']['2']['truth_pixels']==2 and score['per_class']['2']['prediction_pixels']==1
+    assert score['saved_mask_annotated_unassigned_pixels']==3
+    np.testing.assert_array_equal(saved,[[0,0,0],[2,1,2]])
+    assert score["annotated_unassigned_pixels"] == 1
+    assert score["regions"]["small_le_400_um2"]["completely_missed"] == 0
+
+
+def test_prospective_binary_atlas_and_support_bound_match_the_scorer():
+    from experiments.bora_cycles.small_region_atlas import components
+    from experiments.bora_cycles.input_limits import summarize
+    sample=dict(dataset='ocelot',native_mpp_xy=[.5,.5],source=dict(source_version='1.0.1'),raw_to_compact={'1':1,'2':2})
+    truth=np.array([[1,1,0,2,2]],np.uint8);support=np.array([[False,False,False,True,True]])
+    white=np.array([[True,False,True,False,False]]);saved=np.array([[0,0,0,2,2]],np.uint8)
+    score,_=native_score(sample,truth,saved,white=white,ocelot_white_negative=True)
+    atlas=components(truth,support,truth,dict(M=saved),[.5,.5],dict(M=score),sample=sample,
+        white=white,ocelot_white_negative=True)
+    negative=next(c for c in atlas['components'] if c['label']==1)
+    assert negative['correct_pixels_by_method']==[1]
+    assert negative['valid_background_negative_can_be_recovered_by_zero']
+    assert not negative['common_support_cannot_reach_50pct']
+    bound=summarize(truth,support,np.array([[1,2]],np.uint8),{},[.5,.5],sample=sample,
+        white=white,ocelot_white_negative=True)
+    assert bound['per_class']['1']['optimistic_iou_upper_bound']==.5
+    assert bound['optimistic_macro_iou_upper_bound']==.75
+
+
 def test_aggregate_does_not_mix_physical_and_pixel_areas_or_change_penalty():
     rows = []
     for i, (units, iou, seconds) in enumerate((("micrometres", .6, .2), ("pixels", .8, 2.))):

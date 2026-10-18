@@ -1,7 +1,8 @@
 # Additional tissue-region datasets
 
 This acquisition extends the Bora development benchmark with **40 eligible
-native-source ROI images per included dataset**. It does not run Virchow2,
+native-source ROI images per included dataset**. Acquisition and subsequent
+calibrated Virchow2 extraction have separate immutable records. They do not
 change the RGB conversions, run Bora, or create new accuracy scores. The
 machine-readable acquisition manifest records actual completed counts. Source
 patients, slides, TMA cores and ROIs are different units and are reported
@@ -28,14 +29,15 @@ optical detail or establish an acquired microscope magnification.
 
 ## Acquired and audited fields
 
-The first acquisition audit contains200 physically calibrated fields:40 each
+The completed acquisition audit contains200 physically calibrated fields:40 each
 from IGNITE, PESO, GCSS, PUMA and GleasonXAI. Original file hashes, paired native and
 working grids, all fine classes, observed coarse groups and physical window
-sizes were checked. This is an acquisition inventory; a combined inference
-cohort and new segmentation scores have not yet been frozen.
+sizes were checked. A469-field combined inference cohort is frozen:269 prior
+calibrated fields plus these200 new fields. All frozen RGB conversions retain
+their existing formulae. No new segmentation score has yet been claimed.
 
 The local review page is
-[the acquisition viewer](http://127.0.0.1:64889/bora-tissue-acquisition-2026-10-18-v4/index.html).
+[the acquisition viewer](http://127.0.0.1:64889/bora-tissue-acquisition-2026-10-18-v5/index.html).
 Each original/reference/coarse preview has a100µm scale bar. The viewer states
 the actual native/working axes and any interpolation. Two aligned native
 image/mask examples per completed dataset are copied under
@@ -67,9 +69,9 @@ outside the admitted benchmark until the quota can be met with genuine fields.
 Expert carcinoma contours and the provider's image-derived tissue extent are
 distinguished in its metadata.
 
-Virchow2 extraction and its independent audit are complete for the first160
-fields:480 float16 arrays, all finite, with full original-field coverage and
-frozen selected dimensions. PUMA's40-field extraction is a separate batch.
+Virchow2 extraction and its independent audit are complete for all200 new
+fields:600 float16 arrays, all finite, with full original-field coverage and
+frozen selected dimensions. PUMA's40-field extraction has a separate batch record.
 Computed caches use Chiamaka's NVMe drive through documented links under the
 benchmark results directory; original source images remain on the SATA SSD.
 The fixed conversion formulae have not changed, and no new Bora score is claimed.
@@ -228,8 +230,9 @@ masks. Large datasets use source byte-range caches with retained block hashes,
 selected ZIP-member CRC checks and selected file hashes. A range subset never
 claims that the publisher's complete-archive checksum was verified.
 
-Before another Bora cycle: finish the independent acquisition audit, reconcile
-shared source cases and sampling, freeze a combined cohort, encode all tissue
-including unannotated context, and rerun matched parents on the identical
-cohort. Changing the image denominator cannot be reported as an algorithm gain.
+The completed acquisition/feature audits, source-case reconciliation and
+physical sampling review are bound to the469-case input freeze at
+`results/bora-calibrated-tissues-inputs-2026-10-18-v1/`. Before another full Bora
+cycle, run and inspect the engineering pilot and rerun matched parents on the
+identical cohort. Changing the denominator cannot be reported as an algorithm gain.
 The signed earlier cycle artifacts remain unchanged.

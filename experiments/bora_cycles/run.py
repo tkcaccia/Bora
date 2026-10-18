@@ -32,7 +32,7 @@ from .registry import (candidates, roster, CHILDREN_TWO, CYCLE_TWO_SURVIVORS,
                        CHILDREN_NINE, CYCLE_NINE_SURVIVORS,
                        CHILDREN_TEN, CYCLE_TEN_SURVIVORS,
                        CHILDREN_ELEVEN, CYCLE_ELEVEN_SURVIVORS)
-from .diagnostics import novelty, white_regions, mask_diagnostics
+from .diagnostics import novelty, white_regions, mask_diagnostics,rare_colors
 from .runtime_policy import active_policy, runtime_ranking
 from .benchmark_scope import load_scope, validate_scope, requires_parent_parity
 from experiments.bora_extension.task_adapter import geometry, report_units
@@ -63,6 +63,7 @@ def source_record():
         repo/"src/bora/evidence.py", repo/"cpp/evidence/kernels.cpp",
         repo/"cpp/evidence/libbora_evidence.so",
         repo/"experiments/bora_extension/task_adapter.py",
+        repo/"experiments/bora_extension/calibrated_cohort.py",
         repo/"experiments/bora_extension/eligibility.py",
         repo/"experiments/bora_extension/eligibility_policy.json",
         repo/"experiments/bora_extension/calibration.py",
@@ -160,6 +161,10 @@ def freeze_case(args):
                 assert np.all(native[~candidate_support] == 0)
                 assert set(np.unique(native)) <= set(np.unique(coarse)) | {0}
                 if lineage and key in lineage["unchanged_survivors"] and requires_parent_parity(protocol, sample["case"]):
+                    if protocol['cycle']>=11:
+                        previous_record=json.loads((Path(lineage['previous'])/'cases'/sample['case']/'PREDICTIONS.json').read_text())
+                        if previous_record['input_manifest_sha256']!=digest(src/'INPUTS_FROZEN.json'):
+                            raise RuntimeError('Parent comparison requires identical frozen case inputs')
                     old_path = Path(lineage["previous"])/"cases"/sample["case"]/key/"native.tif"
                     if not np.array_equal(native, tifffile.imread(old_path)):
                         raise RuntimeError("An unchanged survivor changed its prediction")
@@ -192,6 +197,16 @@ def freeze_case(args):
         save(out/"NOVELTY.json", detail)
         for name in ("NOVELTY.npz", "NOVELTY.json"):
             files[name] = digest(out/name)
+        if protocol.get('cycle',0)>=11:
+            started=time.perf_counter()
+            diagnostic_support=support|~white_regions(he)[0]
+            rarity,proposals,report=rare_colors(rgb,diagnostic_support,spacing)
+            report.update(seconds=time.perf_counter()-started,
+                support_rule='Inherited tissue support plus every original-H&E nonwhite working pixel',
+                diagnostic_only=True,affects_candidate_labels=False)
+            np.savez_compressed(out/'RARITY.npz',score=rarity,regions=proposals)
+            save(out/'RARITY.json',report)
+            for name in ('RARITY.npz','RARITY.json'):files[name]=digest(out/name)
     save(out/"PREDICTIONS.json", dict(
         case=sample["case"], methods=records, files_sha256=files,
         input_manifest_sha256=digest(src/"INPUTS_FROZEN.json"),
@@ -407,7 +422,7 @@ def main():
     parser.add_argument("--keys", nargs="+")
     parser.add_argument("--workers", type=int, choices=(1, 2, 3), default=3)
     parser.add_argument("--repeats", type=int, default=1)
-    parser.add_argument("--cycle", type=int, choices=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), default=1)
+    parser.add_argument("--cycle", type=int, choices=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), default=1)
     parser.add_argument("--previous", type=Path)
     parser.add_argument("--metric-backend", choices=("numpy", "cpp"), default="cpp")
     args = parser.parse_args()
@@ -432,7 +447,8 @@ def main():
                                7: (CYCLE_SEVEN_SURVIVORS, CHILDREN_SEVEN),
                                8: (CYCLE_EIGHT_SURVIVORS, CHILDREN_EIGHT),
                                9: (CYCLE_NINE_SURVIVORS, CHILDREN_NINE),
-                               10: (CYCLE_TEN_SURVIVORS, CHILDREN_TEN)}[args.cycle]
+                               10: (CYCLE_TEN_SURVIVORS, CHILDREN_TEN),
+                               11: (CYCLE_ELEVEN_SURVIVORS, CHILDREN_ELEVEN)}[args.cycle]
         if previous["cycle"] != args.cycle-1 or selection["survivors"] != list(survivors):
             parser.error("Implemented children do not match the actual reviewed survivors")
         if digest(args.previous/"VISUAL_REVIEW.json") != selection["review_sha256"]:
@@ -442,8 +458,9 @@ def main():
         validate_children(selection, children)
         lineage = dict(previous=str(args.previous), selection_sha256=digest(args.previous/"SELECTION.json"),
                        unchanged_survivors=list(survivors), children=children)
-    keys = args.keys or ["B21", "B22"]+list(active)
-    available = {key for key, value in active.items() if value.implemented} | {"B21", "B22"}
+    controls=['B21','B22']+(['B23'] if args.cycle>=11 else [])
+    keys = args.keys or controls+list(active)
+    available = {key for key, value in active.items() if value.implemented} | set(controls)
     if set(keys)-available:
         parser.error("Requested candidate is not implemented: "+str(set(keys)-available))
     samples = plan["samples"]
@@ -454,7 +471,7 @@ def main():
         if set(args.cases) != {s["case"] for s in samples}:
             parser.error("Unknown case")
     scope = load_scope(args.source, args.cycle)
-    if not args.pilot and set(keys)-{"B21", "B22"} != set(active):
+    if not args.pilot and (set(keys)-set(controls) != set(active) or (args.cycle>=11 and not set(controls)<=set(keys))):
         parser.error("Full cycle requires all 20 candidates")
     if not samples or len(set(keys)) != len(keys):
         parser.error("Empty scope or duplicate method")
@@ -474,6 +491,14 @@ def main():
             small_region_policy="All reference components scored. Separate <=400 um2 and <=400 px2 summaries; unknown spacing never assigned a physical area.",
             degenerate_evidence_policy="Exactly constant single-eligible-class RGB uses the same frozen coarse-completion fallback for every candidate/control, with only explicitly independent H&E glass removal retained. It is not claimed to be refinement.",
             selection="Review every349 image and select five with the unchanged excess-one-second penalty. Report historical149 and new200 separately.")
+        if scope['version']=='calibrated-tissues-v1':
+            protocol['diagnostic_controls']=controls
+            protocol['study_protocol'].update(
+                case_scope=f"All{len(scope['required_cases'])} frozen calibrated tissue ROIs, with prior and newly acquired fields reported separately",
+                reference_policy='Fine masks are decoded only after all predictions freeze. Reference0 is ignored; binary negative targets use explicit RGB-white-only background semantics.',
+                degenerate_evidence_policy='At least two observed groups are required; single-group and uncalibrated cases remain outside the input plan and every score/runtime denominator.',
+                support_policy='P10/P11/P12/B23 own a separately frozen native H&E support raster; all other methods retain inherited support. Every annotated reference pixel is scored.',
+                selection='Review every admitted image and all23 outputs, then select five of the20 candidates using the fixed excess-one-second penalty. Controls cannot survive.')
     validate_scope(protocol, pilot=args.pilot)
     if (args.root/"PROTOCOL.json").exists():
         if json.loads((args.root/"PROTOCOL.json").read_text()) != protocol:

@@ -91,9 +91,12 @@ def publish_selection_status(root):
     html = html.replace("CYCLE AWAITING VISUAL REVIEW",
                         f"CYCLE {cycle} REVIEWED AND SELECTED — {cycle}/20 CYCLES COMPLETE")
     html = re.sub(r"<title>.*?</title>", f"<title>Bora cycle {cycle}: all results</title>", html, count=1)
+    protocol=json.loads((root/'PROTOCOL.json').read_text())
+    controls=set(protocol['methods'])-set(protocol['roster'])
+    control_description='both controls' if len(controls)==2 else f'all {len(controls)} controls'
     info = ('<p id="cycle-selection">Selected: '
             +escape(", ".join(selection["survivors"]))
-            +'. All twenty candidates and both controls remain visible. '
+            +f'. All twenty candidates and {control_description} remain visible. '
             +'<a href="SELECTION.json">All selection and rejection reasons</a>.</p>')
     if 'id="cycle-selection"' in html:
         html = re.sub(r'<p id="cycle-selection">.*?</p>', info, html, count=1)

@@ -19,6 +19,18 @@ def test_new_negative_targets_only_forgive_removed_white_not_missing_stained_tis
         scoring_prediction(sample,saved,zero_is_removed_background=True)
 
 
+def test_ocelot_white_background_adapter_is_prospective_and_version_bound():
+    sample=dict(dataset='ocelot',source=dict(source_version='1.0.1'),raw_to_compact={'1':1,'2':2})
+    saved=np.array([[0,0,2]],np.uint8);white=np.array([[True,False,False]])
+    historical,_=scoring_prediction(sample,saved,zero_is_removed_background=True,white=white)
+    np.testing.assert_array_equal(historical,saved)
+    prospective,_=scoring_prediction(sample,saved,zero_is_removed_background=True,white=white,ocelot_white_negative=True)
+    np.testing.assert_array_equal(prospective,[[1,0,2]])
+    sample['source']['source_version']='unknown'
+    with pytest.raises(ValueError,match='verified1.0.1'):
+        scoring_prediction(sample,saved,zero_is_removed_background=True,white=white,ocelot_white_negative=True)
+
+
 def test_unknown_calibration_requires_explicit_pixel_only_contract():
     with pytest.raises(ValueError, match="explicitly"):
         geometry(dict(working_mpp_xy=None))

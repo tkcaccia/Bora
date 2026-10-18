@@ -88,6 +88,9 @@ def test_prediction_freeze_preserves_owned_support_without_reading_fine_mask(tmp
     record=json.loads((root/'cases/fixture/PREDICTIONS.json').read_text())
     assert record['methods'][key]['status']=='ok',record['methods'][key]
     assert not record['fine_reference_read'] and key+'/support.native.tif' in record['files_sha256']
+    assert {'RARITY.npz','RARITY.json'}<=set(record['files_sha256'])
+    rarity=json.loads((root/'cases/fixture/RARITY.json').read_text())
+    assert rarity['diagnostic_only'] and not rarity['affects_candidate_labels'] and not rarity['fine_reference_used']
     mask=tifffile.imread(root/'cases/fixture'/key/'native.tif')
     own=tifffile.imread(root/'cases/fixture'/key/'support.native.tif')>0
     assert np.all(mask[own]>0) and np.all(mask[~own]==0)

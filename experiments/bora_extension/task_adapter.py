@@ -44,26 +44,38 @@ def report_units(value, units):
     return value
 
 
-def scoring_prediction(sample, prediction, *, zero_is_removed_background, white=None):
-    """RINGS raw0 is a valid negative target, including glass/lumina.
-
-    Final saved masks still have background zero. For RINGS scoring only, map
-    that zero to outside-tumor, so deleting true tumor remains a false negative
-    while correct glass exclusion is not called an unassigned tissue error.
-    All other datasets retain zero as an incorrect prediction on positive GT.
-    """
+def binary_negative(sample, *, ocelot_white_negative=False):
+    """Return the verified broad-negative target; this is not a stroma label."""
     targets={'peso':(1,'non-epithelial target'),'orca':(127,'non-carcinoma tissue target')}
+    if ocelot_white_negative and sample['dataset']=='ocelot':
+        if sample.get('source',{}).get('source_version')!='1.0.1':
+            raise ValueError('OCELOT background adapter requires the verified1.0.1 ontology')
+        targets['ocelot']=(1,'non-cancer background target; not expert stroma')
     if sample['dataset'] in targets:
         raw,name=targets[sample['dataset']]
         mapping={str(k):int(v) for k,v in sample['raw_to_compact'].items()}
-        if sample.get('valid_negative_raw_label')!=raw or str(raw) not in mapping:
+        if (sample['dataset']!='ocelot' and sample.get('valid_negative_raw_label')!=raw) or str(raw) not in mapping:
             raise ValueError('Binary target lacks the declared negative-class contract')
+        return mapping[str(raw)],name
+    return None
+
+
+def scoring_prediction(sample, prediction, *, zero_is_removed_background, white=None,ocelot_white_negative=False):
+    """Map saved glass-zero to a declared negative only for numerical scoring.
+
+    PESO/ORCA and prospectively OCELOT require RGB-white pixels. Historical
+    RINGS retains its original all-zero outside-tumor adapter. Positive target
+    deletions remain false negatives; saved predictions never change.
+    """
+    negative=binary_negative(sample,ocelot_white_negative=ocelot_white_negative)
+    if negative is not None:
+        label,name=negative
         if not zero_is_removed_background or white is None or np.asarray(white).shape!=prediction.shape:
             raise ValueError('Binary background scoring requires the RGB-only white mask and support invariant')
         result=np.array(prediction,copy=True);selected=(result==0)&np.asarray(white,bool)
-        result[selected]=mapping[str(raw)]
+        result[selected]=label
         return result,dict(prediction_modified_for_scoring=True,saved_prediction_modified=False,
-            scoring_only_zero_to_class=mapping[str(raw)],converted_pixels=int(selected.sum()),
+            scoring_only_zero_to_class=label,converted_pixels=int(selected.sum()),
             task=name,conversion_scope='Only photometrically white saved-zero pixels; non-white unassigned pixels remain errors',
             positive_tumour_or_epithelium_deleted_remains_false_negative=True)
     if sample["dataset"] != "rings-tumor":

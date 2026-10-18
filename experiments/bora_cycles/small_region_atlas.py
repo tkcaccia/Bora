@@ -17,7 +17,7 @@ from .run import digest, verify
 from experiments.bora_extension.task_adapter import geometry, report_units, scoring_prediction
 
 
-def components(truth, support, native_coarse, masks, mpp_xy, saved_scores=None, *, sample=None):
+def components(truth, support, native_coarse, masks, mpp_xy, saved_scores=None, *, sample=None,white=None,ocelot_white_negative=False):
     units = "micrometres" if sample is None else geometry(sample, native=True)["units"]
     evaluator = RegionEvaluator(truth, mpp_xy)
     cc = evaluator.components
@@ -26,6 +26,10 @@ def components(truth, support, native_coarse, masks, mpp_xy, saved_scores=None, 
     small = small[small > 0]
     boxes = ndi.find_objects(cc)
     support_count = np.bincount(cc.ravel(), weights=np.asarray(support, bool).ravel(), minlength=n)
+    from experiments.bora_extension.task_adapter import binary_negative
+    negative=binary_negative(sample,ocelot_white_negative=ocelot_white_negative) if sample is not None else None
+    white_outside_count=(np.bincount(cc.ravel(),weights=(np.asarray(white,bool)&~np.asarray(support,bool)).ravel(),minlength=n)
+        if negative is not None and white is not None else np.zeros(n))
     tile_correct = np.bincount(cc.ravel(), weights=(native_coarse == truth).ravel(), minlength=n)
     known_ids = set(np.unique(native_coarse))-{0}
     correct = []
@@ -33,7 +37,8 @@ def components(truth, support, native_coarse, masks, mpp_xy, saved_scores=None, 
     for method in methods:
         prediction = np.asarray(masks[method])
         if sample is not None:
-            prediction, _ = scoring_prediction(sample, prediction, zero_is_removed_background=True)
+            prediction, _ = scoring_prediction(sample, prediction, zero_is_removed_background=True,
+                white=white,ocelot_white_negative=ocelot_white_negative)
         if prediction.shape != truth.shape:
             raise ValueError("Native geometry mismatch")
         count = np.bincount(cc.ravel(), weights=(prediction == truth).ravel(), minlength=n)
@@ -54,13 +59,14 @@ def components(truth, support, native_coarse, masks, mpp_xy, saved_scores=None, 
         count = correct[j]
         outside_negative = (sample is not None and sample["dataset"] == "rings-tumor"
             and str(sample.get("raw_to_compact", {}).get("0")) == str(label))
+        reachable=pixels if outside_negative else support_count[i]+(white_outside_count[i] if negative is not None and negative[0]==label else 0)
         rows.append(dict(component=int(i), label=label, pixels=pixels,
             area_um2=float(evaluator.area_um2[i]),
             native_bbox_xywh=[xs.start, ys.start, xs.stop-xs.start, ys.stop-ys.start],
             class_absent_from_original_coarse=label not in known_ids,
             common_support_pixels=int(support_count[i]),
-            common_support_cannot_reach_50pct=bool(support_count[i]/pixels < .5 and not outside_negative),
-            valid_background_negative_can_be_recovered_by_zero=outside_negative,
+            common_support_cannot_reach_50pct=bool(reachable/pixels < .5),
+            valid_background_negative_can_be_recovered_by_zero=bool(outside_negative or (negative is not None and negative[0]==label)),
             original_coarse_correct_pixels=int(tile_correct[i]),
             correct_pixels_by_method=count.tolist(),
             all_methods_completely_miss=bool(np.all(count == 0)),
@@ -109,9 +115,13 @@ def export(source, root, output):
                 return tifffile.imread(super().__getitem__(key))
         masks = Masks({key: out/key/"native.tif" for key in methods})
         coordinates = geometry(sample, native=True)
+        from PIL import Image
+        from .diagnostics import white_regions
+        white=white_regions(np.array(Image.open(src/'original.native.png').convert('RGB')))[0]
         data = components(truth, support, coarse, masks, coordinates["algorithm_spacing_xy"],
                           {key: row["methods"][key]["score"] for key in methods},
-                          sample=sample if protocol.get("benchmark_scope") else None)
+                          sample=sample if protocol.get("benchmark_scope") else None,white=white,
+                          ocelot_white_negative=protocol.get('benchmark_scope',{}).get('version')=='calibrated-tissues-v1')
         unit_total = totals_by_units.setdefault(coordinates['units'], {key:0 for key in total})
         for item in data["components"]:
             events = dict(small_components=1, absent_coarse_class=item['class_absent_from_original_coarse'],
@@ -132,7 +142,7 @@ def export(source, root, output):
         rows=rows, protocol_sha256=digest(root/"PROTOCOL.json"),
         results_sha256=digest(root/"RESULTS.json"), atlas_source_sha256=digest(Path(__file__)),
         score_policy="Original reference-positive pixels; 8-connected per-class components; <=400 um2 if calibrated, <=400 px2 if unknown. Per-case coordinate units are explicit; RINGS zero follows its valid negative task.",
-        interpretation="Constraint flags can overlap. Coarse-class absence and common-support upper bounds are structural facts, not complete causal attribution. All methods includes the two controls. No semantic identity is inferred for annotation zero.",
+        interpretation="Constraint flags can overlap. Common-support bounds do not bind the native-support interventions. Broad-negative labels use the same scoring-only white-zero adapter as saved scores. All registered controls are included. No semantic identity is inferred for annotation zero.",
         visual_reviews_created=False, predictions_modified=False, scores_modified=False)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(record, indent=2))

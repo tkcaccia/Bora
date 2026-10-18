@@ -25,12 +25,12 @@ def owns_native_support(key,detail):
     return key in mechanisms and detail.get('mechanism')==mechanisms[key] and detail.get('native_support',{}).get('own_native_support') is True
 
 
-def native_score(sample, truth, mask, backend="numpy", *, evaluator=None,white=None):
+def native_score(sample, truth, mask, backend="numpy", *, evaluator=None,white=None,ocelot_white_negative=False):
     from .metrics import RegionEvaluator
     coordinates = geometry(sample, native=True)
     if evaluator is None:
         evaluator = RegionEvaluator(truth, coordinates["algorithm_spacing_xy"])
-    scored, policy = scoring_prediction(sample, mask, zero_is_removed_background=True,white=white)
+    scored, policy = scoring_prediction(sample, mask, zero_is_removed_background=True,white=white,ocelot_white_negative=ocelot_white_negative)
     result = report_units(evaluator.score(scored, backend=backend), coordinates["units"])
     result["saved_mask_annotated_unassigned_pixels"] = int(((truth > 0) & (mask == 0)).sum())
     result["coordinate_units"] = coordinates["units"]
@@ -73,6 +73,7 @@ def score_case(args):
         white=detail, methods={}, coordinate_units=coordinates["units"],
         eligible_class_count=len(eligible), single_eligible_class=len(eligible) == 1,
         historical_subset=sample["case"] in scope["historical_cases"])
+    if scope.get('version')=='calibrated-tissues-v1':row['benchmark_scope_version']=scope['version']
     with threadpool_limits(limits=2):
         for key in keys:
             entry = dict(record["methods"][key])
@@ -92,7 +93,8 @@ def score_case(args):
                     raise ValueError('Unregistered native-support contract')
                 if np.any(mask[~actual_support]) or (not glass_only and np.any(mask[actual_support] == 0)):
                     raise ValueError("The full-supported-tissue invariant is violated")
-                entry["score"], _ = native_score(sample, truth, mask, backend, evaluator=evaluator,white=white)
+                entry["score"], _ = native_score(sample, truth, mask, backend, evaluator=evaluator,white=white,
+                    ocelot_white_negative=scope.get('version')=='calibrated-tissues-v1')
                 entry["background"] = report_units(mask_diagnostics(mask, support, white, exterior,
                     coordinates["algorithm_spacing_xy"], backend=backend), coordinates["units"])
                 if owned:
@@ -102,6 +104,10 @@ def score_case(args):
             row["methods"][key] = entry
     regions = np.load(out/"NOVELTY.npz")["regions"]
     row["novelty"] = discovery_score(resize(regions, truth.shape, True), truth)
+    if 'RARITY.npz' in record['files_sha256']:
+        rare=np.load(out/'RARITY.npz')['regions']
+        row['rare_colour_proposals']=discovery_score(resize(rare,truth.shape,True),truth)
+        row['rare_colour_proposals']['diagnostic_only']=True
     coarse = tifffile.imread(src/"coarse.tif")
     represented = set(np.unique(coarse))-{0}
     reference_classes = set(np.unique(truth))-{0}
@@ -115,6 +121,7 @@ def score_case(args):
 def aggregate(rows, keys, policy):
     from .runtime_policy import runtime_ranking
     ranks = []
+    strata_names=('previous_cohort','new_tissue_datasets') if rows and rows[0].get('benchmark_scope_version')=='calibrated-tissues-v1' else ('historical149','additional200')
     for key in keys:
         entries = [row["methods"][key] for row in rows]
         failed = [row["case"] for row, entry in zip(rows, entries) if entry["status"] != "ok"]
@@ -142,8 +149,8 @@ def aggregate(rows, keys, policy):
             pixel_completely_missed_small_regions=units["pixel"]["completely_missed"],
             per_dataset={d: stats([i for i, r in enumerate(rows) if r["dataset"] == d])
                          for d in sorted({r["dataset"] for r in rows})},
-            strata={"historical149": stats([i for i, r in enumerate(rows) if r["historical_subset"]]),
-                "additional200": stats([i for i, r in enumerate(rows) if not r["historical_subset"]]),
+            strata={strata_names[0]: stats([i for i, r in enumerate(rows) if r["historical_subset"]]),
+                strata_names[1]: stats([i for i, r in enumerate(rows) if not r["historical_subset"]]),
                 "calibrated": stats([i for i, r in enumerate(rows) if r["coordinate_units"] == "micrometres"]),
                 "uncalibrated": stats([i for i, r in enumerate(rows) if r["coordinate_units"] == "pixels"]),
                 "single_eligible_class": stats([i for i, r in enumerate(rows) if r["single_eligible_class"]]),

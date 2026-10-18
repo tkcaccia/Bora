@@ -16,7 +16,7 @@ from .run import digest, save
 from experiments.bora_extension.task_adapter import geometry, report_units
 
 
-def summarize(truth, support, coarse, class_names, mpp_xy, *, sample=None):
+def summarize(truth, support, coarse, class_names, mpp_xy, *, sample=None,white=None,ocelot_white_negative=False):
     truth, support, coarse = np.asarray(truth), np.asarray(support, bool), np.asarray(coarse)
     if truth.shape != support.shape:
         raise ValueError('Native reference/support geometry mismatch')
@@ -24,6 +24,10 @@ def summarize(truth, support, coarse, class_names, mpp_xy, *, sample=None):
     if spacing.shape != (2,) or not np.isfinite(spacing).all() or np.any(spacing <= 0):
         raise ValueError('Positive physical spacing required')
     available = set(np.unique(coarse[coarse > 0]).tolist())
+    from experiments.bora_extension.task_adapter import binary_negative
+    negative=binary_negative(sample,ocelot_white_negative=ocelot_white_negative) if sample is not None else None
+    if negative is not None and (white is None or np.asarray(white).shape!=truth.shape):
+        raise ValueError('The binary support bound requires the same native RGB-white mask as scoring')
     classes = {}
     for label in np.unique(truth[truth > 0]):
         take = truth == label
@@ -31,10 +35,13 @@ def summarize(truth, support, coarse, class_names, mpp_xy, *, sample=None):
         allowed = int(label) in available
         valid_negative = (sample is not None and sample['dataset'] == 'rings-tumor'
             and str(sample.get('raw_to_compact', {}).get('0')) == str(int(label)))
+        reachable=inside if allowed else 0
+        if negative is not None and negative[0]==int(label):
+            reachable=int(np.count_nonzero(take & (support|np.asarray(white,bool)))) if allowed else int(np.count_nonzero(take&np.asarray(white,bool)))
         classes[str(int(label))] = dict(name=class_names.get(str(int(label)), str(int(label))),
             truth_pixels=n, supported_truth_pixels=inside, deleted_positive_pixels=n-inside,
             class_available_in_coarse=allowed,
-            optimistic_iou_upper_bound=1. if valid_negative else inside/n if allowed else 0.)
+            optimistic_iou_upper_bound=1. if valid_negative else reachable/n)
     if not classes:
         raise ValueError('No positive reference pixels')
     deleted = sum(v['deleted_positive_pixels'] for v in classes.values())
@@ -73,8 +80,12 @@ def audit_inputs(source, root):
         support = tifffile.imread(src/'tissue.native.tif') > 0
         coarse = tifffile.imread(src/'coarse.tif')
         coordinates = geometry(sample, native=True)
+        from PIL import Image
+        from .diagnostics import white_regions
+        white=white_regions(np.array(Image.open(src/'original.native.png').convert('RGB')))[0]
         report = summarize(truth,support,coarse,sample['class_names'],coordinates['algorithm_spacing_xy'],
-            sample=sample if protocol.get('benchmark_scope') else None)
+            sample=sample if protocol.get('benchmark_scope') else None,white=white,
+            ocelot_white_negative=protocol.get('benchmark_scope',{}).get('version')=='calibrated-tissues-v1')
         cases.append(dict(case=case,dataset=sample['dataset'],source_region_type=sample['source_region_type'],
             native_mpp_xy=sample['native_mpp_xy'],input_sha256=hashes,
             coordinate_units=coordinates['units'], **report_units(report, coordinates['units'])))
@@ -91,7 +102,7 @@ def audit_inputs(source, root):
         prediction_freeze_sha256=digest(root/'ALL_PREDICTIONS_FROZEN.json'),
         mean_optimistic_macro_iou_upper_bound=float(np.mean([c['optimistic_macro_iou_upper_bound'] for c in cases])),
         reporting_only=True,predictions_modified=False,scores_modified=False,
-        interpretation='Positive reference pixels outside support and classes absent from coarse remain errors, except valid RINGS outside-tumor negatives can be represented by removed background0. '
+        interpretation='Common-support bounds do not bind own-native-support interventions. Positive reference pixels outside support and classes absent from coarse remain errors, except declared negative targets can be represented by removed background0 under their explicit scoring policy. '
         'Reference zero is unscored. The bound assumes perfect supported classification and ignores extra '
         'false positives forced by missing class IDs; it can be unattainable. It is not a normalized quality score.')
 
