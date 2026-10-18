@@ -8,7 +8,7 @@ parent. B21/B22 remain controls. No new model is an established improvement.
 | Parent | Children | Changed assumption |
 | --- | --- | --- |
 | J01 | M01 latent true-class fields; M02 conserved observed class appearance; M03 series-resistance H&E transport | Coarse classes may be wrong; field transport should preserve the observed first moment; subgrid stain barriers need not disappear on averaging |
-| L02 | M04 positive sampling uncertainty; M05 normalized Student prediction; M06 Cantelli rival ranking | Observation noise differs from a Bayesian inverse diagonal; finite appearance observations imply uncertain variance; uncertain distance need not be ranked by predictive density |
+| L02 | M04 positive sampling uncertainty; M05 normalized Student prediction; M06 expected appearance distance | Observation noise differs from a Bayesian inverse diagonal; finite appearance observations imply uncertain variance; expected classification loss differs from predictive density |
 | K05 | M07 free-boundary thin plate; M08 Hermite value/gradient observations; M09 repulsive class prototypes | Affine fields should have zero curvature energy; observations may contain useful derivatives; competing class means should not collapse locally |
 | L03 | M10 accumulated-stain exterior access; M11 eight-ray exterior visibility; M12 binary H&E glass mincut | Background may be defined by integrated stain cost, straight access, or one global unary/perimeter energy rather than route width |
 | C17 | M13 quantized observation intervals; M14 counterfactual class necessity; M15 adversarial joint palette error | RGB bytes have finite precision; class necessity differs from mixture size; palette calibration can be uncertain |
@@ -47,3 +47,15 @@ engineering pilot. All predictions freeze before reference scoring. Full-cycle
 completion still requires actual inspection of every all-method overview,
 useful native crops, explicit20-method tradeoffs, a signed five and its viewer.
 All349 are repeatedly used development images, not independent validation.
+
+Engineering corrections before visual pilot inspection: the first pilot froze
+all286 masks but stopped at a scoring guard that still recognized only L03's
+glass deletions. The second snapshot registers the three new glass mechanisms
+explicitly, including constant-input fallback metadata. That failed pilot is
+preserved. A mathematical simplification then removed M06's proposed minimum
+Cantelli-bound calculation: the class with smallest expected distance has all
+positive rival margins, whereas every other class has a nonpositive margin
+against it. Thus that ranking collapses to minimum expected distance. The final
+M06 implements this exact, simpler Gaussian quadratic-risk rule directly and
+checks it against independent six-point Gaussian quadratic integration. These
+are engineering snapshots of one cycle, not additional completed cycles.

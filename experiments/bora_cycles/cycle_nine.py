@@ -159,19 +159,9 @@ def effective_tile_counts(c, g):
     return float(mass.sum()**2/max(np.sum(mass**2), 1e-30))
 
 
-def cantelli_scores(distance, variance):
-    expectation = distance+3*variance
-    dispersion = 4*variance*distance+6*variance**2
-    result = []
-    for g in range(distance.shape[-1]):
-        rivals = np.arange(distance.shape[-1]) != g
-        margin = expectation[..., rivals]-expectation[..., g, None]
-        var = dispersion[..., rivals]+dispersion[..., g, None]
-        bound = np.where(margin > 0, margin**2/np.maximum(var+margin**2, 1e-30), 0.)
-        # Strictly secondary deterministic ranking, not a probability claim.
-        tie = -1e-8*expectation[..., g]/(1+expectation[..., g])
-        result.append(bound.min(-1)+tie)
-    return np.stack(result, -1)
+def expected_distance_scores(distance, variance):
+    """E[(x-M)' Sigma^-1 (x-M)] for M~N(mean, variance*Sigma)."""
+    return -(distance+3*variance)
 
 
 def uncertain_child(c, palette, he, mode):
@@ -199,8 +189,8 @@ def uncertain_child(c, palette, he, mode):
         else:
             scores.append(-.5*distance/factor-1.5*np.log(factor))
         distances.append(distance); variances.append(variance); reports.append(report)
-    if mode == 'cantelli':
-        scores = cantelli_scores(np.stack(distances, -1), np.stack(variances, -1))
+    if mode == 'expected':
+        scores = expected_distance_scores(np.stack(distances, -1), np.stack(variances, -1))
     else:
         scores = np.stack(scores, -1)
     return softmax(scores, -1), dict(model=mode+' predictive appearance',
@@ -500,7 +490,7 @@ IMPLEMENTATIONS = dict(
     M03=lambda c,p,h: field_child(c,p,h,'series'),
     M04=lambda c,p,h: uncertain_child(c,p,h,'sampling'),
     M05=lambda c,p,h: uncertain_child(c,p,h,'student'),
-    M06=lambda c,p,h: uncertain_child(c,p,h,'cantelli'),
+    M06=lambda c,p,h: uncertain_child(c,p,h,'expected'),
     M07=lambda c,p,h: bending_child(c,p,h,'plate'),
     M08=lambda c,p,h: bending_child(c,p,h,'hermite'),
     M09=lambda c,p,h: bending_child(c,p,h,'repulsion'),

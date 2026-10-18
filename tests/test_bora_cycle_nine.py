@@ -7,7 +7,7 @@ from scipy.optimize import check_grad, minimize
 from scipy.sparse.linalg import spsolve
 
 from experiments.bora_cycles.cycle_nine import (
-    binary_cut_glass, cantelli_scores, interval_objective,
+    binary_cut_glass, expected_distance_scores, interval_objective,
     moment_constrained_system, necessity_scores, projected_inverse, ray_glass,
     repulsion_objective, robust_palette_objective, sampling_variance,
     series_laplacian, stain_access, thin_plate)
@@ -83,13 +83,19 @@ def test_positive_sampling_variance_has_exact_independent_node_limit():
     assert report['variance_minimum'] == 0 and report['linear_system_max_residual'] < 1e-14
 
 
-def test_cantelli_correctly_ranks_exact_and_uncertain_distances():
+def test_expected_distance_has_exact_gaussian_quadrature_and_uncertainty_penalty():
     distance = np.array([[1., 4., 8.], [4., 1., 8.]])
-    scores = cantelli_scores(distance, np.zeros_like(distance))
+    scores = expected_distance_scores(distance, np.zeros_like(distance))
     np.testing.assert_array_equal(scores.argmax(-1), [0, 1])
     variance = np.array([[100., 0., 0.]])
-    scores = cantelli_scores(np.array([[1., 4., 8.]]), variance)
+    scores = expected_distance_scores(np.array([[1., 4., 8.]]), variance)
     assert scores.argmax(-1)[0] == 1
+    # Six spherical cubature points integrate a quadratic exactly.
+    query, mean, v = np.array([.2, -.1, .4]), np.array([.7, .3, -.2]), .08
+    points = mean+np.sqrt(3*v)*np.r_[np.eye(3), -np.eye(3)]
+    exact = np.mean(np.sum((query-points)**2, -1))
+    actual = -expected_distance_scores(np.sum((query-mean)**2), v)
+    assert abs(actual-exact) < 1e-14
 
 
 def test_free_thin_plate_annihilates_all_affine_planes_not_curvature():
