@@ -1,5 +1,5 @@
 {
-  "stage": "all349_scored_and_rendered_actual_review_in_progress",
+  "stage": "signed_complete",
   "completed_cycles": 10,
   "active_cycle": 10,
   "source_commit": "2f25e218a173265c15923e16eab2571bcf8fa2db",
@@ -69,7 +69,7 @@
     "N07": 319,
     "N14": 25
   },
-  "next_action": "Develop fifteen prospective cycle11 innovations from signed J01/M04/N08/N10/C17; preserve fixed RGB, all349 cases and the existing timing penalty. No cycle11 implementation or run yet.",
+  "next_action": "Freeze WSSS sampling/geometry comparison on the9 adequately sized multiclass fields before new cycle11 inference; preserve RGB conversion formulae, original eligibility anchors and native references. Use all299 eligible cases and a matched parent baseline after geometry changes. Complete cycles11-20 and final all-conversion comparison.",
   "survivors": [
     "J01",
     "M04",
@@ -79,5 +79,7 @@
   ],
   "selection_sha256": "b07ec34dede9b2187e41707799ff64e8e1d5d3a48836c186ecd47dbecdf28197",
   "viewer_delivered": true,
-  "viewer_url": "http://127.0.0.1:64889/bora-cycles-2026-10-17/cycle-10/selected.html#tiger_32"
+  "viewer_url": "http://127.0.0.1:64889/bora-cycles-2026-10-17/cycle-10/selected.html#tiger_32",
+  "prospective_scope": 299,
+  "eligibility_report": "/mnt/sata_ssd/Bora-benchmark/results/bora-eligibility-2026-10-18-v1"
 }

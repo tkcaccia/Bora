@@ -1,5 +1,14 @@
 # Expanded Bora benchmark: navigation and interpretation
 
+**Current prospective benchmark:299 images.** The original349-image inventory
+below is preserved for cycles8–10. The user's new group/tile rules exclude30
+single-usable-group images and31 undersized fields, with11 overlapping:
+50 separate diagnostics. Accepted counts are132 BCSS,80 TIGER,9 WSSS,21 RINGS,
+40 OCELOT,10 BEETLE and7 CAMELYON16. Start future runs from
+`results/bora-qualified-inputs-2026-10-18-v1/PLAN.json`, not the unfiltered349
+plan. See [eligibility and sampling](ELIGIBILITY_AND_SAMPLING.md); the remaining
+WSSS context-scale investigation must finish before cycle11 inference.
+
 The development corpus contains **349 ROI images**:132 BCSS,80 TIGER,40
 WSSS4LUAD,40 RINGS tumor,40 OCELOT,10 BEETLE and7 CAMELYON16 windows. It retains
 all149 original images and adds200,40 each from BCSS,TIGER,WSSS4LUAD,RINGS and
@@ -7,10 +16,11 @@ OCELOT. A source dataset may contain full WSIs; none of these349 analysis
 images is a full WSI. This is a selected benchmark, not the complete contents
 of every downloaded dataset.
 
-Nine of the requested20 improvement cycles are signed. Cycle10 is currently
-running on all349 cases; its13-image pilot and3 native label crops were
-actually reviewed but do not complete a cycle. Check `CURRENT_RUN.json`,
-execution reports and signed selection files for newer status.
+Ten of the requested20 improvement cycles are signed. Cycle10 completed
+all349 overview reviews and15 native crops; its selected five are
+J01,M04,N08,N10,C17. No new segmentation has run for the299-image scope yet.
+Check `CURRENT_RUN.json`, execution reports and signed selection files before
+launching another job.
 
 ## Locations
 
@@ -24,10 +34,12 @@ Chiamaka's data base is `/mnt/sata_ssd/Bora-benchmark`.
 | `results/bora-ocelot-inputs-2026-10-18-v1` |40 selected OCELOT training tissue triples |
 | `results/bora-extension-features-2026-10-18-v1` |600 frozen feature arrays across the200 additions, plus scale/coverage/calibration metadata |
 | `results/bora-expanded-349-inputs-2026-10-18-v1` |Authoritative combined349-image input freeze; all five fixed RGB conversions |
+| `results/bora-eligibility-2026-10-18-v1` |Frozen score-blind decisions for all349, per-group tile counts, sampling review and included/diagnostic viewer |
+| `results/bora-qualified-inputs-2026-10-18-v1` |Prospective299-image PLAN and input symlinks;50 excluded inputs separately under diagnostics/ |
 | `results/bora-cycles-2026-10-17/cycle-08` |Signed, fully reviewed349-image cycle8 |
 | `results/bora-cycles-2026-10-17/cycle-09` |Signed, fully reviewed349-image cycle9; survivors J01,M04,K05,M11,C17 |
 | `results/bora-cycles-2026-10-17/cycle-10-pilot-v1` |Reviewed13-image engineering pilot; not a completed cycle |
-| `results/bora-cycles-2026-10-17/cycle-10` |Running349-image cycle10; no visual selection yet |
+| `results/bora-cycles-2026-10-17/cycle-10` |Signed349-image cycle10; survivors J01,M04,N08,N10,C17 |
 | `experiments/bora-extension-2026-10-18` |Immutable executed source snapshots, launch logs and acquisition/input audits |
 
 Local outputs use `/Users/stefano/Documents/ChatGPT/Bora/benchmark/results`.
@@ -102,11 +114,13 @@ background. RINGS scoring alone maps that output0 to its valid negative target;
 deleted tumor still counts as an error. Other tasks retain output0 as an error
 on positive references. White-looking tissue is not automatically ignored.
 
-Thirty inputs have exactly constant converted RGB:11 WSSS4LUAD and19 RINGS.
+In the historical349-image inventory, thirty inputs have exactly constant converted RGB:11 WSSS4LUAD and19 RINGS.
 Three WSSS inputs contain extra coarse labels outside eligible tile summaries.
 Thus eligibility, classes anywhere in coarse labels, and reference classes are
 different quantities. All methods/controls share one frozen coarse-completion
 fallback; explicitly H&E-driven glass rules may additionally remove white.
+These30 cases are excluded prospectively. They remain reproducible in the
+signed historical cycles and visible in the separate diagnostics inventory.
 
 Accuracy is equal-per-image native macro IoU. Primary selection utility is
 `mean_i[macro_IoU_i - 0.05*max(seconds_i-1,0)]`. Apply the excess-time penalty

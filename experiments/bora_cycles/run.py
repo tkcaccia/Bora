@@ -61,7 +61,9 @@ def source_record():
         Path(__file__).with_name("protocol.json"),
         repo/"src/bora/evidence.py", repo/"cpp/evidence/kernels.cpp",
         repo/"cpp/evidence/libbora_evidence.so",
-        repo/"experiments/bora_extension/task_adapter.py"]
+        repo/"experiments/bora_extension/task_adapter.py",
+        repo/"experiments/bora_extension/eligibility.py",
+        repo/"experiments/bora_extension/eligibility_policy.json"]
     return {str(p.relative_to(repo)): digest(p) for p in files}
 
 

@@ -1,15 +1,26 @@
 # Additional inputs for the Bora improvement cycles
 
+**Prospective update after cycle10:** the user excludes images with only one
+group and requires sufficient real tiles. The score-blind
+`eligibility.py` audit now accepts299/349 images:132 BCSS,80 TIGER,9 WSSS,
+21 RINGS,40 OCELOT,10 BEETLE and7 CAMELYON16 windows. Fifty excluded inputs
+remain in a separate diagnostics inventory, outside future scores/rankings.
+See [the eligibility and sampling report](ELIGIBILITY_AND_SAMPLING.md),
+`eligibility_policy.json` and `ELIGIBILITY_EXECUTION.json`. Earlier cycles and
+the historical single-class descriptions below retain their original scope.
+The remaining WSSS sampling mismatch still needs a separate geometry comparison
+before cycle11 inference; this eligibility change is not a segmentation gain.
+
 The user requested continuing the 20-cycle study and adding images alongside
 the current 149. **200 additional image/coarse/reference triples are prepared
 and pass a native-source/overlap audit.** Full encoder inference is also complete:
 all600 arrays across200 additions pass the independent feature audit. Expanded
-Bora cycle9 is signed after349 actual all-method overview inspections and9
-native label crops. Nine of twenty cycles are complete. Its selected five are
-J01,M04,K05,M11,C17. J01 remains the runtime-adjusted leader; the other four
-retain distinct uncertainty,bending,background and palette mechanisms, with
+Bora cycle10 is signed after349 actual all-method overview inspections and15
+native label crops. Ten of twenty cycles are complete. Its selected five are
+J01,M04,N08,N10,C17. J01 remains the runtime-adjusted leader; the other four
+retain distinct uncertainty,variance,background and palette mechanisms, with
 explicit tradeoffs rather than a claim that they are the five highest numeric
-utility ranks. See `../bora_cycles/CYCLE_NINE_REVIEW.md` for every decision.
+utility ranks. See `../bora_cycles/CYCLE_TEN_REVIEW.md` for every decision.
 
 | Dataset | Existing | Added | Frozen total | Added representation |
 | --- | ---: | ---: | ---: | --- |
@@ -45,11 +56,13 @@ filename-prefix groups of unverified patient meaning. Original 25 train / 15 tes
 tags are preserved. They will be used for development, so no independent
 provider-test claim is allowed.
 
-Eight WSSS4LUAD and 19 RINGS inputs have one observed coarse class. They remain
-included; some contain fine classes missing from coarse. Single-coarse-class
-and multiclass results must be shown separately alongside the overall image
-average. Conversion adapters must record the degenerate class-constant case
-and must not introduce reference-derived missing classes.
+In the original cycles8–10 inventory, eight WSSS4LUAD and19 RINGS inputs have
+one coarse-mask class; three further WSSS fields supply only one usable
+feature-selection class. Those30 constant-input cases were included then,
+with a documented fallback and no new-class refinement claim. They are now
+excluded prospectively, as are the remaining small WSSS fields under the tile
+rule. Historical fallback code remains available to reproduce signed results;
+it is not permission to include single-group images in future benchmarks.
 
 `audit_inputs.py` verifies source image/mask hashes, exact native RGB crops,
 categorical remapping, working geometry and 90-pixel coarse majorities. It

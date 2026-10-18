@@ -1,5 +1,15 @@
 # Accuracy, speed and the new one-second penalty
 
+Prospective user steering after cycle10 excludes single-group images and
+fields with too few real tiles. The new score-blind audit qualifies299/349
+inputs and keeps50 exclusions outside the future benchmark. Its frozen rule
+requires two input/feature-selection groups, a real4×4 encoder-field capacity
+and16 usable coarse tiles. Cycle11's scope gate rejects an unaudited349-image
+source. The remaining WSSS nominal2.5× context mismatch is still under
+investigation before a new inference run. See
+`../bora_extension/ELIGIBILITY_AND_SAMPLING.md`; no earlier signed score or
+selection changed and no new cycle is claimed complete.
+
 Ten of twenty cycles are complete: cycles1–7 use149 repeatedly reused development
 ROIs and cycles8–10 use349. The user requests penalizing algorithms that take longer than one
 second per image. The explicit working policy is:

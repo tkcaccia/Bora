@@ -1,4 +1,4 @@
-"""Versioned all-case contracts; historical cycles retain their 149-image gate."""
+"""Versioned scope gates; completed cycles retain their original membership."""
 from collections import Counter
 import json
 from pathlib import Path
@@ -15,6 +15,10 @@ def validate_scope(protocol, *, pilot=False):
         if not pilot and len(protocol["cases"]) != 149:
             raise ValueError("Historical full cycles require149 images")
         return
+    if scope["version"] == "qualified-multigroup-v1":
+        return validate_qualified(protocol, pilot=pilot)
+    if protocol.get("cycle", 1) >= 11:
+        raise ValueError("Cycle11 onward requires the multigroup/real-tile eligibility audit")
     if protocol["cycle"] < 8 or scope["version"] != "expanded349-v1":
         raise ValueError("Expanded scope is prospective from cycle8")
     required, historical = scope["required_cases"], scope["historical_cases"]
@@ -29,6 +33,36 @@ def validate_scope(protocol, *, pilot=False):
         raise ValueError("Duplicate benchmark case")
     if not pilot and set(protocol["cases"]) != set(required):
         raise ValueError("Full expanded cycle requires every349 case")
+
+
+def validate_qualified(protocol, *, pilot=False):
+    scope = protocol["benchmark_scope"]
+    if protocol["cycle"] < 11:
+        raise ValueError("Qualified scope must not rewrite completed cycles1-10")
+    required, excluded = scope["required_cases"], scope["diagnostic_cases"]
+    source = scope["source_cases"]
+    if (not required or len(set(source)) != 349 or len(source) != 349
+            or len(set(required)) != len(required) or len(set(excluded)) != len(excluded)
+            or set(required) & set(excluded) or set(required) | set(excluded) != set(source)):
+        raise ValueError("Qualified and diagnostic inventories must partition the original349")
+    if (scope["source_dataset_counts"] != EXPECTED
+            or sum(scope["dataset_counts"].values()) != len(required)
+            or scope["plan_sha256"] != protocol["input_plan_sha256"]
+            or not set(scope["historical_cases"]) <= set(required)):
+        raise ValueError("Qualified dataset counts/plan identity changed")
+    checks = scope["eligible_case_checks"]
+    if set(checks) != set(required):
+        raise ValueError("Every benchmark image needs its own positive eligibility decision")
+    for check in checks.values():
+        if (not check["eligible"] or check["exclusion_reasons"]
+                or len(check["input_groups"]) < 2 or len(check["observed_groups"]) < 2
+                or min(check["complete_base_fields_yx"]) < 4
+                or check["usable_coarse_tiles"] < 16):
+            raise ValueError("Single-group or undersized image cannot enter the benchmark")
+    if len(protocol["cases"]) != len(set(protocol["cases"])) or not set(protocol["cases"]) <= set(required):
+        raise ValueError("Unexpected or duplicate qualified benchmark case")
+    if not pilot and set(protocol["cases"]) != set(required):
+        raise ValueError("A full cycle must include every qualified image")
 
 
 def requires_parent_parity(protocol, case):
@@ -47,11 +81,43 @@ def load_scope(source, cycle):
     ids = [s["case"] for s in plan["samples"]]
     counts = dict(Counter(s["dataset"] for s in plan["samples"]))
     sha = digest(source/"PLAN.json")
-    if frozen["plan_sha256"] != sha or set(frozen["manifests"]) != set(ids) or frozen["cases"] != 349:
+    if frozen["plan_sha256"] != sha or set(frozen["manifests"]) != set(ids) or frozen["cases"] != len(ids):
         raise ValueError("Expanded all-input freeze missing or changed")
     for case, expected in frozen["manifests"].items():
         if digest(source/"cases"/case/"INPUTS_FROZEN.json") != expected:
             raise ValueError("Expanded case input manifest changed")
+    if plan.get("benchmark_scope_version") == "qualified-multigroup-v1":
+        from experiments.bora_extension.eligibility import POLICY_PATH
+        audit_path, policy_path = source/"ELIGIBILITY.json", source/"POLICY.json"
+        audit = json.loads(audit_path.read_text())
+        if (digest(audit_path) != plan["eligibility_sha256"]
+                or digest(audit_path) != frozen["eligibility_sha256"]
+                or digest(policy_path) != plan["eligibility_policy_sha256"]
+                or json.loads(policy_path.read_text()) != json.loads(POLICY_PATH.read_text())
+                or audit["protocol"]["policy_sha256"] != digest(policy_path)
+                or audit["protocol"]["input_plan_sha256"] != plan["eligibility_source_plan_sha256"]
+                or audit["protocol"]["fine_reference_read"] or audit["protocol"]["scores_read"]
+                or audit["protocol"]["predictions_read"]):
+            raise ValueError("Frozen score-blind eligibility evidence changed")
+        if set(ids) != set(audit["eligible_cases"]) or set(plan["diagnostic_cases"]) != set(audit["excluded_cases"]):
+            raise ValueError("Benchmark membership differs from the eligibility audit")
+        checks = {r["case"]: r for r in audit["cases"] if r["eligible"]}
+        if any(checks[case]["input_manifest_sha256"] != frozen["manifests"][case] for case in ids):
+            raise ValueError("Eligibility decision belongs to different frozen inputs")
+        compact_checks = {case: {key: check[key] for key in (
+            "eligible", "exclusion_reasons", "input_groups", "observed_groups",
+            "complete_base_fields_yx", "usable_coarse_tiles", "input_manifest_sha256")}
+            for case, check in checks.items()}
+        scope = dict(version="qualified-multigroup-v1", required_cases=ids,
+            diagnostic_cases=plan["diagnostic_cases"],
+            historical_cases=plan["historical_cases"], dataset_counts=counts,
+            source_cases=[r["case"] for r in audit["cases"]],
+            source_dataset_counts={d: r["total"] for d,r in audit["datasets"].items()},
+            eligible_case_checks=compact_checks, eligibility_sha256=digest(audit_path),
+            eligibility_policy_sha256=digest(policy_path),
+            plan_sha256=sha, all_inputs_sha256=digest(source/"ALL_INPUTS_FROZEN.json"))
+        validate_scope(dict(cycle=cycle, cases=ids, benchmark_scope=scope, input_plan_sha256=sha))
+        return scope
     scope = dict(version="expanded349-v1", required_cases=ids,
         historical_cases=plan["historical_cases"], dataset_counts=counts,
         plan_sha256=sha, all_inputs_sha256=digest(source/"ALL_INPUTS_FROZEN.json"))
