@@ -99,7 +99,7 @@ def _probabilities(values, coarse, classes):
         *values.shape[:2], len(classes)).astype(np.float32)
 
 
-def convert_rgb(tokens, coarse, palette, variants):
+def convert_rgb(tokens, coarse, palette, variants, *, allow_local_fallback=False):
     """Average #9 and #19 class probabilities before 8-bit palette conversion.
 
     variants contains scale_1 and scale_2: values, original resized shape, and
@@ -108,16 +108,29 @@ def convert_rgb(tokens, coarse, palette, variants):
     """
     summaries, labels = observations(tokens, coarse)
     classes = np.unique(labels)
-    if len(summaries) < 16:
-        raise ValueError("At least 16 eligible physical coarse tiles are required")
-    if len(classes) < 2:
-        raise ValueError("RGB9+19 requires at least two observed coarse groups")
     if not np.array_equal(classes, np.unique(coarse[coarse > 0])):
         raise ValueError("Every coarse group needs an eligible tile observation")
     palette = np.asarray(palette, dtype=np.float32)
     if (palette.ndim != 2 or palette.shape[1] != 3 or len(palette) < coarse.max()
             or not np.isfinite(palette).all() or np.any(palette < 0) or np.any(palette > 255)):
         raise ValueError("Finite RGB palette indexed by coarse label minus one required")
+    if len(summaries) < 16 or len(classes) < 2:
+        if not allow_local_fallback:
+            if len(summaries) < 16:
+                raise ValueError("At least 16 eligible physical coarse tiles are required")
+            raise ValueError("RGB9+19 requires at least two observed coarse groups")
+        # A whole slide can contain a locally tiny or homogeneous tissue
+        # fragment even when the slide as a whole has ample tiles and groups.
+        # Preserve that tissue without fitting a statistically invalid local
+        # probability model. Such windows are reported explicitly.
+        rgb = np.empty((*coarse.shape,3), np.uint8)
+        rgb[:] = np.rint(np.mean(palette[classes-1], axis=0)).astype(np.uint8)
+        present = coarse > 0
+        rgb[present] = np.rint(palette[coarse[present]-1]).astype(np.uint8)
+        return rgb, dict(conversion="coarse-palette fallback",
+            reason="fewer than 16 eligible local tiles or only one local group",
+            eligible_local_tiles=int(len(summaries)), observed_local_groups=classes.tolist(),
+            full_RGB9_plus_19_applied=False, fine_reference_used=False)
     selected = select_dimensions(summaries, labels)
     scaler = StandardScaler().fit(summaries[:, selected])
     scaler.scale_ = np.maximum(scaler.scale_, .05)

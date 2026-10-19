@@ -178,6 +178,24 @@ startup and export costs. The encoder is upstream and excluded. The existing
 116-image benchmark is a development evaluation with adaptively reused data;
 it does not establish untouched-test accuracy or complete-WSI throughput.
 
+## Whole-slide input
+
+The `bora.wsi.WholeSlide` reader accepts calibrated RGB OME-TIFF/BigTIFF files,
+including `.btf`, and visits them in native-pixel windows with bounded image
+memory. OME physical pixel sizes, rather than TIFF display DPI, determine the
+resampling to the encoder's working resolution. The optional `wsi` dependency
+installs `pyvips`; the host also needs libvips. The windowed
+`bora.wsi_export.export` writes a disk-backed native mask and compact GeoJSON,
+then rasterizes the fitted polygons to ensure the mask and GeoJSON agree.
+Per-window checkpoints permit safe continuation of CPU vector export.
+
+The [Visium HD colon whole-slide study](https://github.com/tkcaccia/Bora-Analysis/tree/main/studies/visium-hd-colon-wsi-2026-10-19)
+contains the reproducible orchestration for Virchow2, global coarse groups,
+RGB9+19, Bora-AF and Neighbor context on a 75,250 × 48,740-pixel image.
+[Inspect the full-slide viewer](https://tkcaccia.github.io/Bora-Analysis/visium-hd-colon/).
+Single-field `bora refine` remains an in-memory command; use the bounded study
+workflow for full-slide inference and retain enough disk for native masks.
+
 ## Scope and migration
 
 Version 0.2 replaces the previous experimental CLI. Watershed, MedSAM,
@@ -186,10 +204,11 @@ launchers are removed from the application. Historical source/evidence is
 preserved in Bora-Analysis and Git history. No background research cycle is
 started by installation, import or command execution.
 
-This implementation processes aligned fields in memory. Full-slide tiling,
-cross-field identity reconciliation and the proposed source-WSI transfer study
-require separate validation; native-coordinate output alone is not proof of
-whole-slide scalability.
+The single-field command processes an aligned field in memory. The separate
+whole-slide workflow streams calibrated fields and native output to disk.
+Cross-field identity reconciliation and source-WSI transfer remain separate
+scientific questions; native-coordinate output alone does not establish their
+accuracy.
 
 ## License
 

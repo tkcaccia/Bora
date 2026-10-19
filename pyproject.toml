@@ -12,6 +12,7 @@ dependencies = ["numpy==2.2.6", "scipy==1.15.3", "scikit-image==0.25.2", "tifffi
 
 [project.optional-dependencies]
 test = ["pytest>=7.4"]
+wsi = ["pyvips>=2.2,<3"]
 
 [project.scripts]
 bora = "bora.cli:main"

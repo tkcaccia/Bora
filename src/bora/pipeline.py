@@ -81,7 +81,9 @@ class Case:
     variants: dict | None = None
     provenance: dict | None = None
 
-    def validate(self):
+    def validate(self, *, minimum_tiles=16, minimum_groups=2):
+        if minimum_tiles < 1 or minimum_groups < 1:
+            raise ValueError("Minimum tile and group counts must be positive")
         image, coarse = np.asarray(self.image), np.asarray(self.coarse)
         self.mpp_xy = spacing_xy(self.mpp_xy)
         self.native_mpp_xy = spacing_xy(self.native_mpp_xy)
@@ -104,8 +106,8 @@ class Case:
         if not np.allclose(native_extent, working_extent, rtol=1e-6, atol=1e-6):
             raise ValueError("Native and working pixel spacings must describe the same physical field")
         summaries, labels = observations(tokens, coarse)
-        if len(summaries) < 16 or len(np.unique(labels)) < 2:
-            raise ValueError("At least16 eligible coarse tiles and two coarse groups required")
+        if len(summaries) < minimum_tiles or len(np.unique(labels)) < minimum_groups:
+            raise ValueError(f"At least {minimum_tiles} eligible coarse tiles and {minimum_groups} coarse groups required")
         if not np.array_equal(np.unique(labels), np.unique(coarse[coarse > 0])):
             raise ValueError("Each coarse group must have a supported tile observation")
         if self.rgb is not None and (np.asarray(self.rgb).shape != image.shape or self.rgb.dtype != np.uint8):
@@ -168,12 +170,14 @@ def load_case(path):
     return case.validate()
 
 
-def prepare(case):
+def prepare(case, *, wsi_window=False):
     """Refine geometry and build Neighbor context descriptors, before any semantic readout."""
-    case.validate()
+    case.validate(minimum_tiles=1 if wsi_window else 16,
+                  minimum_groups=1 if wsi_window else 2)
     start = perf_counter()
     if case.rgb is None:
-        rgb, conversion = convert_rgb(case.tokens, case.coarse, case.palette, case.variants)
+        rgb, conversion = convert_rgb(case.tokens, case.coarse, case.palette, case.variants,
+                                      allow_local_fallback=wsi_window)
     else:
         rgb, conversion = case.rgb, dict(conversion="RGB9+19", supplied_cached_rgb=True,
                                         cached_formula_not_recomputed=True)
