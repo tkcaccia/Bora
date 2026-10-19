@@ -13,8 +13,10 @@ from PIL import Image
 from sklearn.linear_model import LogisticRegression, Ridge
 from sklearn.preprocessing import StandardScaler
 
-from appearance_fixtures import spatial_case
-from bora.appearance_state import save_state
+from appearance_fixtures import (assert_frozen_rgb_quantization,
+                                legacy_rgb9plus19, spatial_case)
+from bora.appearance_state import (linear_state, linear_values, probabilities,
+                                  save_state, scale_values, scaler_state)
 from bora.appearance_bridge import run_request, main
 from bora.conversion import convert_rgb
 from bora.discriminative import DiscriminativeAppearance, select_pairwise
@@ -38,15 +40,22 @@ def row_case(mode="shared"):
 
 @pytest.mark.parametrize("classes", [2, 3])
 def test_rgb_recipe_matches_full_legacy_formula_and_roundtrips(classes, tmp_path, monkeypatch):
-    # Reference images were generated with the original convert_rgb, before
-    # fit/transform extraction. Entire rasters, not selected sample pixels.
     f, coarse, palette, variants = spatial_case(classes)
+    legacy_rgb, legacy_probability, selected = legacy_rgb9plus19(f, coarse, palette, variants)
     recipe = RGB9Plus19Recipe.fit(f, coarse, palette, variants)
     rgb, _ = recipe.transform(f, variants)
+    expected = recipe.predict_proba(f, variants)
+    # Compare the complete legacy formula with models fitted on this runtime.
+    # Two float32 epsilon units accommodate BLAS/layout arithmetic order; this
+    # is an absolute probability bound, never a relative or image-wide average.
+    np.testing.assert_array_equal(recipe.state["selected_dimensions"], selected)
+    np.testing.assert_allclose(expected, legacy_probability, rtol=0, atol=2e-7)
+    np.testing.assert_allclose(rgb, legacy_rgb, rtol=0, atol=1)
+    # Frozen macOS reference: isolated half-integer quantization crossings are
+    # permitted across BLAS/CPU platforms, with BOTH magnitude and count limits.
     with np.load(Path(__file__).parent / "data" / f"rgb9plus19_legacy_{classes}.npz") as old:
         np.testing.assert_array_equal(recipe.state["selected_dimensions"], old["selected"])
-        np.testing.assert_array_equal(rgb, old["rgb"])
-    expected = recipe.predict_proba(f, variants)
+        assert_frozen_rgb_quantization(rgb, old["rgb"])
     path = tmp_path / "local.json"
     recipe.save(path)
     def forbidden(*args, **kwargs):
@@ -61,6 +70,35 @@ def test_rgb_recipe_matches_full_legacy_formula_and_roundtrips(classes, tmp_path
     np.testing.assert_array_equal(loaded.predict_proba(f, variants), expected)
     with pytest.raises(FileExistsError):
         loaded.save(path)
+
+
+@pytest.mark.parametrize("delta,count,accepted", [(1, 3, True), (1, 4, False), (2, 1, False)])
+def test_frozen_rgb_quantization_limits_reject_color_or_spatial_drift(delta, count, accepted):
+    reference = np.full((100, 1000, 3), 127, np.uint8)
+    changed = reference.copy()
+    changed.reshape(-1)[:count] += delta
+    if accepted:
+        assert_frozen_rgb_quantization(changed, reference)
+    else:
+        with pytest.raises(AssertionError):
+            assert_frozen_rgb_quantization(changed, reference)
+
+
+@pytest.mark.parametrize("dtype", [np.float32, np.float64])
+def test_replay_numeric_primitives_match_sklearn_predictions(dtype):
+    rng = np.random.default_rng(48)
+    x = rng.normal(size=(40, 8)).astype(dtype)
+    scaler = StandardScaler().fit(x)
+    np.testing.assert_array_equal(scale_values(scaler_state(scaler), x), scaler.transform(x))
+    ridge = Ridge(alpha=100).fit(x, rng.normal(size=(40, 5)).astype(dtype))
+    tolerance = 4 * np.finfo(dtype).eps
+    np.testing.assert_allclose(linear_values(linear_state(ridge), x), ridge.predict(x),
+                               rtol=tolerance, atol=tolerance)
+    for classes in (2, 3):
+        clf = LogisticRegression(C=.3, class_weight="balanced", max_iter=2000,
+                                 random_state=430).fit(x, np.arange(len(x)) % classes)
+        np.testing.assert_allclose(probabilities(linear_state(clf, logistic=True), x),
+                                   clf.predict_proba(x), rtol=0, atol=1e-14)
 
 
 def test_local_recipe_rejects_wrong_field_and_malformed_state(tmp_path):

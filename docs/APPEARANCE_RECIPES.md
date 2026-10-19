@@ -165,11 +165,15 @@ Keep the target's patient/site out of training and method selection. Retain
 unannotated tissue as unannotated, and audit background exclusion independently.
 Do not infer comparable marker intensities from local RGB colors.
 
-The initial tests use deterministic synthetic cached arrays: complete-raster
-parity against the old RGB9+19 implementation for two/three groups, load/replay
-with fitting disabled, palette-invariant probabilities, frozen transfer,
-train/test separation, bad feature contracts and CSV round-trip. These validate
-software behavior, not tissue accuracy. Real cached H&E files alone are not
+The initial tests use deterministic synthetic cached arrays: same-runtime
+probability parity against the pre-extraction RGB9+19 formula for two/three
+groups (absolute tolerance 2e-7), bitwise exact fitted-state load/replay with
+fitting disabled, palette-invariant probabilities, frozen transfer, train/test
+separation, bad feature contracts and CSV round-trip. Frozen macOS RGB rasters
+allow at most one intensity level in at most 0.001% of channels across CPU/BLAS
+platforms; selected channels remain exact. See `tests/data/README.md` for the
+separate formula, quantization and replay checks. These validate software
+behavior, not tissue accuracy. Real cached H&E files alone are not
 spatial features; a `NOVELTY.npz` distance/region raster is not an embedding cache.
 No encoder or GPU is run by these tests. Evaluate scientific accuracy on
 independent, calibrated, annotation-compatible cases before reporting transfer.
