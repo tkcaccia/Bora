@@ -80,6 +80,7 @@ class Case:
     palette: np.ndarray | None = None
     variants: dict | None = None
     provenance: dict | None = None
+    rgb_recipe: object | None = None
 
     def validate(self, *, minimum_tiles=16, minimum_groups=2):
         if minimum_tiles < 1 or minimum_groups < 1:
@@ -112,6 +113,8 @@ class Case:
             raise ValueError("Each coarse group must have a supported tile observation")
         if self.rgb is not None and (np.asarray(self.rgb).shape != image.shape or self.rgb.dtype != np.uint8):
             raise ValueError("Cached RGB9+19 must be aligned uint8 RGB")
+        if self.rgb is not None and self.rgb_recipe is not None:
+            raise ValueError("Supply cached evidence_rgb or a fitted rgb_recipe, not both")
         return self
 
 
@@ -120,7 +123,7 @@ def load_case(path):
     path = Path(path).resolve()
     spec = json.loads(path.read_text())
     allowed = {"case", "image", "coarse", "tile_labels", "tile_size_yx", "tissue", "tokens", "mpp_xy", "native_mpp_xy",
-               "native_tissue", "evidence_rgb", "palette", "variants", "encoder_revision", "encoder_sha256"}
+               "native_tissue", "evidence_rgb", "rgb_recipe", "palette", "variants", "encoder_revision", "encoder_sha256"}
     if set(spec) - allowed:
         raise ValueError("Unknown case fields: " + ", ".join(sorted(set(spec) - allowed)))
     if ("coarse" in spec) == ("tile_labels" in spec):
@@ -149,6 +152,10 @@ def load_case(path):
     native = (tifffile.imread(file(spec["native_tissue"], "native_tissue")) > 0
               if "native_tissue" in spec else tissue.copy())
     rgb = _image(file(spec["evidence_rgb"], "evidence_rgb")) if "evidence_rgb" in spec else None
+    recipe = None
+    if "rgb_recipe" in spec:
+        from .rgb_recipe import RGB9Plus19Recipe
+        recipe = RGB9Plus19Recipe.load(file(spec["rgb_recipe"], "rgb_recipe"))
     variants = {}
     if rgb is None:
         for name in ("scale_1", "scale_2"):
@@ -167,6 +174,7 @@ def load_case(path):
         np.asarray(spec["palette"]) if "palette" in spec else None, variants,
         dict(input_sha256=hashes, encoder_revision=ENCODER_REVISION, encoder_sha256=ENCODER_SHA256,
              fine_annotations_read=False, encoder_inference_included=False))
+    case.rgb_recipe = recipe
     return case.validate()
 
 
@@ -175,7 +183,12 @@ def prepare(case, *, wsi_window=False):
     case.validate(minimum_tiles=1 if wsi_window else 16,
                   minimum_groups=1 if wsi_window else 2)
     start = perf_counter()
-    if case.rgb is None:
+    if case.rgb_recipe is not None:
+        from .appearance_state import array_digest
+        if array_digest(case.coarse) != case.rgb_recipe.state["input_sha256"]["coarse"]:
+            raise ValueError("The fitted local rgb_recipe belongs to a different coarse mask")
+        rgb, conversion = case.rgb_recipe.transform(case.tokens, case.variants)
+    elif case.rgb is None:
         rgb, conversion = convert_rgb(case.tokens, case.coarse, case.palette, case.variants,
                                       allow_local_fallback=wsi_window)
     else:

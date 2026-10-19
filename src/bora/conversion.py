@@ -100,12 +100,13 @@ def _probabilities(values, coarse, classes):
 
 
 def convert_rgb(tokens, coarse, palette, variants, *, allow_local_fallback=False):
-    """Average #9 and #19 class probabilities before 8-bit palette conversion.
+    """Fit local RGB9+19 once for a new field; replay via RGB9Plus19Recipe.
 
-    variants contains scale_1 and scale_2: values, original resized shape, and
-    selected_dimensions for 64-channel caches (or full 1280-channel arrays).
-    Only coarse group observations enter these fits; no fine masks are accepted.
+    The legacy convenience API and explicit homogeneous-WSI fallback remain.
+    For repeated use save a fitted recipe and call its transform/predict_proba;
+    loading that JSON never refits any scaler or logistic/Ridge model.
     """
+    from .rgb_recipe import RGB9Plus19Recipe
     summaries, labels = observations(tokens, coarse)
     classes = np.unique(labels)
     if not np.array_equal(classes, np.unique(coarse[coarse > 0])):
@@ -119,75 +120,13 @@ def convert_rgb(tokens, coarse, palette, variants, *, allow_local_fallback=False
             if len(summaries) < 16:
                 raise ValueError("At least 16 eligible physical coarse tiles are required")
             raise ValueError("RGB9+19 requires at least two observed coarse groups")
-        # A whole slide can contain a locally tiny or homogeneous tissue
-        # fragment even when the slide as a whole has ample tiles and groups.
-        # Preserve that tissue without fitting a statistically invalid local
-        # probability model. Such windows are reported explicitly.
-        rgb = np.empty((*coarse.shape,3), np.uint8)
-        rgb[:] = np.rint(np.mean(palette[classes-1], axis=0)).astype(np.uint8)
+        rgb = np.empty((*coarse.shape, 3), np.uint8)
+        rgb[:] = np.rint(np.mean(palette[classes - 1], axis=0)).astype(np.uint8)
         present = coarse > 0
-        rgb[present] = np.rint(palette[coarse[present]-1]).astype(np.uint8)
+        rgb[present] = np.rint(palette[coarse[present] - 1]).astype(np.uint8)
         return rgb, dict(conversion="coarse-palette fallback",
             reason="fewer than 16 eligible local tiles or only one local group",
             eligible_local_tiles=int(len(summaries)), observed_local_groups=classes.tolist(),
             full_RGB9_plus_19_applied=False, fine_reference_used=False)
-    selected = select_dimensions(summaries, labels)
-    scaler = StandardScaler().fit(summaries[:, selected])
-    scaler.scale_ = np.maximum(scaler.scale_, .05)
-    tile_z = scaler.transform(summaries[:, selected]).astype(np.float32)
-    z = scaler.transform(tokens[..., selected].reshape(-1, 64)).reshape(*tokens.shape[:2], 64).astype(np.float32)
-    aligned = {}
-    for name in ("scale_1", "scale_2"):
-        spec = variants[name]
-        values = np.asarray(spec["values"], dtype=np.float32)
-        if values.ndim != 3 or not np.isfinite(values).all():
-            raise ValueError("Finite spatial scale features required")
-        if values.shape[-1] == 1280:
-            values = values[..., selected]
-        elif values.shape[-1] != 64 or not np.array_equal(spec.get("selected_dimensions"), selected):
-            raise ValueError("Scale-cache selection does not match this coarse mask")
-        aligned[name] = _align(values, spec["shape_yx"], z.shape[:2], coarse.shape)
-    middle, mt = _scale(aligned["scale_1"], coarse)
-    wide, wt = _scale(aligned["scale_2"], coarse)
-    with np.errstate(invalid="ignore", divide="ignore"):
-        correlations = np.stack([np.array([np.corrcoef(tile_z[:, i], other[:, i])[0, 1]
-                                          for i in range(64)]) for other in (mt, wt)])
-    persistence = np.maximum(np.nan_to_num(correlations.min(0)), 0)
-    means = [tile_z[labels == g].mean(0) for g in classes]
-    var = [tile_z[labels == g].var(0) for g in classes]
-    rankings = []
-    for a, b in combinations(range(len(classes)), 2):
-        score = (means[a] - means[b]) ** 2 / (var[a] + var[b] + .05)
-        score *= .05 + persistence
-        rankings.append(np.argsort(-score))
-    keep, positions = [], [0] * len(rankings)
-    while len(keep) < 32:
-        for i, ranking in enumerate(rankings):
-            while positions[i] < len(ranking) and int(ranking[positions[i]]) in keep:
-                positions[i] += 1
-            if positions[i] < len(ranking):
-                keep.append(int(ranking[positions[i]])); positions[i] += 1
-                if len(keep) == 32:
-                    break
-    consensus = (z[..., keep] + middle[..., keep] + wide[..., keep]) / 3
-    p9 = _expand(_probabilities(consensus, coarse, classes), coarse.shape)
-    neighbours = np.empty((*z.shape[:2], 192), np.float32)
-    for j, k in enumerate((1, 2, 4)):
-        padded = np.pad(z, ((k, k), (k, k), (0, 0)), mode="reflect")
-        neighbours[..., j * 64:(j + 1) * 64] = (padded[:-2*k, k:-k] + padded[2*k:, k:-k]
-            + padded[k:-k, :-2*k] + padded[k:-k, 2*k:]) / 4
-    yy, xx = np.indices(z.shape[:2])
-    folds = (yy >= z.shape[0] // 2) * 2 + (xx >= z.shape[1] // 2)
-    completed = np.empty_like(z)
-    for fold in range(4):
-        test = folds == fold
-        train = ~ndi.binary_dilation(test, iterations=4)
-        if not train.any() or not test.any():
-            raise ValueError("Insufficient spatial token extent for the fixed #19 folds")
-        model = Ridge(alpha=100).fit(neighbours[train], z[train])
-        completed[test] = model.predict(neighbours[test])
-    p19 = _expand(_probabilities(completed, coarse, classes), coarse.shape)
-    p = np.mean(np.stack([p9, p19]), axis=0, dtype=np.float32)
-    rgb = np.rint(np.clip(p, 0, 1) @ palette[classes - 1]).clip(0, 255).astype(np.uint8)
-    return rgb, dict(conversion="RGB9+19", components=[9, 19], weights=[.5, .5],
-                     selected_dimensions=selected.tolist(), fine_reference_used=False)
+    recipe = RGB9Plus19Recipe.fit(tokens, coarse, palette, variants)
+    return recipe.transform(tokens, variants)

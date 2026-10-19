@@ -158,3 +158,9 @@ when supplied, creation of cached RGB evidence.
 The manuscript's 349 training source images, source IDs, native crops,
 provider links and acquisition instructions are documented in
 [Bora-Analysis](https://github.com/tkcaccia/Bora-Analysis/blob/main/docs/MANUSCRIPT_MODEL_DATA.md).
+
+For CPU-only viewer integration and repeat use of fitted evidence, see
+[Appearance recipes](APPEARANCE_RECIPES.md). This covers the full geometry-bound
+RGB9+19 fit/replay API and the separately named row-wise Feature contrast
+bridge. Shared semantic Feature contrast is an explicit training-only frozen
+mapping; it is not the Neighbor context classifier or local RGB9+19.
