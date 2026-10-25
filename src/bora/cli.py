@@ -25,6 +25,22 @@ def parser():
     a = sub.add_parser("refine", help="RGB9+19, Bora-AF, Neighbor context identity and compact native GeoJSON")
     a.add_argument("case", type=Path); a.add_argument("--model", type=Path, required=True)
     a.add_argument("--output", type=Path, required=True)
+    a = sub.add_parser("kodama-contours", help="global three-group exact mask and guarded diagonal tissue GeoJSON")
+    a.add_argument("assembly", type=Path, help="complete frozen native-mask assembly folder")
+    a.add_argument("native_he", type=Path, help="registered native RGB H&E TIFF")
+    a.add_argument("group_names", type=Path, help="JSON object mapping IDs 1, 2, 3 to group names")
+    a.add_argument("--output", type=Path, required=True)
+    a.add_argument("--minimum-area-um2", type=float, default=1000.0)
+    a.add_argument("--minimum-free-gib", type=float, default=1.0)
+    a = sub.add_parser("kodama-fit", help="fit a frozen numeric head from three-group PCA32 training samples")
+    a.add_argument("manifest", type=Path)
+    a.add_argument("--output", type=Path, required=True)
+    a = sub.add_parser("kodama-score", help="score a registered full-slide PCA32 field across encoder seams")
+    a.add_argument("manifest", type=Path)
+    a.add_argument("--model", type=Path, required=True)
+    a.add_argument("--output", type=Path, required=True)
+    a.add_argument("--sigma-tokens", type=float, required=True)
+    a.add_argument("--prior-exponent", type=float, required=True)
     return p
 
 
@@ -125,6 +141,23 @@ def main(argv=None):
                 report = prepare_file(a.case, a.output)
             elif a.command == "train":
                 report = train_file(a.manifest, a.output)
+            elif a.command == "kodama-contours":
+                from .kodama_bora import publish_three_group_contours
+                if not np.isfinite(a.minimum_free_gib) or a.minimum_free_gib < 0:
+                    raise ValueError("Free-space reserve must be a nonnegative GiB value")
+                names = json.loads(a.group_names.read_text())
+                report = publish_three_group_contours(
+                    a.assembly, a.native_he, a.output, names,
+                    minimum_area_um2=a.minimum_area_um2,
+                    minimum_free_bytes=int(a.minimum_free_gib * 1024**3))
+            elif a.command == "kodama-fit":
+                from .kodama_bora import fit_three_group_model
+                report = fit_three_group_model(a.manifest, a.output)
+            elif a.command == "kodama-score":
+                from .kodama_bora import score_three_group_model
+                report = score_three_group_model(a.manifest, a.model, a.output,
+                    sigma_tokens=a.sigma_tokens,
+                    prior_exponent=a.prior_exponent)
             else:
                 case = load_case(a.case)
                 model = NeighborContextClassifier.load(a.model)

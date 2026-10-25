@@ -3,7 +3,7 @@
 Bora takes an H&E image, anonymous tile-cluster labels, calibrated Virchow2
 spatial features and a user-trained fastPLS tissue classifier. It returns a
 refined, classified tissue mask and compact GeoJSON whose regions carry the
-predicted tissue names. There is one supported pipeline:
+predicted tissue names. The standard trained-tissue pipeline is:
 
 **Virchow2 spatial tokens → fixed Virchow2 RGB evidence → Bora-AF → Neighbor context → GeoJSON.**
 
@@ -14,6 +14,15 @@ One native CPU fastPLS SIMPLS-LDA head predicts one tissue identity per group.
 The audited 25-class model uses 24 components; smaller training vocabularies
 are capped at their class-discriminant dimension. No classifier selector or
 automatic algorithm search is installed.
+
+For **three anonymous KODAMA groups**, Bora also provides the PM016-derived
+registered full-slide route: one globally pooled Virchow2 PCA32 lattice,
+an explicitly fitted numeric three-group head, native H&E-guided boundary
+refinement, a single global mask, and guarded diagonal tissue contours. It is
+the standard route for KODAMA-group annotations; its fitted head is supplied
+per experiment and no PM016 weights or biological tissue identities are
+bundled. The exact mask is retained separately from the editable, simplified
+GeoJSON. See [the three-group workflow](docs/KODAMA_THREE_GROUP_WORKFLOW.md).
 
 Benchmark acquisition, historical research, figures and the public viewer live
 in [Bora-Analysis](https://github.com/tkcaccia/Bora-Analysis).
