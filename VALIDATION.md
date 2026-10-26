@@ -30,3 +30,15 @@ the preserved reference implementation. Selected coordinates and resulting RGB
 pixels are bitwise identical in all three fixtures. The published coverage
 converter is unchanged (SHA256
 `995f734250017c130a87ca79d81d54a5ed44fbf89808514314043f94626f7d46`).
+
+The accepted-region identity handoff was validated on macOS with Python 3.12,
+NumPy 2.2.6 and the built vendored fastPLS core: **103 tests passed, 2 skipped**.
+The skips require optional pyvips and a local PM016 vector fixture. New tests
+compare streamed descriptors against the original native-pixel overlap and
+physical boundary context implementation across several stripe sizes. They
+also check padded token coordinates, disconnected pieces, isolated groups,
+allocation-driven stripe reduction, conflicting overlaps, changed input hashes,
+frame/dimension/spacing rejection, the actual frozen native classifier, exact
+geometry preservation, and exclusive new output paths. This synthetic suite
+verifies implementation behavior; it does not establish tissue accuracy on a
+new slide or independently prove caller-asserted image registration.

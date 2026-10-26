@@ -41,6 +41,15 @@ def parser():
     a.add_argument("--output", type=Path, required=True)
     a.add_argument("--sigma-tokens", type=float, required=True)
     a.add_argument("--prior-exponent", type=float, required=True)
+    a = sub.add_parser("classify-regions", help="name existing tissue polygons with frozen Neighbor-context PLS")
+    a.add_argument("contours", type=Path, help="accepted native-coordinate tissue GeoJSON")
+    a.add_argument("registration", type=Path, help="bora-region-registration-v1 JSON")
+    a.add_argument("--tokens", type=Path, required=True)
+    a.add_argument("--model", type=Path, required=True)
+    a.add_argument("--output", type=Path, required=True)
+    a.add_argument("--group-field", default="value")
+    a.add_argument("--stripe-rows", type=int, default=256)
+    a.add_argument("--maximum-working-mib", type=int, default=256)
     return p
 
 
@@ -158,6 +167,11 @@ def main(argv=None):
                 report = score_three_group_model(a.manifest, a.model, a.output,
                     sigma_tokens=a.sigma_tokens,
                     prior_exponent=a.prior_exponent)
+            elif a.command == "classify-regions":
+                from .region_identity import classify_regions
+                report = classify_regions(a.contours, a.registration, a.tokens,
+                    a.model, a.output, group_field=a.group_field, stripe_rows=a.stripe_rows,
+                    maximum_working_bytes=a.maximum_working_mib * 1024**2)
             else:
                 case = load_case(a.case)
                 model = NeighborContextClassifier.load(a.model)

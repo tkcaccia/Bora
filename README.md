@@ -24,6 +24,12 @@ per experiment and no PM016 weights or biological tissue identities are
 bundled. The exact mask is retained separately from the editable, simplified
 GeoJSON. See [the three-group workflow](docs/KODAMA_THREE_GROUP_WORKFLOW.md).
 
+Once those tissue contours have been accepted, `bora classify-regions` can add
+the frozen Neighbor-context PLS tissue names while preserving every coordinate,
+hole and disconnected component. It uses the original full 1280-channel tokens
+and pools each complete source group; the PCA32 three-group head is not reused
+as a biological classifier. See [classifying accepted regions](docs/REGION_IDENTITY.md).
+
 Benchmark acquisition, historical research, figures and the public viewer live
 in [Bora-Analysis](https://github.com/tkcaccia/Bora-Analysis).
 [Open the benchmark viewer](https://tkcaccia.github.io/Bora-Analysis/).

@@ -133,3 +133,11 @@ exact mask as the pixel-level reproducibility reference. If a guard fails,
 there is no completion receipt. A 1,000 µm² floor and 3 µm outer-contour
 tolerance yielded 49 PM016 components with 83.1% diagonal segments, but these
 values do not establish accuracy for another slide or biological class.
+
+## 5. Add trained tissue identities without changing contours
+
+The anonymous groups can subsequently receive tissue names from the frozen
+Neighbor-context PLS model with `bora classify-regions`. This uses the original
+1280-channel token field, not the PCA32 numeric group head. All pieces of one
+source group share one tissue prediction, and every accepted geometry stays
+unchanged. See [the registration, outputs and transfer limitations](REGION_IDENTITY.md).
