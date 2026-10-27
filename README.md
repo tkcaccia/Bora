@@ -2,10 +2,17 @@
 
 Bora takes an H&E image, anonymous tile-cluster labels, calibrated Virchow2
 spatial features and a user-trained fastPLS tissue classifier. It returns a
-refined, classified tissue mask and compact GeoJSON whose regions carry the
-predicted tissue names. The standard trained-tissue pipeline is:
+refined tissue mask and compact GeoJSON. When a relevant tissue model is
+supplied, each complete segment also receives a predicted tissue name.
 
-**Virchow2 spatial tokens → fixed Virchow2 RGB evidence → Bora-AF → Neighbor context → GeoJSON.**
+The selected whole-slide route is:
+
+**Tile groups → global Virchow2 group evidence → native H&E boundary refinement → exact mask → simplified GeoJSON → fastPLS tissue naming.**
+
+The group evidence is a three-channel probability field. Its RGB display is a
+visualization of those probabilities, not an H&E replacement fed to the
+native boundary refiner. The GeoJSON geometry is fitted only after a single
+native mask has been assembled for the complete slide.
 
 Neighbor context pools all 1280 token channels over each complete anonymous group, including
 disconnected pieces. It concatenates that mean with its difference from
@@ -15,20 +22,25 @@ The audited 25-class model uses 24 components; smaller training vocabularies
 are capped at their class-discriminant dimension. No classifier selector or
 automatic algorithm search is installed.
 
-For **three anonymous KODAMA groups**, Bora also provides the PM016-derived
+For **three anonymous KODAMA groups**, Bora provides the
 registered full-slide route: one globally pooled Virchow2 PCA32 lattice,
 an explicitly fitted numeric three-group head, native H&E-guided boundary
 refinement, a single global mask, and guarded diagonal tissue contours. It is
-the standard route for KODAMA-group annotations; its fitted head is supplied
-per experiment and no PM016 weights or biological tissue identities are
+the selected route for KODAMA-group annotations; its fitted head is supplied
+per experiment and no example-slide weights or biological tissue identities are
 bundled. The exact mask is retained separately from the editable, simplified
 GeoJSON. See [the three-group workflow](docs/KODAMA_THREE_GROUP_WORKFLOW.md).
 
-Once those tissue contours have been accepted, `bora classify-regions` can add
+Once those tissue contours have been accepted, `bora classify-regions` adds
 the frozen Neighbor-context PLS tissue names while preserving every coordinate,
 hole and disconnected component. It uses the original full 1280-channel tokens
 and pools each complete source group; the PCA32 three-group head is not reused
 as a biological classifier. See [classifying accepted regions](docs/REGION_IDENTITY.md).
+
+The earlier `bora refine` command remains available for its existing
+single-field results; it is not the selected whole-slide KODAMA route. New
+whole-slide results should follow the score, native-mask, contour and region
+classification commands in the linked workflow.
 
 Benchmark acquisition, historical research, figures and the public viewer live
 in [Bora-Analysis](https://github.com/tkcaccia/Bora-Analysis).

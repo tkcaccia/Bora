@@ -1,4 +1,4 @@
-"""Command line interface for the sole supported Bora pipeline."""
+"""Command line interface for Bora's selected WSI and retained field routes."""
 import argparse
 import json
 import os
@@ -15,14 +15,14 @@ from .pipeline import load_case, prepare, run, json_file, digest, _mask
 
 
 def parser():
-    p = argparse.ArgumentParser(prog="bora", description="Bora-AF + Neighbor context (native fastPLS CPU)")
+    p = argparse.ArgumentParser(prog="bora", description="Virchow2 tissue evidence, native H&E refinement and Neighbor context fastPLS region identity")
     p.add_argument("--version", action="version", version=__version__)
     sub = p.add_subparsers(dest="command", required=True)
     a = sub.add_parser("prepare", help="prepare whole-group geometry/descriptors for training")
     a.add_argument("case", type=Path); a.add_argument("--output", type=Path, required=True)
     a = sub.add_parser("train", help="fit the single Neighbor context classifier on declared training groups")
     a.add_argument("manifest", type=Path); a.add_argument("--output", type=Path, required=True)
-    a = sub.add_parser("refine", help="RGB9+19, Bora-AF, Neighbor context identity and compact native GeoJSON")
+    a = sub.add_parser("refine", help="retained single-field RGB9+19/Bora-AF route")
     a.add_argument("case", type=Path); a.add_argument("--model", type=Path, required=True)
     a.add_argument("--output", type=Path, required=True)
     a = sub.add_parser("kodama-contours", help="global three-group exact mask and guarded diagonal tissue GeoJSON")
@@ -41,6 +41,9 @@ def parser():
     a.add_argument("--output", type=Path, required=True)
     a.add_argument("--sigma-tokens", type=float, required=True)
     a.add_argument("--prior-exponent", type=float, required=True)
+    a = sub.add_parser("kodama-native", help="refine one frozen global three-group score on calibrated native H&E")
+    a.add_argument("manifest", type=Path)
+    a.add_argument("--output", type=Path, required=True)
     a = sub.add_parser("classify-regions", help="name existing tissue polygons with frozen Neighbor-context PLS")
     a.add_argument("contours", type=Path, help="accepted native-coordinate tissue GeoJSON")
     a.add_argument("registration", type=Path, help="bora-region-registration-v1 JSON")
@@ -167,6 +170,9 @@ def main(argv=None):
                 report = score_three_group_model(a.manifest, a.model, a.output,
                     sigma_tokens=a.sigma_tokens,
                     prior_exponent=a.prior_exponent)
+            elif a.command == "kodama-native":
+                from .kodama_native import refine_global_score_to_native
+                report = refine_global_score_to_native(a.manifest, a.output)
             elif a.command == "classify-regions":
                 from .region_identity import classify_regions
                 report = classify_regions(a.contours, a.registration, a.tokens,

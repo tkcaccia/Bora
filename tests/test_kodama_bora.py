@@ -101,6 +101,8 @@ def test_kodama_cli_has_separate_fit_score_and_contour_steps():
         "--output", "score", "--sigma-tokens", "2", "--prior-exponent", ".7"]).command == "kodama-score"
     assert parser().parse_args(["kodama-contours", "assembly", "he.tif", "names.json",
         "--output", "contours"]).command == "kodama-contours"
+    assert parser().parse_args(["kodama-native", "native.json",
+        "--output", "native"]).command == "kodama-native"
 
 
 def test_complete_native_three_group_mask_becomes_diagonal_tissue_annotations(tmp_path):
