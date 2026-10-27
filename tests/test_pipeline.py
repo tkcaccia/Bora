@@ -4,7 +4,7 @@ import pytest
 import tifffile
 from PIL import Image
 from rasterio.features import rasterize
-from bora.pipeline import Case, prepare, run, load_case, expand_tile_labels, ENCODER_REVISION, ENCODER_SHA256
+from bora.pipeline import Case, prepare, run, load_case, expand_tile_labels, export_mask, ENCODER_REVISION, ENCODER_SHA256
 from bora.classifier import NeighborContextClassifier
 from bora.cli import parser, train_file
 
@@ -37,6 +37,17 @@ def test_full_native_pipeline_and_vector_roundtrip(tmp_path):
     assert report["fine_annotations_read"] is False and report["native_head_count"] == 1
     assert vector["final_native_pixel_region_cleanup"]["positive_polygon_parts_below_threshold"] == 0
     with pytest.raises(FileExistsError): run(c, model, output)
+
+
+def test_vector_export_preserves_a_hundred_pixel_tissue_region(tmp_path):
+    mask = np.ones((96, 96), np.uint8)
+    mask[30:40, 30:40] = 2
+    export_mask(mask, tmp_path, [.5, .5], {1: "stroma", 2: "tumor"})
+    vector = json.loads((tmp_path / "mask.geojson").read_text())
+    output = tifffile.imread(tmp_path / "mask.ome.tif")
+    assert vector["minimum_component_area_pixels"] == 20
+    assert {f["properties"]["value"] for f in vector["features"]} == {1, 2}
+    np.testing.assert_array_equal(output, mask)
 
 
 @pytest.mark.parametrize("bad", ["mpp", "fov", "small", "single", "tokens"])

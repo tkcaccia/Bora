@@ -218,13 +218,13 @@ def export_mask(mask, folder, mpp, names):
     cleaned, cleanup = fill_small_regions(mask, 20)
     temporary = folder / "export-input.tif"
     tifffile.imwrite(temporary, cleaned, compression="deflate")
-    report = convert(temporary, folder / "mask.geojson", page=0, min_area=500., simplify=2.,
+    report = convert(temporary, folder / "mask.geojson", page=0, min_area=20., simplify=2.,
                      workers=1, striped_native=False)
     temporary.unlink()
     data = json.loads((folder / "mask.geojson").read_text())
     data.update(native_shape_yx=list(mask.shape), native_mpp_xy=list(map(float, mpp)),
                 coordinate_space="native_image_pixel_edges", origin="top_left",
-                minimum_component_area_pixels=500., simplification_tolerance_pixels=2.)
+                minimum_component_area_pixels=20., simplification_tolerance_pixels=2.)
     for f in data["features"]:
         value = int(f["properties"]["value"])
         g = shape(f["geometry"])
