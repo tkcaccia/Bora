@@ -7,9 +7,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-24.04, macos-latest]
         python: ['3.10', '3.12']
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: '2'
@@ -24,7 +24,7 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libopenblas-dev liblapack-dev libvips-dev
       - name: macOS WSI reader
-        if: runner.os == 'macos-latest'
+        if: runner.os == 'macOS'
         run: |
           brew install vips
           echo "DYLD_FALLBACK_LIBRARY_PATH=$(brew --prefix)/lib" >> "$GITHUB_ENV"
