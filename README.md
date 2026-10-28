@@ -5,42 +5,37 @@ spatial features and a user-trained fastPLS tissue classifier. It returns a
 refined tissue mask and compact GeoJSON. When a relevant tissue model is
 supplied, each complete segment also receives a predicted tissue name.
 
-The selected whole-slide route is:
+The frozen whole-slide route, released in **0.2.2**, is:
 
-**Tile groups → global Virchow2 group evidence → native H&E boundary refinement → exact mask → simplified GeoJSON → fastPLS tissue naming.**
+**Tile groups → one slide-wide RGB9+19 response fit → all group responses + H&E refinement → one global mask → compact diagonal GeoJSON.**
 
-The group evidence is a three-channel probability field. Its RGB display is a
-visualization of those probabilities, not an H&E replacement fed to the
-native boundary refiner. The GeoJSON geometry is fitted only after a single
-native mask has been assembled for the complete slide.
+This is the numerical route used for the approved colorectal whole-slide
+result. All response channels enter refinement directly; the RGB image is
+only a visualization. A diagnostic field is cropped from the completed slide,
+without fitting, refinement or area cleanup in that field. Components and
+enclosed background holes strictly smaller than **400 µm²** are removed or
+filled globally. Contours are smoothed at 1.5 µm and shared boundaries are
+simplified with physical, per-class agreement guards.
 
-Neighbor context pools all 1280 token channels over each complete anonymous group, including
-disconnected pieces. It concatenates that mean with its difference from
-neighbouring group means, weighted by shared boundary length in micrometres.
-One native CPU fastPLS SIMPLS-LDA head predicts one tissue identity per group.
-The audited 25-class model uses 24 components; smaller training vocabularies
-are capped at their class-discriminant dimension. No classifier selector or
-automatic algorithm search is installed.
+Start with the [frozen whole-slide workflow](docs/FROZEN_COLORECTAL_WSI.md).
+`bora wsi-fit`, `bora wsi-project`, `bora wsi` and `bora wsi-crop` expose this
+route. Its [reference profile](src/bora/frozen_colorectal.json) records the
+settings, source hashes and accepted output identities. Input groups and
+features are supplied by the user; slide-specific weights are fitted once.
 
-For **three anonymous KODAMA groups**, Bora provides the
-registered full-slide route: one globally pooled Virchow2 PCA32 lattice,
-an explicitly fitted numeric three-group head, native H&E-guided boundary
-refinement, a single global mask, and guarded diagonal tissue contours. It is
-the selected route for KODAMA-group annotations; its fitted head is supplied
-per experiment and no example-slide weights or biological tissue identities are
-bundled. The exact mask is retained separately from the editable, simplified
-GeoJSON. See [the three-group workflow](docs/KODAMA_THREE_GROUP_WORKFLOW.md).
+Tissue naming is a separate step. Neighbor context pools all 1280 token
+channels over each complete anonymous group, including disconnected pieces.
+It concatenates that mean with its difference from neighboring group means,
+weighted by shared boundary length in micrometres. One native CPU fastPLS
+SIMPLS-LDA head predicts one tissue identity per group. The audited 25-class
+model uses 24 components; smaller training vocabularies are capped at their
+class-discriminant dimension. There is no classifier selector. The approved
+colorectal preview contains anonymous groups, without biological tissue names.
+See [classifying accepted regions](docs/REGION_IDENTITY.md) to add names using
+an independently trained tissue model while preserving the contours.
 
-Once those tissue contours have been accepted, `bora classify-regions` adds
-the frozen Neighbor-context PLS tissue names while preserving every coordinate,
-hole and disconnected component. It uses the original full 1280-channel tokens
-and pools each complete source group; the PCA32 three-group head is not reused
-as a biological classifier. See [classifying accepted regions](docs/REGION_IDENTITY.md).
-
-The earlier `bora refine` command remains available for its existing
-single-field results; it is not the selected whole-slide KODAMA route. New
-whole-slide results should follow the score, native-mask, contour and region
-classification commands in the linked workflow.
+The older three-group PCA32 commands and field-level `bora refine` remain
+compatibility APIs. They are not the frozen colorectal whole-slide method.
 
 Benchmark acquisition, historical research, figures and the public viewer live
 in [Bora-Analysis](https://github.com/tkcaccia/Bora-Analysis).
@@ -60,12 +55,18 @@ git clone https://github.com/tkcaccia/Bora.git
 cd Bora
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install -e '.[test]'
+# Install libvips first: Ubuntu: apt install libvips-dev; macOS: brew install vips
+python -m pip install -e '.[test,wsi]'
 pytest -q
 bora --help
 ```
 
-## Inputs and calibration
+## Field-level compatibility workflow
+
+The following case format and `prepare`/`refine` examples describe the older
+field API. For the selected full-slide method use the workflow linked above.
+
+### Inputs and calibration
 
 Bora consumes encoder features; it does not download a model or launch GPU/HPC
 work. Supply the full, **unselected 1280-channel Virchow2 spatial-token grid**
@@ -184,7 +185,7 @@ reproducibility check found identical tissue predictions on all 116 saved
 evaluation fields (399 whole groups), so the published masks and scores do not
 change for that cohort. See [the correction audit](docs/FASTPLS_CORRECTION.md).
 
-## Geometry and timing
+## Field-level geometry and timing
 
 Bora-AF lets groups compete throughout supported tissue, without fixed boundary
 margins or hard seeds. Glass is removed after refinement. The published native
@@ -205,37 +206,25 @@ startup and export costs. The encoder is upstream and excluded. The existing
 116-image benchmark is a development evaluation with adaptively reused data;
 it does not establish untouched-test accuracy or complete-WSI throughput.
 
-## Whole-slide input
+## Whole-slide input and migration
 
-The `bora.wsi.WholeSlide` reader accepts calibrated RGB OME-TIFF/BigTIFF files,
-including `.btf`, and visits them in native-pixel windows with bounded image
-memory. OME physical pixel sizes, rather than TIFF display DPI, determine the
-resampling to the encoder's working resolution. The optional `wsi` dependency
-installs `pyvips`; the host also needs libvips. The windowed
-`bora.wsi_export.export` writes a disk-backed native mask and compact GeoJSON,
-then rasterizes the fitted polygons to ensure the mask and GeoJSON agree.
-Per-window checkpoints permit safe continuation of CPU vector export.
+Use the [frozen whole-slide workflow](docs/FROZEN_COLORECTAL_WSI.md) and the
+`wsi-fit → wsi-project → wsi → wsi-crop` commands for new WSI analyses.
+The optional `wsi` dependency supplies pyvips; the host needs libvips.
+Upstream image calibration and feature extraction must retain their pixel
+spacing, source identities and channel selection. The package never launches
+an encoder or GPU job.
 
-The [Visium HD colon whole-slide study](https://github.com/tkcaccia/Bora-Analysis/tree/main/studies/visium-hd-colon-wsi-2026-10-19)
-contains the reproducible orchestration for Virchow2, global coarse groups,
-RGB9+19, Bora-AF and Neighbor context on a 75,250 × 48,740-pixel image.
-[Inspect the full-slide viewer](https://tkcaccia.github.io/Bora-Analysis/visium-hd-colon/).
-Single-field `bora refine` remains an in-memory command; use the bounded study
-workflow for full-slide inference and retain enough disk for native masks.
+The older `bora.wsi.WholeSlide` reader, windowed export, field API and
+three-group PCA32 commands remain available for reproducing previous results.
+Their field settings do not override the frozen full-slide settings above.
+Bora 0.2.2 preserves the accepted numerical kernels and adds portable manifests,
+source hashes, global-output receipts and diagnostic crop verification.
 
-## Scope and migration
-
-Version 0.2 replaces the previous experimental CLI. Watershed, MedSAM,
-PathSegmentor, earlier evidence solvers, alternative classifiers and evolution
-launchers are removed from the application. Historical source/evidence is
-preserved in Bora-Analysis and Git history. No background research cycle is
-started by installation, import or command execution.
-
-The single-field command processes an aligned field in memory. The separate
-whole-slide workflow streams calibrated fields and native output to disk.
-Cross-field identity reconciliation and source-WSI transfer remain separate
-scientific questions; native-coordinate output alone does not establish their
-accuracy.
+No background search or benchmark campaign starts during installation, import
+or execution. Historical studies stay outside the application. The full-slide
+freeze covers anonymous group segmentation; biological tissue identities
+require a relevant independently trained Neighbor context fastPLS model.
 
 ## License
 

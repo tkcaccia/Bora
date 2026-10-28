@@ -1,4 +1,4 @@
-"""Command line interface for Bora's selected WSI and retained field routes."""
+"""Frozen colorectal WSI workflow and retained compatibility commands."""
 import argparse
 import json
 import os
@@ -15,9 +15,21 @@ from .pipeline import load_case, prepare, run, json_file, digest, _mask
 
 
 def parser():
-    p = argparse.ArgumentParser(prog="bora", description="Virchow2 tissue evidence, native H&E refinement and Neighbor context fastPLS region identity")
+    p = argparse.ArgumentParser(prog="bora", description="Frozen global RGB9+19/H&E WSI refinement and Neighbor context fastPLS region identity")
     p.add_argument("--version", action="version", version=__version__)
     sub = p.add_subparsers(dest="command", required=True)
+    a = sub.add_parser("wsi-fit", help="fit one slide-wide RGB9+19 response model (selected workflow)")
+    a.add_argument("manifest", type=Path); a.add_argument("--output", type=Path, required=True)
+    a = sub.add_parser("wsi-project", help="apply the frozen response model across the complete slide")
+    a.add_argument("manifest", type=Path); a.add_argument("--fit", type=Path, required=True)
+    a.add_argument("--output", type=Path, required=True)
+    a = sub.add_parser("wsi", help="selected default: one global mask and compact diagonal GeoJSON")
+    a.add_argument("manifest", type=Path); a.add_argument("--output", type=Path, required=True)
+    a.add_argument("--minimum-free-gib", type=float, default=1.0)
+    a.add_argument("--memory-gib", type=float, default=12.0)
+    a = sub.add_parser("wsi-crop", help="crop an existing full-slide mask and geometry; never refit")
+    a.add_argument("result", type=Path); a.add_argument("--box", type=int, nargs=4, metavar=("X","Y","W","H"), required=True)
+    a.add_argument("--output", type=Path, required=True)
     a = sub.add_parser("prepare", help="prepare whole-group geometry/descriptors for training")
     a.add_argument("case", type=Path); a.add_argument("--output", type=Path, required=True)
     a = sub.add_parser("train", help="fit the single Neighbor context classifier on declared training groups")
@@ -25,23 +37,23 @@ def parser():
     a = sub.add_parser("refine", help="retained single-field RGB9+19/Bora-AF route")
     a.add_argument("case", type=Path); a.add_argument("--model", type=Path, required=True)
     a.add_argument("--output", type=Path, required=True)
-    a = sub.add_parser("kodama-contours", help="global three-group exact mask and guarded diagonal tissue GeoJSON")
+    a = sub.add_parser("kodama-contours", help="legacy three-group contour compatibility command")
     a.add_argument("assembly", type=Path, help="complete frozen native-mask assembly folder")
     a.add_argument("native_he", type=Path, help="registered native RGB H&E TIFF")
     a.add_argument("group_names", type=Path, help="JSON object mapping IDs 1, 2, 3 to group names")
     a.add_argument("--output", type=Path, required=True)
     a.add_argument("--minimum-area-um2", type=float, default=1000.0)
     a.add_argument("--minimum-free-gib", type=float, default=1.0)
-    a = sub.add_parser("kodama-fit", help="fit a frozen numeric head from three-group PCA32 training samples")
+    a = sub.add_parser("kodama-fit", help="legacy three-group PCA32 fitting compatibility command")
     a.add_argument("manifest", type=Path)
     a.add_argument("--output", type=Path, required=True)
-    a = sub.add_parser("kodama-score", help="score a registered full-slide PCA32 field across encoder seams")
+    a = sub.add_parser("kodama-score", help="legacy three-group PCA32 projection compatibility command")
     a.add_argument("manifest", type=Path)
     a.add_argument("--model", type=Path, required=True)
     a.add_argument("--output", type=Path, required=True)
     a.add_argument("--sigma-tokens", type=float, required=True)
     a.add_argument("--prior-exponent", type=float, required=True)
-    a = sub.add_parser("kodama-native", help="refine one frozen global three-group score on calibrated native H&E")
+    a = sub.add_parser("kodama-native", help="legacy three-group native-mask compatibility command")
     a.add_argument("manifest", type=Path)
     a.add_argument("--output", type=Path, required=True)
     a = sub.add_parser("classify-regions", help="name existing tissue polygons with frozen Neighbor-context PLS")
@@ -148,8 +160,22 @@ def main(argv=None):
     a = parser().parse_args(argv)
     cv2.setNumThreads(2)
     try:
-        with threadpool_limits(limits=2):
-            if a.command == "prepare":
+        with threadpool_limits(limits=4 if a.command in {"wsi-fit", "wsi-project", "wsi", "wsi-crop"} else 2):
+            if a.command == "wsi-fit":
+                from .slide_responses import fit_slide_responses
+                report = fit_slide_responses(a.manifest, a.output)
+            elif a.command == "wsi-project":
+                from .slide_responses import project_slide_responses
+                report = project_slide_responses(a.manifest, a.fit, a.output)
+            elif a.command == "wsi":
+                from .wsi_frozen import run_wsi
+                if not np.isfinite([a.minimum_free_gib,a.memory_gib]).all() or a.minimum_free_gib < 0 or a.memory_gib <= 0:
+                    raise ValueError("Resource limits must be finite and nonnegative")
+                report = run_wsi(a.manifest,a.output,minimum_free_bytes=int(a.minimum_free_gib*1024**3),memory_budget_bytes=int(a.memory_gib*1024**3))
+            elif a.command == "wsi-crop":
+                from .wsi_frozen import crop_wsi
+                report = crop_wsi(a.result,a.box,a.output)
+            elif a.command == "prepare":
                 report = prepare_file(a.case, a.output)
             elif a.command == "train":
                 report = train_file(a.manifest, a.output)

@@ -1,4 +1,8 @@
-# Train and use Bora
+# Train and use the field-level compatibility API
+
+For the selected full-slide segmentation route, use the
+[frozen colorectal workflow](FROZEN_COLORECTAL_WSI.md). The field-level case
+format below remains supported for earlier results and tissue-model training.
 
 Bora separates **anonymous region geometry** from **tissue identity**. At
 inference it reads a calibrated H&E image, tile-cluster labels, full Virchow2

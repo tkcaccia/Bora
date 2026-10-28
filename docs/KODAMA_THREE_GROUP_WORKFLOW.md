@@ -1,4 +1,8 @@
-# KODAMA three-group Bora route
+# Legacy KODAMA three-group compatibility route
+
+**This is not the frozen colorectal workflow.** Use the
+[frozen whole-slide method](FROZEN_COLORECTAL_WSI.md) for new WSI analysis.
+This page documents the earlier three-group PCA32 API for reproducibility.
 
 This CPU route maps a **registered, global** Virchow2 PCA32 token field to three
 anonymous KODAMA groups, refines boundaries against native H&E, and publishes
@@ -77,7 +81,7 @@ holdout regions before publication.
 
 ## 3. Refine native H&E and assemble once
 
-The selected route consumes the **one saved global probability field** from
+This compatibility route consumes the **one saved global probability field** from
 step 2, the original calibrated H&E OME-TIFF, and a binary tissue-support TIFF.
 The support may have a different raster size; absolute pixel centres are used
 when it is sampled in the native image frame. Put the actual hashes and

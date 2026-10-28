@@ -1,5 +1,43 @@
 # Release validation
 
+## Frozen colorectal whole-slide release (0.2.2, 28 October 2026)
+
+The selected route is one slide-wide RGB9+19 fit followed by direct
+all-response H&E refinement, global 400 µm² topology cleanup and compact
+diagonal contours. The accepted colorectal output is the reference;
+the three-group PCA32 and field APIs are compatibility commands.
+See [the frozen workflow](docs/FROZEN_COLORECTAL_WSI.md) and
+[its source and output identities](src/bora/frozen_colorectal.json).
+
+A fresh Linux native wheel was built and installed in an isolated CPU
+environment. The complete suite passed: **114 passed, 1 skipped**. The skip
+requires an optional private PM016 r4 fixture. New tests cover the complete
+fit/project/refine/crop handoff, the strict physical area threshold, components
+crossing diagnostic edges, nonzero native-coordinate origins, odd raster
+sizes, streamed-versus-monolithic diffusion and smoothing, shared diagonal
+fitting, annotation exclusion, receipt checks and changed-output rejection.
+
+All extracted refinement function bodies were compared with the accepted
+full-slide source and matched, apart from passing pixel spacing explicitly
+instead of using a global variable. The converter/cleanup source files match
+the recorded 0.2.1 baseline. A CPU replay using the frozen colorectal state
+checked five whole-width token stripes (3,768,320 response values): all
+float16 values were identical with the reference four-thread BLAS setting.
+Five spatial refinement probes also had zero different pixels against the
+saved global intermediate mask. Refitting on all 11,469 colorectal tiles
+(183,504 spatial observations) reproduced all 17 saved model/scaler arrays
+bit for bit. The packaged response functions enforce that
+four-thread setting; arbitrary BLAS thread counts can change the last stored
+float16 bit. Source and reference hashes accompany the release.
+
+This is an implementation-continuity check, not a new full-slide rerun or an
+independent accuracy experiment. No GPU inference or expert-label selection
+was performed for the release audit. Dependency pins match the accepted
+runtime, using the headless OpenCV distribution of the same version.
+
+## Earlier release and classifier audits
+
+
 The retained workflow is Virchow2 RGB evidence, Bora appearance fields, Neighbor
 context tissue identification, and compact native-coordinate GeoJSON export.
 The application exposes one classifier. Historical research and benchmark code

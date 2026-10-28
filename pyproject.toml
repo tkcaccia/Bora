@@ -4,15 +4,15 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "bora-segmentation"
-version = "0.2.1"
-description = "Bora-AF refinement and native fastPLS Neighbor context tissue identification"
+version = "0.2.2"
+description = "Frozen whole-slide RGB9+19/H&E refinement and fastPLS Neighbor context tissue identification"
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
-dependencies = ["numpy==2.2.6", "scipy==1.15.3", "scikit-image==0.25.2", "tifffile==2025.5.10", "shapely==2.1.2", "Pillow==12.3.0", "rasterio==1.4.4", "opencv-python-headless==5.0.0.93", "threadpoolctl==3.7.0", "scikit-learn==1.7.2"]
+dependencies = ["numpy==2.2.6", "scipy==1.15.3", "scikit-image==0.25.2", "tifffile==2025.5.10", "shapely==2.1.2", "Pillow==12.1.1", "rasterio==1.4.4", "opencv-python-headless==4.13.0.92", "threadpoolctl==3.6.0", "scikit-learn==1.7.2"]
 
 [project.optional-dependencies]
 test = ["pytest>=7.4"]
-wsi = ["pyvips>=2.2,<3"]
+wsi = ["pyvips==2.2.3"]
 
 [project.scripts]
 bora = "bora.cli:main"

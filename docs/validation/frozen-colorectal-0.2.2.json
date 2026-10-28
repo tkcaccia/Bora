@@ -1,0 +1,280 @@
+{
+  "status": "COMPLETE",
+  "release": "0.2.2",
+  "date": "2026-10-28",
+  "test_suite": {
+    "passed": 114,
+    "skipped": 1,
+    "skip_reason": "Optional private PM016 r4 fixture not installed"
+  },
+  "full_slide_fit_replay": {
+    "status": "COMPLETE",
+    "training_tiles": 11469,
+    "groups": 16,
+    "spatial_training_samples": 183504,
+    "all_fitted_arrays_bitwise_equal": true,
+    "arrays": [
+      {
+        "array": "selected_dimensions",
+        "shape": [
+          64
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      },
+      {
+        "array": "persistent_positions",
+        "shape": [
+          32
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      },
+      {
+        "array": "classes",
+        "shape": [
+          16
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      },
+      {
+        "array": "p9_coef",
+        "shape": [
+          16,
+          32
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      },
+      {
+        "array": "p9_intercept",
+        "shape": [
+          16
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      },
+      {
+        "array": "p19_coef",
+        "shape": [
+          16,
+          64
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      },
+      {
+        "array": "p19_intercept",
+        "shape": [
+          16
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      },
+      {
+        "array": "ridge_coef",
+        "shape": [
+          4,
+          64,
+          192
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      },
+      {
+        "array": "ridge_intercept",
+        "shape": [
+          4,
+          64
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      },
+      {
+        "array": "ridge_global_coef",
+        "shape": [
+          64,
+          192
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      },
+      {
+        "array": "ridge_global_intercept",
+        "shape": [
+          64
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      },
+      {
+        "array": "mean_1",
+        "shape": [
+          64
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      },
+      {
+        "array": "scale_1",
+        "shape": [
+          64
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      },
+      {
+        "array": "mean_2",
+        "shape": [
+          64
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      },
+      {
+        "array": "scale_2",
+        "shape": [
+          64
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      },
+      {
+        "array": "mean_4",
+        "shape": [
+          64
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      },
+      {
+        "array": "scale_4",
+        "shape": [
+          64
+        ],
+        "bitwise_equal": true,
+        "maximum_absolute_difference": 0.0
+      }
+    ],
+    "reference_model_sha256": "f847ca00e0325462f47cf3d2aee31a34d565730f8e402b8a3631a4e8da9d2b05",
+    "source_sha256": "19748e7333b76aa30ea3aa2ec1019e81631ed15d7b9e4e5115dd1f588b9ec932",
+    "elapsed_seconds": 43.44468749500811
+  },
+  "global_response_and_mask_replay": {
+    "status": "COMPLETE",
+    "scope": "CPU replay against accepted full-slide artifacts; no new clustering, GPU inference or expert scoring",
+    "probability_stripes": [
+      {
+        "rows": [
+          0,
+          16
+        ],
+        "values": 753664,
+        "different_values": 0,
+        "maximum_probability_difference": 0.0,
+        "changed_top_group_pixels": 0,
+        "differences_above_one_float16_ulp": 0
+      },
+      {
+        "rows": [
+          384,
+          400
+        ],
+        "values": 753664,
+        "different_values": 0,
+        "maximum_probability_difference": 0.0,
+        "changed_top_group_pixels": 0,
+        "differences_above_one_float16_ulp": 0
+      },
+      {
+        "rows": [
+          800,
+          816
+        ],
+        "values": 753664,
+        "different_values": 0,
+        "maximum_probability_difference": 0.0,
+        "changed_top_group_pixels": 0,
+        "differences_above_one_float16_ulp": 0
+      },
+      {
+        "rows": [
+          1216,
+          1232
+        ],
+        "values": 753664,
+        "different_values": 0,
+        "maximum_probability_difference": 0.0,
+        "changed_top_group_pixels": 0,
+        "differences_above_one_float16_ulp": 0
+      },
+      {
+        "rows": [
+          1584,
+          1600
+        ],
+        "values": 753664,
+        "different_values": 0,
+        "maximum_probability_difference": 0.0,
+        "changed_top_group_pixels": 0,
+        "differences_above_one_float16_ulp": 0
+      }
+    ],
+    "refinement_probes": [
+      {
+        "analysis_core_xyxy": [
+          720,
+          720,
+          816,
+          816
+        ],
+        "different_pixels": 0
+      },
+      {
+        "analysis_core_xyxy": [
+          1488,
+          720,
+          1584,
+          816
+        ],
+        "different_pixels": 0
+      },
+      {
+        "analysis_core_xyxy": [
+          6352,
+          3352,
+          6448,
+          3448
+        ],
+        "different_pixels": 0
+      },
+      {
+        "analysis_core_xyxy": [
+          10852,
+          7452,
+          10948,
+          7548
+        ],
+        "different_pixels": 0
+      },
+      {
+        "analysis_core_xyxy": [
+          14952,
+          8952,
+          15048,
+          9048
+        ],
+        "different_pixels": 0
+      }
+    ],
+    "model_sha256": "f847ca00e0325462f47cf3d2aee31a34d565730f8e402b8a3631a4e8da9d2b05",
+    "probability_sha256": "e942d52e3298f42d12315c4254e602ff8225cccae65337ee4943685f27dadd5e",
+    "reference_mask_sha256": "066de901bd3de6114140e99e8ca87f39bd439e8bc284408dde5f34f08507b595"
+  },
+  "notes": [
+    "Original accepted full-slide artifacts retained without regeneration.",
+    "No GPU use or new scientific accuracy evaluation.",
+    "Response and refinement numerical kernels reproduce accepted colorectal implementation; portable receipts and paths differ."
+  ]
+}
