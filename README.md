@@ -56,6 +56,8 @@ cd Bora
 python -m venv .venv
 source .venv/bin/activate
 # Install libvips first: Ubuntu: apt install libvips-dev; macOS: brew install vips
+# macOS Framework Python may also need:
+# export DYLD_FALLBACK_LIBRARY_PATH="$(brew --prefix)/lib"
 python -m pip install -e '.[test,wsi]'
 pytest -q
 bora --help

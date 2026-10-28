@@ -25,7 +25,9 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libopenblas-dev liblapack-dev libvips-dev
       - name: macOS WSI reader
         if: runner.os == 'macos-latest'
-        run: brew install vips
+        run: |
+          brew install vips
+          echo "DYLD_FALLBACK_LIBRARY_PATH=$(brew --prefix)/lib" >> "$GITHUB_ENV"
       - run: python -m pip install -e '.[test,wsi]'
       - run: python -m pytest -q
       - run: bora --help
