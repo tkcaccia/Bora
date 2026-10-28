@@ -15,7 +15,7 @@ test = ["pytest>=7.4"]
 wsi = ["pyvips==2.2.3"]
 
 [project.scripts]
-bora = "bora.cli:main"
+bora = "bora.entrypoint:main"
 
 [tool.scikit-build]
 cmake.build-type = "Release"

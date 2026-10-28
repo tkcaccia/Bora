@@ -72,8 +72,12 @@ The accepted RGB9+19 mathematics is retained: multiscale persistence selects
 32 positions within the 64 channels; balanced logistic response heads use
 C=0.3. Neighbor reconstruction uses four spatially held-out quadrant fits
 with ridge alpha=100. Their averaged prediction is passed through the second
-response head, and the two probability fields are averaged. Four BLAS threads are used, matching the reference run. The numeric
-model is saved as NPZ without pickle. These response heads reproduce
+response head, and the two probability fields are averaged. The `bora` launcher
+initializes four BLAS threads before importing numeric
+libraries, matching the reference run. When importing the Python functions
+directly, set `OPENBLAS_NUM_THREADS=4` and `OMP_NUM_THREADS=4` before starting
+Python; changing a smaller initialized thread pool at runtime can crash some
+OpenBLAS builds. The numeric model is saved as NPZ without pickle. These response heads reproduce
 anonymous groups; they are separate from the fastPLS tissue classifier.
 
 Projection writes the full token probability field, an RGB visualization and

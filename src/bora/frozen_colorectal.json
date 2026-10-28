@@ -50,7 +50,8 @@
     "multicpu_geojson.py": "995f734250017c130a87ca79d81d54a5ed44fbf89808514314043f94626f7d46",
     "compact_geojson.py": "83b41fd1f2177a5630003915d81ef736e0b3cefb1a95ace75bd9bbed6005baf1",
     "mask_cleanup.py": "4e0f536f818f659e41aaf1d2cb9bd83dabc047dfdc1c907a1ce54eeada7fc14c",
-    "cli.py": "23fbaab60a7a2765305958e850d92fc71f6ab4e152cbce02d07bc43fd8098d26"
+    "cli.py": "23fbaab60a7a2765305958e850d92fc71f6ab4e152cbce02d07bc43fd8098d26",
+    "entrypoint.py": "2d576d12813a91b51b04eaec16ffa147cf1eb51b78c5ce0e1155faf5d02b5295"
   },
   "reference_sources_sha256": {
     "global_mask_v2.py": "e79273d1a022fea8680c6b74883d4c2ab88e92245c74338cfc9bc9a9406bcd00",

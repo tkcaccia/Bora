@@ -28,7 +28,10 @@ saved global intermediate mask. Refitting on all 11,469 colorectal tiles
 (183,504 spatial observations) reproduced all 17 saved model/scaler arrays
 bit for bit. The packaged response functions enforce that
 four-thread setting; arbitrary BLAS thread counts can change the last stored
-float16 bit. Source and reference hashes accompany the release.
+float16 bit. The console launcher initializes this setting before importing
+numerical libraries. Its fit/project handoff is also tested in fresh processes
+starting from a two-thread parent environment, covering the native optimizer
+startup failure observed in Linux CI. Source and reference hashes accompany the release.
 
 This is an implementation-continuity check, not a new full-slide rerun or an
 independent accuracy experiment. No GPU inference or expert-label selection

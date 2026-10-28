@@ -1,6 +1,9 @@
 """Regression contracts for the selected complete-slide colorectal route."""
 import hashlib
 import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -177,8 +180,14 @@ def test_one_slide_response_fit_is_reused_for_all_pixels(tmp_path):
         values[ids==0]=np.nan
         name=f'factor{factor}.npy';np.save(tmp_path/name,values);spec['features'][str(factor)]=name
     write_json(tmp_path/'input.json',spec)
-    fitted=fit_slide_responses(tmp_path/'input.json',tmp_path/'fit')
-    projected=project_slide_responses(tmp_path/'input.json',tmp_path/'fit',tmp_path/'project')
+    # Exercise the real CLI in fresh processes, starting from the two-thread
+    # environment that exposed a native optimizer crash on Linux CI.
+    env=dict(os.environ,OPENBLAS_NUM_THREADS='2',OMP_NUM_THREADS='2')
+    entry=[sys.executable,'-c','from bora.entrypoint import main; raise SystemExit(main())']
+    subprocess.run(entry+['wsi-fit',str(tmp_path/'input.json'),'--output',str(tmp_path/'fit')],env=env,check=True,capture_output=True,text=True)
+    subprocess.run(entry+['wsi-project',str(tmp_path/'input.json'),'--fit',str(tmp_path/'fit'),'--output',str(tmp_path/'project')],env=env,check=True,capture_output=True,text=True)
+    fitted=json.loads((tmp_path/'fit/GLOBAL_FIT_COMPLETE.json').read_text())
+    projected=json.loads((tmp_path/'project/GLOBAL_PROJECTION_COMPLETE.json').read_text())
     assert fitted['training_tiles']==15 and fitted['one_fit_used_across_slide']
     assert projected['model_sha256']==fitted['model_sha256']
     prob=np.load(tmp_path/'project/group-probabilities-token-grid.f16.npy')
