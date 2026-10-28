@@ -13,8 +13,8 @@ jobs:
         python: ['3.10', '3.12']
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: '2'
-      OPENBLAS_NUM_THREADS: '2'
-      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '4'
+      OMP_NUM_THREADS: '4'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
