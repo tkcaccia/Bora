@@ -18,6 +18,8 @@ filled globally. Contours are smoothed at 1.5 µm and shared boundaries are
 simplified with physical, per-class agreement guards.
 
 Start with the [frozen whole-slide workflow](docs/FROZEN_COLORECTAL_WSI.md).
+For a reviewed tissue boundary supplied as an input, see the
+[tissue-area GeoJSON manifest](docs/tissue-geojson-input.md).
 `bora wsi-fit`, `bora wsi-project`, `bora wsi` and `bora wsi-crop` expose this
 route. Its [reference profile](src/bora/frozen_colorectal.json) records the
 settings, source hashes and accepted output identities. Input groups and

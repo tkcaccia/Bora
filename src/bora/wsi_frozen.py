@@ -18,6 +18,7 @@ from .mask_cleanup import remove_small_vector_parts, fill_small_vector_holes
 
 FORMAT = "bora-wsi-colorectal-v1"
 RESPONSE_FORMAT = "bora-slide-global-responses-v1"
+MAX_VECTOR_REPAIR_PASSES = 8
 
 
 def bound_file(base, value, name):
@@ -44,7 +45,7 @@ def read_case(path):
     path = Path(path).resolve(); spec = json.loads(path.read_text())
     allowed = {"format", "source_frame_id", "image", "shape_yx", "group_grid",
         "probabilities", "response_receipt", "working_mpp_xy", "native_mpp_xy",
-        "native_shape_yx", "analysis_native_bounds_xyxy"}
+        "native_shape_yx", "analysis_native_bounds_xyxy", "quality_control"}
     if spec.get("format") != FORMAT or set(spec) - allowed:
         raise ValueError("Use a bora-wsi-colorectal-v1 manifest containing predictors only")
     frame = spec.get("source_frame_id")
@@ -108,6 +109,12 @@ def read_case(path):
         analysis_bounds_native_xyxy=bounds, input_sha256=hashes,
         manifest_sha256=sha(path), expert_annotation_used=False,
         response_model_sha256=response["model_sha256"])
+    if 'quality_control' in spec:
+        if spec['quality_control'].get('format') == 'bora-background-only-support-v1':
+            from .background_support import bind_support
+        else:
+            from .grandqc_support import bind_support
+        identity['quality_control']=bind_support(spec['quality_control'],path.parent,hashes['image'],[image.height,image.width],mpp)
     return image, prob, grid, identity
 
 
@@ -174,25 +181,37 @@ def run_wsi(manifest, output, *, minimum_free_bytes=1024**3, memory_budget_bytes
     cv2.setNumThreads(4); pyvips.cache_set_max_mem(64<<20); pyvips.cache_set_max(0)
     output.mkdir(); atomic(output/"INPUTS_FROZEN.json", identity); started=time.monotonic()
     try:
-        support=numerical.tissue_support(image,(h,w),mpp,output)
+        if 'quality_control' in identity:
+            if identity['quality_control']['mode'] == 'background-only':
+                from .background_support import stream_support
+            else:
+                from .grandqc_support import stream_support
+            support=stream_support(identity['quality_control'],(h,w),output)
+        else:
+            support=numerical.tissue_support(image,(h,w),mpp,output)
         mask=numerical.predict(image,prob,grid,support,output,mpp)
         cleaned,cleanup=numerical.clean_global(mask,mpp,output/"global-cleaned-mask.npy");del mask;numerical.release()
         atomic(output/"PREDICTION_FROZEN.json",dict(status="COMPLETE",inputs_sha256=sha(output/"INPUTS_FROZEN.json"),mask_sha256=sha(output/"global-cleaned-mask.npy"),cleanup=cleanup,expert_annotation_used=False))
         data,conversion=numerical.fit_vectors(cleaned,mpp,output);del cleaned;numerical.release()
         final=numerical.raster_global(data,(h,w),output/"global-rasterized-mask.npy");repairs=[]
-        for i in range(3):
+        # A local raster tie can move by one pixel after a polygon patch. Keep
+        # repairing the same frozen prediction until the vector and raster
+        # agree, with a finite guard against oscillation.
+        for i in range(MAX_VECTOR_REPAIR_PASSES):
             checked,report=numerical.clean_global(final,mpp,output/f"global-raster-clean-{i}.npy")
             data,n=numerical.repair_raster(data,final,checked);repairs.append(dict(patches=n,cleanup=report))
             if n==0:del checked;break
             data=remove_small_vector_parts(data,400/np.prod(mpp));data=fill_small_vector_holes(data,400/np.prod(mpp))
             del final,checked;numerical.release();final=numerical.raster_global(data,(h,w),output/f"global-raster-repaired-{i}.npy")
-        else:raise ValueError("Global vector/raster cleanup failed to converge")
+        else:raise ValueError(f"Global vector/raster cleanup failed after {MAX_VECTOR_REPAIR_PASSES} passes")
         audit=numerical.audit(data,final,mpp);atomic(output/"GLOBAL_AREA_AUDIT.json",audit)
         data["full_slide_input_identity"]=identity;data["minimum_component_and_hole_um2"]=400
         atomic(output/"BORA_FULL_SLIDE.working.geojson",data)
         native=native_vectors(data,identity);atomic(output/"BORA_FULL_SLIDE.wsi.geojson",native)
         tifffile.imwrite(output/"BORA_FULL_SLIDE.mask-0p5um.tif",final,tile=(512,512),compression="deflate",bigtiff=True,resolution=(10000/mpp[0],10000/mpp[1]),resolutionunit="CENTIMETER")
         names=("BORA_FULL_SLIDE.working.geojson","BORA_FULL_SLIDE.wsi.geojson","BORA_FULL_SLIDE.mask-0p5um.tif","INPUTS_FROZEN.json","PREDICTION_FROZEN.json","SEAM_AUDIT.json","GLOBAL_AREA_AUDIT.json")
+        if 'quality_control' in identity:
+            names=names+(('BACKGROUND_SUPPORT_USED.json',) if identity['quality_control']['mode']=='background-only' else ('GRANDQC_SUPPORT_USED.json',))
         result=dict(status="COMPLETE",profile=PROFILE,input_identity=identity,entire_slide_refinement=True,
             global_component_cleanup=True,diagnostic_fields_used_in_inference=False,
             global_geometry_audit=audit,native_cleanup=native["native_coordinate_final_cleanup"],

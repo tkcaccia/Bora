@@ -169,15 +169,16 @@ def test_one_slide_response_fit_is_reused_for_all_pixels(tmp_path):
     pytest.importorskip('pyvips')
     import pyvips
     rng=np.random.default_rng(430)
-    grid=(np.indices((4,4)).sum(0)%3+1).astype(np.uint8);grid[0,0]=0
+    grid=(np.indices((4,4)).sum(0)%3+1).astype(np.uint8)
+    feature_groups=grid.copy();grid[0,0]=0;grid[0,1]=0
     np.save(tmp_path/'groups.npy',grid)
     Image.new('RGB',(890,889),(170,90,140)).save(tmp_path/'he.png')
     spec=dict(format='bora-wsi-response-input-v1',source_frame_id='fit-fixture',image='he.png',shape_yx=[889,890],
         group_grid='groups.npy',selected_dimensions=list(range(64)),features={})
     for factor in (1,2,4):
-        step=16//factor;ids=grid.repeat(step,0).repeat(step,1)
+        step=16//factor;ids=feature_groups.repeat(step,0).repeat(step,1)
         values=rng.normal(0,.1,(*ids.shape,64)).astype(np.float32)+ids[...,None]*.8
-        values[ids==0]=np.nan
+        values[:step,:step]=np.nan  # pure glass; the next tile is unlabelled tissue
         name=f'factor{factor}.npy';np.save(tmp_path/name,values);spec['features'][str(factor)]=name
     write_json(tmp_path/'input.json',spec)
     # Exercise the real CLI in fresh processes, starting from the two-thread
@@ -188,11 +189,13 @@ def test_one_slide_response_fit_is_reused_for_all_pixels(tmp_path):
     subprocess.run(entry+['wsi-project',str(tmp_path/'input.json'),'--fit',str(tmp_path/'fit'),'--output',str(tmp_path/'project')],env=env,check=True,capture_output=True,text=True)
     fitted=json.loads((tmp_path/'fit/GLOBAL_FIT_COMPLETE.json').read_text())
     projected=json.loads((tmp_path/'project/GLOBAL_PROJECTION_COMPLETE.json').read_text())
-    assert fitted['training_tiles']==15 and fitted['one_fit_used_across_slide']
+    assert fitted['training_tiles']==14 and fitted['one_fit_used_across_slide']
     assert projected['model_sha256']==fitted['model_sha256']
     prob=np.load(tmp_path/'project/group-probabilities-token-grid.f16.npy')
     np.testing.assert_allclose(prob[16:,16:].sum(2),1,atol=.003)
     assert not prob[:16,:16].any()
+    np.testing.assert_allclose(prob[:16,16:32].sum(2),1,atol=.003)
+    assert projected['unlabelled_projected_tokens']==256
     rgb=pyvips.Image.new_from_file(str(tmp_path/'project/rgb9plus19-fullslide-0p5um.tif'))
     assert (rgb.height,rgb.width)==(889,890)
     spec['source_frame_id']='different-slide';write_json(tmp_path/'input.json',spec)
