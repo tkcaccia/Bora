@@ -27,6 +27,10 @@ def parser():
     a.add_argument("manifest", type=Path); a.add_argument("--output", type=Path, required=True)
     a.add_argument("--minimum-free-gib", type=float, default=1.0)
     a.add_argument("--memory-gib", type=float, default=12.0)
+    a = sub.add_parser("wsi-polished", help="whole-slide result with no square tile prior, 6 µm contour smoothing and a 2000 µm² minimum geometry")
+    a.add_argument("manifest", type=Path); a.add_argument("--output", type=Path, required=True)
+    a.add_argument("--minimum-free-gib", type=float, default=1.0)
+    a.add_argument("--memory-gib", type=float, default=12.0)
     a = sub.add_parser("wsi-crop", help="crop an existing full-slide mask and geometry; never refit")
     a.add_argument("result", type=Path); a.add_argument("--box", type=int, nargs=4, metavar=("X","Y","W","H"), required=True)
     a.add_argument("--output", type=Path, required=True)
@@ -160,7 +164,7 @@ def main(argv=None):
     a = parser().parse_args(argv)
     cv2.setNumThreads(2)
     try:
-        with threadpool_limits(limits=4 if a.command in {"wsi-fit", "wsi-project", "wsi", "wsi-crop"} else 2):
+        with threadpool_limits(limits=4 if a.command in {"wsi-fit", "wsi-project", "wsi", "wsi-polished", "wsi-crop"} else 2):
             if a.command == "wsi-fit":
                 from .slide_responses import fit_slide_responses
                 report = fit_slide_responses(a.manifest, a.output)
@@ -169,6 +173,11 @@ def main(argv=None):
                 report = project_slide_responses(a.manifest, a.fit, a.output)
             elif a.command == "wsi":
                 from .wsi_frozen import run_wsi
+                if not np.isfinite([a.minimum_free_gib,a.memory_gib]).all() or a.minimum_free_gib < 0 or a.memory_gib <= 0:
+                    raise ValueError("Resource limits must be finite and nonnegative")
+                report = run_wsi(a.manifest,a.output,minimum_free_bytes=int(a.minimum_free_gib*1024**3),memory_budget_bytes=int(a.memory_gib*1024**3))
+            elif a.command == "wsi-polished":
+                from .wsi_polished import run_wsi
                 if not np.isfinite([a.minimum_free_gib,a.memory_gib]).all() or a.minimum_free_gib < 0 or a.memory_gib <= 0:
                     raise ValueError("Resource limits must be finite and nonnegative")
                 report = run_wsi(a.manifest,a.output,minimum_free_bytes=int(a.minimum_free_gib*1024**3),memory_budget_bytes=int(a.memory_gib*1024**3))
