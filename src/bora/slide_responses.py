@@ -181,6 +181,15 @@ def _coefficients(model):
 
 @threadpool_limits.wrap(limits=4)
 def fit_slide_responses(manifest,output):
+    from .full_channel_inputs import is_full_input,prepare_bora_selection
+    if is_full_input(manifest):
+        output=Path(output)
+        if output.exists():raise FileExistsError(output)
+        selected,identity=prepare_bora_selection(manifest,output.with_name(output.name+'-bora-selection'))
+        result=fit_slide_responses(selected,output)
+        result.update(identity,full_input_channels=1280,selection_owner='Bora',internal_selected_input_manifest=str(selected.resolve()))
+        atomic(output/'GLOBAL_FIT_COMPLETE.json',result)
+        return result
     output=Path(output)
     if output.exists():raise FileExistsError(output)
     arrays,eligible,labels,info=_inputs(manifest)
@@ -219,6 +228,19 @@ def fit_slide_responses(manifest,output):
 
 @threadpool_limits.wrap(limits=4)
 def project_slide_responses(manifest,fit_folder,output):
+    from .full_channel_inputs import is_full_input,read_full_input
+    if is_full_input(manifest):
+        _,_,_,_,identity=read_full_input(manifest)
+        receipt=json.loads((Path(fit_folder)/'GLOBAL_FIT_COMPLETE.json').read_text())
+        for key,value in identity.items():
+            if receipt.get(key)!=value:raise ValueError('Full-channel input differs from the fitted Bora input')
+        selected=Path(receipt['internal_selected_input_manifest'])
+        audit=json.loads((selected.parent/'BORA_SELECTION_COMPLETE.json').read_text())
+        if audit['selected_input_manifest_sha256']!=sha(selected):raise ValueError('Internal Bora selection changed')
+        result=project_slide_responses(selected,fit_folder,output)
+        result.update(identity,full_input_channels=1280,selection_owner='Bora')
+        atomic(Path(output)/'GLOBAL_PROJECTION_COMPLETE.json',result)
+        return result
     output=Path(output);fit_folder=Path(fit_folder)
     if output.exists():raise FileExistsError(output)
     arrays,eligible,labels,info=_inputs(manifest)
@@ -239,6 +261,7 @@ def project_slide_responses(manifest,fit_folder,output):
     # The two smaller lattices are materialized exactly as in the accepted run.
     arrays[2]=np.asarray(arrays[2],np.float32);arrays[4]=np.asarray(arrays[4],np.float32)
     columns=np.arange(width);keep=state["persistent_positions"].astype(int)
+    projected_tokens=0;unlabelled_projected_tokens=0
     for start in range(0,height,16):
         rows=np.arange(start,min(start+16,height))
         z,neighbour_x=neighbors(arrays[1],rows,state["mean_1"],state["scale_1"])
@@ -247,7 +270,15 @@ def project_slide_responses(manifest,fit_folder,output):
         p9=softmax(consensus.reshape(-1,32)@state["p9_coef"].T+state["p9_intercept"],axis=1).reshape(len(rows),width,k)
         reconstructed=(neighbour_x.reshape(-1,192)@state["ridge_global_coef"].T+state["ridge_global_intercept"]).reshape(len(rows),width,64)
         p19=softmax(reconstructed.reshape(-1,64)@state["p19_coef"].T+state["p19_intercept"],axis=1).reshape(len(rows),width,k)
-        p=(p9+p19)/2;support=eligible[rows[:,None]//16,columns[None,:]//16];p[~support]=0
+        # Labels identify fitting observations. They do not delimit where a
+        # fitted head can be applied: Visium has tissue outside measured spots.
+        # Unencoded glass is represented by nonfinite base-scale features.
+        p=(p9+p19)/2
+        support=np.isfinite(np.asarray(arrays[1][rows],np.float32)).all(axis=2)
+        labelled=eligible[rows[:,None]//16,columns[None,:]//16]
+        projected_tokens+=int(support.sum())
+        unlabelled_projected_tokens+=int(np.count_nonzero(support&~labelled))
+        p[~support]=0
         probability[rows]=p.astype(np.float16)
         rgb=np.rint(np.clip(p@palette,0,255)).astype(np.uint8);rgb[~support]=255;color[rows]=rgb
         probability.flush();color.flush()
@@ -258,6 +289,8 @@ def project_slide_responses(manifest,fit_folder,output):
     result=dict(info,status="COMPLETE",format=RESPONSE_FORMAT,model_sha256=receipt["model_sha256"],
         probability_sha256=sha(output/"group-probabilities-token-grid.f16.npy"),
         shape_yxc=[int(height),int(width),k],class_ids=list(range(1,k+1)),
+        projection_support="finite base-scale Virchow2 tokens, independent of fitting labels",
+        projected_tokens=projected_tokens,unlabelled_projected_tokens=unlabelled_projected_tokens,
         one_fit_used_across_slide=True,independently_fitted_windows=False,
         fit_receipt_sha256=sha(fit_folder/"GLOBAL_FIT_COMPLETE.json"))
     atomic(output/"GLOBAL_PROJECTION_COMPLETE.json",result);return result
