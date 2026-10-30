@@ -2,7 +2,8 @@
 
 The 28 October colorectal freeze remains available through ``bora wsi``.
 This route uses the complete continuous response, a fixed tissue support,
-6 µm contour polish and a repeated strict 2000 µm² whole-slide area repair.
+and caller-selected physical contour smoothing and minimum geometry area.
+The current whole-slide benchmark defaults are 6 µm and 2000 µm².
 """
 from __future__ import annotations
 import copy, json, math, os, time
@@ -44,6 +45,25 @@ def spacing(value, name):
     result = np.asarray(value, dtype=float)
     if result.shape != (2,) or not np.isfinite(result).all() or np.any(result <= 0):
         raise ValueError(f"{name} must contain two positive finite pixel spacings")
+    return result
+
+
+def polished_parameters(minimum_area_um2, contour_sigma_um):
+    """Validate physical output settings before reading or writing a slide."""
+    result = {}
+    for name, value, unit in (
+            ("minimum_area_um2", minimum_area_um2, "µm²"),
+            ("contour_sigma_um", contour_sigma_um, "µm")):
+        if isinstance(value, (bool, str)):
+            raise ValueError(f"{name} must be positive and finite in {unit}")
+        try:
+            number = float(value)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError(f"{name} must be positive and finite in {unit}") from exc
+        if not math.isfinite(number) or number <= 0:
+            raise ValueError(f"{name} must be positive and finite in {unit}")
+        result[name] = number
+    result["prepolish_minimum_um2"] = min(400.0, result["minimum_area_um2"])
     return result
 
 
@@ -136,7 +156,7 @@ def polygonal(geometry):
     return unary_union(parts(geometry))
 
 
-def native_vectors(working, identity):
+def native_vectors(working, identity, minimum_area_um2=2000):
     """Transform the completed global coverage into original WSI coordinates."""
     mpp = np.array(identity["mpp_xy"]); nmpp = np.array(identity["native_mpp_xy"])
     factor = mpp / nmpp; origin = identity["analysis_bounds_native_xyxy"][:2]
@@ -148,14 +168,14 @@ def native_vectors(working, identity):
     native.update(coordinate_space="original_WSI_native_pixel_edges", native_mpp_xy=nmpp.tolist(),
         native_shape_yx=identity["native_shape_yx"], working_mpp_xy=mpp.tolist(),
         working_pixel_to_native_scale_xy=factor.tolist(), native_origin_xy=origin,
-        physical_area_rule=dict(minimum_component_and_enclosed_hole_um2=2000,
+        physical_area_rule=dict(minimum_component_and_enclosed_hole_um2=minimum_area_um2,
             scope="entire slide before diagnostic cropping", strictly_less_than=True))
     for f in native["features"]:
         g = polygonal(translate(scale(shape(f["geometry"]), xfact=factor[0], yfact=factor[1], origin=(0,0)), xoff=origin[0], yoff=origin[1]))
         f["geometry"] = mapping(g); f["properties"].update(area_pixels=float(g.area), area_um2=float(g.area*np.prod(nmpp)))
     before = copy.deepcopy(native)
-    native = remove_small_vector_parts(native, 2000/np.prod(nmpp))
-    native = fill_small_vector_holes(native, 2000/np.prod(nmpp))
+    native = remove_small_vector_parts(native, minimum_area_um2/np.prod(nmpp))
+    native = fill_small_vector_holes(native, minimum_area_um2/np.prod(nmpp))
     agreement = geometry_agreement(before, native)
     if (not agreement["all_classes_preserved"] or not agreement["all_polygons_valid"]
             or agreement["minimum_class_iou"] < .95 or agreement["changed_tissue_area_fraction"] > .025
@@ -166,20 +186,30 @@ def native_vectors(working, identity):
     if delta > 2: raise ValueError("Unexpected coordinate-repair change above 2 µm²")
     for f in native["features"]:
         g = shape(f["geometry"])
-        if not g.is_valid or any(p.area*np.prod(nmpp) < 2000-1e-6 for p in ([g] if g.geom_type=="Polygon" else g.geoms)):
-            raise ValueError("Native polygon does not satisfy the global 2000 µm² rule")
+        if not g.is_valid or any(p.area*np.prod(nmpp) < minimum_area_um2-1e-6 for p in ([g] if g.geom_type=="Polygon" else g.geoms)):
+            raise ValueError("Native polygon does not satisfy the requested minimum area")
     native["native_coordinate_final_cleanup"] = dict(agreement=agreement,
-        minimum_part_and_hole_um2=2000, scope="entire slide before cropping",
+        minimum_part_and_hole_um2=minimum_area_um2, scope="entire slide before cropping",
         changed_symmetric_area_um2=float(delta))
     return native
 
 
-def run_wsi(manifest, output, *, minimum_free_bytes=1024**3, memory_budget_bytes=12*1024**3):
+def run_wsi(manifest, output, *, minimum_free_bytes=1024**3,
+            memory_budget_bytes=12*1024**3, minimum_area_um2=2000,
+            contour_sigma_um=6.0):
     """Run the selected global method once. Resource limits do not alter it."""
     import pyvips, shutil
+    parameters=polished_parameters(minimum_area_um2,contour_sigma_um)
+    minimum_area_um2=parameters['minimum_area_um2']
+    contour_sigma_um=parameters['contour_sigma_um']
+    prepolish_minimum_um2=parameters['prepolish_minimum_um2']
     output = Path(output)
     if output.exists(): raise FileExistsError("Use a fresh full-slide output directory")
     image, prob, grid, identity = read_case(manifest)
+    identity['polished_parameters']={
+        'minimum_component_and_enclosed_hole_um2':minimum_area_um2,
+        'contour_gaussian_sigma_um':contour_sigma_um,
+        'prepolish_minimum_um2':prepolish_minimum_um2}
     h,w = identity["shape_yx"]; mpp = tuple(identity["mpp_xy"])
     if type(memory_budget_bytes) is not int or memory_budget_bytes < 10*h*w + 256*1024**2:
         raise ValueError("Memory budget is too small for the global component audit")
@@ -197,26 +227,26 @@ def run_wsi(manifest, output, *, minimum_free_bytes=1024**3, memory_budget_bytes
         else:
             support=numerical.tissue_support(image,(h,w),mpp,output)
         mask=numerical.predict(image,prob,grid,support,output,mpp)
-        first,first_cleanup=numerical.clean_global(mask,mpp,output/"global-prepolish-cleaned-mask.npy",minimum_area_um2=400)
+        first,first_cleanup=numerical.clean_global(mask,mpp,output/"global-prepolish-cleaned-mask.npy",minimum_area_um2=prepolish_minimum_um2)
         del mask;numerical.release()
         first_hash=sha(output/"global-prepolish-cleaned-mask.npy")
-        polish=smooth_global(first,support,mpp,output/"contour-smoothed-mask.npy",sigma_um=6.0)
+        polish=smooth_global(first,support,mpp,output/"contour-smoothed-mask.npy",sigma_um=contour_sigma_um)
         del first;numerical.release()
         source=np.load(output/"contour-smoothed-mask.npy",mmap_mode="r")
         passes=[]
         for index in range(3):
             path=output/f"polished-area-clean-{index}.npy"
-            cleaned,count=numerical.clean_global(source,mpp,path,minimum_area_um2=2000)
+            cleaned,count=numerical.clean_global(source,mpp,path,minimum_area_um2=minimum_area_um2)
             passes.append(count);del source;numerical.release();source=cleaned
             if count['parts']==0 and count['holes']==0:break
-        else:raise ValueError('2000 µm² post-smoothing cleanup did not converge')
+        else:raise ValueError('Post-smoothing minimum-area cleanup did not converge')
         del source;numerical.release()
         os.replace(path,output/"global-cleaned-mask.npy")
         cleaned=np.load(output/"global-cleaned-mask.npy",mmap_mode="r")
         cleanup={key:first_cleanup[key]+sum(p[key] for p in passes)
                  for key in ('parts','holes','pixels')}
-        contour_receipt=dict(status='COMPLETE',sigma_um=6.0,
-            prepolish_minimum_um2=400,final_minimum_um2=2000,
+        contour_receipt=dict(status='COMPLETE',sigma_um=contour_sigma_um,
+            prepolish_minimum_um2=prepolish_minimum_um2,final_minimum_um2=minimum_area_um2,
             prepolish_mask_sha256=first_hash,
             smoothed_mask_sha256=sha(output/"contour-smoothed-mask.npy"),
             final_cleaned_mask_sha256=sha(output/"global-cleaned-mask.npy"),
@@ -228,22 +258,22 @@ def run_wsi(manifest, output, *, minimum_free_bytes=1024**3, memory_budget_bytes
             mask_sha256=contour_receipt['final_cleaned_mask_sha256'],
             cleanup=cleanup,contour_polish_receipt_sha256=sha(output/"CONTOUR_POLISH_COMPLETE.json"),
             expert_annotation_used=False))
-        data,conversion=numerical.fit_vectors(cleaned,mpp,output);del cleaned;numerical.release()
+        data,conversion=numerical.fit_vectors(cleaned,mpp,output,minimum_area_um2=minimum_area_um2);del cleaned;numerical.release()
         final=numerical.raster_global(data,(h,w),output/"global-rasterized-mask.npy");repairs=[]
         # A local raster tie can move by one pixel after a polygon patch. Keep
         # repairing the same frozen prediction until the vector and raster
         # agree, with a finite guard against oscillation.
         for i in range(MAX_VECTOR_REPAIR_PASSES):
-            checked,report=numerical.clean_global(final,mpp,output/f"global-raster-clean-{i}.npy")
+            checked,report=numerical.clean_global(final,mpp,output/f"global-raster-clean-{i}.npy",minimum_area_um2=minimum_area_um2)
             data,n=numerical.repair_raster(data,final,checked);repairs.append(dict(patches=n,cleanup=report))
             if n==0:del checked;break
-            data=remove_small_vector_parts(data,2000/np.prod(mpp));data=fill_small_vector_holes(data,2000/np.prod(mpp))
+            data=remove_small_vector_parts(data,minimum_area_um2/np.prod(mpp));data=fill_small_vector_holes(data,minimum_area_um2/np.prod(mpp))
             del final,checked;numerical.release();final=numerical.raster_global(data,(h,w),output/f"global-raster-repaired-{i}.npy")
         else:raise ValueError(f"Global vector/raster cleanup failed after {MAX_VECTOR_REPAIR_PASSES} passes")
-        audit=numerical.audit(data,final,mpp);atomic(output/"GLOBAL_AREA_AUDIT.json",audit)
-        data["full_slide_input_identity"]=identity;data["minimum_component_and_hole_um2"]=2000
+        audit=numerical.audit(data,final,mpp,minimum_area_um2=minimum_area_um2);atomic(output/"GLOBAL_AREA_AUDIT.json",audit)
+        data["full_slide_input_identity"]=identity;data["minimum_component_and_hole_um2"]=minimum_area_um2
         atomic(output/"BORA_FULL_SLIDE.working.geojson",data)
-        native=native_vectors(data,identity);atomic(output/"BORA_FULL_SLIDE.wsi.geojson",native)
+        native=native_vectors(data,identity,minimum_area_um2=minimum_area_um2);atomic(output/"BORA_FULL_SLIDE.wsi.geojson",native)
         tifffile.imwrite(output/"BORA_FULL_SLIDE.mask-0p5um.tif",final,tile=(512,512),compression="deflate",bigtiff=True,resolution=(10000/mpp[0],10000/mpp[1]),resolutionunit="CENTIMETER")
         names=("BORA_FULL_SLIDE.working.geojson","BORA_FULL_SLIDE.wsi.geojson","BORA_FULL_SLIDE.mask-0p5um.tif","INPUTS_FROZEN.json","PREDICTION_FROZEN.json","CONTOUR_POLISH_COMPLETE.json","SEAM_AUDIT.json","GLOBAL_AREA_AUDIT.json")
         if 'quality_control' in identity:

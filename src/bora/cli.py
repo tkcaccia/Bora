@@ -27,10 +27,14 @@ def parser():
     a.add_argument("manifest", type=Path); a.add_argument("--output", type=Path, required=True)
     a.add_argument("--minimum-free-gib", type=float, default=1.0)
     a.add_argument("--memory-gib", type=float, default=12.0)
-    a = sub.add_parser("wsi-polished", help="whole-slide result with no square tile prior, 6 µm contour smoothing and a 2000 µm² minimum geometry")
+    a = sub.add_parser("wsi-polished", help="whole-slide result with configurable physical contour smoothing and minimum geometry")
     a.add_argument("manifest", type=Path); a.add_argument("--output", type=Path, required=True)
     a.add_argument("--minimum-free-gib", type=float, default=1.0)
     a.add_argument("--memory-gib", type=float, default=12.0)
+    a.add_argument("--minimum-area-um2", type=float, default=2000.0,
+                   help="strict minimum component and enclosed-hole area in µm² (default: 2000)")
+    a.add_argument("--contour-sigma-um", "--contour-smoothing-um", type=float, default=6.0,
+                   help="Gaussian class-contour smoothing sigma in µm (default: 6)")
     a = sub.add_parser("wsi-crop", help="crop an existing full-slide mask and geometry; never refit")
     a.add_argument("result", type=Path); a.add_argument("--box", type=int, nargs=4, metavar=("X","Y","W","H"), required=True)
     a.add_argument("--output", type=Path, required=True)
@@ -180,7 +184,7 @@ def main(argv=None):
                 from .wsi_polished import run_wsi
                 if not np.isfinite([a.minimum_free_gib,a.memory_gib]).all() or a.minimum_free_gib < 0 or a.memory_gib <= 0:
                     raise ValueError("Resource limits must be finite and nonnegative")
-                report = run_wsi(a.manifest,a.output,minimum_free_bytes=int(a.minimum_free_gib*1024**3),memory_budget_bytes=int(a.memory_gib*1024**3))
+                report = run_wsi(a.manifest,a.output,minimum_free_bytes=int(a.minimum_free_gib*1024**3),memory_budget_bytes=int(a.memory_gib*1024**3),minimum_area_um2=a.minimum_area_um2,contour_sigma_um=a.contour_sigma_um)
             elif a.command == "wsi-crop":
                 from .wsi_frozen import crop_wsi
                 report = crop_wsi(a.result,a.box,a.output)

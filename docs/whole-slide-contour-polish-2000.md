@@ -7,6 +7,21 @@ enclosed unoccupied hole with physical area **strictly below 2000 µm²** is
 reassigned; exactly 2000 µm² is retained. Calculate pixel area from measured
 X and Y spacing, not an assumed nominal 0.5 µm/pixel.
 
+The `bora wsi-polished` function accepts `minimum_area_um2` and
+`contour_sigma_um`; its command-line options are `--minimum-area-um2` and
+`--contour-sigma-um` (alias `--contour-smoothing-um`). Both must be positive
+finite numbers. Defaults are 2000 µm² and 6 µm, which remain the required
+settings for the current whole-slide benchmark. An alternate run uses a fresh
+output directory and records its chosen values in the input identity, contour
+receipt, geometry audit and final result. The preliminary repair is capped at
+the selected final minimum so a lower requested threshold cannot be erased
+by the historical 400 µm² preparation step.
+
+```bash
+bora wsi-polished case.json --output result-new \
+  --minimum-area-um2 2000 --contour-sigma-um 6
+```
+
 1. Keep the original KODAMA groups, all 1280 raw Virchow2 channels, and the
    reviewed tissue-area GeoJSON unchanged. Use the continuous Bora response
    with no hard square tile-label prior. On the complete slide, run the

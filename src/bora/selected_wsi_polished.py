@@ -2,8 +2,8 @@
 
 Virchow2 and KODAMA are upstream. The complete frame is projected once and
 refined with continuous probabilities; no diagnostic crop is fitted alone.
-The final physical-scale contour polish and 2000 µm² cleanup are performed by
-the separate versioned entry point in ``wsi_polished``.
+The final physical-scale contour polish and caller-selected minimum-area
+cleanup are performed by the versioned entry point in ``wsi_polished``.
 """
 from __future__ import annotations
 import ctypes, gc, hashlib, json, math, os, time
@@ -175,10 +175,10 @@ def clean_global(labels,mpp,output,minimum_area_um2=2000):
         del cc,stats;release();out.flush();print('GLOBAL_AREA_CLEANUP',g,counts,flush=True)
     return out,counts
 
-def fit_vectors(mask,mpp,out):
+def fit_vectors(mask,mpp,out,minimum_area_um2=2000):
     tifffile.imwrite(out/'global-vector-input.tif',mask,tile=(512,512),compression='deflate',bigtiff=True)
     del mask;release()
-    report=convert(out/'global-vector-input.tif',out/'initial.geojson',page=0,min_area=2000/np.prod(mpp),simplify=2.,workers=1,striped_native=False)
+    report=convert(out/'global-vector-input.tif',out/'initial.geojson',page=0,min_area=minimum_area_um2/np.prod(mpp),simplify=2.,workers=1,striped_native=False)
     data=json.loads((out/'initial.geojson').read_text());data['native_mpp_xy']=list(mpp)
     before=boundary_stats(data);attempts=[];chosen=data
     for tolerance in (5.,10/3,5/3,5/6,5/12):
@@ -186,7 +186,7 @@ def fit_vectors(mask,mpp,out):
         okay=(agreement['all_classes_preserved'] and agreement['all_polygons_valid'] and agreement['interclass_overlap_area_pixels']<1e-7 and agreement['minimum_class_iou']>=.95 and agreement['changed_tissue_area_fraction']<=.025)
         attempts.append({'tolerance_um':tolerance,'admissible':okay,'agreement':agreement})
         if okay:chosen=candidate;break
-    chosen=remove_small_vector_parts(chosen,2000/np.prod(mpp));chosen=fill_small_vector_holes(chosen,2000/np.prod(mpp))
+    chosen=remove_small_vector_parts(chosen,minimum_area_um2/np.prod(mpp));chosen=fill_small_vector_holes(chosen,minimum_area_um2/np.prod(mpp))
     for f in chosen['features']:
         g=int(f['properties']['value']);f['properties'].update(name=f'group_{g:02d}',objectType='annotation',identity='anonymous KODAMA group')
     chosen['compact_boundary_report']={'before':before,'after':boundary_stats(chosen),'attempts':attempts,'shared_arcs_fitted_once':True}
@@ -218,7 +218,7 @@ def repair_raster(data,original,cleaned):
         f['geometry']=mapping(g)
     return data,sum(len(v) for v in patches.values())
 
-def audit(data,mask,mpp):
+def audit(data,mask,mpp,minimum_area_um2=2000):
     min_area=float('inf');minhole=float('inf');geoms=[shape(f['geometry']) for f in data['features']]
     polygon_list=[];polygon_owner=[]
     for owner,g in enumerate(geoms):
@@ -229,7 +229,7 @@ def audit(data,mask,mpp):
         if not g.is_valid:raise ValueError('Invalid global geometry')
         for p in ([g] if g.geom_type=='Polygon' else g.geoms):
             min_area=min(min_area,p.area*np.prod(mpp))
-            if p.area*np.prod(mpp)<2000-1e-6:raise ValueError('Global polygon below physical minimum')
+            if p.area*np.prod(mpp)<minimum_area_um2-1e-6:raise ValueError('Global polygon below physical minimum')
             for r in p.interiors:
                 hole=Polygon(r)
                 occupants=[polygon_list[j] for j in tree.query(hole) if polygon_owner[j]!=i]
@@ -239,10 +239,10 @@ def audit(data,mask,mpp):
                         if h.geom_type!='Polygon':continue
                         if h.area*np.prod(mpp)<1e-6:continue
                         minhole=min(minhole,h.area*np.prod(mpp))
-                        if h.area*np.prod(mpp)<2000-1e-6:raise ValueError('Global hole below physical minimum')
+                        if h.area*np.prod(mpp)<minimum_area_um2-1e-6:raise ValueError('Global hole below physical minimum')
     overlap=sum(geoms[i].intersection(geoms[j]).area for i in range(len(geoms)) for j in range(i))
     if overlap>1e-7:raise ValueError('Global classes overlap')
-    threshold=math.ceil(2000/np.prod(mpp));counts=[]
+    threshold=math.ceil(minimum_area_um2/np.prod(mpp));counts=[]
     for g in [int(v) for v in np.unique(mask) if v>0]+[0]:
         n,cc,stats,_=connected(mask==g,8);a=stats[1:,cv2.CC_STAT_AREA]
         if g==0:
@@ -251,6 +251,7 @@ def audit(data,mask,mpp):
         bad=int(np.count_nonzero(a<threshold));counts.append({'group':g,'components':len(a),'below_minimum':bad})
         del cc,stats;release()
         if bad:raise ValueError('Global raster still contains a small component')
-    return {'status':'COMPLETE','global_component_audits':counts,'minimum_polygon_um2':min_area,
+    return {'status':'COMPLETE','minimum_area_um2':minimum_area_um2,
+            'global_component_audits':counts,'minimum_polygon_um2':min_area,
             'minimum_enclosed_background_hole_um2':minhole if math.isfinite(minhole) else None,
             'interclass_overlap_pixels2':overlap,'boundaries':boundary_stats(data)}
