@@ -20,7 +20,8 @@ from . import selected_wsi_polished as numerical
 from .selected_wsi_polished import sha, atomic, PROFILE
 from .contour_polish import smooth_global
 from .compact_geojson import geometry_agreement
-from .mask_cleanup import remove_small_vector_parts, fill_small_vector_holes
+from .mask_cleanup import remove_small_vector_parts
+from .coverage_holes import fill_small_vector_holes
 
 FORMAT = "bora-wsi-colorectal-v1"
 RESPONSE_FORMAT = "bora-slide-global-responses-v1"

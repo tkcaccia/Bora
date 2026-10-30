@@ -21,7 +21,8 @@ from shapely.strtree import STRtree
 from .multicpu_geojson import convert
 from .compact_geojson import geometry_agreement, boundary_stats
 from .wsi_coverage_lookup import fit_coverage_indexed as fit_coverage
-from .mask_cleanup import remove_small_vector_parts, fill_small_vector_holes
+from .mask_cleanup import remove_small_vector_parts
+from .coverage_holes import fill_small_vector_holes
 
 PROFILE = "bora-wholeslide-contour-polished-2026-10-30-v2"
 
