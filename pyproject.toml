@@ -1,13 +1,15 @@
 [build-system]
-requires = ["scikit-build-core>=0.10", "pybind11>=2.13", "numpy==2.2.6"]
+requires = ["scikit-build-core>=0.11.1", "pybind11>=2.13", "numpy==2.2.6"]
 build-backend = "scikit_build_core.build"
 
 [project]
 name = "bora-segmentation"
-version = "0.2.3"
+version = "0.2.4"
 description = "Frozen whole-slide RGB9+19/H&E refinement and fastPLS Neighbor context tissue identification"
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
+license = "MIT"
+license-files = ["LICENSE", "vendor/fastpls/LICENSE", "vendor/fastpls-bindings/LICENSE", "src/bora/_vendor/fastpls/LICENSE"]
 dependencies = ["numpy==2.2.6", "scipy==1.15.3", "scikit-image==0.25.2", "tifffile==2025.5.10", "shapely==2.1.2", "Pillow==12.1.1", "rasterio==1.4.4", "opencv-python-headless==4.13.0.92", "threadpoolctl==3.6.0", "scikit-learn==1.7.2"]
 
 [project.optional-dependencies]

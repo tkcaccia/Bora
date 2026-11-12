@@ -232,6 +232,8 @@ source hashes, global-output receipts and diagnostic crop verification.
 Bora 0.2.3 includes the later Chiamaka-local full-channel, tissue-support,
 small-field and intermediate-retention fixes used by the validation freeze;
 see the tagged source and its SHA256 manifest.
+Bora 0.2.4 adds the MIT package license and distribution metadata. It does
+not change the frozen 0.2.3 segmentation kernels or validation results.
 
 No background search or benchmark campaign starts during installation, import
 or execution. Historical studies stay outside the application. The full-slide
@@ -240,7 +242,10 @@ require a relevant independently trained Neighbor context fastPLS model.
 
 ## License
 
-The vendored fastPLS core and bindings retain their MIT license, including
-Stefano Cacciatore's copyright notice. No new overall project license is
-selected by this release. Upstream libraries,
-datasets and reference materials retain their respective licenses.
+Bora software is released under the [MIT License](LICENSE). The vendored
+fastPLS core and bindings retain their own MIT notices and Stefano Cacciatore's
+copyright in `vendor/` and `src/bora/_vendor/`.
+
+This software license does not grant rights to third-party images,
+annotations, model checkpoints, benchmark media or manuscript content.
+Obtain those materials under their providers' terms.
