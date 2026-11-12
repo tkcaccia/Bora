@@ -4,8 +4,8 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "bora-segmentation"
-version = "0.2.4"
-description = "Frozen whole-slide RGB9+19/H&E refinement and fastPLS Neighbor context tissue identification"
+version = "0.3.0"
+description = "Bora KODAMA route and supervised Virchow2 tissue segmentation"
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
 license = "MIT"

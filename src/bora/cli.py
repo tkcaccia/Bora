@@ -15,9 +15,15 @@ from .pipeline import load_case, prepare, run, json_file, digest, _mask
 
 
 def parser():
-    p = argparse.ArgumentParser(prog="bora", description="Frozen global RGB9+19/H&E WSI refinement and Neighbor context fastPLS region identity")
+    p = argparse.ArgumentParser(prog="bora", description="Bora supervised Virchow2 segmentation and KODAMA/fastPLS tissue routes")
     p.add_argument("--version", action="version", version=__version__)
     sub = p.add_subparsers(dest="command", required=True)
+    for name in ("fit", "predict", "evaluate"):
+        a = sub.add_parser(name, help=f"{name} the frozen supervised Virchow2 ridge route")
+        a.add_argument("manifest", type=Path)
+        a.add_argument("--output", type=Path, required=True)
+    a = sub.add_parser("verify", help="verify a supervised model, prediction folder, or evaluation receipt")
+    a.add_argument("artifact", type=Path)
     a = sub.add_parser("wsi-fit", help="fit one slide-wide RGB9+19 response model (selected workflow)")
     a.add_argument("manifest", type=Path); a.add_argument("--output", type=Path, required=True)
     a = sub.add_parser("wsi-project", help="apply the frozen response model across the complete slide")
@@ -171,7 +177,13 @@ def main(argv=None):
     cv2.setNumThreads(2)
     try:
         with threadpool_limits(limits=4 if a.command in {"wsi-fit", "wsi-project", "wsi", "wsi-polished", "wsi-crop"} else 2):
-            if a.command == "wsi-fit":
+            if a.command in {"fit", "predict", "evaluate", "verify"}:
+                from . import supervised
+                if a.command == "verify":
+                    report = supervised.verify(a.artifact)
+                else:
+                    report = getattr(supervised, a.command)(a.manifest, a.output)
+            elif a.command == "wsi-fit":
                 from .slide_responses import fit_slide_responses
                 report = fit_slide_responses(a.manifest, a.output)
             elif a.command == "wsi-project":

@@ -5,10 +5,18 @@ identifies the current KODAMA–Bora group pipeline and supervised eight-class
 ridge route, with source hashes and explicit validation limits. New external
 cohorts should use that tagged release as a fixed starting point.
 
-Bora takes an H&E image, anonymous tile-cluster labels, calibrated Virchow2
-spatial features and a user-trained fastPLS tissue classifier. It returns a
-refined tissue mask and compact GeoJSON. When a relevant tissue model is
-supplied, each complete segment also receives a predicted tissue name.
+Bora supports two tissue-segmentation routes. KODAMA–Bora refines anonymous
+tile clusters and can name the resulting groups with fastPLS. Supervised Bora
+fits an eight-class ridge head on complete Virchow2 feature caches and projects
+class scores to the image. Both routes require calibrated H&E inputs.
+
+The supervised route is available in the installable package through
+`bora fit`, `bora predict`, `bora evaluate`, and `bora verify`. See the
+[supervised command contract](docs/supervised-commands.md). Its initial package
+interface covers the frozen training head, bounded score projection, ROI masks,
+whole-slide geometry, and scoring. The historical whole-slide finalizer remains
+the accepted production entry point until package output has passed pixel and
+vector equivalence checks.
 
 The frozen whole-slide route, released in **0.2.2**, is:
 
@@ -234,6 +242,9 @@ small-field and intermediate-retention fixes used by the validation freeze;
 see the tagged source and its SHA256 manifest.
 Bora 0.2.4 adds the MIT package license and distribution metadata. It does
 not change the frozen 0.2.3 segmentation kernels or validation results.
+Bora 0.3.0 stages the supervised Virchow2 commands and leaves historical
+entry points intact. The package WSI route requires full-slide pixel and
+native-vector equivalence before it replaces the accepted finalizer.
 
 No background search or benchmark campaign starts during installation, import
 or execution. Historical studies stay outside the application. The full-slide
