@@ -19,7 +19,7 @@ def digest(path):
 def main():
     spec = json.loads(MANIFEST.read_text())
     assert spec['format'] == 'bora-validation-code-freeze-v1'
-    assert spec['tag'] == 'validation-freeze-2026-11-12'
+    assert spec['tag'] == 'validation-freeze-2026-11-12-v2'
     files = spec['source_sha256']
     assert len(files) >= 80
     for rel, expected in files.items():
