@@ -1,5 +1,8 @@
 # Supervised Bora commands
 
+For one checksum-pinned BCSS ROI command and its accepted pixel hash, see
+[reproduce one result](reproduce-one-result.md).
+
 The installable `bora` program now keeps the KODAMA/fastPLS commands and adds
 `fit`, `predict`, `evaluate`, and `verify` for the frozen eight-class supervised
 Virchow2 ridge method. These are CPU commands. Supply complete, unmodified
