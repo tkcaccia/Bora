@@ -149,8 +149,8 @@ def _inputs(manifest):
     if grid.ndim!=2 or grid.dtype.kind not in "iu" or grid.min()<0 or grid.max()>255 or any(n%4 for n in grid.shape):
         raise ValueError("Use a categorical grid padded to multiples of four tiles")
     eligible=grid>0;labels=grid[eligible].astype(np.uint8);classes=np.unique(labels)
-    if len(classes)<2 or not np.array_equal(classes,np.arange(1,len(classes)+1)):
-        raise ValueError("At least two contiguous anonymous group IDs are required")
+    if len(classes)<1 or not np.array_equal(classes,np.arange(1,len(classes)+1)):
+        raise ValueError("At least one contiguous anonymous group ID is required")
     dimensions=np.asarray(spec["selected_dimensions"])
     if dimensions.shape!=(64,) or dimensions.dtype.kind not in "iu" or len(np.unique(dimensions))!=64 or dimensions.min()<0 or dimensions.max()>=1280:
         raise ValueError("Declare the same 64 selected Virchow2 channel indices at every scale")
@@ -182,12 +182,23 @@ def _coefficients(model):
 @threadpool_limits.wrap(limits=4)
 def fit_slide_responses(manifest,output):
     from .full_channel_inputs import is_full_input,prepare_bora_selection
+    from .reduced_channel_inputs import is_reduced_input,prepare_reduced_selection
     if is_full_input(manifest):
         output=Path(output)
         if output.exists():raise FileExistsError(output)
         selected,identity=prepare_bora_selection(manifest,output.with_name(output.name+'-bora-selection'))
         result=fit_slide_responses(selected,output)
         result.update(identity,full_input_channels=1280,selection_owner='Bora',internal_selected_input_manifest=str(selected.resolve()))
+        atomic(output/'GLOBAL_FIT_COMPLETE.json',result)
+        return result
+    if is_reduced_input(manifest):
+        output=Path(output)
+        if output.exists():raise FileExistsError(output)
+        selected,identity=prepare_reduced_selection(manifest,output.with_name(output.name+'-bora-selection'))
+        result=fit_slide_responses(selected,output)
+        result.update(identity,source_encoder_channels=1280,reduced_cache_channels=256,
+                      selection_owner='Bora',internal_selected_input_manifest=str(selected.resolve()),
+                      feature_source='verified label-free MAD256 compact cache')
         atomic(output/'GLOBAL_FIT_COMPLETE.json',result)
         return result
     output=Path(output)
@@ -197,9 +208,65 @@ def fit_slide_responses(manifest,output):
     scalers={};standardized={}
     for factor in (1,2,4):
         mean,scale,standardized[factor]=fit_scaler(summaries[factor]);scalers[factor]=(mean,scale)
+    if len(np.unique(labels)) == 1:
+        # No between-community contrast exists. Retain finite encoder coverage
+        # and reviewed H&E support without inventing a second tissue group.
+        consensus=np.mean(np.stack([standardized[f] for f in (1,2,4)]),axis=0)
+        center=np.median(consensus,axis=0)
+        variation=np.median(np.abs(consensus-center),axis=0)
+        keep=np.argsort(-variation,kind='stable')[:32].astype(np.int16)
+        state=dict(selected_dimensions=np.asarray(info["selected_dimensions"],np.int16),
+            persistent_positions=keep,classes=np.asarray([1],np.uint8),
+            p9_coef=np.zeros((1,32),np.float32),p9_intercept=np.zeros(1,np.float32),
+            p19_coef=np.zeros((1,64),np.float32),p19_intercept=np.zeros(1,np.float32),
+            ridge_coef=np.zeros((4,64,192),np.float32),
+            ridge_intercept=np.zeros((4,64),np.float32),
+            ridge_global_coef=np.zeros((64,192),np.float32),
+            ridge_global_intercept=np.zeros(64,np.float32))
+        for factor in (1,2,4):
+            state[f"mean_{factor}"],state[f"scale_{factor}"]=scalers[factor]
+        output.mkdir(parents=True)
+        path=output/"slide_global_rgb9plus19_state.npz"
+        np.savez_compressed(path,**state)
+        result=dict(info,status="COMPLETE",format="bora-slide-global-fit-v1",
+            model_sha256=sha(path),class_ids=[1],spatial_training_samples=0,
+            one_fit_used_across_slide=True,independently_fitted_windows=False,
+            group_response_heads="single-community constant response; no class discriminator fitted",
+            tissue_identity_classifier="separate Neighbor context fastPLS model",
+            single_community_handling="finite encoder coverage and H&E reviewed tissue support")
+        atomic(output/"GLOBAL_FIT_COMPLETE.json",result)
+        return result
     keep=persistence_positions(standardized,labels)
     p9=classifier(np.mean(np.stack([standardized[f][:,keep] for f in (1,2,4)]),axis=0),labels)
     x,y,fold=spatial_training(arrays[1],eligible,*scalers[1]);heads=[]
+    if len(np.unique(fold)) < 2:
+        # A small ROI cannot support held-out-quadrant reconstruction.
+        # Use the fitted tile response head and record the missing CV stage.
+        c9,i9=_coefficients(p9)
+        k=len(p9.classes_)
+        state=dict(selected_dimensions=np.asarray(info["selected_dimensions"],np.int16),
+            persistent_positions=keep,classes=p9.classes_.astype(np.uint8),
+            p9_coef=c9,p9_intercept=i9,
+            p19_coef=np.zeros((k,64),np.float32),p19_intercept=np.zeros(k,np.float32),
+            ridge_coef=np.zeros((4,64,192),np.float32),
+            ridge_intercept=np.zeros((4,64),np.float32),
+            ridge_global_coef=np.zeros((64,192),np.float32),
+            ridge_global_intercept=np.zeros(64,np.float32),
+            response_head_mode=np.asarray('tile_only_no_spatial_cv'))
+        for factor in (1,2,4):
+            state[f"mean_{factor}"],state[f"scale_{factor}"]=scalers[factor]
+        output.mkdir(parents=True)
+        path=output/"slide_global_rgb9plus19_state.npz"
+        np.savez_compressed(path,**state)
+        result=dict(info,status="COMPLETE",format="bora-slide-global-fit-v1",
+            model_sha256=sha(path),class_ids=p9.classes_.tolist(),
+            spatial_training_samples=len(y),one_fit_used_across_slide=True,
+            independently_fitted_windows=False,
+            group_response_heads='tile head only; spatial quadrant cross-validation unavailable',
+            spatial_cv_available=False,
+            tissue_identity_classifier='separate Neighbor context fastPLS model')
+        atomic(output/"GLOBAL_FIT_COMPLETE.json",result)
+        return result
     for quadrant in range(4):
         if not np.any(fold!=quadrant):raise ValueError("Neighbour reconstruction needs tissue observations in more than one spatial quadrant")
         heads.append(Ridge(alpha=100).fit(x[fold!=quadrant],y[fold!=quadrant]))
@@ -229,6 +296,7 @@ def fit_slide_responses(manifest,output):
 @threadpool_limits.wrap(limits=4)
 def project_slide_responses(manifest,fit_folder,output):
     from .full_channel_inputs import is_full_input,read_full_input
+    from .reduced_channel_inputs import is_reduced_input,read_reduced_input
     if is_full_input(manifest):
         _,_,_,_,identity=read_full_input(manifest)
         receipt=json.loads((Path(fit_folder)/'GLOBAL_FIT_COMPLETE.json').read_text())
@@ -239,6 +307,20 @@ def project_slide_responses(manifest,fit_folder,output):
         if audit['selected_input_manifest_sha256']!=sha(selected):raise ValueError('Internal Bora selection changed')
         result=project_slide_responses(selected,fit_folder,output)
         result.update(identity,full_input_channels=1280,selection_owner='Bora')
+        atomic(Path(output)/'GLOBAL_PROJECTION_COMPLETE.json',result)
+        return result
+    if is_reduced_input(manifest):
+        _,_,_,_,_,identity=read_reduced_input(manifest)
+        receipt=json.loads((Path(fit_folder)/'GLOBAL_FIT_COMPLETE.json').read_text())
+        for key,value in identity.items():
+            if receipt.get(key)!=value:raise ValueError('Reduced-cache input differs from the fitted Bora input')
+        selected=Path(receipt['internal_selected_input_manifest'])
+        audit=json.loads((selected.parent/'BORA_REDUCED_SELECTION_COMPLETE.json').read_text())
+        if audit['selected_input_manifest_sha256']!=sha(selected):
+            raise ValueError('Internal reduced-cache selection changed')
+        result=project_slide_responses(selected,fit_folder,output)
+        result.update(identity,source_encoder_channels=1280,reduced_cache_channels=256,
+                      selection_owner='Bora',feature_source='verified label-free MAD256 compact cache')
         atomic(Path(output)/'GLOBAL_PROJECTION_COMPLETE.json',result)
         return result
     output=Path(output);fit_folder=Path(fit_folder)
@@ -264,17 +346,21 @@ def project_slide_responses(manifest,fit_folder,output):
     projected_tokens=0;unlabelled_projected_tokens=0
     for start in range(0,height,16):
         rows=np.arange(start,min(start+16,height))
-        z,neighbour_x=neighbors(arrays[1],rows,state["mean_1"],state["scale_1"])
-        aligned=[align_scale(arrays[f],rows,columns,f,state[f"mean_{f}"],state[f"scale_{f}"],keep) for f in (2,4)]
-        consensus=(z[...,keep]+aligned[0]+aligned[1])/3
-        p9=softmax(consensus.reshape(-1,32)@state["p9_coef"].T+state["p9_intercept"],axis=1).reshape(len(rows),width,k)
-        reconstructed=(neighbour_x.reshape(-1,192)@state["ridge_global_coef"].T+state["ridge_global_intercept"]).reshape(len(rows),width,64)
-        p19=softmax(reconstructed.reshape(-1,64)@state["p19_coef"].T+state["p19_intercept"],axis=1).reshape(len(rows),width,k)
-        # Labels identify fitting observations. They do not delimit where a
-        # fitted head can be applied: Visium has tissue outside measured spots.
-        # Unencoded glass is represented by nonfinite base-scale features.
-        p=(p9+p19)/2
         support=np.isfinite(np.asarray(arrays[1][rows],np.float32)).all(axis=2)
+        if k==1:
+            p=support[...,None].astype(np.float32)
+        else:
+            z,neighbour_x=neighbors(arrays[1],rows,state["mean_1"],state["scale_1"])
+            aligned=[align_scale(arrays[f],rows,columns,f,state[f"mean_{f}"],state[f"scale_{f}"],keep) for f in (2,4)]
+            consensus=(z[...,keep]+aligned[0]+aligned[1])/3
+            p9=softmax(consensus.reshape(-1,32)@state["p9_coef"].T+state["p9_intercept"],axis=1).reshape(len(rows),width,k)
+            if ('response_head_mode' in state and
+                    str(state['response_head_mode']) == 'tile_only_no_spatial_cv'):
+                p=p9
+            else:
+                reconstructed=(neighbour_x.reshape(-1,192)@state["ridge_global_coef"].T+state["ridge_global_intercept"]).reshape(len(rows),width,64)
+                p19=softmax(reconstructed.reshape(-1,64)@state["p19_coef"].T+state["p19_intercept"],axis=1).reshape(len(rows),width,k)
+                p=(p9+p19)/2
         labelled=eligible[rows[:,None]//16,columns[None,:]//16]
         projected_tokens+=int(support.sum())
         unlabelled_projected_tokens+=int(np.count_nonzero(support&~labelled))

@@ -29,6 +29,36 @@ RESPONSE_FORMAT = "bora-slide-global-responses-v1"
 MAX_VECTOR_REPAIR_PASSES = 8
 
 
+def clip_raster_to_support(mask, support, *, block_rows=512):
+    """Enforce the reviewed tissue support after vector rasterization.
+
+    The vector fitter may move a contour past the source support.  Apply the
+    exact raster support before repairing vectors, not only when displaying
+    the result.  A blockwise operation avoids a second slide-sized boolean
+    allocation.
+    """
+    if mask.shape != support.shape:
+        raise ValueError("Raster and reviewed tissue support have different shapes")
+    removed = 0
+    for y in range(0, mask.shape[0], block_rows):
+        view = mask[y:y + block_rows]
+        outside = np.asarray(support[y:y + block_rows]) == 0
+        removed += int(np.count_nonzero(view[outside]))
+        view[outside] = 0
+    if hasattr(mask, "flush"):
+        mask.flush()
+    return removed
+
+
+def count_positive_outside_support(mask, support, *, block_rows=512):
+    if mask.shape != support.shape:
+        raise ValueError("Raster and reviewed tissue support have different shapes")
+    return sum(int(np.count_nonzero(
+        (np.asarray(mask[y:y + block_rows]) > 0) &
+        (np.asarray(support[y:y + block_rows]) == 0)))
+        for y in range(0, mask.shape[0], block_rows))
+
+
 def bound_file(base, value, name):
     """Resolve relative paths and bind their bytes before computation."""
     ref = {"path": value} if isinstance(value, str) else value
@@ -104,7 +134,7 @@ def read_case(path):
     if grid.ndim != 2 or grid.dtype.kind not in "iu" or np.any(grid < 0) or grid.max() > 255:
         raise ValueError("Use a categorical group grid with zero for pure-background tiles")
     classes = np.unique(grid[grid > 0]); k = len(classes)
-    if not 2 <= k <= 255 or not np.array_equal(classes, np.arange(1, k + 1)):
+    if not 1 <= k <= 255 or not np.array_equal(classes, np.arange(1, k + 1)):
         raise ValueError("Anonymous group IDs must be contiguous integers 1..K")
     if dims[0] > grid.shape[0] * 224 or dims[1] > grid.shape[1] * 224:
         raise ValueError("The 224-pixel tile grid does not cover the full analysis frame")
@@ -196,7 +226,7 @@ def native_vectors(working, identity, minimum_area_um2=2000):
 
 def run_wsi(manifest, output, *, minimum_free_bytes=1024**3,
             memory_budget_bytes=12*1024**3, minimum_area_um2=2000,
-            contour_sigma_um=6.0):
+            contour_sigma_um=6.0, retire_intermediate_masks=True):
     """Run the selected global method once. Resource limits do not alter it."""
     import pyvips, shutil
     parameters=polished_parameters(minimum_area_um2,contour_sigma_um)
@@ -259,17 +289,34 @@ def run_wsi(manifest, output, *, minimum_free_bytes=1024**3,
             cleanup=cleanup,contour_polish_receipt_sha256=sha(output/"CONTOUR_POLISH_COMPLETE.json"),
             expert_annotation_used=False))
         data,conversion=numerical.fit_vectors(cleaned,mpp,output,minimum_area_um2=minimum_area_um2);del cleaned;numerical.release()
+        reviewed_clip=None
+        if 'quality_control' in identity and identity['quality_control']['mode']=='background-only':
+            from .support_vector_clip import clip_vectors_to_reviewed_support
+            data,reviewed_clip=clip_vectors_to_reviewed_support(
+                data,identity,support,mpp,minimum_area_um2)
+            atomic(output/'SUPPORT_VECTOR_CLIP_COMPLETE.json',reviewed_clip)
         final=numerical.raster_global(data,(h,w),output/"global-rasterized-mask.npy");repairs=[]
+        initial_outside_support=count_positive_outside_support(final,support)
+        if reviewed_clip is not None and initial_outside_support:
+            raise ValueError('Exactly clipped tissue vectors still rasterize outside support')
         # A local raster tie can move by one pixel after a polygon patch. Keep
         # repairing the same frozen prediction until the vector and raster
         # agree, with a finite guard against oscillation.
         for i in range(MAX_VECTOR_REPAIR_PASSES):
             checked,report=numerical.clean_global(final,mpp,output/f"global-raster-clean-{i}.npy",minimum_area_um2=minimum_area_um2)
-            data,n=numerical.repair_raster(data,final,checked);repairs.append(dict(patches=n,cleanup=report))
+            clipped=clip_raster_to_support(checked,support)
+            data,n=numerical.repair_raster(data,final,checked);repairs.append(dict(patches=n,cleanup=report,outside_support_removed=clipped))
             if n==0:del checked;break
-            data=remove_small_vector_parts(data,minimum_area_um2/np.prod(mpp));data=fill_small_vector_holes(data,minimum_area_um2/np.prod(mpp))
+            data=remove_small_vector_parts(data,minimum_area_um2/np.prod(mpp))
+            if reviewed_clip is None:
+                data=fill_small_vector_holes(data,minimum_area_um2/np.prod(mpp))
             del final,checked;numerical.release();final=numerical.raster_global(data,(h,w),output/f"global-raster-repaired-{i}.npy")
+            if reviewed_clip is not None and count_positive_outside_support(final,support):
+                raise ValueError('Raster repair reintroduced pixels outside exact reviewed support')
         else:raise ValueError(f"Global vector/raster cleanup failed after {MAX_VECTOR_REPAIR_PASSES} passes")
+        remaining_outside_support=count_positive_outside_support(final,support)
+        if remaining_outside_support:
+            raise ValueError(f"Final polygon raster extends outside reviewed tissue support by {remaining_outside_support} pixels")
         audit=numerical.audit(data,final,mpp,minimum_area_um2=minimum_area_um2);atomic(output/"GLOBAL_AREA_AUDIT.json",audit)
         data["full_slide_input_identity"]=identity;data["minimum_component_and_hole_um2"]=minimum_area_um2
         atomic(output/"BORA_FULL_SLIDE.working.geojson",data)
@@ -278,13 +325,30 @@ def run_wsi(manifest, output, *, minimum_free_bytes=1024**3,
         names=("BORA_FULL_SLIDE.working.geojson","BORA_FULL_SLIDE.wsi.geojson","BORA_FULL_SLIDE.mask-0p5um.tif","INPUTS_FROZEN.json","PREDICTION_FROZEN.json","CONTOUR_POLISH_COMPLETE.json","SEAM_AUDIT.json","GLOBAL_AREA_AUDIT.json")
         if 'quality_control' in identity:
             names=names+(('BACKGROUND_SUPPORT_USED.json',) if identity['quality_control']['mode']=='background-only' else ('GRANDQC_SUPPORT_USED.json',))
+        if reviewed_clip is not None:
+            names=names+('SUPPORT_VECTOR_CLIP_COMPLETE.json',)
         result=dict(status="COMPLETE",profile=PROFILE,input_identity=identity,entire_slide_refinement=True,
             global_component_cleanup=True,contour_polish=contour_receipt,
             diagnostic_fields_used_in_inference=False,
             global_geometry_audit=audit,native_cleanup=native["native_coordinate_final_cleanup"],
-            raster_repair=repairs,conversion=conversion,elapsed_seconds=time.monotonic()-started,
+            raster_repair=repairs,
+            support_bound_audit=dict(initial_outside_support_pixels=initial_outside_support,
+                final_outside_support_pixels=remaining_outside_support,
+                source_support_sha256=sha(output/"support.npy"),
+                vector_clip_receipt_sha256=(sha(output/'SUPPORT_VECTOR_CLIP_COMPLETE.json')
+                                            if reviewed_clip is not None else None)),
+            conversion=conversion,elapsed_seconds=time.monotonic()-started,
             files_sha256={name:sha(output/name) for name in names})
-        atomic(output/"FULL_SLIDE_COMPLETE.json",result);return result
+        atomic(output/"FULL_SLIDE_COMPLETE.json",result)
+        # The final TIFF, vectors, receipts and hashes are complete before
+        # all large solver arrays are retired. Reviewed support is stored
+        # separately from this output folder.
+        if retire_intermediate_masks:
+            del final
+            numerical.release()
+            from .intermediate_retention import retire_polished_work_arrays
+            retire_polished_work_arrays(output, result)
+        return result
     except Exception as exc:
         atomic(output/"FAILED.json",dict(status="FAILED",profile=PROFILE,error=str(exc)))
         raise

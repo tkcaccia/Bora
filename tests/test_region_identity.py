@@ -51,6 +51,44 @@ def test_padding_not_stretched_and_isolated_group_has_zero_contrast():
     assert mass.tolist() == [1]
 
 
+def test_cropped_native_bounds_map_groups_to_the_correct_spatial_tokens():
+    mask = np.zeros((30, 28), np.uint8)
+    mask[3:8, 4:9] = 1
+    mask[18:23, 19:24] = 2
+    features = [dict(properties=dict(value=int(v)), geometry=g)
+                for g, v in shapes(mask) if v]
+    tokens = np.zeros((2, 2, 1280), np.float32)
+    tokens[0, 0] = 1
+    tokens[1, 1] = 9
+    ids, descriptors, mass, _ = describe_region_polygons(
+        tokens, features, mask.shape, (28, 28), (.25, .25),
+        working_content_shape_yx=(20, 20), native_content_bounds_xyxy=(4, 3, 24, 23))
+    np.testing.assert_array_equal(ids, [1, 2])
+    np.testing.assert_array_equal(mass, [25, 25])
+    np.testing.assert_array_equal(descriptors[:, 0], [1, 9])
+    # The old full-frame scale gives the second group a different descriptor.
+    _, wrong, _, _ = describe_region_polygons(
+        tokens, features, mask.shape, (28, 28), (.25, .25),
+        working_content_shape_yx=(20, 20))
+    assert wrong[1, 0] != 9
+    with pytest.raises(ValueError, match="content bounds"):
+        describe_region_polygons(tokens, features, mask.shape, (28, 28), (.25, .25),
+            working_content_shape_yx=(20, 20), native_content_bounds_xyxy=(4, 3, 23, 23))
+
+
+def test_uncovered_glass_tokens_can_remain_nan_in_saved_full_channel_cache():
+    mask = np.zeros((15, 15), np.uint8)
+    mask[14, 14] = 1
+    features = [dict(properties=dict(value=1), geometry=g) for g, v in shapes(mask) if v]
+    tokens = np.full((2, 2, 1280), np.nan, np.float16)
+    tokens[1, 1] = 7
+    _, descriptors, mass, _ = describe_region_polygons(
+        tokens, features, mask.shape, mask.shape, (.5, .5), stripe_rows=1)
+    assert mass.tolist() == [1]
+    np.testing.assert_array_equal(descriptors[0, :1280], 7)
+    np.testing.assert_array_equal(descriptors[0, 1280:], 0)
+
+
 def test_small_budget_reduces_stripes_without_changing_descriptors():
     mask, features, tokens = fixture_data()
     expected = describe_region_polygons(tokens, features, mask.shape, (29, 47), (.25, .27))
@@ -58,6 +96,24 @@ def test_small_budget_reduces_stripes_without_changing_descriptors():
         stripe_rows=100, maximum_working_bytes=400000)
     for a, b in zip(actual, expected):
         np.testing.assert_array_equal(a, b)
+
+
+def test_subpixel_roundoff_at_native_edge_is_accepted_but_real_overflow_is_not():
+    mask = np.ones((15, 15), np.uint8)
+    features = [dict(properties=dict(value=1), geometry=dict(type='Polygon',
+        coordinates=[[[0, 0], [15, 0], [15, 15], [0, 15], [0, 0]]]))]
+    tokens = np.ones((2, 2, 1280), np.float32)
+    exact = describe_region_polygons(tokens, features, mask.shape, mask.shape, (.5, .5))
+    rounded = copy.deepcopy(features)
+    rounded[0]['geometry']['coordinates'][0][1] = [15 + 5e-10, 0]
+    rounded[0]['geometry']['coordinates'][0][2] = [15 + 5e-10, 15]
+    actual = describe_region_polygons(tokens, rounded, mask.shape, mask.shape, (.5, .5))
+    for left, right in zip(actual, exact):
+        np.testing.assert_array_equal(left, right)
+    rounded[0]['geometry']['coordinates'][0][1] = [15.001, 0]
+    rounded[0]['geometry']['coordinates'][0][2] = [15.001, 15]
+    with pytest.raises(ValueError, match='outside the native image frame'):
+        describe_region_polygons(tokens, rounded, mask.shape, mask.shape, (.5, .5))
 
 
 def test_overlapping_same_group_pieces_do_not_hide_a_conflicting_group():
@@ -112,8 +168,93 @@ def files(tmp_path):
     return contours, registration, token_path, model_path, json.loads(contours.read_text()), reg
 
 
+def test_calibrated_resize_registration_uses_unpadded_content_mapping(tmp_path):
+    contours, registration, tokens, model, doc, reg = files(tmp_path)
+    calibration = tmp_path / "calibration.json"
+    calibration.write_text(json.dumps(dict(status="COMPLETE", source_sha256="a" * 64,
+        source_original_shape_yx=[57, 93], source_mpp_xy=[.25, .27],
+        target_shape_yxc=[29, 47, 3], true_working_size_wh=[20, 15],
+        target_sha256="b" * 64)))
+    cache = tmp_path / "cache.json"
+    cache.write_text(json.dumps(dict(status="COMPLETE", stage="virchow2_spatial",
+        identity=dict(image_sha256="b" * 64, source_sha256="a" * 64,
+                      encoder=dict(channels=1280)),
+        outputs={"factor-1": dict(path="tokens.npy", bytes=tokens.stat().st_size,
+                                  sha256=digest(tokens))})))
+    reg.update(format="bora-region-registration-v2",
+        registration_method="calibrated_resize_pad", working_content_shape_yx=[15, 20],
+        calibration_receipt=str(calibration), calibration_sha256=digest(calibration),
+        spatial_cache_manifest=str(cache), spatial_cache_manifest_sha256=digest(cache),
+        data_store=str(tmp_path))
+    registration.write_text(json.dumps(reg))
+    output = tmp_path / "classified"
+    report = classify_regions(contours, registration, tokens, model, output, stripe_rows=7)
+    assert report["working_content_shape_yx"] == [15, 20]
+    data = np.load(tokens, allow_pickle=False)
+    _, expected, _, _ = describe_region_polygons(data, doc["features"], (57, 93),
+        (29, 47), (.25, .27), working_content_shape_yx=(15, 20))
+    with np.load(output / "descriptors.npz", allow_pickle=False) as saved:
+        np.testing.assert_array_equal(saved["x"], expected)
+
+
+@pytest.mark.parametrize("shape_key", ["source_native_shape_yxc", "source_original_shape_yx"])
+def test_two_step_registration_binds_native_resize_pad_and_full_channel_cache(tmp_path, shape_key):
+    contours, registration, tokens, model, doc, reg = files(tmp_path)
+    native = tmp_path / "native.json"
+    first = dict(status="COMPLETE", source_sha256="a" * 64,
+        source_mpp_xy=[.25, .27],
+        native_analysis_bounds_xyxy=[0, 0, 93, 57],
+        target_shape_yxc=[15, 20, 3], target_sha256="c" * 64)
+    first[shape_key] = [57, 93, 3] if shape_key.endswith("yxc") else [57, 93]
+    native.write_text(json.dumps(first))
+    pad = tmp_path / "pad.json"
+    second = dict(status="COMPLETE", source_sha256="c" * 64,
+        source_shape_yxc=[15, 20, 3], target_shape_yxc=[29, 47, 3],
+        true_working_size_wh=[20, 15], target_sha256="b" * 64)
+    pad.write_text(json.dumps(second))
+    cache = tmp_path / "cache.json"
+    cache.write_text(json.dumps(dict(status="COMPLETE", stage="virchow2_spatial",
+        identity=dict(image_sha256="b" * 64, source_sha256="c" * 64,
+                      encoder=dict(channels=1280)),
+        outputs={"factor-1": dict(path="tokens.npy", bytes=tokens.stat().st_size,
+                                  sha256=digest(tokens))})))
+    reg.update(format="bora-region-registration-v3",
+        registration_method="calibrated_resize_chain", working_content_shape_yx=[15, 20],
+        native_content_bounds_xyxy=[0, 0, 93, 57],
+        native_identity_receipt=str(native), native_identity_sha256=digest(native),
+        native_identity_kind="calibration_source",
+        calibration_receipts=[dict(path=str(p), sha256=digest(p)) for p in (native, pad)],
+        spatial_cache_manifest=str(cache), spatial_cache_manifest_sha256=digest(cache),
+        data_store=str(tmp_path))
+    doc["full_slide_input_identity"] = dict(source_frame_id="synthetic/native",
+        analysis_bounds_native_xyxy=[0, 0, 93, 57],
+        input_sha256=dict(image="b" * 64))
+    contours.write_text(json.dumps(doc))
+    reg["contours_sha256"] = digest(contours)
+    registration.write_text(json.dumps(reg))
+    output = tmp_path / "classified-v3"
+    report = classify_regions(contours, registration, tokens, model, output)
+    assert report["registration_format"] == "bora-region-registration-v3"
+    assert report["native_content_bounds_xyxy"] == [0, 0, 93, 57]
+    assert set(report["input_sha256"]) == {"contours", "registration", "tokens", "model",
+                                              "native_identity", "calibration_0", "calibration_1",
+                                              "spatial_cache_manifest"}
+    second["source_sha256"] = "d" * 64
+    pad.write_text(json.dumps(second))
+    reg["calibration_receipts"][1]["sha256"] = digest(pad)
+    registration.write_text(json.dumps(reg))
+    with pytest.raises(ValueError, match="chain"):
+        classify_regions(contours, registration, tokens, model, tmp_path / "broken-chain")
+
+
 def test_frozen_native_head_changes_only_properties_and_publishes_receipt(tmp_path):
-    contours, registration, tokens, model, original, _ = files(tmp_path)
+    contours, registration, tokens, model, original, reg = files(tmp_path)
+    # Published Bora WSI polygons use a text classification, not a mapping.
+    for feature in original["features"]:
+        feature["properties"]["classification"] = "anonymous_group"
+    contours.write_text(json.dumps(original))
+    reg["contours_sha256"] = digest(contours)
+    registration.write_text(json.dumps(reg))
     input_hashes = [digest(p) for p in (contours, registration, tokens, model)]
     output = tmp_path / "named"
     report = classify_regions(contours, registration, tokens, model, output, stripe_rows=7)
@@ -125,7 +266,12 @@ def test_frozen_native_head_changes_only_properties_and_publishes_receipt(tmp_pa
     assert report["group_count"] == 3 and report["feature_count"] > 3
     assert report["biological_accuracy_qualified"] is False
     assert report["responses_are_calibrated_probabilities"] is False
-    assert all(f["properties"]["name"] in ("tissue A", "tissue B") for f in result["features"])
+    for source, named in zip(original["features"], result["features"]):
+        for field in ("value", "name", "classification"):
+            assert named["properties"][field] == source["properties"][field]
+        assert named["properties"]["predicted_tissue"] in ("tissue A", "tissue B")
+    assert all(f["properties"]["source_group_classification"] == "anonymous_group"
+               for f in result["features"])
     # Two separated pieces of the same anonymous group retain one identity.
     source_30 = [f for f in result["features"] if f["properties"]["source_group_id"] == 30]
     assert len(source_30) == 2

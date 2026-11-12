@@ -1,5 +1,10 @@
 # Bora
 
+The [12 November 2026 validation code freeze](docs/VALIDATION_FREEZE_2026-11-12.md)
+identifies the current KODAMA–Bora group pipeline and supervised eight-class
+ridge route, with source hashes and explicit validation limits. New external
+cohorts should use that tagged release as a fixed starting point.
+
 Bora takes an H&E image, anonymous tile-cluster labels, calibrated Virchow2
 spatial features and a user-trained fastPLS tissue classifier. It returns a
 refined tissue mask and compact GeoJSON. When a relevant tissue model is
@@ -224,6 +229,9 @@ three-group PCA32 commands remain available for reproducing previous results.
 Their field settings do not override the frozen full-slide settings above.
 Bora 0.2.2 preserves the accepted numerical kernels and adds portable manifests,
 source hashes, global-output receipts and diagnostic crop verification.
+Bora 0.2.3 includes the later Chiamaka-local full-channel, tissue-support,
+small-field and intermediate-retention fixes used by the validation freeze;
+see the tagged source and its SHA256 manifest.
 
 No background search or benchmark campaign starts during installation, import
 or execution. Historical studies stay outside the application. The full-slide

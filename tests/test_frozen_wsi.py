@@ -53,9 +53,11 @@ def case_files(folder, height=481, width=601):
 
 def test_profile_preserves_reference_kernel_hashes():
     import bora
-    root = Path(bora.__file__).parent
-    profile = json.loads((root/'frozen_colorectal.json').read_text())
-    assert profile['version'] == bora.__version__ == '0.2.2'
+    package = Path(bora.__file__).parent
+    profile = json.loads((package/'frozen_colorectal.json').read_text())
+    root = Path(__file__).resolve().parents[1] / 'benchmark/frozen_colorectal_0p2p2/src/bora'
+    assert profile['version'] == '0.2.2'
+    assert bora.__version__ == '0.2.3'
     assert profile['parameters']['final_minimum_area_um2'] == 400
     assert profile['parameters']['group_count_reference'] == 16
     for name, digest in profile['source_sha256'].items():

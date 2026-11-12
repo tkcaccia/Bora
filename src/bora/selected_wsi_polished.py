@@ -106,7 +106,11 @@ def diffuse_window(image,prob,grid,support,box):
     # transition at the original tile lattice. Blur probabilities over four
     # 1-um analysis pixels before H&E-guided diffusion; support still comes
     # from the reviewed tissue GeoJSON and is applied below.
-    p=cv2.GaussianBlur(p,(0,0),4)
+    if prob.shape[-1]==1:
+        # OpenCV drops the last axis for one channel; retain an HWC response.
+        p=np.ones((y1-y0,x1-x0,1),np.float32)
+    else:
+        p=cv2.GaussianBlur(p,(0,0),4)
     prior=grid[(2*yy.astype(int))[:,None]//224,(2*xx.astype(int))[None,:]//224]
     inside=np.asarray(support[2*y0:min(2*y1,h):2,2*x0:min(2*x1,w):2],bool)
     return diffuse(p,he,prior,inside)
@@ -156,13 +160,13 @@ def predict(image,prob,grid,support,out,mpp):
     return smoothed
 
 def clean_global(labels,mpp,output,minimum_area_um2=2000):
-    """Exact global 8-connected areas, with bounded integer CC storage."""
+    """Exact global 4-connected areas, matching vector polygon components."""
     if not math.isfinite(minimum_area_um2) or minimum_area_um2 <= 0:
         raise ValueError('Positive physical minimum area required')
     out=np.lib.format.open_memmap(output,mode='w+',dtype=np.uint8,shape=labels.shape);out[:]=labels
     threshold=math.ceil(minimum_area_um2/np.prod(mpp));kernel=np.ones((3,3),np.uint8);counts={'parts':0,'holes':0,'pixels':0}
     for g in [int(v) for v in np.unique(labels) if v>0]+[0]:
-        n,cc,stats,_=connected(out==g,8)
+        n,cc,stats,_=connected(out==g,4)
         small=np.flatnonzero((stats[:,cv2.CC_STAT_AREA]<threshold)&(np.arange(n)>0))
         for cid in small:
             x,y,w,h,area=map(int,stats[cid]);xa,ya=max(0,x-1),max(0,y-1);xb,yb=min(out.shape[1],x+w+1),min(out.shape[0],y+h+1)

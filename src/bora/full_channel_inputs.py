@@ -19,7 +19,7 @@ def read_full_input(manifest):
  grid=np.load(groups,allow_pickle=False)
  if grid.ndim!=2 or grid.dtype.kind not in 'iu' or grid.min()<0 or grid.max()>255 or any(n%4 for n in grid.shape):raise ValueError('Categorical padded tile clusters required')
  eligible=grid>0;labels=grid[eligible];classes=np.unique(labels)
- if len(classes)<2 or not np.array_equal(classes,np.arange(1,len(classes)+1)):raise ValueError('At least two contiguous anonymous tile clusters required')
+ if len(classes)<1 or not np.array_equal(classes,np.arange(1,len(classes)+1)):raise ValueError('At least one contiguous anonymous tile cluster required')
  shape=spec['shape_yx']
  if not isinstance(shape,list) or len(shape)!=2 or any(type(n) is not int or n<1 for n in shape) or np.any(np.array(shape)>np.array(grid.shape)*224):raise ValueError('Complete image frame required')
  if set(spec['features'])!={'1','2','4'}:raise ValueError('Three full-channel scales required')
@@ -40,7 +40,15 @@ def prepare_bora_selection(manifest,output):
   block=arrays[1][y*16:(y+1)*16,x*16:(x+1)*16]
   if not np.isfinite(block).all():raise ValueError('Fitting tile lacks full-channel tokens')
   values[i]=block.mean((0,1),dtype=np.float64)
- dimensions=select_dimensions(values,labels).astype(int);output.mkdir(parents=True)
+ if len(np.unique(labels))==1:
+  center=np.median(values,axis=0)
+  mad=np.median(np.abs(values-center),axis=0)
+  dimensions=np.argsort(-mad,kind='stable')[:64].astype(int)
+  basis='within-community median absolute deviation over 1280 tile-mean channels'
+ else:
+  dimensions=select_dimensions(values,labels).astype(int)
+  basis='full 1280-channel base-scale token means over fitting tiles and their anonymous cluster IDs'
+ output.mkdir(parents=True)
  files={}
  for factor,a in arrays.items():
   path=output/f'bora-selected-factor-{factor}.npy'
@@ -49,5 +57,5 @@ def prepare_bora_selection(manifest,output):
   selected.flush();del selected;files[str(factor)]=dict(path=str(path.resolve()),sha256=sha(path))
  selected_spec=dict(spec,format='bora-wsi-response-input-v1',image=dict(path=str(bound_file(Path(manifest).resolve().parent,spec['image'],'image')[0]),sha256=identity['source_image_sha256']),group_grid=dict(path=str(bound_file(Path(manifest).resolve().parent,spec['group_grid'],'group_grid')[0]),sha256=identity['group_grid_sha256']),features=files,selected_dimensions=dimensions.tolist())
  target=output/'bora-selected-input.json';atomic(target,selected_spec)
- atomic(output/'BORA_SELECTION_COMPLETE.json',dict(identity,status='COMPLETE',input_channels=1280,retained_channels=64,selected_dimensions=dimensions.tolist(),selection_owner='Bora',selection_basis='full 1280-channel base-scale token means over fitting tiles and their anonymous cluster IDs',selected_input_manifest_sha256=sha(target)))
+ atomic(output/'BORA_SELECTION_COMPLETE.json',dict(identity,status='COMPLETE',input_channels=1280,retained_channels=64,selected_dimensions=dimensions.tolist(),selection_owner='Bora',selection_basis=basis,selected_input_manifest_sha256=sha(target)))
  return target,identity
