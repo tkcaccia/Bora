@@ -9,6 +9,10 @@ infiltrate. ROI output is a class-mask PNG; the whole-slide route also produces
 a full-resolution TIFF and native-coordinate GeoJSON. The corrected PEsO
 two-class head is separate because its stroma label is an H&E-derived **weak
 proxy**, not expert annotation.
+The deployed 203-channel fit is retained for reproducibility. A later
+training-only comparison that removed known cross-source TCGA patient overlap
+favored an all-channel ridge control; channel selection is therefore not
+established as an accuracy improvement.
 
 The installable package exposes `bora fit`, `bora predict`, `bora evaluate`,
 and `bora verify`. Start with the [reproduce-one-result guide](docs/reproduce-one-result.md)
@@ -48,8 +52,9 @@ pytest -q
 2. Freeze the eight-class crosswalk and training split. Fit the classwise
    top-32-feature ridge head on training tokens with `bora fit`; the union in
    the accepted model contains 203 channels. Never tune on evaluation masks.
-3. Use `bora predict` with a checksum-bound manifest. ROI inference restricts
-   predictions to declared dataset classes, then smooths contours and
+3. Use `bora predict` with a checksum-bound manifest. ROI inference can restrict
+   predictions to declared dataset classes for the historical source-conditioned
+   display or leave all eight classes eligible for unrestricted scoring. It smooths contours and
    reassigns small islands. Whole-slide inference uses reviewed Bora tissue
    support and a training-frozen class-presence rule before physical cleanup
    and vector export.
@@ -82,14 +87,17 @@ The public viewer is in [Bora-Analysis](https://github.com/tkcaccia/Bora-Analysi
   field-level commands remain for historical reproduction. Their settings do
   not override the eight-class method.
 - **Release lineage:** 0.2.3 added Chiamaka-local full-channel and tissue
-  support fixes; 0.2.4 added MIT distribution metadata; 0.3.0 stages the
+  support fixes; 0.2.4 added MIT distribution metadata; 0.3.0 adds the
   supervised commands while retaining historical routes. Source hashes and
   benchmark qualifications are in the [validation freeze](docs/VALIDATION_FREEZE_2026-11-12.md).
 
-The accepted historical whole-slide finalizer remains the production entry
-point until the package implementation passes full pixel and native-vector
-equivalence on an approved slide. Installation and import do not launch a
-GPU, background search, or benchmark campaign.
+The installed 0.3.0 route reproduced the frozen case-001 and case-069 ROI
+masks exactly and matched an approved public ovarian slide in all 218,365,952
+full-resolution mask pixels, raw score values and native polygon features.
+Those are regression checks, not tissue-accuracy estimates or a claim that
+every public slide was reprocessed by the package. The historical finalizer
+and its receipts remain frozen. Installation and import do not launch a GPU,
+background search, or benchmark campaign.
 
 ## License
 

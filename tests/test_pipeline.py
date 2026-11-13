@@ -75,9 +75,10 @@ def test_training_refuses_validation_descriptors_before_opening_them(tmp_path):
     with pytest.raises(ValueError, match="split=train"): train_file(p, tmp_path / "model.npz")
 
 
-def test_cli_has_one_pipeline_and_no_classifier_selector():
+def test_cli_leads_with_supervised_and_has_no_classifier_selector():
     p = parser()
-    assert "Neighbor context" in p.description
+    assert "supervised Virchow2" in p.description
+    assert "KODAMA/fastPLS" in p.description
     with pytest.raises(SystemExit): p.parse_args(["refine", "case.json", "--model", "m.npz", "--output", "result", "--classifier", "opls"])
 
 

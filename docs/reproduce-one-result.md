@@ -77,3 +77,8 @@ The accepted historical mask and its metrics came from inspected development
 data. The old training-selection folds had known cross-source TCGA patient-ID
 overlap, so these hashes demonstrate reproducibility of that frozen method,
 not patient-disjoint accuracy. No expert mask is read during prediction.
+
+This exact recipe was executed on Chiamaka with the installed 0.3.0 wheel on
+13 November 2026. It reproduced the expected decoded-pixel hash and the
+historical PNG file hash; the versioned local receipt is
+`Bora-Data/reproduce-case001-2026-11-13-v1/REPRODUCE_RESULT.json`.

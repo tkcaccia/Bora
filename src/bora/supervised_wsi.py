@@ -511,6 +511,10 @@ def verify_wsi(folder: Path) -> dict:
                     raise ValueError("Full-slide TIFF pixels differ from exact mask")
         del mask
     native = json.loads((folder / "supervised-bora.native.geojson").read_text())
+    # The native vector stores native spacing; the calibrated spacing is bound
+    # separately by the completed full-slide receipt. Reconstruct verification
+    # context without changing the frozen vector's public coordinate schema.
+    native["working_mpp_xy"] = receipt["calibrated_mpp_xy"]
     context = {"source": {"height": receipt["calibrated_shape_yx"][0],
                            "width": receipt["calibrated_shape_yx"][1]}, "geoj": native}
     audit = audit_final(folder / "supervised-bora.final-2000um2.uint8.dat",
