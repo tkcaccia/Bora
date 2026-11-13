@@ -545,12 +545,15 @@ def segment_full_slide(manifest: Path, output: Path) -> dict:
     spec = _read_manifest(manifest, "bora-supervised-predict-v1")
     if not isinstance(spec.get("wsi"), dict) or spec.get("roi") is not None:
         raise ValueError("Full-slide segmentation requires wsi settings and no ROI settings")
-    predict(manifest, output)
+    prediction = predict(manifest, output)
     folder = output / "full-slide"
-    verified = verify_wsi(folder)
+    receipt_path = folder / "FULL_SLIDE_VERIFIED.json"
+    receipt_sha = sha(receipt_path)
+    if prediction["full_slide_receipt_sha256"] != receipt_sha:
+        raise ValueError("Full-slide receipt changed after prediction")
     return {
-        "status": verified["status"],
-        "full_slide_receipt_sha256": verified["receipt_sha256"],
+        "status": "VERIFIED",
+        "full_slide_receipt_sha256": receipt_sha,
         "mask_tiff": str((folder / "supervised-bora.mask-0p5um.tif").resolve()),
         "native_geojson": str((folder / "supervised-bora.native.geojson").resolve()),
     }
