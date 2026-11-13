@@ -150,3 +150,73 @@ def test_wsi_projection_keeps_reviewed_background(tmp_path):
     assert set(np.unique(projected)) == {0, 1, 2}
     repaired, _ = supervised_wsi.area_repair(projected, support, tmp_path / "clean.dat", (.5, .5), 400)
     assert np.array_equal(repaired > 0, support > 0)
+
+
+def test_public_full_slide_function_exports_clean_native_vectors(tmp_path):
+    import rasterio
+    from rasterio.transform import Affine
+    from shapely.geometry import box, mapping
+    from bora import segment_full_slide
+    from bora.supervised_wsi import verify_wsi
+
+    model = tmp_path / "ridge.npz"
+    coefficients = np.zeros((8, 2), np.float64)
+    coefficients[0, 0] = coefficients[1, 1] = 1
+    intercept = np.array([0, 0] + [-100] * 6, np.float64)
+    np.savez(model, format="bora-supervised-ridge-v1",
+             selected=np.array([0, 1], np.int32), mean=np.zeros(2),
+             std=np.ones(2), coef=coefficients, intercept=intercept,
+             classes=np.arange(1, 9), training_manifest_sha256="a" * 64,
+             method="eight-class-ridge")
+    grid = np.zeros((20, 20, 1280), np.float16)
+    grid[:, :10, 0] = 10
+    grid[:, 10:, 1] = 10
+    features = tmp_path / "features.npy"
+    np.save(features, grid)
+    source = tmp_path / "calibrated.tif"
+    with rasterio.open(source, "w", driver="GTiff", height=280, width=280,
+                       count=3, dtype="uint8", transform=Affine.identity()) as dst:
+        for band in range(1, 4):
+            dst.write(np.full((280, 280), 180, np.uint8), band)
+    support = tmp_path / "support.geojson"
+    support.write_text(json.dumps({
+        "coordinate_space": "original_WSI_native_pixel_edges",
+        "native_origin_xy": [0, 0], "native_shape_yx": [280, 280],
+        "native_mpp_xy": [.5, .5], "working_mpp_xy": [.5, .5],
+        "working_pixel_to_native_scale_xy": [1, 1],
+        "full_slide_input_identity": {"shape_yx": [280, 280]},
+        "features": [{"geometry": mapping(box(10, 10, 270, 270))}]}))
+    presence = tmp_path / "presence.json"
+    presence.write_text(json.dumps({
+        "status": "TRAINING_ONLY_RIDGE_CLASS_PRESENCE_RULE_FROZEN",
+        "minimum_predicted_tissue_fraction": .02,
+        "development_masks_opened": 0, "whole_slide_expert_masks_opened": 0}))
+    ontology = tmp_path / "ontology.json"
+    ontology.write_text(json.dumps({"classes": {
+        str(i): {"name": f"class_{i}"} for i in range(1, 9)}}))
+    manifest = tmp_path / "predict.json"
+    manifest.write_text(json.dumps({
+        "format": "bora-supervised-predict-v1",
+        "model": {"path": model.name, "sha256": sha(model)},
+        "features": {"path": features.name, "sha256": sha(features)},
+        "wsi": {"calibrated_shape_yx": [280, 280],
+                "source_frame_id": "synthetic:calibrated_0p5um",
+                "source_image": {"path": source.name, "sha256": sha(source)},
+                "support_geojson": {"path": support.name, "sha256": sha(support)},
+                "ontology": {"path": ontology.name, "sha256": sha(ontology)},
+                "class_presence_receipt": {"path": presence.name, "sha256": sha(presence)},
+                "minimum_predicted_tissue_fraction": .02}}))
+    output = tmp_path / "segmented"
+    result = segment_full_slide(manifest, output)
+    assert result["status"] == "VERIFIED"
+    assert verify_wsi(output / "full-slide")["status"] == "VERIFIED"
+    with rasterio.open(result["mask_tiff"]) as src:
+        mask = src.read(1)
+    assert set(np.unique(mask)) == {0, 1, 2}
+    assert np.all(mask[:10] == 0) and np.all(mask[:, :10] == 0)
+    native = json.loads((output / "full-slide/supervised-bora.native.geojson").read_text())
+    assert native["coordinate_space"] == "original_WSI_native_pixel_edges"
+    receipt = json.loads((output / "full-slide/FULL_SLIDE_VERIFIED.json").read_text())
+    assert receipt["contour_smoothing"]["sigma_um"] == 6
+    assert receipt["independent_geometry_audit"]["physical_minimum_um2"] == 2000
+    assert receipt["independent_geometry_audit"]["native_geojson_roundtrip_different_pixels"] == 0

@@ -525,3 +525,33 @@ def verify_wsi(folder: Path) -> dict:
     return {"status": "VERIFIED", "class_ids": receipt["class_ids"],
             "receipt_sha256": sha(receipt_path)}
 
+
+def segment_full_slide(manifest: Path, output: Path) -> dict:
+    """Run supervised Bora's complete slide pipeline from a pinned feature grid.
+
+    ``manifest`` is a ``bora-supervised-predict-v1`` manifest with a ``wsi``
+    section and no ``roi`` section. This CPU function projects the eight-class
+    ridge scores, applies Bora's reviewed tissue support, smooths contours at
+    6 µm, removes positive islands and enclosed holes below 2,000 µm², and
+    exports a full-resolution TIFF and native-coordinate GeoJSON. It refuses
+    an existing output directory and preserves partial output on failure.
+
+    Returns verification status, the receipt hash, and absolute artifact paths. The
+    same path is used by ``bora predict`` when its manifest contains ``wsi``.
+    """
+    from .supervised import _read_manifest, predict
+
+    manifest, output = Path(manifest), Path(output)
+    spec = _read_manifest(manifest, "bora-supervised-predict-v1")
+    if not isinstance(spec.get("wsi"), dict) or spec.get("roi") is not None:
+        raise ValueError("Full-slide segmentation requires wsi settings and no ROI settings")
+    predict(manifest, output)
+    folder = output / "full-slide"
+    verified = verify_wsi(folder)
+    return {
+        "status": verified["status"],
+        "full_slide_receipt_sha256": verified["receipt_sha256"],
+        "mask_tiff": str((folder / "supervised-bora.mask-0p5um.tif").resolve()),
+        "native_geojson": str((folder / "supervised-bora.native.geojson").resolve()),
+    }
+

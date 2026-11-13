@@ -19,6 +19,12 @@ and `bora verify`. Start with the [reproduce-one-result guide](docs/reproduce-on
 for a SHA256-pinned BCSS ROI, or read the [supervised command
 contract](docs/supervised-commands.md). Encoder inference and image calibration
 are upstream: these commands consume existing feature caches and run on CPU.
+
+For whole slides, `from bora import segment_full_slide` runs prediction,
+6 µm contour smoothing, 2,000 µm² raster/vector cleanup and native GeoJSON
+export from one checksum-pinned manifest. `bora predict` with the same `wsi`
+manifest uses this finalization path.
+
 The frozen [validation code release](docs/VALIDATION_FREEZE_2026-11-12.md)
 records source identities and limits. The 87-image Benchmark 1 gallery is an
 inspected development set, not an independent external test. The original
@@ -88,7 +94,8 @@ The public viewer is in [Bora-Analysis](https://github.com/tkcaccia/Bora-Analysi
   not override the eight-class method.
 - **Release lineage:** 0.2.3 added Chiamaka-local full-channel and tissue
   support fixes; 0.2.4 added MIT distribution metadata; 0.3.0 adds the
-  supervised commands while retaining historical routes. Source hashes and
+  supervised commands while retaining historical routes; 0.3.1 exposes the
+  existing whole-slide finalization as a public Python function. Source hashes and
   benchmark qualifications are in the [validation freeze](docs/VALIDATION_FREEZE_2026-11-12.md).
 
 The installed 0.3.0 route reproduced the frozen case-001 and case-069 ROI

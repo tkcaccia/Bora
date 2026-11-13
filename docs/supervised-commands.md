@@ -89,12 +89,35 @@ grids. To finalize a WSI, add a `wsi` object:
 
 The complete-slide path applies reviewed Bora tissue support, the
 training-frozen 2% class-presence rule, bicubic pixel projection, 400 µm²
-precontour cleanup, 6 µm contour smoothing, 2,000 µm² final cleanup, and
-native GeoJSON. It writes a TIFF, GeoJSON and bound receipts. The historical
-WSI finalizer remains the accepted production entry point until package output
-passes pixel and vector equivalence on a full approved slide. The supplied
+precontour cleanup, 6 µm contour smoothing, and 2,000 µm² final raster and
+vector cleanup. It checks every positive island and enclosed hole, then writes
+a full-resolution TIFF and native-coordinate GeoJSON. This is the same
+physical-scale finalization policy used by the current KODAMA–Bora whole-slide
+route; the class scores and group generation remain different. The supplied
 support must be in original native pixel edges and include a calibrated-to-
 native transform. Crops are display-only and never fitted independently.
+
+Python users can run the complete supervised slide pipeline as one function:
+
+```python
+from pathlib import Path
+from bora import segment_full_slide
+
+result = segment_full_slide(Path("image.json"), Path("output/slide-001"))
+print(result["mask_tiff"])
+print(result["native_geojson"])
+```
+
+`image.json` is the `bora-supervised-predict-v1` manifest above with its `wsi`
+section, a SHA256-pinned eight-class ridge model, and a SHA256-pinned full
+1,280-channel feature grid; omit `roi`. This CPU function calls the same path
+as `bora predict image.json --output output/slide-001` and verifies the final
+vector against the TIFF and reviewed support. It refuses an existing output
+directory and preserves partial files on failure. The output folder also
+contains `full-slide/FULL_SLIDE_VERIFIED.json`, class selection, cleanup and
+contour receipts. The installed package matched one frozen public ovarian
+slide in every full-resolution mask pixel and native polygon feature; that
+regression does not establish accuracy or equivalence on all slides.
 
 ## Evaluate and verify
 
