@@ -1,3 +1,10 @@
+# Bora for R 0.1.4
+
+- Align the hash-checked one-result guide and install command with the
+  current R/Python release pair. The R 0.1.3 plus Python 0.3.4 installed-wheel
+  replay matched the original training-region output hashes exactly; no
+  prediction algorithm changed in 0.1.4.
+
 # Bora for R 0.1.3
 
 - Joint KODAMA predictions now record the correct SHA256-bound source preview

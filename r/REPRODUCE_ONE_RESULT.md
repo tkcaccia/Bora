@@ -7,7 +7,7 @@ redistributed by the MIT-licensed Bora code.
 
 ## Environment and exact inputs
 
-Use Bora Python backend **0.3.1**, Bora R **0.1.0**, R **4.6.0**, and
+Use Bora Python backend **0.3.4**, Bora R **0.1.4**, R **4.6.0**, and
 Virchow2 revision `3158645804b69e3f3bc4439d4116edddf0840a72`. The
 checkpoint SHA256 is
 `8d6cea947eb2418c3b0dff48cfb9b238e47744ab0dfca21b2b0637b140769b4b`;
@@ -33,7 +33,8 @@ BCSS source data from its provider and reproduce the stated calibration,
 support and ontology mapping before using this hash target. A file with a
 different input hash is a different experiment.
 
-Install the matching Python wheel into a Python environment with PyTorch,
+Check out the exact R release and install its matching Python backend into a
+Python environment with PyTorch,
 `timm`, the licensed Virchow2 checkpoint and the package dependencies, then
 install the R package from this same checkout. Set `RETICULATE_PYTHON` to
 that environment's executable **before starting R**. KODAMA 0.99.7,
@@ -44,6 +45,8 @@ and preserve the Bora project's 100 GiB disk reserve on Chiamaka. A new
 output directory is required.
 
 ```bash
+git clone --branch bora-r-v0.1.4 https://github.com/tkcaccia/Bora.git
+cd Bora
 python -m pip install '.[wsi]'
 R CMD INSTALL r
 export RETICULATE_PYTHON=/path/to/encoder-python
@@ -96,5 +99,13 @@ The independently audited local receipts are
 `migration/bora-r-real-preparation-2026-11-14-v1/REAL_PREPARATION_AUDIT_VERIFIED.json`
 and
 `migration/bora-r-real-training-2026-11-14-v1/R_TRAINING_AND_PREDICTION_AUDIT_VERIFIED.json`.
+Installed Bora R **0.1.4** and a built Python **0.3.4** wheel reproduced the
+model, final TIFF, decoded mask pixels, preview, class-specific binary images
+and native GeoJSON exactly from the same SHA256-verified feature cache. The
+intermediate installed R 0.1.3 replay matched too. This source-free code
+change did not repeat GPU feature extraction: the full-channel factor-1/2/4
+arrays were SHA256-verified against the earlier extraction, and the feature
+worker source was unchanged across these releases. The installed-wheel replay
+audits are retained in `migration/bora-r-current-reproduction-2026-11-14-v1/`.
 The separate [Python reproduction guide](../docs/reproduce-one-result.md)
 covers the frozen eight-class development-case model.

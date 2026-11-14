@@ -1,4 +1,4 @@
-# Bora for R 0.1.3
+# Bora for R 0.1.4
 
 This MIT R package is released alongside the Bora Python backend.
 `Bora.preparation`, `Bora.training`, and the
@@ -30,7 +30,7 @@ licensed Virchow2 checkpoint is required for feature extraction. Set
 directory. Install the pinned source release and its matching Python backend:
 
 ```bash
-git clone --branch bora-r-v0.1.3 https://github.com/tkcaccia/Bora.git
+git clone --branch bora-r-v0.1.4 https://github.com/tkcaccia/Bora.git
 cd Bora
 python3 -m venv .venv
 .venv/bin/python -m pip install '.[wsi]'
