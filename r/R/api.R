@@ -129,10 +129,22 @@ Bora.training <- function(images, annotations, feature_dir,
 #' @param predictor Optional Bora.training result or model directory.
 #' @param output_dir New prediction directory.
 #' @param resolutions Optional numeric clustering-resolution values.
+#' @param source_mpp_xy Calibrated source X/Y pixel spacing in micrometres.
+#' @param output_mpp_xy Output X/Y pixel spacing in micrometres.
+#' @param minimum_area_um2 Minimum positive tissue-component area after cleanup.
+#' @param contour_sigma_um Physical width of class-contour smoothing.
+#' @param minimum_free_gib Required free-space reserve after projected outputs.
+#' @param max_new_gib Optional new-run peak storage cap in GiB.
 #' @return A prediction manifest object.
 #' @export
 Bora.prediction <- function(preparation, predictor = NULL, output_dir,
-                            resolutions = NULL) {
+                            resolutions = NULL,
+                            source_mpp_xy = c(.5, .5),
+                            output_mpp_xy = c(4, 4),
+                            minimum_area_um2 = 2000,
+                            contour_sigma_um = 6,
+                            minimum_free_gib = 1,
+                            max_new_gib = NULL) {
   if (inherits(preparation, "bora-r-preparation-v1")) {
     preparation <- dirname(preparation$manifest)
   }
@@ -157,8 +169,33 @@ Bora.prediction <- function(preparation, predictor = NULL, output_dir,
               any(resolutions <= 0) || anyDuplicated(resolutions))) {
     stop("resolutions must be distinct positive finite values", call. = FALSE)
   }
+  if (!is.numeric(source_mpp_xy) || length(source_mpp_xy) != 2L ||
+      anyNA(source_mpp_xy) || any(!is.finite(source_mpp_xy)) ||
+      any(source_mpp_xy <= 0) || !is.numeric(output_mpp_xy) ||
+      length(output_mpp_xy) != 2L || anyNA(output_mpp_xy) ||
+      any(!is.finite(output_mpp_xy)) || any(output_mpp_xy <= 0) ||
+      !is.numeric(minimum_area_um2) || length(minimum_area_um2) != 1L ||
+      is.na(minimum_area_um2) || !is.finite(minimum_area_um2) ||
+      minimum_area_um2 <= 0 || !is.numeric(contour_sigma_um) ||
+      length(contour_sigma_um) != 1L || is.na(contour_sigma_um) ||
+      !is.finite(contour_sigma_um) || contour_sigma_um <= 0 ||
+      !is.numeric(minimum_free_gib) || length(minimum_free_gib) != 1L ||
+      is.na(minimum_free_gib) || !is.finite(minimum_free_gib) ||
+      minimum_free_gib < 0 ||
+      (!is.null(max_new_gib) && (!is.numeric(max_new_gib) ||
+       length(max_new_gib) != 1L || is.na(max_new_gib) ||
+       !is.finite(max_new_gib) || max_new_gib <= 0))) {
+    stop("Measured spacing and finite positive prediction limits are required",
+         call. = FALSE)
+  }
   output_dir <- .bora_output_dir(output_dir, "output_dir")
-  .bora_backend()$predict(preparation, predictor, output_dir, resolutions)
+  .bora_backend()$predict(preparation, predictor, output_dir, resolutions,
+                          source_mpp_xy = as.list(as.numeric(source_mpp_xy)),
+                          output_mpp_xy = as.list(as.numeric(output_mpp_xy)),
+                          minimum_area_um2 = as.numeric(minimum_area_um2),
+                          contour_sigma_um = as.numeric(contour_sigma_um),
+                          minimum_free_gib = as.numeric(minimum_free_gib),
+                          max_new_gib = if (is.null(max_new_gib)) NULL else as.numeric(max_new_gib))
   .bora_result(file.path(output_dir, "PREDICTION_COMPLETE.json"),
                "bora-r-prediction-v1")
 }

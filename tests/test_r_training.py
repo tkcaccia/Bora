@@ -5,6 +5,7 @@ import pytest
 
 from bora.r_training import _annotation_grid, _sample_case, train
 from bora.r_feature_preflight import sha256
+from bora.r_prediction import load_model, output_shape, project_mask, score_case
 
 
 def test_class_raster_reads_exact_token_centres_and_requires_mapping(tmp_path):
@@ -100,3 +101,22 @@ def test_fit_uses_frozen_factor_one_head_with_multiscale_cache(tmp_path):
     assert result["classes"] == [1, 2]
     with np.load(result["model_path"], allow_pickle=False) as fitted:
         assert fitted["selected"].max() < 1280
+    checked_model = load_model(tmp_path / "model")
+    frozen = json.loads((preparation / "PREPARATION_COMPLETE.json").read_text())
+    score = score_case(frozen, frozen["cases"][0], checked_model,
+                       tmp_path / "scores")
+    smoothed = np.load(score["smoothed_scores_path"], mmap_mode="r")
+    assert smoothed.shape == (2, 2, 2)
+    assert output_shape((28, 28), (.5, .5), (.5, .5)) == (28, 28)
+    native = tmp_path / "native.dat"
+    project_mask(smoothed, checked_model["classes"], (28, 28), (1, 1), native)
+    pixels = np.memmap(native, mode="r", dtype=np.uint8, shape=(28, 28))
+    assert pixels[14, 0] == 1 and pixels[14, 27] == 2
+    clip = np.ones((28, 28), np.uint8)
+    clip[:14] = 0
+    clipped = tmp_path / "clipped.dat"
+    project_mask(smoothed, checked_model["classes"], (28, 28), (1, 1),
+                 clipped, support=clip)
+    masked_pixels = np.memmap(clipped, mode="r", dtype=np.uint8, shape=(28, 28))
+    assert not masked_pixels[:14].any()
+    assert np.array_equal(masked_pixels[14:], pixels[14:])

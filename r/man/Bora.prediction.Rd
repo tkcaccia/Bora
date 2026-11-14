@@ -4,7 +4,18 @@
 \alias{Bora.prediction}
 \title{Predict tissue masks from prepared Virchow2 features}
 \usage{
-Bora.prediction(preparation, predictor = NULL, output_dir, resolutions = NULL)
+Bora.prediction(
+  preparation,
+  predictor = NULL,
+  output_dir,
+  resolutions = NULL,
+  source_mpp_xy = c(0.5, 0.5),
+  output_mpp_xy = c(4, 4),
+  minimum_area_um2 = 2000,
+  contour_sigma_um = 6,
+  minimum_free_gib = 1,
+  max_new_gib = NULL
+)
 }
 \arguments{
 \item{preparation}{Bora.preparation result or its cache directory.}
@@ -14,6 +25,18 @@ Bora.prediction(preparation, predictor = NULL, output_dir, resolutions = NULL)
 \item{output_dir}{New prediction directory.}
 
 \item{resolutions}{Optional numeric clustering-resolution values.}
+
+\item{source_mpp_xy}{Calibrated source X/Y pixel spacing in micrometres.}
+
+\item{output_mpp_xy}{Output X/Y pixel spacing in micrometres.}
+
+\item{minimum_area_um2}{Minimum positive tissue-component area after cleanup.}
+
+\item{contour_sigma_um}{Physical width of class-contour smoothing.}
+
+\item{minimum_free_gib}{Required free-space reserve after projected outputs.}
+
+\item{max_new_gib}{Optional new-run peak storage cap in GiB.}
 }
 \value{
 A prediction manifest object.

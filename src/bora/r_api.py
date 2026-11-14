@@ -282,3 +282,22 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
     return fit_class_head(images, annotations, feature_dir, class_labels,
                           output_dir, max_tokens_per_class=max_tokens_per_class,
                           channels_per_class=channels_per_class, alpha=alpha)
+
+
+def predict(preparation, predictor, output_dir, resolutions,
+            *, source_mpp_xy=(.5, .5), output_mpp_xy=(4.0, 4.0),
+            minimum_area_um2=2000.0, contour_sigma_um=6.0,
+            minimum_free_gib=1.0, max_new_gib=None) -> dict:
+    """Dispatch the R prediction route without changing frozen Python CLIs."""
+    if predictor is None:
+        raise NotImplementedError("Joint-image KODAMA route is not yet released in the R interface")
+    if resolutions is not None:
+        raise ValueError("Supervised prediction does not accept cluster resolutions")
+    from .r_prediction import predict_supervised
+    return predict_supervised(preparation, predictor, output_dir,
+        source_mpp_xy=tuple(map(float, source_mpp_xy)),
+        output_mpp_xy=tuple(map(float, output_mpp_xy)),
+        minimum_area_um2=float(minimum_area_um2),
+        contour_sigma_um=float(contour_sigma_um),
+        minimum_free_gib=float(minimum_free_gib),
+        max_new_gib=None if max_new_gib is None else float(max_new_gib))

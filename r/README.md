@@ -1,10 +1,10 @@
 # Bora for R (development)
 
 This R package is being built alongside the MIT Bora Python package. It is
-not yet a released interface. `Bora.preparation` and `Bora.training` have
-synthetic end-to-end pilots; `Bora.prediction` has an exported R contract but
-its Python backend is still under development. None of these routes has yet
-passed the required real-image regression for release.
+not yet a released interface. `Bora.preparation`, `Bora.training`, and the
+supervised branch of `Bora.prediction` have synthetic end-to-end pilots.
+The KODAMA branch of `Bora.prediction` is still under development. None of
+these routes has yet passed the required real-image regression for release.
 
 The R package calls the version-matched Bora Python backend through
 `reticulate`. Virchow2 weights are separately licensed and are never bundled
@@ -26,3 +26,11 @@ For benchmark runs, supply an independently prepared tissue mask for every
 image. Without a mask, preparation intentionally encodes the full H&E field,
 including glass. Class annotations used by training are separate from these
 tissue-support masks.
+
+Supervised prediction projects class scores from the full-channel factor-1
+cache, saves native and common-support-clipped masks separately, applies
+measured-area and contour cleanup, and writes class-specific binary TIFFs,
+the multiclass TIFF, source-pixel-coordinate GeoJSON, and a preview. The
+physical pixel spacing must be supplied for each calibrated image. Synthetic
+output equivalence does not establish whole-slide memory or numerical
+regression against the historical eight-class release.
