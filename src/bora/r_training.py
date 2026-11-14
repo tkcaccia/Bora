@@ -214,7 +214,7 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
     per_case_quota = max(1, math.ceil(max_tokens_per_class / len(images)))
     chunks, labels = [], []
     rows = []
-    factors = None
+    factors = [1]  # the frozen supervised head uses factor-1, 1,280-channel tokens
     try:
         for index, (image, annotation, mapping) in enumerate(zip(images, annotations, class_labels)):
             case = preparation["cases"][index]
@@ -224,12 +224,9 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
             if not annotation.is_file():
                 raise FileNotFoundError(annotation)
             grids = _verified_scales(preparation, case)
-            if factors is None:
-                factors = list(grids)
-            elif list(grids) != factors:
-                raise ValueError("All training images need identical feature scales")
             target = _annotation_grid(annotation, tuple(source["image_shape_yx"]), mapping)
-            features, y, counts = _sample_case(grids, target, per_case_quota, rng)
+            features, y, counts = _sample_case({1: grids[1]}, target,
+                                                per_case_quota, rng)
             if len(y):
                 chunks.append(features)
                 labels.append(y)

@@ -17,8 +17,8 @@ be published after all three end-to-end routes pass regression.
 `Bora.training` reads exact-size class raster masks or pixel-coordinate class
 GeoJSON. Class IDs must be present in the annotation or supplied with
 `class_labels` as a list of named integer mappings (one per image); zero is
-unscored. It samples the prepared full-channel arrays
-at factor-1 token centres, selects classwise contrast channels and fits a
+unscored. It samples the prepared full 1,280-channel factor-1 array
+at token centres, selects classwise contrast channels and fits a
 linear ridge head. This general R route is separate from the frozen historical
 eight-class checkpoint until full regression is complete.
 
