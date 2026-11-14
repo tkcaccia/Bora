@@ -9,7 +9,10 @@ Bora.training(
   annotations,
   feature_dir,
   class_labels = NULL,
-  output_dir
+  output_dir,
+  max_tokens_per_class = 8000L,
+  channels_per_class = 32L,
+  alpha = 10
 )
 }
 \arguments{
@@ -22,6 +25,13 @@ Bora.training(
 \item{class_labels}{Optional per-image label mappings.}
 
 \item{output_dir}{New model output directory.}
+
+\item{max_tokens_per_class}{Maximum sampled factor-1 token centres per class
+across the training images, allocated evenly by image.}
+
+\item{channels_per_class}{Standardized contrast channels selected per class.}
+
+\item{alpha}{Positive ridge penalty.}
 }
 \value{
 A predictor manifest object.

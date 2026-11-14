@@ -272,3 +272,13 @@ def prepare(images, tissue_masks, feature_dir, model_dir, scales,
                    "worker_evidence": error.evidence if isinstance(error, FeatureWorkerFailure) else None}
         _atomic_json(output / "PREPARATION_FAILED.json", failure)
         raise
+
+
+def train(images, annotations, feature_dir, class_labels, output_dir,
+          *, max_tokens_per_class: int = 8000,
+          channels_per_class: int = 32, alpha: float = 10.0) -> dict:
+    """Fit one source-bound classwise ridge head from prepared full channels."""
+    from .r_training import train as fit_class_head
+    return fit_class_head(images, annotations, feature_dir, class_labels,
+                          output_dir, max_tokens_per_class=max_tokens_per_class,
+                          channels_per_class=channels_per_class, alpha=alpha)

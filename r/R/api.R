@@ -57,10 +57,16 @@ Bora.preparation <- function(images, tissue_masks = NULL, feature_dir,
 #' @param feature_dir An existing Bora.preparation manifest or cache directory.
 #' @param class_labels Optional per-image label mappings.
 #' @param output_dir New model output directory.
+#' @param max_tokens_per_class Maximum sampled factor-1 token centres per class
+#'   across the training images, allocated evenly by image.
+#' @param channels_per_class Standardized contrast channels selected per class.
+#' @param alpha Positive ridge penalty.
 #' @return A predictor manifest object.
 #' @export
 Bora.training <- function(images, annotations, feature_dir,
-                          class_labels = NULL, output_dir) {
+                          class_labels = NULL, output_dir,
+                          max_tokens_per_class = 8000L,
+                          channels_per_class = 32L, alpha = 10) {
   images <- .bora_paths(images, "images")
   annotations <- .bora_paired_paths(annotations, images, "annotations")
   if (is.null(annotations)) {
@@ -78,8 +84,21 @@ Bora.training <- function(images, annotations, feature_dir,
     stop("feature_dir must be one existing preparation directory", call. = FALSE)
   }
   output_dir <- .bora_output_dir(output_dir, "output_dir")
+  if (!is.numeric(max_tokens_per_class) || length(max_tokens_per_class) != 1L ||
+      is.na(max_tokens_per_class) || max_tokens_per_class != as.integer(max_tokens_per_class) ||
+      max_tokens_per_class < 1L || max_tokens_per_class > 100000L ||
+      !is.numeric(channels_per_class) || length(channels_per_class) != 1L ||
+      is.na(channels_per_class) || channels_per_class != as.integer(channels_per_class) ||
+      channels_per_class < 1L || channels_per_class > 1280L ||
+      !is.numeric(alpha) || length(alpha) != 1L || is.na(alpha) ||
+      !is.finite(alpha) || alpha <= 0) {
+    stop("Finite positive training limits and ridge penalty are required", call. = FALSE)
+  }
   .bora_backend()$train(as.list(images), as.list(annotations), feature_dir,
-                        class_labels, output_dir)
+                        class_labels, output_dir,
+                        max_tokens_per_class = as.integer(max_tokens_per_class),
+                        channels_per_class = as.integer(channels_per_class),
+                        alpha = as.numeric(alpha))
   .bora_result(file.path(output_dir, "TRAINING_COMPLETE.json"),
                "bora-r-training-v1")
 }
