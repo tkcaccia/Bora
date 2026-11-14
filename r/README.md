@@ -49,6 +49,13 @@ image. Without a mask, preparation intentionally encodes the full H&E field,
 including glass. Class annotations used by training are separate from these
 tissue-support masks.
 
+For a reviewed tissue-area GeoJSON, the Python package function
+`bora.r_tissue_support.materialize_reviewed_tissue_support` makes an aligned,
+tiled TIFF and an exact-pixel/source-hash receipt. The Bora-Analysis benchmark
+wrapper calls that function; the package owns the rasterization and tile-count
+checks. This procedure does not infer the tissue boundary or certify the
+manual review.
+
 Supervised prediction projects class scores from the full-channel factor-1
 cache, saves native and common-support-clipped masks separately, applies
 measured-area and contour cleanup, and writes class-specific binary TIFFs,
