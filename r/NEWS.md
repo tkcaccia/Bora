@@ -1,3 +1,14 @@
+# Bora for R 0.1.1
+
+- `Bora.prediction(preview_backend = "gdal-lanczos")` uses compiled GDAL
+  downsampling for large tiled H&E previews. The default
+  `"vips-lanczos3"` retains byte-for-byte historical previews. On one
+  source-only ovarian WSI, the explicit GDAL option reduced the thumbnail
+  read from 120.82 to 1.37 seconds on warmed input. The full prediction
+  replay took 29.96 seconds and kept 14 score, mask, binary TIFF, support
+  and GeoJSON artifacts byte-identical to the frozen run. Only preview
+  pixels changed slightly (mean absolute RGB difference 0.978/255).
+
 # Bora for R 0.1.0
 
 - First source release of `Bora.preparation`, `Bora.training` and

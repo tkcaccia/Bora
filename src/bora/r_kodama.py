@@ -257,13 +257,16 @@ def complete_joint(preparation_dir: Path, stage_dir: Path, cluster_dir: Path,
                    minimum_area_um2: float = 2000.0,
                    contour_sigma_um: float = 6.0,
                    minimum_free_gib: float = 1.0,
-                   max_new_gib: float | None = None) -> dict:
+                   max_new_gib: float | None = None,
+                   preview_backend: str = "vips-lanczos3") -> dict:
     """Project each joint solution back to every source image and write masks."""
     from .r_prediction import (
         _preview, _resource_admission, _write_mask_tiff,
         finalize_projected_mask, output_shape, output_support,
         project_mask, score_case, source_coordinate_geojson,
     )
+    if preview_backend not in ("vips-lanczos3", "gdal-lanczos"):
+        raise ValueError("Unknown preview backend")
 
     prep_path = Path(preparation_dir).resolve() / 'PREPARATION_COMPLETE.json'
     stage_path = Path(stage_dir).resolve() / 'JOINT_STAGE_COMPLETE.json'
@@ -388,7 +391,10 @@ def complete_joint(preparation_dir: Path, stage_dir: Path, cluster_dir: Path,
                                    list(map(int, head['classes'])),
                                    folder / 'preview.png',
                                    source_rgb_cache=preview_cache /
-                                   f'image-{case_index:03d}.npy')
+                                   (f'image-{case_index:03d}.npy' if
+                                    preview_backend == "vips-lanczos3" else
+                                    f'image-{case_index:03d}.gdal-lanczos.npy'),
+                                   backend=preview_backend)
                 record = {'format': 'bora-r-anonymous-prediction-case-v1',
                           'status': 'COMPLETE', 'image': str(image_path),
                           'image_sha256': source['image_sha256'],

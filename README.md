@@ -20,7 +20,7 @@ for a SHA256-pinned BCSS ROI, or read the [supervised command
 contract](docs/supervised-commands.md). Encoder inference and image calibration
 are upstream: these commands consume existing feature caches and run on CPU.
 
-The [Bora R 0.1.0 interface](r/README.md) exports `Bora.preparation`,
+The [Bora R 0.1.1 interface](r/README.md) exports `Bora.preparation`,
 `Bora.training`, and `Bora.prediction`. It uses the matching Python backend
 through reticulate, keeps full-channel feature arrays on disk, and supports
 supervised and joint-image KODAMA routes. The [R one-result guide](r/REPRODUCE_ONE_RESULT.md)
@@ -103,7 +103,9 @@ The public viewer is in [Bora-Analysis](https://github.com/tkcaccia/Bora-Analysi
 - **Release lineage:** 0.2.3 added Chiamaka-local full-channel and tissue
   support fixes; 0.2.4 added MIT distribution metadata; 0.3.0 adds the
   supervised commands while retaining historical routes; 0.3.1 exposes the
-  existing whole-slide finalization as a public Python function. Source hashes and
+  existing whole-slide finalization as a public Python function; 0.3.2 adds
+  an explicit GDAL Lanczos preview option for tiled TIFFs while preserving
+  the historical libvips default. Source hashes and
   benchmark qualifications are in the [validation freeze](docs/VALIDATION_FREEZE_2026-11-12.md).
 
 The installed 0.3.0 route reproduced the frozen case-001 and case-069 ROI

@@ -23,4 +23,6 @@ test_that("prediction requires an existing preparation directory", {
   expect_error(Bora.prediction(tempfile(), output_dir = tempfile()), "missing path")
   expect_error(Bora.prediction(tempdir(), output_dir = tempfile(),
                                resolutions = c(1, 1)), "distinct")
+  expect_error(Bora.prediction(tempdir(), output_dir = tempfile(),
+                               preview_backend = "unknown"), "preview_backend")
 })

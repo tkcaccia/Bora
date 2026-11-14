@@ -15,7 +15,8 @@ Bora.prediction(
   contour_sigma_um = 6,
   minimum_free_gib = 1,
   max_new_gib = NULL,
-  max_joint_tiles = 10000L
+  max_joint_tiles = 10000L,
+  preview_backend = "vips-lanczos3"
 )
 }
 \arguments{
@@ -41,6 +42,10 @@ Bora.prediction(
 
 \item{max_joint_tiles}{Maximum tiles admitted to a joint KODAMA fit; no
 tiles are silently sampled away.}
+
+\item{preview_backend}{`"vips-lanczos3"` preserves historical preview bytes;
+`"gdal-lanczos"` is faster for large tiled TIFFs but may change preview
+RGB values slightly. Neither changes the class mask or GeoJSON.}
 }
 \value{
 A prediction manifest object.

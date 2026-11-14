@@ -510,25 +510,39 @@ def _write_mask_tiff(array: np.ndarray, path: Path, *, equals: int | None = None
 
 
 def _preview(image_path: Path, final_tiff: Path, classes: list[int], path: Path,
-             *, source_rgb_cache: Path | None = None) -> dict:
-    import pyvips
+             *, source_rgb_cache: Path | None = None,
+             backend: str = "vips-lanczos3") -> dict:
     import rasterio
     from rasterio.enums import Resampling
     from PIL import Image
 
+    if backend not in ("vips-lanczos3", "gdal-lanczos"):
+        raise ValueError("Unknown preview backend")
     if source_rgb_cache is not None and source_rgb_cache.exists():
         rgb = np.load(source_rgb_cache, allow_pickle=False)
         if (rgb.ndim != 3 or rgb.shape[2] != 3 or max(rgb.shape[:2]) > 1024
                 or rgb.dtype != np.uint8):
             raise ValueError("Cached preview is not calibrated uint8 RGB")
     else:
-        source = pyvips.Image.new_from_file(str(image_path), access="sequential")
-        scale = min(1, 1024 / max(source.width, source.height))
-        small = source.resize(scale, kernel="lanczos3")
-        if small.bands != 3 or small.format != "uchar":
-            raise ValueError("Preview source is not calibrated uint8 RGB")
-        rgb = np.ndarray(buffer=small.write_to_memory(), dtype=np.uint8,
-                         shape=(small.height, small.width, 3)).copy()
+        if backend == "vips-lanczos3":
+            import pyvips
+            source = pyvips.Image.new_from_file(str(image_path), access="sequential")
+            scale = min(1, 1024 / max(source.width, source.height))
+            small = source.resize(scale, kernel="lanczos3")
+            if small.bands != 3 or small.format != "uchar":
+                raise ValueError("Preview source is not calibrated uint8 RGB")
+            rgb = np.ndarray(buffer=small.write_to_memory(), dtype=np.uint8,
+                             shape=(small.height, small.width, 3)).copy()
+        else:
+            with rasterio.open(image_path) as source:
+                if source.count != 3 or any(dtype != "uint8" for dtype in source.dtypes):
+                    raise ValueError("Preview source is not calibrated uint8 RGB")
+                scale = min(1, 1024 / max(source.width, source.height))
+                height = max(1, round(source.height * scale))
+                width = max(1, round(source.width * scale))
+                bands = source.read((1, 2, 3), out_shape=(3, height, width),
+                                    resampling=Resampling.lanczos)
+                rgb = np.ascontiguousarray(np.moveaxis(bands, 0, -1))
         if source_rgb_cache is not None:
             temporary = source_rgb_cache.with_name(source_rgb_cache.name + ".partial")
             with temporary.open("xb") as stream:
@@ -545,9 +559,12 @@ def _preview(image_path: Path, final_tiff: Path, classes: list[int], path: Path,
         inside = labels == cls
         overlay[inside] = .45 * overlay[inside] + .55 * color
     Image.fromarray(overlay.clip(0, 255).astype(np.uint8)).save(path)
-    return {"path": str(path), "sha256": sha256(path),
+    result = {"path": str(path), "sha256": sha256(path),
             "shape_yx": list(rgb.shape[:2]),
             "format": "RGB overlay; colors identify class IDs"}
+    if backend != "vips-lanczos3":
+        result["source_thumbnail_backend"] = backend
+    return result
 
 
 def _resource_admission(preparation: dict, model: dict,
@@ -600,7 +617,8 @@ def predict_supervised(preparation_dir: Path, predictor_dir: Path, output_dir: P
                        minimum_area_um2: float = 2000.0,
                        contour_sigma_um: float = 6.0,
                        minimum_free_gib: float = 1.0,
-                       max_new_gib: float | None = None) -> dict:
+                       max_new_gib: float | None = None,
+                       preview_backend: str = "vips-lanczos3") -> dict:
     """Complete the supervised route with native and common-support outputs."""
     root = Path(preparation_dir).resolve()
     manifest_path = root / "PREPARATION_COMPLETE.json"
@@ -612,6 +630,8 @@ def predict_supervised(preparation_dir: Path, predictor_dir: Path, output_dir: P
     if not all(math.isfinite(v) and v > 0 for v in (*source_mpp_xy, *output_mpp_xy)) or \
        minimum_area_um2 <= 0 or contour_sigma_um <= 0:
         raise ValueError("Measured spacing and positive cleanup limits required")
+    if preview_backend not in ("vips-lanczos3", "gdal-lanczos"):
+        raise ValueError("Unknown preview backend")
     output = Path(output_dir).resolve()
     if output.exists():
         raise FileExistsError(output)
@@ -667,7 +687,7 @@ def predict_supervised(preparation_dir: Path, predictor_dir: Path, output_dir: P
                     equals=int(cls))
             preview = _preview(image_path, Path(masks["final"]["path"]),
                                list(map(int, model["classes"])),
-                               folder / "preview.png")
+                               folder / "preview.png", backend=preview_backend)
             record = {"format": "bora-r-prediction-case-v1", "status": "COMPLETE",
                       "image": str(image_path),
                       "image_sha256": source["image_sha256"],

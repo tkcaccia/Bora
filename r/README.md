@@ -1,4 +1,4 @@
-# Bora for R 0.1.0
+# Bora for R 0.1.1
 
 This MIT R package is released alongside the Bora Python backend.
 `Bora.preparation`, `Bora.training`, and the
@@ -30,7 +30,7 @@ licensed Virchow2 checkpoint is required for feature extraction. Set
 directory. Install the pinned source release and its matching Python backend:
 
 ```bash
-git clone --branch bora-r-v0.1.0 https://github.com/tkcaccia/Bora.git
+git clone --branch bora-r-v0.1.1 https://github.com/tkcaccia/Bora.git
 cd Bora
 python3 -m venv .venv
 .venv/bin/python -m pip install '.[wsi]'
@@ -114,6 +114,17 @@ both preview files had the historical SHA256. This measures preview reuse,
 not an overall prediction speedup or KODAMA fit time. The core interpolation
 and geometry work already runs in compiled OpenCV, rasterio and GEOS paths;
 we have not replaced it with an unprofiled C++ rewrite.
+
+For a faster preview on a large tiled TIFF, pass
+`preview_backend = "gdal-lanczos"` to `Bora.prediction`. The default
+`"vips-lanczos3"` keeps historical preview PNG bytes reproducible. On the
+same ovarian slide, a warmed GDAL thumbnail took 1.37 seconds versus
+120.82 seconds for the libvips path. A complete source-only replay with
+the GDAL option took 29.96 seconds; raw and smoothed scores, native and final
+mask TIFFs, eight binary TIFFs, common support and GeoJSON remained
+byte-identical to the frozen result. The preview RGB changed slightly
+(mean absolute channel difference 0.978/255). This is one slide profile,
+not a cross-format speed guarantee.
 
 A source-only BCSS H&E region regression reused an independently verified
 full-1,280-channel historical cache and a separately computed H&E tissue

@@ -287,7 +287,8 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
 def predict(preparation, predictor, output_dir, resolutions,
             *, source_mpp_xy=(.5, .5), output_mpp_xy=(4.0, 4.0),
             minimum_area_um2=2000.0, contour_sigma_um=6.0,
-            minimum_free_gib=1.0, max_new_gib=None) -> dict:
+            minimum_free_gib=1.0, max_new_gib=None,
+            preview_backend="vips-lanczos3") -> dict:
     """Dispatch the R prediction route without changing frozen Python CLIs."""
     if predictor is None:
         raise NotImplementedError("Joint-image KODAMA route is not yet released in the R interface")
@@ -300,7 +301,8 @@ def predict(preparation, predictor, output_dir, resolutions,
         minimum_area_um2=float(minimum_area_um2),
         contour_sigma_um=float(contour_sigma_um),
         minimum_free_gib=float(minimum_free_gib),
-        max_new_gib=None if max_new_gib is None else float(max_new_gib))
+        max_new_gib=None if max_new_gib is None else float(max_new_gib),
+        preview_backend=preview_backend)
 
 
 def joint_stage(preparation, output_dir, *, max_joint_tiles: int = 10000,
@@ -315,7 +317,8 @@ def joint_stage(preparation, output_dir, *, max_joint_tiles: int = 10000,
 def joint_complete(preparation, stage_dir, cluster_dir, output_dir,
                    *, source_mpp_xy=(.5, .5), output_mpp_xy=(4.0, 4.0),
                    minimum_area_um2=2000.0, contour_sigma_um=6.0,
-                   minimum_free_gib=1.0, max_new_gib=None) -> dict:
+                   minimum_free_gib=1.0, max_new_gib=None,
+                   preview_backend="vips-lanczos3") -> dict:
     """Return joint KODAMA groups to each source H&E image."""
     from .r_kodama import complete_joint
     return complete_joint(preparation, stage_dir, cluster_dir, output_dir,
@@ -324,4 +327,5 @@ def joint_complete(preparation, stage_dir, cluster_dir, output_dir,
                           minimum_area_um2=float(minimum_area_um2),
                           contour_sigma_um=float(contour_sigma_um),
                           minimum_free_gib=float(minimum_free_gib),
-                          max_new_gib=None if max_new_gib is None else float(max_new_gib))
+                          max_new_gib=None if max_new_gib is None else float(max_new_gib),
+                          preview_backend=preview_backend)
