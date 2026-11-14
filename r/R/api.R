@@ -76,6 +76,22 @@ Bora.training <- function(images, annotations, feature_dir,
       (!is.list(class_labels) || length(class_labels) != length(images))) {
     stop("class_labels must be a list with one mapping per image", call. = FALSE)
   }
+  if (!is.null(class_labels)) {
+    class_labels <- lapply(class_labels, function(mapping) {
+      if (!is.numeric(mapping) || !length(mapping) || anyNA(mapping) ||
+          is.null(names(mapping)) || any(!nzchar(names(mapping))) ||
+          anyDuplicated(names(mapping)) ||
+          any(mapping != as.integer(mapping)) ||
+          any(mapping < 1L | mapping > 254L)) {
+        stop("Each class mapping must be a named integer vector with IDs 1..254",
+             call. = FALSE)
+      }
+      # A named R list becomes a Python dict; a named atomic vector does not.
+      value <- as.list(as.integer(mapping))
+      names(value) <- names(mapping)
+      value
+    })
+  }
   if (inherits(feature_dir, "bora-r-preparation-v1")) {
     feature_dir <- dirname(feature_dir$manifest)
   }
