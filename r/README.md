@@ -1,0 +1,18 @@
+# Bora for R (development)
+
+This R package is being built alongside the MIT Bora Python package. It is
+not yet a released interface. The three exported functions are
+`Bora.preparation`, `Bora.training`, and `Bora.prediction`.
+
+The R package will call the version-matched Bora Python backend through
+`reticulate`. Virchow2 weights are separately licensed and are never bundled
+with Bora. A user-managed Python environment with Bora, PyTorch, timm and the
+licensed Virchow2 checkpoint is required for feature extraction. Set
+`RETICULATE_PYTHON` before starting R and `BORA_VIRCHOW2_MODEL` to the model
+directory. The package's production install command and result reproduction
+guide will be published after all three end-to-end routes pass regression.
+
+For benchmark runs, supply an independently prepared tissue mask for every
+image. Without a mask, preparation intentionally encodes the full H&E field,
+including glass. Class annotations used by training are separate from these
+tissue-support masks.

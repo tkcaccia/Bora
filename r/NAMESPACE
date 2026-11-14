@@ -1,0 +1,5 @@
+useDynLib(Bora, .registration = TRUE)
+importFrom(Rcpp, evalCpp)
+export(Bora.preparation)
+export(Bora.training)
+export(Bora.prediction)

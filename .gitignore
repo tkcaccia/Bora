@@ -46,3 +46,9 @@ benchmark/prepared/
 benchmark/results/
 benchmark/models/
 benchmark/experiments/
+
+# R package build products
+Bora.Rcheck/
+Bora_*.tar.gz
+r/src/*.o
+r/src/*.so
