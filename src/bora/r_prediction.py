@@ -509,21 +509,35 @@ def _write_mask_tiff(array: np.ndarray, path: Path, *, equals: int | None = None
             "shape_yx": [height, width], "class_id": equals}
 
 
-def _preview(image_path: Path, final_tiff: Path, classes: list[int], path: Path) -> dict:
+def _preview(image_path: Path, final_tiff: Path, classes: list[int], path: Path,
+             *, source_rgb_cache: Path | None = None) -> dict:
     import pyvips
     import rasterio
     from rasterio.enums import Resampling
     from PIL import Image
 
-    source = pyvips.Image.new_from_file(str(image_path), access="sequential")
-    scale = min(1, 1024 / max(source.width, source.height))
-    small = source.resize(scale, kernel="lanczos3")
-    if small.bands != 3 or small.format != "uchar":
-        raise ValueError("Preview source is not calibrated uint8 RGB")
-    rgb = np.ndarray(buffer=small.write_to_memory(), dtype=np.uint8,
-                     shape=(small.height, small.width, 3)).copy()
+    if source_rgb_cache is not None and source_rgb_cache.exists():
+        rgb = np.load(source_rgb_cache, allow_pickle=False)
+        if (rgb.ndim != 3 or rgb.shape[2] != 3 or max(rgb.shape[:2]) > 1024
+                or rgb.dtype != np.uint8):
+            raise ValueError("Cached preview is not calibrated uint8 RGB")
+    else:
+        source = pyvips.Image.new_from_file(str(image_path), access="sequential")
+        scale = min(1, 1024 / max(source.width, source.height))
+        small = source.resize(scale, kernel="lanczos3")
+        if small.bands != 3 or small.format != "uchar":
+            raise ValueError("Preview source is not calibrated uint8 RGB")
+        rgb = np.ndarray(buffer=small.write_to_memory(), dtype=np.uint8,
+                         shape=(small.height, small.width, 3)).copy()
+        if source_rgb_cache is not None:
+            temporary = source_rgb_cache.with_name(source_rgb_cache.name + ".partial")
+            with temporary.open("xb") as stream:
+                np.save(stream, rgb, allow_pickle=False)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temporary, source_rgb_cache)
     with rasterio.open(final_tiff) as raster:
-        labels = raster.read(1, out_shape=(small.height, small.width),
+        labels = raster.read(1, out_shape=rgb.shape[:2],
                              resampling=Resampling.nearest)
     overlay = rgb.astype(np.float32)
     for cls in classes:
@@ -532,7 +546,7 @@ def _preview(image_path: Path, final_tiff: Path, classes: list[int], path: Path)
         overlay[inside] = .45 * overlay[inside] + .55 * color
     Image.fromarray(overlay.clip(0, 255).astype(np.uint8)).save(path)
     return {"path": str(path), "sha256": sha256(path),
-            "shape_yx": [small.height, small.width],
+            "shape_yx": list(rgb.shape[:2]),
             "format": "RGB overlay; colors identify class IDs"}
 
 

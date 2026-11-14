@@ -329,6 +329,8 @@ def complete_joint(preparation_dir: Path, stage_dir: Path, cluster_dir: Path,
         'projected_peak_new_bytes': projected,
         'minimum_free_gib': minimum_free_gib, 'max_new_gib': max_new_gib,
         'solutions': len(plans), 'source_images': len(prep['cases'])})
+    preview_cache = output / 'source-preview-rgb'
+    preview_cache.mkdir()
     complete = []
     try:
         for item, path, labels, head, admission in plans:
@@ -384,7 +386,9 @@ def complete_joint(preparation_dir: Path, stage_dir: Path, cluster_dir: Path,
                     equals=int(cls)) for cls in head['classes']}
                 preview = _preview(image_path, Path(masks['final']['path']),
                                    list(map(int, head['classes'])),
-                                   folder / 'preview.png')
+                                   folder / 'preview.png',
+                                   source_rgb_cache=preview_cache /
+                                   f'image-{case_index:03d}.npy')
                 record = {'format': 'bora-r-anonymous-prediction-case-v1',
                           'status': 'COMPLETE', 'image': str(image_path),
                           'image_sha256': source['image_sha256'],
@@ -423,6 +427,11 @@ def complete_joint(preparation_dir: Path, stage_dir: Path, cluster_dir: Path,
                              'receipt_sha256': sha256(solution_receipt)})
         result = {'format': 'bora-r-prediction-v1', 'status': 'COMPLETE',
                   'route': 'joint-image-kodama-anonymous-groups',
+                  'source_preview_caches': [
+                      {'path': str(preview_cache / f'image-{i:03d}.npy'),
+                       'sha256': sha256(preview_cache / f'image-{i:03d}.npy'),
+                       'source_image_sha256': case['source']['image_sha256']}
+                      for i, case in enumerate(prep['cases'])],
                   'preparation_manifest_sha256': sha256(prep_path),
                   'joint_stage_sha256': sha256(stage_path),
                   'clusters_sha256': sha256(cluster_path),

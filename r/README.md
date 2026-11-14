@@ -14,8 +14,10 @@ historical caches. One public ovarian whole slide passed installed-R
 prediction regression: raw and smoothed score arrays matched the frozen
 Python hashes, and native-coordinate GeoJSON roundtripped exactly to the
 final raster. That prediction took 2 min 49 s on CPU with 3.15 GiB peak host
-memory after feature extraction. These are selected technical regressions;
-broader reproducibility and cross-platform qualification remain pending.
+memory after feature extraction. The R source package builds and checks on
+Linux, macOS and Windows in CI; the Python CPU test matrix passes on Linux
+and macOS. These are selected technical regressions; multi-platform GPU
+feature extraction and broad biological validation remain pending.
 
 The [R installation and one-result guide](REPRODUCE_ONE_RESULT.md) records
 the exact real training-image input schema, commands and output hashes.
@@ -79,6 +81,18 @@ limit (default 10,000) and never silently downsamples the joint fit. Its
 performance on large whole slides remains to be profiled. The fabricated
 pilot is an interface and geometry check, not evidence of biological
 segmentation quality or historical numerical equivalence.
+
+**Preview performance.** In a source-only profile of one approved ovarian
+whole slide, 137.6 of 172.2 seconds (79.9%) of CPU prediction time went to
+creating the 1,024-pixel H&E preview, mostly decoding a single-page TIFF in
+libvips. The mask and GeoJSON remained byte- or pixel-identical to the frozen
+regression. The joint-image route now caches that source RGB thumbnail once
+per image and reuses it across requested clustering resolutions. On the same
+slide, the first preview took 150.61 seconds and reuse took 0.25 seconds;
+both preview files had the historical SHA256. This measures preview reuse,
+not an overall prediction speedup or KODAMA fit time. The core interpolation
+and geometry work already runs in compiled OpenCV, rasterio and GEOS paths;
+we have not replaced it with an unprofiled C++ rewrite.
 
 A source-only BCSS H&E region regression reused an independently verified
 full-1,280-channel historical cache and a separately computed H&E tissue
