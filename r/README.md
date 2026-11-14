@@ -7,8 +7,15 @@ The joint-image KODAMA branch of `Bora.prediction` also passed a fabricated
 two-image, two-resolution end-to-end pilot. One BCSS H&E region has passed
 source-registration and frozen supervised-head regressions. A separate frozen
 BCSS training image has passed real-image R fitting and prediction with an
-independent source-mask, coefficient and vector audit. Full-slide resource
-qualification and a broader reproducibility audit remain pending.
+independent source-mask, coefficient and vector audit. The same BCSS training
+image passed masked three-scale Virchow2 extraction through the installed R
+function: all three full-1,280-channel arrays were byte-identical to frozen
+historical caches. One public ovarian whole slide passed installed-R
+prediction regression: raw and smoothed score arrays matched the frozen
+Python hashes, and native-coordinate GeoJSON roundtripped exactly to the
+final raster. That prediction took 2 min 49 s on CPU with 3.15 GiB peak host
+memory after feature extraction. These are selected technical regressions;
+broader reproducibility and cross-platform qualification remain pending.
 
 The R package calls the version-matched Bora Python backend through
 `reticulate`. Virchow2 weights are separately licensed and are never bundled
@@ -46,7 +53,11 @@ adapter of the frozen 203-channel eight-class ridge head reproduced one
 historical BCSS display mask exactly (453,888 of 453,888 pixels), and R and
 Python projections produced identical score-array hashes. This is one
 inspected-development image, with no expert reference opened; it does not
-establish whole-slide memory or broad numerical equivalence.
+establish broad numerical equivalence. The separate ovarian WSI check
+established score-array identity and exact output geometry, but did not use
+a whole-slide expert reference. Its historical public display used a
+four-class class-presence gate; this regression projected all eight classes,
+so its final raster is not expected to match that display.
 
 With `predictor = NULL`, prediction pools every strictly admitted 224-pixel
 tile from the prepared images into one source-bound KODAMA 0.99.7 fit. A
