@@ -365,7 +365,9 @@ def complete_joint(preparation_dir: Path, stage_dir: Path, cluster_dir: Path,
                     output_mpp_xy, list(map(int, head['classes'])),
                     source['image_sha256'], model_hash, folder / 'cleanup',
                     minimum_area_um2=minimum_area_um2,
-                    contour_sigma_um=contour_sigma_um)
+                    contour_sigma_um=contour_sigma_um,
+                    class_names={str(int(cls)): f"Group {int(cls)}"
+                                 for cls in head['classes']})
                 vector = source_coordinate_geojson(
                     folder / 'cleanup/vectors-output-grid/exact/mask.geojson',
                     folder / 'class-mask.geojson',

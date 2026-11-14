@@ -254,7 +254,8 @@ def finalize_projected_mask(shared_mask_path: Path, support_path: Path,
                             classes: list[int], source_image_sha256: str,
                             model_sha256: str, output: Path,
                             *, minimum_area_um2: float = 2000.0,
-                            contour_sigma_um: float = 6.0) -> dict:
+                            contour_sigma_um: float = 6.0,
+                            class_names: dict[str, str] | None = None) -> dict:
     """Reuse frozen global repair, smoothing and vector guards on one grid.
 
     The vector publisher emits geometry in the *output grid* pixel coordinates.
@@ -272,6 +273,12 @@ def finalize_projected_mask(shared_mask_path: Path, support_path: Path,
             not 2 <= len(classes) <= 32 or len(set(classes)) != len(classes) or
             any(not 1 <= cls <= 254 for cls in classes)):
         raise ValueError("Invalid finalization geometry or class set")
+    if class_names is None:
+        class_names = {str(cls): f"class_{cls}" for cls in classes}
+    if set(class_names) != set(map(str, classes)) or \
+       any(not isinstance(value, str) or not value.strip()
+           for value in class_names.values()):
+        raise ValueError("Every final class requires one nonempty name")
     expected_bytes = shape_yx[0] * shape_yx[1]
     if Path(shared_mask_path).stat().st_size != expected_bytes or \
        Path(support_path).stat().st_size != expected_bytes:
@@ -320,7 +327,7 @@ def finalize_projected_mask(shared_mask_path: Path, support_path: Path,
             json.dumps(assembly_receipt, indent=2) + "\n")
         vector = publish_global_wsi_vectors(
             assembly, output / "vectors-output-grid",
-            {str(cls): f"class_{cls}" for cls in classes},
+            class_names,
             minimum_area_um2=minimum_area_um2,
             smoothing_tolerance_um=0.0)
         result = {"format": "bora-r-output-grid-finalization-v1",
