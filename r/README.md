@@ -17,6 +17,9 @@ final raster. That prediction took 2 min 49 s on CPU with 3.15 GiB peak host
 memory after feature extraction. These are selected technical regressions;
 broader reproducibility and cross-platform qualification remain pending.
 
+The [R installation and one-result guide](REPRODUCE_ONE_RESULT.md) records
+the exact real training-image input schema, commands and output hashes.
+
 The R package calls the version-matched Bora Python backend through
 `reticulate`. Virchow2 weights are separately licensed and are never bundled
 with Bora. A user-managed Python environment with Bora, PyTorch, timm and the

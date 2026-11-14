@@ -20,6 +20,13 @@ for a SHA256-pinned BCSS ROI, or read the [supervised command
 contract](docs/supervised-commands.md). Encoder inference and image calibration
 are upstream: these commands consume existing feature caches and run on CPU.
 
+An [R interface under development](r/README.md) exports `Bora.preparation`,
+`Bora.training`, and `Bora.prediction`. It uses the matching Python backend
+through reticulate, keeps full-channel feature arrays on disk, and supports
+supervised and joint-image KODAMA routes. The [R one-result guide](r/REPRODUCE_ONE_RESULT.md)
+gives a real training-ROI command and expected hashes. Cross-platform and
+larger-cohort qualification remain in progress.
+
 For whole slides, `from bora import segment_full_slide` runs prediction,
 6 µm contour smoothing, 2,000 µm² raster/vector cleanup and native GeoJSON
 export from one checksum-pinned manifest. `bora predict` with the same `wsi`
