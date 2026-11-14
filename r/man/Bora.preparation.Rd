@@ -9,7 +9,9 @@ Bora.preparation(
   tissue_masks = NULL,
   feature_dir,
   model_dir = Sys.getenv("BORA_VIRCHOW2_MODEL"),
-  scales = c(1L, 2L, 4L)
+  scales = c(1L, 2L, 4L),
+  max_seconds = 3600L,
+  minimum_free_gib = 1
 )
 }
 \arguments{
@@ -22,6 +24,10 @@ Bora.preparation(
 \item{model_dir}{Local licensed Virchow2 model directory.}
 
 \item{scales}{Integer scale factors; defaults to 1, 2 and 4.}
+
+\item{max_seconds}{Finite maximum GPU seconds for each image-scale worker.}
+
+\item{minimum_free_gib}{Minimum free-space reserve after projected features.}
 }
 \value{
 A manifest object with feature paths and provenance.

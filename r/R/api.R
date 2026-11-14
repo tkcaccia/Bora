@@ -10,11 +10,14 @@
 #' @param feature_dir New directory for reusable feature caches.
 #' @param model_dir Local licensed Virchow2 model directory.
 #' @param scales Integer scale factors; defaults to 1, 2 and 4.
+#' @param max_seconds Finite maximum GPU seconds for each image-scale worker.
+#' @param minimum_free_gib Minimum free-space reserve after projected features.
 #' @return A manifest object with feature paths and provenance.
 #' @export
 Bora.preparation <- function(images, tissue_masks = NULL, feature_dir,
                              model_dir = Sys.getenv("BORA_VIRCHOW2_MODEL"),
-                             scales = c(1L, 2L, 4L)) {
+                             scales = c(1L, 2L, 4L),
+                             max_seconds = 3600L, minimum_free_gib = 1) {
   images <- .bora_paths(images, "images")
   tissue_masks <- .bora_paired_paths(tissue_masks, images, "tissue_masks")
   feature_dir <- .bora_output_dir(feature_dir, "feature_dir")
@@ -27,8 +30,18 @@ Bora.preparation <- function(images, tissue_masks = NULL, feature_dir,
       anyDuplicated(scales)) {
     stop("scales must be distinct positive integers", call. = FALSE)
   }
-  .bora_backend()$prepare(images, tissue_masks, feature_dir, model_dir,
-                          as.integer(scales))
+  if (!is.numeric(max_seconds) || length(max_seconds) != 1L ||
+      is.na(max_seconds) || max_seconds != as.integer(max_seconds) ||
+      max_seconds < 60L || !is.numeric(minimum_free_gib) ||
+      length(minimum_free_gib) != 1L || is.na(minimum_free_gib) ||
+      !is.finite(minimum_free_gib) || minimum_free_gib < 0) {
+    stop("Finite max_seconds and minimum_free_gib values are required", call. = FALSE)
+  }
+  .bora_backend()$prepare(as.list(images),
+                          if (is.null(tissue_masks)) NULL else as.list(tissue_masks),
+                          feature_dir, model_dir, as.list(as.integer(scales)),
+                          max_seconds = as.integer(max_seconds),
+                          minimum_free_gib = as.numeric(minimum_free_gib))
   .bora_result(file.path(feature_dir, "PREPARATION_COMPLETE.json"),
                "bora-r-preparation-v1")
 }
@@ -65,7 +78,7 @@ Bora.training <- function(images, annotations, feature_dir,
     stop("feature_dir must be one existing preparation directory", call. = FALSE)
   }
   output_dir <- .bora_output_dir(output_dir, "output_dir")
-  .bora_backend()$train(images, annotations, feature_dir,
+  .bora_backend()$train(as.list(images), as.list(annotations), feature_dir,
                         class_labels, output_dir)
   .bora_result(file.path(output_dir, "TRAINING_COMPLETE.json"),
                "bora-r-training-v1")
