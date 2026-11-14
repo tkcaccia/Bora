@@ -53,3 +53,12 @@ limit (default 10,000) and never silently downsamples the joint fit. Its
 performance on large whole slides remains to be profiled. The fabricated
 pilot is an interface and geometry check, not evidence of biological
 segmentation quality or historical numerical equivalence.
+
+A source-only BCSS H&E region regression reused an independently verified
+full-1,280-channel historical cache and a separately computed H&E tissue
+support. Forty-eight strict tiles yielded two and five anonymous groups at
+resolutions 1.0 and 1.5. The binary TIFFs, final raster, and source-coordinate
+GeoJSON passed exact pixel equality after a one-pixel support-hole mismatch
+was found and fixed in the developing vector export. This checks one real
+region's source registration and output geometry. It does not establish class
+accuracy, historical KODAMA–Bora equivalence, or whole-slide scalability.

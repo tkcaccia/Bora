@@ -328,8 +328,17 @@ def finalize_projected_mask(shared_mask_path: Path, support_path: Path,
         vector = publish_global_wsi_vectors(
             assembly, output / "vectors-output-grid",
             class_names,
-            minimum_area_um2=minimum_area_um2,
+            # Raster cleanup has already enforced the physical area floor.
+            # The shared vector publisher also fills holes below its own
+            # floor; applying that floor again can turn a reviewed zero
+            # support pixel into tissue. A subpixel vector floor preserves
+            # every cleaned raster pixel, including source-support holes.
+            minimum_area_um2=min(minimum_area_um2,
+                                 .5 * mpp_xy[0] * mpp_xy[1]),
             smoothing_tolerance_um=0.0)
+        exact_vector_mask = output / "vectors-output-grid/exact/mask.uint8.dat"
+        if sha256(exact_vector_mask) != sha256(final_path):
+            raise ValueError("Final vector raster differs from the cleaned tissue mask")
         result = {"format": "bora-r-output-grid-finalization-v1",
                   "status": "COMPLETE", "coordinate_space": "output_grid_pixel_edges",
                   "not_native_coordinate_release": True,
@@ -339,6 +348,8 @@ def finalize_projected_mask(shared_mask_path: Path, support_path: Path,
                   "support_sha256": sha256(Path(support_path)),
                   "output_mpp_xy": list(mpp_xy),
                   "minimum_area_um2": minimum_area_um2,
+                  "vector_pixel_preserving_area_um2": min(
+                      minimum_area_um2, .5 * mpp_xy[0] * mpp_xy[1]),
                   "contour_sigma_um": contour_sigma_um,
                   "first_area_repair": first_report,
                   "contour_smoothing": smooth_report,

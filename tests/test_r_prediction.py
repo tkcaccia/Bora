@@ -3,7 +3,8 @@ import json
 import numpy as np
 
 from bora.r_feature_preflight import sha256
-from bora.r_prediction import output_support, source_coordinate_geojson
+from bora.r_prediction import (finalize_projected_mask, output_support,
+                               source_coordinate_geojson)
 
 
 def test_output_support_matches_source_centres_and_full_glass(tmp_path):
@@ -64,3 +65,34 @@ def test_streamed_source_geojson_uses_calibrated_pixel_edges(tmp_path):
     assert transformed["output_grid_shape_yx"] == [28, 28]
     assert transformed["features"][0]["geometry"]["coordinates"][0][1] == [80, 0]
     assert transformed["features"][0]["properties"]["area_pixels"] == 6400
+
+
+def test_vector_export_preserves_a_small_zero_support_hole(tmp_path):
+    from rasterio.features import rasterize
+    from rasterio.transform import Affine
+
+    support = np.ones((32, 32), np.uint8)
+    support[16, 16] = 0
+    projected = np.ones((32, 32), np.uint8)
+    projected[:, 16:] = 2
+    projected[support == 0] = 0
+    support_path = tmp_path / "support.dat"
+    projected_path = tmp_path / "projected.dat"
+    support.tofile(support_path)
+    projected.tofile(projected_path)
+    out = tmp_path / "final"
+    result = finalize_projected_mask(
+        projected_path, support_path, support.shape, (4., 4.), [1, 2],
+        "a" * 64, "b" * 64, out,
+        minimum_area_um2=2000., contour_sigma_um=6.)
+    final = np.fromfile(result["final_mask_path"], dtype=np.uint8).reshape(support.shape)
+    exact = np.fromfile(out / "vectors-output-grid/exact/mask.uint8.dat",
+                        dtype=np.uint8).reshape(support.shape)
+    geo = json.loads((out / "vectors-output-grid/exact/mask.geojson").read_text())
+    drawn = rasterize(((feature["geometry"], int(feature["properties"]["value"]))
+                       for feature in geo["features"]),
+                      out_shape=support.shape, transform=Affine.identity(),
+                      fill=0, dtype=np.uint8)
+    assert final[16, 16] == exact[16, 16] == drawn[16, 16] == 0
+    assert np.array_equal(final, exact)
+    assert np.array_equal(final, drawn)
