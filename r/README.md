@@ -4,8 +4,9 @@ This R package is being built alongside the MIT Bora Python package. It is
 not yet a released interface. `Bora.preparation`, `Bora.training`, and the
 supervised branch of `Bora.prediction` have synthetic end-to-end pilots.
 The joint-image KODAMA branch of `Bora.prediction` also passed a fabricated
-two-image, two-resolution end-to-end pilot. None of these routes has yet
-passed the required real-image regression for release.
+two-image, two-resolution end-to-end pilot. One BCSS H&E region has passed
+source-registration and frozen supervised-head regressions. Full-slide
+resource qualification and a broader reproducibility audit remain pending.
 
 The R package calls the version-matched Bora Python backend through
 `reticulate`. Virchow2 weights are separately licensed and are never bundled
@@ -32,9 +33,12 @@ Supervised prediction projects class scores from the full-channel factor-1
 cache, saves native and common-support-clipped masks separately, applies
 measured-area and contour cleanup, and writes class-specific binary TIFFs,
 the multiclass TIFF, source-pixel-coordinate GeoJSON, and a preview. The
-physical pixel spacing must be supplied for each calibrated image. Synthetic
-output equivalence does not establish whole-slide memory or numerical
-regression against the historical eight-class release.
+physical pixel spacing must be supplied for each calibrated image. A read-only
+adapter of the frozen 203-channel eight-class ridge head reproduced one
+historical BCSS display mask exactly (453,888 of 453,888 pixels), and R and
+Python projections produced identical score-array hashes. This is one
+inspected-development image, with no expert reference opened; it does not
+establish whole-slide memory or broad numerical equivalence.
 
 With `predictor = NULL`, prediction pools every strictly admitted 224-pixel
 tile from the prepared images into one source-bound KODAMA 0.99.7 fit. A
