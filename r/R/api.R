@@ -1,9 +1,11 @@
 #' Prepare Virchow2 features for calibrated H&E images
 #'
-#' A supplied tissue mask limits encoder windows to tissue. Without a mask,
-#' every image tile is encoded, including glass. Benchmark runs must provide
-#' precomputed tissue masks. The result references on-disk full-channel arrays;
-#' it does not copy whole-slide arrays into R.
+#' For new extraction, a supplied tissue mask limits encoder windows to tissue.
+#' Without a mask, every image tile is encoded, including glass. A verified
+#' historical full-field cache can instead be adopted with a new support mask;
+#' its encoder coverage is recorded separately. Benchmark runs must provide
+#' precomputed tissue masks. The result references on-disk full-channel arrays
+#' without copying whole-slide arrays into R.
 #'
 #' @param images Character vector of calibrated RGB H&E image paths.
 #' @param tissue_masks Optional aligned raster or GeoJSON path per image.
@@ -12,12 +14,16 @@
 #' @param scales Integer scale factors; defaults to 1, 2 and 4.
 #' @param max_seconds Finite maximum GPU seconds for each image-scale worker.
 #' @param minimum_free_gib Minimum free-space reserve after projected features.
+#' @param precomputed_manifest Optional JSON manifest of SHA256-verified,
+#'   source-registered full-1280 Virchow2 arrays. This reuses existing arrays
+#'   without launching an encoder worker; see the package README for schema.
 #' @return A manifest object with feature paths and provenance.
 #' @export
 Bora.preparation <- function(images, tissue_masks = NULL, feature_dir,
                              model_dir = Sys.getenv("BORA_VIRCHOW2_MODEL"),
                              scales = c(1L, 2L, 4L),
-                             max_seconds = 3600L, minimum_free_gib = 1) {
+                             max_seconds = 3600L, minimum_free_gib = 1,
+                             precomputed_manifest = NULL) {
   images <- .bora_paths(images, "images")
   tissue_masks <- .bora_paired_paths(tissue_masks, images, "tissue_masks")
   feature_dir <- .bora_output_dir(feature_dir, "feature_dir")
@@ -37,11 +43,18 @@ Bora.preparation <- function(images, tissue_masks = NULL, feature_dir,
       !is.finite(minimum_free_gib) || minimum_free_gib < 0) {
     stop("Finite max_seconds and minimum_free_gib values are required", call. = FALSE)
   }
+  if (!is.null(precomputed_manifest)) {
+    precomputed_manifest <- .bora_paths(precomputed_manifest, "precomputed_manifest")
+    if (length(precomputed_manifest) != 1L || !file.exists(precomputed_manifest)) {
+      stop("precomputed_manifest must be one existing JSON file", call. = FALSE)
+    }
+  }
   .bora_backend()$prepare(as.list(images),
                           if (is.null(tissue_masks)) NULL else as.list(tissue_masks),
                           feature_dir, model_dir, as.list(as.integer(scales)),
                           max_seconds = as.integer(max_seconds),
-                          minimum_free_gib = as.numeric(minimum_free_gib))
+                          minimum_free_gib = as.numeric(minimum_free_gib),
+                          precomputed_manifest = precomputed_manifest)
   .bora_result(file.path(feature_dir, "PREPARATION_COMPLETE.json"),
                "bora-r-preparation-v1")
 }

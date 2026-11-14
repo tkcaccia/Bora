@@ -1,4 +1,4 @@
-# Bora for R 0.1.1
+# Bora for R 0.1.2
 
 This MIT R package is released alongside the Bora Python backend.
 `Bora.preparation`, `Bora.training`, and the
@@ -30,7 +30,7 @@ licensed Virchow2 checkpoint is required for feature extraction. Set
 directory. Install the pinned source release and its matching Python backend:
 
 ```bash
-git clone --branch bora-r-v0.1.1 https://github.com/tkcaccia/Bora.git
+git clone --branch bora-r-v0.1.2 https://github.com/tkcaccia/Bora.git
 cd Bora
 python3 -m venv .venv
 .venv/bin/python -m pip install '.[wsi]'
@@ -62,6 +62,40 @@ For benchmark runs, supply an independently prepared tissue mask for every
 image. Without a mask, preparation intentionally encodes the full H&E field,
 including glass. Class annotations used by training are separate from these
 tissue-support masks.
+
+### Reuse verified full-channel features
+
+`Bora.preparation(..., precomputed_manifest = "verified-grids.json")` can adopt
+previously extracted Virchow2 grids without copying them or starting a GPU
+worker. The JSON lists the input images in the same order as `images`, and
+binds their SHA256 values, the Virchow2 checkpoint and configuration hashes,
+and each factor-1/2/4 float16 `H × W × 1280` NumPy array. Each scale needs a
+separately verified source receipt whose hash is in the manifest. This is a
+reuse route for audited caches, not a way to certify an unaudited array.
+
+The manifest format is `bora-precomputed-features-v1`. Its top level has
+`model_checkpoint_sha256`, `model_config_sha256`, and `images`. Each image
+entry has absolute `image_path`, `image_sha256`, `encoder_selection`
+(`full-field` or `supplied-tissue`), optional `encoder_tissue_sha256` for the
+latter, and a `scales` object keyed by factor. Each scale has absolute `path`,
+`sha256`, `source_receipt_path`, `source_receipt_sha256`, and `registration`:
+
+```json
+{"axis_order":"yxc","origin_source_px_yx":[0,0],
+ "token_stride_source_px_yx":[14,14],
+ "padding":"right-bottom-to-multiple-896"}
+```
+
+The stride is `[28,28]` at factor 2 and `[56,56]` at factor 4. Every source
+receipt uses `bora-precomputed-scale-receipt-v1`, status `VERIFIED`, and repeats
+the source image hash, model hashes, factor, array hash, `shape_yxc`,
+registration, encoder selection, and encoder tissue hash (or JSON `null`).
+Adoption checks all array and receipt bytes and shapes before creating the
+output directory. A `full-field` cache may be paired with a new tissue mask:
+the manifest records that the encoder once covered glass, while the supplied
+mask now controls Bora tile admission and final support. A `supplied-tissue`
+cache requires the exact same mask hash. Subsequent `Bora.training` and
+`Bora.prediction` consume the standard preparation manifest.
 
 For a reviewed tissue-area GeoJSON, the Python package function
 `bora.r_tissue_support.materialize_reviewed_tissue_support` makes an aligned,

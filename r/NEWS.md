@@ -1,3 +1,12 @@
+# Bora for R 0.1.2
+
+- `Bora.preparation(precomputed_manifest = ...)` adopts separately verified,
+  source-bound full-1,280-channel Virchow2 arrays for multiple images without
+  re-extraction or copying full arrays. Image, model, support, registration,
+  feature and source-receipt identities are checked before output creation.
+- A fabricated two-image three-scale regression passed the downstream training
+  grid reader; tampered hashes, registration and source receipts fail closed.
+
 # Bora for R 0.1.1
 
 - `Bora.prediction(preview_backend = "gdal-lanczos")` uses compiled GDAL

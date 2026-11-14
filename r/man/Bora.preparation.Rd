@@ -11,7 +11,8 @@ Bora.preparation(
   model_dir = Sys.getenv("BORA_VIRCHOW2_MODEL"),
   scales = c(1L, 2L, 4L),
   max_seconds = 3600L,
-  minimum_free_gib = 1
+  minimum_free_gib = 1,
+  precomputed_manifest = NULL
 )
 }
 \arguments{
@@ -28,13 +29,19 @@ Bora.preparation(
 \item{max_seconds}{Finite maximum GPU seconds for each image-scale worker.}
 
 \item{minimum_free_gib}{Minimum free-space reserve after projected features.}
+
+\item{precomputed_manifest}{Optional JSON manifest of SHA256-verified,
+source-registered full-1280 Virchow2 arrays. This reuses existing arrays
+without launching an encoder worker; see the package README for schema.}
 }
 \value{
 A manifest object with feature paths and provenance.
 }
 \description{
-A supplied tissue mask limits encoder windows to tissue. Without a mask,
-every image tile is encoded, including glass. Benchmark runs must provide
-precomputed tissue masks. The result references on-disk full-channel arrays;
-it does not copy whole-slide arrays into R.
+For new extraction, a supplied tissue mask limits encoder windows to tissue.
+Without a mask, every image tile is encoded, including glass. A verified
+historical full-field cache can instead be adopted with a new support mask;
+its encoder coverage is recorded separately. Benchmark runs must provide
+precomputed tissue masks. The result references on-disk full-channel arrays
+without copying whole-slide arrays into R.
 }

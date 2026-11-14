@@ -7,6 +7,10 @@ test_that("preparation requires existing images and a new output", {
                                 feature_dir = tempfile()), "one path per image")
   expect_error(Bora.preparation(image, feature_dir = tempfile(),
                                 model_dir = ""), "model_dir")
+  expect_error(Bora.preparation(image, feature_dir = tempfile(),
+                                model_dir = tempdir(),
+                                precomputed_manifest = tempfile()),
+               "missing path")
 })
 
 test_that("training rejects a tissue-only or unpaired reference", {

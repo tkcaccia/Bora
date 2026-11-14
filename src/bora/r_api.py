@@ -185,8 +185,13 @@ def _case_plan(image: Path, support: Path | None, case_dir: Path,
 
 
 def prepare(images, tissue_masks, feature_dir, model_dir, scales,
-            *, max_seconds: int = 3600, minimum_free_gib: float = 1.0) -> dict:
+            *, max_seconds: int = 3600, minimum_free_gib: float = 1.0,
+            precomputed_manifest: str | None = None) -> dict:
     """Prepare full-1280 feature arrays, one fresh output tree per call."""
+    if precomputed_manifest is not None:
+        from .r_cache_adoption import adopt
+        return adopt(images, tissue_masks, feature_dir, model_dir, scales,
+                     precomputed_manifest, minimum_free_gib=minimum_free_gib)
     if isinstance(images, (str, Path)):
         images = [images]
     if isinstance(tissue_masks, (str, Path)):
