@@ -334,6 +334,10 @@ def complete_joint(preparation_dir: Path, stage_dir: Path, cluster_dir: Path,
         'solutions': len(plans), 'source_images': len(prep['cases'])})
     preview_cache = output / 'source-preview-rgb'
     preview_cache.mkdir()
+    def preview_cache_path(index: int) -> Path:
+        suffix = '.npy' if preview_backend == 'vips-lanczos3' else '.gdal-lanczos.npy'
+        return preview_cache / f'image-{index:03d}{suffix}'
+
     complete = []
     try:
         for item, path, labels, head, admission in plans:
@@ -390,10 +394,7 @@ def complete_joint(preparation_dir: Path, stage_dir: Path, cluster_dir: Path,
                 preview = _preview(image_path, Path(masks['final']['path']),
                                    list(map(int, head['classes'])),
                                    folder / 'preview.png',
-                                   source_rgb_cache=preview_cache /
-                                   (f'image-{case_index:03d}.npy' if
-                                    preview_backend == "vips-lanczos3" else
-                                    f'image-{case_index:03d}.gdal-lanczos.npy'),
+                                   source_rgb_cache=preview_cache_path(case_index),
                                    backend=preview_backend)
                 record = {'format': 'bora-r-anonymous-prediction-case-v1',
                           'status': 'COMPLETE', 'image': str(image_path),
@@ -434,8 +435,8 @@ def complete_joint(preparation_dir: Path, stage_dir: Path, cluster_dir: Path,
         result = {'format': 'bora-r-prediction-v1', 'status': 'COMPLETE',
                   'route': 'joint-image-kodama-anonymous-groups',
                   'source_preview_caches': [
-                      {'path': str(preview_cache / f'image-{i:03d}.npy'),
-                       'sha256': sha256(preview_cache / f'image-{i:03d}.npy'),
+                      {'path': str(preview_cache_path(i)),
+                       'sha256': sha256(preview_cache_path(i)),
                        'source_image_sha256': case['source']['image_sha256']}
                       for i, case in enumerate(prep['cases'])],
                   'preparation_manifest_sha256': sha256(prep_path),

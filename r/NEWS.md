@@ -1,3 +1,9 @@
+# Bora for R 0.1.3
+
+- Joint KODAMA predictions now record the correct SHA256-bound source preview
+  cache name when the GDAL Lanczos backend is selected. This corrects a
+  final-receipt failure after masks for all images and resolutions were saved.
+
 # Bora for R 0.1.2
 
 - `Bora.preparation(precomputed_manifest = ...)` adopts separately verified,

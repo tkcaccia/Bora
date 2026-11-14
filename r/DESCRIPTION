@@ -1,6 +1,6 @@
 Package: Bora
 Title: Tissue Segmentation from Calibrated H&E Images
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: person("Stefano", "Cacciatore", role = c("aut", "cre"),
     email = "stefano.cacciatore@icgeb.org")
 Description: An R interface to the Bora tissue segmentation pipeline. The
