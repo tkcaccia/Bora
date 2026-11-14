@@ -5,8 +5,10 @@ not yet a released interface. `Bora.preparation`, `Bora.training`, and the
 supervised branch of `Bora.prediction` have synthetic end-to-end pilots.
 The joint-image KODAMA branch of `Bora.prediction` also passed a fabricated
 two-image, two-resolution end-to-end pilot. One BCSS H&E region has passed
-source-registration and frozen supervised-head regressions. Full-slide
-resource qualification and a broader reproducibility audit remain pending.
+source-registration and frozen supervised-head regressions. A separate frozen
+BCSS training image has passed real-image R fitting and prediction with an
+independent source-mask, coefficient and vector audit. Full-slide resource
+qualification and a broader reproducibility audit remain pending.
 
 The R package calls the version-matched Bora Python backend through
 `reticulate`. Virchow2 weights are separately licensed and are never bundled
@@ -23,6 +25,12 @@ unscored. It samples the prepared full 1,280-channel factor-1 array
 at token centres, selects classwise contrast channels and fits a
 linear ridge head. This general R route is separate from the frozen historical
 eight-class checkpoint until full regression is complete.
+
+The real training-image pilot used four expert-derived broad classes from one
+BCSS training case. Its 821 sampled finite tokens yielded 55 selected channels;
+an independent audit reproduced the model coefficients exactly. The resulting
+preview is a technical end-to-end check on a training image, not a held-out
+accuracy or generalization result.
 
 For benchmark runs, supply an independently prepared tissue mask for every
 image. Without a mask, preparation intentionally encodes the full H&E field,
