@@ -12,7 +12,7 @@ Encoding: UTF-8
 Depends: R (>= 4.3.0)
 Imports: jsonlite, Rcpp, reticulate
 LinkingTo: Rcpp
-Suggests: testthat (>= 3.0.0)
+Suggests: testthat (>= 3.0.0), KODAMA, RANN, igraph
 Config/testthat/edition: 3
 SystemRequirements: C++17; Python with the Bora encoder dependencies for
     Virchow2 inference

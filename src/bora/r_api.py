@@ -301,3 +301,27 @@ def predict(preparation, predictor, output_dir, resolutions,
         contour_sigma_um=float(contour_sigma_um),
         minimum_free_gib=float(minimum_free_gib),
         max_new_gib=None if max_new_gib is None else float(max_new_gib))
+
+
+def joint_stage(preparation, output_dir, *, max_joint_tiles: int = 10000,
+                minimum_free_gib: float = 1.0) -> dict:
+    """Freeze every admitted tile from all prepared images in one joint input."""
+    from .r_kodama import stage_joint
+    return stage_joint(preparation, output_dir,
+                       max_joint_tiles=int(max_joint_tiles),
+                       minimum_free_gib=float(minimum_free_gib))
+
+
+def joint_complete(preparation, stage_dir, cluster_dir, output_dir,
+                   *, source_mpp_xy=(.5, .5), output_mpp_xy=(4.0, 4.0),
+                   minimum_area_um2=2000.0, contour_sigma_um=6.0,
+                   minimum_free_gib=1.0, max_new_gib=None) -> dict:
+    """Return joint KODAMA groups to each source H&E image."""
+    from .r_kodama import complete_joint
+    return complete_joint(preparation, stage_dir, cluster_dir, output_dir,
+                          source_mpp_xy=tuple(map(float, source_mpp_xy)),
+                          output_mpp_xy=tuple(map(float, output_mpp_xy)),
+                          minimum_area_um2=float(minimum_area_um2),
+                          contour_sigma_um=float(contour_sigma_um),
+                          minimum_free_gib=float(minimum_free_gib),
+                          max_new_gib=None if max_new_gib is None else float(max_new_gib))

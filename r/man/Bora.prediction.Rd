@@ -14,7 +14,8 @@ Bora.prediction(
   minimum_area_um2 = 2000,
   contour_sigma_um = 6,
   minimum_free_gib = 1,
-  max_new_gib = NULL
+  max_new_gib = NULL,
+  max_joint_tiles = 10000L
 )
 }
 \arguments{
@@ -37,6 +38,9 @@ Bora.prediction(
 \item{minimum_free_gib}{Required free-space reserve after projected outputs.}
 
 \item{max_new_gib}{Optional new-run peak storage cap in GiB.}
+
+\item{max_joint_tiles}{Maximum tiles admitted to a joint KODAMA fit; no
+tiles are silently sampled away.}
 }
 \value{
 A prediction manifest object.

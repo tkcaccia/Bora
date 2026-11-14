@@ -135,6 +135,8 @@ Bora.training <- function(images, annotations, feature_dir,
 #' @param contour_sigma_um Physical width of class-contour smoothing.
 #' @param minimum_free_gib Required free-space reserve after projected outputs.
 #' @param max_new_gib Optional new-run peak storage cap in GiB.
+#' @param max_joint_tiles Maximum tiles admitted to a joint KODAMA fit; no
+#'   tiles are silently sampled away.
 #' @return A prediction manifest object.
 #' @export
 Bora.prediction <- function(preparation, predictor = NULL, output_dir,
@@ -144,7 +146,8 @@ Bora.prediction <- function(preparation, predictor = NULL, output_dir,
                             minimum_area_um2 = 2000,
                             contour_sigma_um = 6,
                             minimum_free_gib = 1,
-                            max_new_gib = NULL) {
+                            max_new_gib = NULL,
+                            max_joint_tiles = 10000L) {
   if (inherits(preparation, "bora-r-preparation-v1")) {
     preparation <- dirname(preparation$manifest)
   }
@@ -184,18 +187,52 @@ Bora.prediction <- function(preparation, predictor = NULL, output_dir,
       minimum_free_gib < 0 ||
       (!is.null(max_new_gib) && (!is.numeric(max_new_gib) ||
        length(max_new_gib) != 1L || is.na(max_new_gib) ||
-       !is.finite(max_new_gib) || max_new_gib <= 0))) {
+       !is.finite(max_new_gib) || max_new_gib <= 0)) ||
+      !is.numeric(max_joint_tiles) || length(max_joint_tiles) != 1L ||
+      is.na(max_joint_tiles) || !is.finite(max_joint_tiles) ||
+      max_joint_tiles < 40 || max_joint_tiles > .Machine$integer.max ||
+      max_joint_tiles != as.integer(max_joint_tiles)) {
     stop("Measured spacing and finite positive prediction limits are required",
          call. = FALSE)
   }
   output_dir <- .bora_output_dir(output_dir, "output_dir")
-  .bora_backend()$predict(preparation, predictor, output_dir, resolutions,
-                          source_mpp_xy = as.list(as.numeric(source_mpp_xy)),
-                          output_mpp_xy = as.list(as.numeric(output_mpp_xy)),
-                          minimum_area_um2 = as.numeric(minimum_area_um2),
-                          contour_sigma_um = as.numeric(contour_sigma_um),
-                          minimum_free_gib = as.numeric(minimum_free_gib),
-                          max_new_gib = if (is.null(max_new_gib)) NULL else as.numeric(max_new_gib))
-  .bora_result(file.path(output_dir, "PREDICTION_COMPLETE.json"),
+  backend <- .bora_backend()
+  if (!is.null(predictor)) {
+    backend$predict(preparation, predictor, output_dir, resolutions,
+                    source_mpp_xy = as.list(as.numeric(source_mpp_xy)),
+                    output_mpp_xy = as.list(as.numeric(output_mpp_xy)),
+                    minimum_area_um2 = as.numeric(minimum_area_um2),
+                    contour_sigma_um = as.numeric(contour_sigma_um),
+                    minimum_free_gib = as.numeric(minimum_free_gib),
+                    max_new_gib = if (is.null(max_new_gib)) NULL else as.numeric(max_new_gib))
+    return(.bora_result(file.path(output_dir, "PREDICTION_COMPLETE.json"),
+                        "bora-r-prediction-v1"))
+  }
+  if (is.null(resolutions)) resolutions <- 1.0
+  dir.create(output_dir)
+  stage <- file.path(output_dir, "joint-stage")
+  clusters <- file.path(output_dir, "joint-clusters")
+  predictions <- file.path(output_dir, "predictions")
+  tryCatch({
+    backend$joint_stage(preparation, stage,
+                        max_joint_tiles = as.integer(max_joint_tiles),
+                        minimum_free_gib = as.numeric(minimum_free_gib))
+    .bora_kodama_cluster(stage, clusters, resolutions)
+    backend$joint_complete(preparation, stage, clusters, predictions,
+                           source_mpp_xy = as.list(as.numeric(source_mpp_xy)),
+                           output_mpp_xy = as.list(as.numeric(output_mpp_xy)),
+                           minimum_area_um2 = as.numeric(minimum_area_um2),
+                           contour_sigma_um = as.numeric(contour_sigma_um),
+                           minimum_free_gib = as.numeric(minimum_free_gib),
+                           max_new_gib = if (is.null(max_new_gib)) NULL else as.numeric(max_new_gib))
+  }, error = function(e) {
+    jsonlite::write_json(list(format = "bora-r-joint-prediction-failure-v1",
+                              status = "FAILED_PRESERVE_PARTIAL",
+                              error = conditionMessage(e)),
+                         file.path(output_dir, "PREDICTION_FAILED.json"),
+                         pretty = TRUE, auto_unbox = TRUE)
+    stop(e)
+  })
+  .bora_result(file.path(predictions, "PREDICTION_COMPLETE.json"),
                "bora-r-prediction-v1")
 }
