@@ -7,7 +7,7 @@ redistributed by the MIT-licensed Bora code.
 
 ## Environment and exact inputs
 
-Use Bora Python backend **0.3.1**, Bora R **0.1.0.9000**, R **4.6.0**, and
+Use Bora Python backend **0.3.1**, Bora R **0.1.0**, R **4.6.0**, and
 Virchow2 revision `3158645804b69e3f3bc4439d4116edddf0840a72`. The
 checkpoint SHA256 is
 `8d6cea947eb2418c3b0dff48cfb9b238e47744ab0dfca21b2b0637b140769b4b`;

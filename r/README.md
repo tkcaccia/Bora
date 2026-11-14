@@ -1,7 +1,7 @@
-# Bora for R (development)
+# Bora for R 0.1.0
 
-This R package is being built alongside the MIT Bora Python package. It is
-not yet a released interface. `Bora.preparation`, `Bora.training`, and the
+This MIT R package is released alongside the Bora Python backend.
+`Bora.preparation`, `Bora.training`, and the
 supervised branch of `Bora.prediction` have synthetic end-to-end pilots.
 The joint-image KODAMA branch of `Bora.prediction` also passed a fabricated
 two-image, two-resolution end-to-end pilot. One BCSS H&E region has passed
@@ -27,8 +27,22 @@ The R package calls the version-matched Bora Python backend through
 with Bora. A user-managed Python environment with Bora, PyTorch, timm and the
 licensed Virchow2 checkpoint is required for feature extraction. Set
 `RETICULATE_PYTHON` before starting R and `BORA_VIRCHOW2_MODEL` to the model
-directory. The production install command and result reproduction guide will
-be published after all three end-to-end routes pass regression.
+directory. Install the pinned source release and its matching Python backend:
+
+```bash
+git clone --branch bora-r-v0.1.0 https://github.com/tkcaccia/Bora.git
+cd Bora
+python3 -m venv .venv
+.venv/bin/python -m pip install '.[wsi]'
+mkdir -p .R-library
+R CMD INSTALL --library="$PWD/.R-library" r
+export R_LIBS_USER="$PWD/.R-library"
+export RETICULATE_PYTHON="$PWD/.venv/bin/python"
+```
+
+Install compatible PyTorch and timm separately for Virchow2 extraction,
+and obtain the checkpoint under its own terms. The [one-result guide](REPRODUCE_ONE_RESULT.md)
+provides exact commands, source/model hashes and expected output hashes.
 
 `Bora.training` reads exact-size class raster masks or pixel-coordinate class
 GeoJSON. Class IDs must be present in the annotation or supplied with
