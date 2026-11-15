@@ -49,3 +49,10 @@
   been qualified.
 - The MIT license covers Bora code. It does not license Virchow2 weights,
   H&E images, expert masks or other third-party data.
+# Bora for R 0.1.5
+
+- `Bora.spatial()` reads registered expression-group positions from Seurat,
+  Giotto, SpatialExperiment or a spot table, fits a sparse spot-guided Bora
+  head on full-channel Virchow2 features, and writes a cleaned TIFF mask and
+  source-pixel GeoJSON. This same-section exploratory fit is not an expert
+  tissue classifier and does not reproduce the frozen historical Visium masks.

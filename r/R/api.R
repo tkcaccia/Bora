@@ -153,6 +153,8 @@ Bora.training <- function(images, annotations, feature_dir,
 #' @param preview_backend `"vips-lanczos3"` preserves historical preview bytes;
 #'   `"gdal-lanczos"` is faster for large tiled TIFFs but may change preview
 #'   RGB values slightly. Neither changes the class mask or GeoJSON.
+#' @param class_names Optional named character vector mapping predicted class
+#'   IDs to names in the output GeoJSON. Requires a supervised predictor.
 #' @return A prediction manifest object.
 #' @export
 Bora.prediction <- function(preparation, predictor = NULL, output_dir,
@@ -164,7 +166,8 @@ Bora.prediction <- function(preparation, predictor = NULL, output_dir,
                             minimum_free_gib = 1,
                             max_new_gib = NULL,
                             max_joint_tiles = 10000L,
-                            preview_backend = "vips-lanczos3") {
+                            preview_backend = "vips-lanczos3",
+                            class_names = NULL) {
   if (inherits(preparation, "bora-r-preparation-v1")) {
     preparation <- dirname(preparation$manifest)
   }
@@ -217,6 +220,13 @@ Bora.prediction <- function(preparation, predictor = NULL, output_dir,
       !(preview_backend %in% c("vips-lanczos3", "gdal-lanczos"))) {
     stop("preview_backend must be vips-lanczos3 or gdal-lanczos", call. = FALSE)
   }
+  if (!is.null(class_names) &&
+      (is.null(predictor) || !is.character(class_names) || !length(class_names) ||
+       anyNA(class_names) || any(!nzchar(class_names)) ||
+       is.null(names(class_names)) || anyDuplicated(names(class_names)))) {
+    stop("class_names must be a named character vector for supervised prediction",
+         call. = FALSE)
+  }
   output_dir <- .bora_output_dir(output_dir, "output_dir")
   backend <- .bora_backend()
   if (!is.null(predictor)) {
@@ -227,7 +237,8 @@ Bora.prediction <- function(preparation, predictor = NULL, output_dir,
                     contour_sigma_um = as.numeric(contour_sigma_um),
                     minimum_free_gib = as.numeric(minimum_free_gib),
                     max_new_gib = if (is.null(max_new_gib)) NULL else as.numeric(max_new_gib),
-                    preview_backend = preview_backend)
+                    preview_backend = preview_backend,
+                    class_names = if (is.null(class_names)) NULL else as.list(class_names))
     return(.bora_result(file.path(output_dir, "PREDICTION_COMPLETE.json"),
                         "bora-r-prediction-v1"))
   }

@@ -16,7 +16,8 @@ Bora.prediction(
   minimum_free_gib = 1,
   max_new_gib = NULL,
   max_joint_tiles = 10000L,
-  preview_backend = "vips-lanczos3"
+  preview_backend = "vips-lanczos3",
+  class_names = NULL
 )
 }
 \arguments{
@@ -46,6 +47,9 @@ tiles are silently sampled away.}
 \item{preview_backend}{`"vips-lanczos3"` preserves historical preview bytes;
 `"gdal-lanczos"` is faster for large tiled TIFFs but may change preview
 RGB values slightly. Neither changes the class mask or GeoJSON.}
+
+\item{class_names}{Optional named character vector mapping predicted class
+IDs to names in the output GeoJSON. Requires a supervised predictor.}
 }
 \value{
 A prediction manifest object.

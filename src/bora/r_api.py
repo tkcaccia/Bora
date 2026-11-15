@@ -293,7 +293,7 @@ def predict(preparation, predictor, output_dir, resolutions,
             *, source_mpp_xy=(.5, .5), output_mpp_xy=(4.0, 4.0),
             minimum_area_um2=2000.0, contour_sigma_um=6.0,
             minimum_free_gib=1.0, max_new_gib=None,
-            preview_backend="vips-lanczos3") -> dict:
+            preview_backend="vips-lanczos3", class_names=None) -> dict:
     """Dispatch the R prediction route without changing frozen Python CLIs."""
     if predictor is None:
         raise NotImplementedError("Joint-image KODAMA route is not yet released in the R interface")
@@ -307,7 +307,7 @@ def predict(preparation, predictor, output_dir, resolutions,
         contour_sigma_um=float(contour_sigma_um),
         minimum_free_gib=float(minimum_free_gib),
         max_new_gib=None if max_new_gib is None else float(max_new_gib),
-        preview_backend=preview_backend)
+        preview_backend=preview_backend, class_names=class_names)
 
 
 def joint_stage(preparation, output_dir, *, max_joint_tiles: int = 10000,

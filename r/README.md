@@ -1,8 +1,16 @@
-# Bora for R 0.1.4
+# Bora for R 0.1.5
 
 This MIT R package is released alongside the Bora Python backend.
 `Bora.preparation`, `Bora.training`, and the
 supervised branch of `Bora.prediction` have synthetic end-to-end pilots.
+`Bora.spatial()` adds a same-section expression-guided route for registered
+Seurat, Giotto and SpatialExperiment spot groups. It returns a categorical
+TIFF, source-image-pixel GeoJSON, binary group images and a preview. Group
+names come from the supplied expression object; this route fits to those
+spots and does not claim expert tissue labels or cell-level expression.
+The [Benchmark 4 R example](examples/benchmark4_spatial.R) accepts an
+already clustered spatial object. The Bora-Analysis Benchmark 4 tutorial also
+shows how its expression-clustering front ends feed this function.
 The joint-image KODAMA branch of `Bora.prediction` also passed a fabricated
 two-image, two-resolution end-to-end pilot. One BCSS H&E region has passed
 source-registration and frozen supervised-head regressions. A separate frozen
@@ -22,7 +30,7 @@ feature extraction and broad biological validation remain pending.
 The [R installation and one-result guide](REPRODUCE_ONE_RESULT.md) records
 the exact real training-image input schema, commands and output hashes.
 
-The R package calls the version-matched Bora Python backend through
+The R 0.1.5 package calls Bora Python backend 0.3.5 through
 `reticulate`. Virchow2 weights are separately licensed and are never bundled
 with Bora. A user-managed Python environment with Bora, PyTorch, timm and the
 licensed Virchow2 checkpoint is required for feature extraction. Set
@@ -30,7 +38,7 @@ licensed Virchow2 checkpoint is required for feature extraction. Set
 directory. Install the pinned source release and its matching Python backend:
 
 ```bash
-git clone --branch bora-r-v0.1.4 https://github.com/tkcaccia/Bora.git
+git clone --branch bora-r-v0.1.5 https://github.com/tkcaccia/Bora.git
 cd Bora
 python3 -m venv .venv
 .venv/bin/python -m pip install '.[wsi]'

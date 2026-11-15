@@ -1,6 +1,6 @@
 Package: Bora
 Title: Tissue Segmentation from Calibrated H&E Images
-Version: 0.1.4
+Version: 0.1.5
 Authors@R: person("Stefano", "Cacciatore", role = c("aut", "cre"),
     email = "stefano.cacciatore@icgeb.org")
 Description: An R interface to the Bora tissue segmentation pipeline. The
@@ -12,7 +12,8 @@ Encoding: UTF-8
 Depends: R (>= 4.3.0)
 Imports: jsonlite, Rcpp, reticulate
 LinkingTo: Rcpp
-Suggests: testthat (>= 3.0.0), KODAMA, RANN, igraph
+Suggests: testthat (>= 3.0.0), KODAMA, RANN, igraph,
+    SeuratObject, Giotto, SpatialExperiment, SummarizedExperiment
 Config/testthat/edition: 3
 SystemRequirements: C++17; Python with the Bora encoder dependencies for
     Virchow2 inference

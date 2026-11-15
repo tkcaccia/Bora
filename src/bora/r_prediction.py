@@ -618,7 +618,8 @@ def predict_supervised(preparation_dir: Path, predictor_dir: Path, output_dir: P
                        contour_sigma_um: float = 6.0,
                        minimum_free_gib: float = 1.0,
                        max_new_gib: float | None = None,
-                       preview_backend: str = "vips-lanczos3") -> dict:
+                       preview_backend: str = "vips-lanczos3",
+                       class_names: dict[str, str] | None = None) -> dict:
     """Complete the supervised route with native and common-support outputs."""
     root = Path(preparation_dir).resolve()
     manifest_path = root / "PREPARATION_COMPLETE.json"
@@ -627,6 +628,12 @@ def predict_supervised(preparation_dir: Path, predictor_dir: Path, output_dir: P
        preparation.get("status") != "COMPLETE" or not preparation.get("cases"):
         raise ValueError("Complete Bora R preparation required")
     model = load_model(predictor_dir)
+    if class_names is not None and (
+            not isinstance(class_names, dict) or
+            set(class_names) != set(map(str, model["classes"])) or
+            any(not isinstance(value, str) or not value.strip()
+                for value in class_names.values())):
+        raise ValueError("class_names must name exactly the fitted class IDs")
     if not all(math.isfinite(v) and v > 0 for v in (*source_mpp_xy, *output_mpp_xy)) or \
        minimum_area_um2 <= 0 or contour_sigma_um <= 0:
         raise ValueError("Measured spacing and positive cleanup limits required")
@@ -669,7 +676,8 @@ def predict_supervised(preparation_dir: Path, predictor_dir: Path, output_dir: P
                 shape_yx, output_mpp_xy, list(map(int, model["classes"])),
                 source["image_sha256"], model["model_sha256"], folder / "cleanup",
                 minimum_area_um2=minimum_area_um2,
-                contour_sigma_um=contour_sigma_um)
+                contour_sigma_um=contour_sigma_um,
+                class_names=class_names)
             exact_geojson = folder / "cleanup/vectors-output-grid/exact/mask.geojson"
             source_vector = source_coordinate_geojson(
                 exact_geojson, folder / "class-mask.geojson",
