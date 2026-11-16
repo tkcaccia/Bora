@@ -9,7 +9,7 @@ Bora.prediction(
   predictor = NULL,
   output_dir,
   resolutions = NULL,
-  source_mpp_xy = c(0.5, 0.5),
+  source_mpp_xy = NULL,
   output_mpp_xy = c(4, 4),
   minimum_area_um2 = 2000,
   contour_sigma_um = 6,
@@ -29,7 +29,8 @@ Bora.prediction(
 
 \item{resolutions}{Optional numeric clustering-resolution values.}
 
-\item{source_mpp_xy}{Calibrated source X/Y pixel spacing in micrometres.}
+\item{source_mpp_xy}{Required measured source X/Y pixel spacing in
+micrometres; never inferred from a nominal scan magnification.}
 
 \item{output_mpp_xy}{Output X/Y pixel spacing in micrometres.}
 

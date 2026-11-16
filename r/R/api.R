@@ -153,7 +153,8 @@ Bora.training <- function(images, annotations, feature_dir,
 #' @param predictor Optional Bora.training result or model directory.
 #' @param output_dir New prediction directory.
 #' @param resolutions Optional numeric clustering-resolution values.
-#' @param source_mpp_xy Calibrated source X/Y pixel spacing in micrometres.
+#' @param source_mpp_xy Required measured source X/Y pixel spacing in
+#'   micrometres; never inferred from a nominal scan magnification.
 #' @param output_mpp_xy Output X/Y pixel spacing in micrometres.
 #' @param minimum_area_um2 Minimum positive tissue-component area after cleanup.
 #' @param contour_sigma_um Physical width of class-contour smoothing.
@@ -170,7 +171,7 @@ Bora.training <- function(images, annotations, feature_dir,
 #' @export
 Bora.prediction <- function(preparation, predictor = NULL, output_dir,
                             resolutions = NULL,
-                            source_mpp_xy = c(.5, .5),
+                            source_mpp_xy = NULL,
                             output_mpp_xy = c(4, 4),
                             minimum_area_um2 = 2000,
                             contour_sigma_um = 6,
@@ -203,6 +204,7 @@ Bora.prediction <- function(preparation, predictor = NULL, output_dir,
               any(resolutions <= 0) || anyDuplicated(resolutions))) {
     stop("resolutions must be distinct positive finite values", call. = FALSE)
   }
+  source_mpp_xy <- .bora_measured_spacing(source_mpp_xy)
   if (!is.numeric(source_mpp_xy) || length(source_mpp_xy) != 2L ||
       anyNA(source_mpp_xy) || any(!is.finite(source_mpp_xy)) ||
       any(source_mpp_xy <= 0) || !is.numeric(output_mpp_xy) ||

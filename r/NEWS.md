@@ -1,3 +1,13 @@
+# Bora for R 0.2.0
+
+- Require explicit measured source X/Y pixel spacing for `Bora.prediction()`
+  and `Bora.spatial()`. The former 0.5 µm default could silently put masks
+  and GeoJSON in the wrong physical coordinates on differently calibrated
+  images. Existing scripts must pass `source_mpp_xy = c(x, y)` from measured
+  image metadata.
+- Separate historical package acceptance checks from biological validation
+  and document the release protocol for each new slide result.
+
 # Bora for R 0.1.7
 
 - Add `Bora.download_virchow2()` for individually authorized downloads of the

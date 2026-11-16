@@ -1,4 +1,4 @@
-# Bora for R 0.1.7: reference and acceptance manual
+# Bora for R 0.2.0: reference and acceptance manual
 
 Bora provides four analysis functions and one optional model-download helper.
 `Bora.download_virchow2()` obtains the separately licensed model;
@@ -31,6 +31,14 @@ interpreter containing Bora, PyTorch, timm and rasterio, and set
 `REPRODUCE_ONE_RESULT.md` for a complete frozen training-image replay.
 
 Images must be calibrated RGB H&E with known physical X/Y pixel spacing.
+`Bora.prediction()` and `Bora.spatial()` require that measured spacing in
+`source_mpp_xy`; an omitted value fails before model inference or writing an
+output. Do not substitute a nominal 20× or 40× magnification for measured
+pixel spacing. This is a deliberate change from R 0.1.7, which assumed
+0.5 µm/pixel when the argument was omitted.
+One `Bora.prediction()` call applies one X/Y spacing pair to every prepared
+image. If the images have different measured spacings, make separate
+prediction calls for each spacing group.
 Masks and GeoJSON must be registered to the exact source image. Keep distinct
 directories for inputs, features, predictors and predictions. Use a new output
 directory for each run; retain the JSON SHA256 receipts.
@@ -113,7 +121,15 @@ The output describes morphology associated with input expression groups; it
 is not a cell segmentation, independent tissue annotation or estimate of
 individual-cell expression.
 
-## Verification performed on Chiamaka, 16 November 2026
+## Historical verification performed on Chiamaka, 16 November 2026
+
+The R 0.2.0 source package was built and checked on Chiamaka with all tests and
+the source vignette: `R CMD check --no-manual` returned `Status: OK`.
+The explicit-spacing failure test ran before Python import or output creation.
+The [workflow vignette](vignettes/bora-workflow.Rmd) runs a CPU input-contract
+check and gives executable commands for all four routes when the user supplies
+licensed weights and registered data. It is not a distributed biological
+end-to-end fixture. The rows below are earlier R 0.1.6 acceptance evidence.
 
 The following are software and geometry checks, not new biological accuracy
 estimates. Evidence and source hashes are under
@@ -122,7 +138,7 @@ estimates. Evidence and source hashes are under
 | Route | Check and acceptance result |
 | --- | --- |
 | Model download helper | Offline Hub simulations verify commit and file hashes, existing-path rejection, missing-file isolation and gated-access guidance. Licensed weights were not downloaded. |
-| Installation | R 0.1.6 source package built, installed in a clean local library, and `R CMD check --no-manual --no-vignettes` ended `Status: OK`. |
+| Installation | The R 0.1.6 source package built, installed in a clean local library, and `R CMD check --no-manual --no-vignettes` ended `Status: OK`. This is the historical acceptance run, not a new 0.2.0 biological validation. |
 | R and Python contracts | R package tests passed, including invalid scales, class mappings, resource limits, duplicate spots and coordinates. The 24 focused Python R-API tests passed, including source-bound cache rejection and GPU admission/cleanup gates. |
 | Real Virchow2 preparation | On a frozen 448 x 448 synthetic H&E fixture, a tissue mask admitted 1 source tile and 6 finest-scale encoder windows; no mask admitted all 4 source tiles and 24 windows. All three arrays were SHA256- and row-hash verified as float16 with 1,280 channels. Both services ended with no owned process or GPU context. |
 | Training formats | Equivalent raster and GeoJSON annotations labelled 128 finite token centres per class. Selected channels, normalization and ridge coefficients matched exactly; the model file hashes differ only because the source annotation identity is recorded. |

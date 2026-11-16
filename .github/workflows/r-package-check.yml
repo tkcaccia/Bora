@@ -36,7 +36,7 @@ jobs:
       - name: Install portable check dependencies
         shell: bash
         run: |
-          Rscript -e 'packages <- c("Rcpp", "jsonlite", "reticulate", "testthat"); install.packages(packages, repos = "https://cloud.r-project.org"); stopifnot(all(vapply(packages, requireNamespace, logical(1), quietly = TRUE)))'
+          Rscript -e 'packages <- c("Rcpp", "jsonlite", "reticulate", "testthat", "knitr", "rmarkdown"); install.packages(packages, repos = "https://cloud.r-project.org"); stopifnot(all(vapply(packages, requireNamespace, logical(1), quietly = TRUE)))'
       - name: Build source package
         shell: bash
         run: R CMD build r

@@ -20,12 +20,12 @@ for a SHA256-pinned BCSS ROI, or read the [supervised command
 contract](docs/supervised-commands.md). Encoder inference and image calibration
 are upstream: these commands consume existing feature caches and run on CPU.
 
-The [Bora R 0.1.6 interface](r/README.md) exports `Bora.preparation`,
-`Bora.training`, `Bora.prediction`, and `Bora.spatial`. It uses Python backend 0.3.5
+The [Bora R 0.2.0 interface](r/README.md) exports `Bora.preparation`,
+`Bora.training`, `Bora.prediction`, and `Bora.spatial`. It uses Python backend 0.3.6
 through reticulate, keeps full-channel feature arrays on disk, and supports
 supervised and joint-image KODAMA routes. The [R one-result guide](r/REPRODUCE_ONE_RESULT.md)
-gives a real training-ROI command and expected hashes. The [reference and
-acceptance manual](docs/reference/Bora_R_0.1.6_reference_and_acceptance_manual.pdf)
+gives a real training-ROI command and expected hashes. The current [reference and
+acceptance manual](r/REFERENCE_MANUAL.md)
 reports the Chiamaka software checks and known limits. Earlier R releases
 passed Linux, macOS and Windows CI; cross-platform GPU extraction and larger
 biological-cohort qualification remain separate limitations.

@@ -32,7 +32,8 @@
 #' @param tissue_mask Optional aligned tissue raster or GeoJSON, used only when
 #'   `preparation` is absent.
 #' @param model_dir Local licensed Virchow2 model directory.
-#' @param source_mpp_xy Measured H&E X/Y pixel spacing in micrometres.
+#' @param source_mpp_xy Required measured H&E X/Y pixel spacing in
+#'   micrometres; never inferred from a nominal scan magnification.
 #' @param output_mpp_xy Output X/Y pixel spacing in micrometres.
 #' @param channels_per_group Maximum contrast channels selected per group.
 #' @param alpha Positive ridge penalty.
@@ -49,13 +50,14 @@ Bora.spatial <- function(image, object, output_dir, cluster_column = NULL,
                          coordinate_scale_xy = c(1, 1), preparation = NULL,
                          tissue_mask = NULL,
                          model_dir = Sys.getenv("BORA_VIRCHOW2_MODEL"),
-                         source_mpp_xy = c(.5, .5), output_mpp_xy = c(4, 4),
+                         source_mpp_xy = NULL, output_mpp_xy = c(4, 4),
                          channels_per_group = 32L, alpha = 10,
                          minimum_area_um2 = 2000, contour_sigma_um = 6,
                          minimum_free_gib = 1, max_new_gib = NULL,
                          preview_backend = "vips-lanczos3") {
   image <- .bora_paths(image, "image")
   if (length(image) != 1L) stop("image must be one H&E path", call. = FALSE)
+  source_mpp_xy <- .bora_measured_spacing(source_mpp_xy)
   output_dir <- .bora_output_dir(output_dir, "output_dir")
   if (!is.numeric(coordinate_scale_xy) || length(coordinate_scale_xy) != 2L ||
       anyNA(coordinate_scale_xy) || any(!is.finite(coordinate_scale_xy)) ||

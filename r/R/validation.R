@@ -56,3 +56,10 @@
   }
   structure(list(manifest = path, data = value), class = c(expected_format, "bora_result"))
 }
+.bora_measured_spacing <- function(value) {
+  if (!is.numeric(value) || length(value) != 2L || anyNA(value) ||
+      any(!is.finite(value)) || any(value <= 0)) {
+    stop("Measured spacing source_mpp_xy must be supplied explicitly as two positive finite X/Y micrometre values", call. = FALSE)
+  }
+  as.numeric(value)
+}

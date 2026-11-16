@@ -37,5 +37,6 @@ test_that("prediction requires an existing preparation directory", {
   expect_error(Bora.prediction(tempdir(), output_dir = tempfile(),
                                resolutions = c(1, 1)), "distinct")
   expect_error(Bora.prediction(tempdir(), output_dir = tempfile(),
+                               source_mpp_xy = c(.5, .5),
                                preview_backend = "unknown"), "preview_backend")
 })

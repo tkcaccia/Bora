@@ -27,11 +27,15 @@ test_that("training rejects class mappings and limits before fitting", {
 })
 
 test_that("prediction distinguishes supervised and joint KODAMA arguments", {
-  args <- list(preparation = tempdir(), output_dir = tempfile())
+  args <- list(preparation = tempdir(), output_dir = tempfile(),
+               source_mpp_xy = c(.5, .5))
+  expect_error(Bora.prediction(tempdir(), output_dir = tempfile()),
+               "Measured spacing")
   expect_error(do.call(Bora.prediction, c(args, list(resolutions = c(1, 1)))), "distinct")
   expect_error(do.call(Bora.prediction, c(args, list(max_joint_tiles = 39L))),
                "Measured spacing")
-  expect_error(do.call(Bora.prediction, c(args, list(source_mpp_xy = c(.5, 0)))),
+  expect_error(Bora.prediction(tempdir(), output_dir = tempfile(),
+                               source_mpp_xy = c(.5, 0)),
                "Measured spacing")
   expect_error(do.call(Bora.prediction,
                        c(args, list(predictor = tempdir(), resolutions = 1))),
@@ -39,6 +43,17 @@ test_that("prediction distinguishes supervised and joint KODAMA arguments", {
   expect_error(do.call(Bora.prediction,
                        c(args, list(class_names = c(a = "tissue")))),
                "supervised prediction")
+})
+
+test_that("spatial route requires measured spacing before Python or output", {
+  image <- tempfile(fileext = ".tif")
+  writeBin(as.raw(1:8), image)
+  on.exit(unlink(image))
+  output <- tempfile()
+  expect_error(Bora.spatial(image, data.frame(), output), "Measured spacing")
+  expect_false(dir.exists(output))
+  expect_error(Bora.spatial(image, data.frame(), output,
+                            source_mpp_xy = c(0.5, NA_real_)), "Measured spacing")
 })
 
 test_that("spatial spot metadata catches missing and ambiguous inputs", {

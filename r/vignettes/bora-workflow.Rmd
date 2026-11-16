@@ -1,0 +1,108 @@
+---
+title: "Bora preparation training prediction and spatial output"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Bora preparation training prediction and spatial output}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette states the input contract for the four public analysis routes.
+The first chunk runs without a model or image. The complete workflow chunks
+are executable after replacing the paths with the reader's calibrated H&E
+images, registered masks and licensed Virchow2 checkpoint. The package does
+not distribute those third-party inputs. A frozen real-image regression with
+expected hashes is in `REPRODUCE_ONE_RESULT.md`.
+
+```{r contract}
+if (requireNamespace("Bora", quietly = TRUE)) {
+  stopifnot(utils::packageVersion("Bora") >= "0.2.0")
+  missing_spacing <- tryCatch(
+    Bora::Bora.prediction(tempdir(), output_dir = tempfile("bora-vignette-")),
+    error = conditionMessage
+  )
+  stopifnot(grepl("Measured spacing source_mpp_xy", missing_spacing,
+                fixed = TRUE))
+}
+```
+
+## Prepare full-channel features
+
+Calibrate X and Y pixel spacing from the supplied image metadata. The
+reviewed tissue mask limits encoder windows to tissue; the expert class mask
+is a separate fitting input. Without a tissue mask, preparation encodes the
+entire image field, including empty glass-slide background.
+
+```{r prepare, eval=FALSE}
+image <- "/data/roi-a.tif"
+tissue <- "/data/roi-a-tissue.geojson"
+model <- "/models/Virchow2-v1"
+prepared <- Bora.preparation(
+  images = image, tissue_masks = tissue,
+  feature_dir = "/results/roi-a-features-v1", model_dir = model,
+  scales = c(1L, 2L, 4L), minimum_free_gib = 100
+)
+```
+
+The factor 1, 2 and 4 caches retain all 1,280 channels. The encoder needs
+the separately licensed model and an admitted GPU. Verify the preparation
+receipt before fitting or reusing a cache.
+
+## Fit from registered class annotations and predict
+
+Training annotations must use the exact image coordinate frame. Zero denotes
+unscored pixels. Choose channels, thresholds and penalties on training-only
+folds before evaluating another image.
+
+```{r supervised, eval=FALSE}
+head <- Bora.training(
+  images = image, annotations = "/data/roi-a-classes.tif",
+  feature_dir = prepared, output_dir = "/results/head-v1"
+)
+result <- Bora.prediction(
+  preparation = prepared, predictor = head,
+  output_dir = "/results/roi-a-prediction-v1",
+  source_mpp_xy = c(0.50, 0.50), # replace with measured X and Y values
+  output_mpp_xy = c(4, 4), minimum_area_um2 = 2000,
+  contour_sigma_um = 6, minimum_free_gib = 100
+)
+```
+
+Inspect the result manifest, multiclass TIFF, binary class images, source-pixel
+GeoJSON and preview together. A training-image replay tests software
+registration; it is not an independent accuracy estimate.
+
+## Predict anonymous KODAMA groups jointly
+
+With no predictor, `Bora.prediction()` pools strictly admitted tissue tiles
+from all images in the preparation. Group IDs are anonymous, not tissue names.
+
+```{r joint, eval=FALSE}
+anonymous <- Bora.prediction(
+  preparation = prepared, predictor = NULL,
+  resolutions = c(0.5, 1, 2), output_dir = "/results/joint-v1",
+  source_mpp_xy = c(0.50, 0.50), # all inputs must have this measured spacing
+  minimum_free_gib = 100
+)
+```
+
+## Refine expression groups on the same section
+
+The Seurat, Giotto or SpatialExperiment object must carry spot positions
+registered to the H&E image and expression-derived cluster labels. This is
+an exploratory same-section fit, not a cell segmentation or independent
+anatomical validation.
+
+```{r spatial, eval=FALSE}
+spatial <- Bora.spatial(
+  image = image, object = clustered_object,
+  tissue_mask = tissue, output_dir = "/results/spatial-v1",
+  source_mpp_xy = c(0.50, 0.50), # measured H&E pixel spacing
+  coordinate_scale_xy = c(1, 1)
+)
+stopifnot(file.exists(spatial$mask), file.exists(spatial$geojson))
+```
+
+Use the [Benchmark 4 tutorial](https://tkcaccia.github.io/Bora-Analysis/visium/tutorial.html)
+for the dataset-specific steps that create a clustered R object from Visium
+data. Its historic raw-input replay is not distributed with this package.

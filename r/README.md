@@ -1,9 +1,10 @@
-# Bora for R 0.1.7
+# Bora for R 0.2.0
 
 The [reference and acceptance manual](REFERENCE_MANUAL.md) explains the five
 user-facing functions, their inputs and outputs, the completed software checks,
-and the limits of those checks. A [PDF edition](../docs/reference/Bora_R_0.1.7_reference_and_acceptance_manual.pdf)
-is included in the repository.
+and the limits of those checks. The [0.1.7 PDF edition](../docs/reference/Bora_R_0.1.7_reference_and_acceptance_manual.pdf)
+is retained as historical documentation; use the current Markdown manual for
+the explicit-spacing API.
 
 This MIT R package is released alongside the Bora Python backend.
 `Bora.preparation`, `Bora.training`, and the
@@ -35,7 +36,7 @@ feature extraction and broad biological validation remain pending.
 The [R installation and one-result guide](REPRODUCE_ONE_RESULT.md) records
 the exact real training-image input schema, commands and output hashes.
 
-The R 0.1.7 package calls the matching Bora Python backend through
+The R 0.2.0 package calls the matching Bora Python backend through
 `reticulate`. Virchow2 weights are separately licensed and are never bundled
 with Bora. A user-managed Python environment with Bora, PyTorch, timm and the
 licensed Virchow2 checkpoint is required for feature extraction. Set
@@ -69,8 +70,14 @@ The helper downloads only `config.json` and `model.safetensors` into a new
 directory, records the exact Hub commit and both SHA256 values in
 `DOWNLOAD_COMPLETE.json`, and leaves any incomplete transfer outside the
 usable model directory. It does not bundle weights or bypass the model gate.
-The [one-result guide](REPRODUCE_ONE_RESULT.md)
+The [one-result guide](REPRODUCE_ONE_RESULT.md) is a frozen 0.1.4 replay, not
+a current eight-class benchmark reproduction. It
 provides exact commands, source/model hashes and expected output hashes.
+
+For predictions and spatial expression workflows, pass measured X/Y source
+pixel spacing explicitly, for example `source_mpp_xy = c(0.5, 0.5)` only when
+both values were verified from that image's metadata. The former implicit
+0.5 µm default was removed in 0.2.0 to avoid silent physical-coordinate errors.
 
 `Bora.training` reads exact-size class raster masks or pixel-coordinate class
 GeoJSON. Class IDs must be present in the annotation or supplied with

@@ -15,7 +15,7 @@ Bora.spatial(
   preparation = NULL,
   tissue_mask = NULL,
   model_dir = Sys.getenv("BORA_VIRCHOW2_MODEL"),
-  source_mpp_xy = c(0.5, 0.5),
+  source_mpp_xy = NULL,
   output_mpp_xy = c(4, 4),
   channels_per_group = 32L,
   alpha = 10,
@@ -53,7 +53,8 @@ for this exact image. If absent, full-channel Virchow2 features are made.}
 
 \item{model_dir}{Local licensed Virchow2 model directory.}
 
-\item{source_mpp_xy}{Measured H&E X/Y pixel spacing in micrometres.}
+\item{source_mpp_xy}{Required measured H&E X/Y pixel spacing in
+micrometres; never inferred from a nominal scan magnification.}
 
 \item{output_mpp_xy}{Output X/Y pixel spacing in micrometres.}
 
