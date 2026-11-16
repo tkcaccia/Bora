@@ -1,8 +1,8 @@
-# Bora for R 0.1.6
+# Bora for R 0.1.7
 
-The [reference and acceptance manual](REFERENCE_MANUAL.md) explains all four
-functions, their inputs and outputs, the completed software checks, and the
-limits of those checks. A [PDF edition](../docs/reference/Bora_R_0.1.6_reference_and_acceptance_manual.pdf)
+The [reference and acceptance manual](REFERENCE_MANUAL.md) explains the five
+user-facing functions, their inputs and outputs, the completed software checks,
+and the limits of those checks. A [PDF edition](../docs/reference/Bora_R_0.1.7_reference_and_acceptance_manual.pdf)
 is included in the repository.
 
 This MIT R package is released alongside the Bora Python backend.
@@ -35,7 +35,7 @@ feature extraction and broad biological validation remain pending.
 The [R installation and one-result guide](REPRODUCE_ONE_RESULT.md) records
 the exact real training-image input schema, commands and output hashes.
 
-The R 0.1.6 package calls Bora Python backend 0.3.5 through
+The R 0.1.7 package calls the matching Bora Python backend through
 `reticulate`. Virchow2 weights are separately licensed and are never bundled
 with Bora. A user-managed Python environment with Bora, PyTorch, timm and the
 licensed Virchow2 checkpoint is required for feature extraction. Set
@@ -43,18 +43,33 @@ licensed Virchow2 checkpoint is required for feature extraction. Set
 directory. Install the pinned source release and its matching Python backend:
 
 ```bash
-git clone --branch bora-r-v0.1.6 https://github.com/tkcaccia/Bora.git
+git clone https://github.com/tkcaccia/Bora.git
 cd Bora
 python3 -m venv .venv
-.venv/bin/python -m pip install '.[wsi]'
+.venv/bin/python -m pip install '.[wsi,model-download]'
 mkdir -p .R-library
 R CMD INSTALL --library="$PWD/.R-library" r
 export R_LIBS_USER="$PWD/.R-library"
 export RETICULATE_PYTHON="$PWD/.venv/bin/python"
 ```
 
-Install compatible PyTorch and timm separately for Virchow2 extraction,
-and obtain the checkpoint under its own terms. The [one-result guide](REPRODUCE_ONE_RESULT.md)
+Install compatible PyTorch and timm separately for Virchow2 extraction.
+Each user must [accept Virchow2's gated terms](https://huggingface.co/paige-ai/Virchow2)
+with their own institutional Hugging Face account. After authenticating with
+`hf auth login` or setting `HF_TOKEN` in the Python environment, download it:
+
+```r
+library(Bora)
+model <- Bora.download_virchow2("/path/to/models/Virchow2-v1")
+Sys.setenv(BORA_VIRCHOW2_MODEL = model$model_dir)
+# Bora.preparation(..., model_dir = model$model_dir)
+```
+
+The helper downloads only `config.json` and `model.safetensors` into a new
+directory, records the exact Hub commit and both SHA256 values in
+`DOWNLOAD_COMPLETE.json`, and leaves any incomplete transfer outside the
+usable model directory. It does not bundle weights or bypass the model gate.
+The [one-result guide](REPRODUCE_ONE_RESULT.md)
 provides exact commands, source/model hashes and expected output hashes.
 
 `Bora.training` reads exact-size class raster masks or pixel-coordinate class

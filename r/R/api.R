@@ -11,7 +11,8 @@
 #' @param images Character vector of calibrated RGB H&E image paths.
 #' @param tissue_masks Optional aligned raster or GeoJSON path per image.
 #' @param feature_dir New directory for reusable feature caches.
-#' @param model_dir Local licensed Virchow2 model directory.
+#' @param model_dir Local licensed Virchow2 model directory, such as the
+#'   `$model_dir` returned by `Bora.download_virchow2()`.
 #' @param scales Integer scale factors; defaults to 1, 2 and 4. A factor of
 #'   1 uses the finest Virchow2 token grid; 2 and 4 use coarser image scales.
 #'   In R, the suffix `L` in `c(1L, 2L, 4L)` marks integer values.

@@ -1,6 +1,7 @@
 useDynLib(Bora, .registration = TRUE)
 importFrom(Rcpp, evalCpp)
 export(Bora.preparation)
+export(Bora.download_virchow2)
 export(Bora.training)
 export(Bora.prediction)
 export(Bora.spatial)

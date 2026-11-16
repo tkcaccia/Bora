@@ -1,3 +1,10 @@
+# Bora for R 0.1.7
+
+- Add `Bora.download_virchow2()` for individually authorized downloads of the
+  official gated model. It pins the resolved Hub commit, records file SHA256
+  values, and makes the model directory available only after both required
+  files arrive. Weights remain outside the Bora package and repository.
+
 # Bora for R 0.1.6
 
 - Reject duplicate spot IDs with an explicit registration error before R

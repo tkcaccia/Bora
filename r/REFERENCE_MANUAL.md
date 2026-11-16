@@ -1,17 +1,31 @@
-# Bora for R 0.1.6: reference and acceptance manual
+# Bora for R 0.1.7: reference and acceptance manual
 
-Bora provides four user functions. `Bora.preparation()` extracts reusable
+Bora provides four analysis functions and one optional model-download helper.
+`Bora.download_virchow2()` obtains the separately licensed model;
+`Bora.preparation()` extracts reusable
 Virchow2 features; `Bora.training()` fits a class predictor from registered
 expert masks; `Bora.prediction()` produces class or anonymous-group maps; and
 `Bora.spatial()` projects expression-derived spot groups onto an H&E image.
-The R package uses the matching Bora Python backend 0.3.5 through `reticulate`.
+The R package uses the matching Bora Python backend 0.3.6 through `reticulate`.
 Bora code is MIT licensed. Virchow2 weights and image datasets retain their
 own terms and are not included.
 
 ## Set up
 
-Install the R package and Python backend from tag `bora-r-v0.1.6`. Supply a
-licensed Virchow2 checkpoint yourself. Set `RETICULATE_PYTHON` to the Python
+Install the matching R package and Python backend. Obtain individual access
+to the [gated Virchow2 model](https://huggingface.co/paige-ai/Virchow2) using an
+institutional Hugging Face account, and accept its terms before downloading.
+In the active Python environment install `huggingface_hub`, then run
+`hf auth login` or set `HF_TOKEN`. Call
+`Bora.download_virchow2("/path/to/models/Virchow2-v1")`; pass the returned
+`$model_dir` to `Bora.preparation()` or set `BORA_VIRCHOW2_MODEL` to it.
+The helper downloads only `config.json` and `model.safetensors` and records
+their SHA256 values and the resolved Hub commit in `DOWNLOAD_COMPLETE.json`.
+It neither bundles weights nor bypasses the model's access terms. An
+incomplete transfer remains in a separate `.incomplete-*` directory and does
+not become a usable model directory.
+
+Set `RETICULATE_PYTHON` to the Python
 interpreter containing Bora, PyTorch, timm and rasterio, and set
 `BORA_VIRCHOW2_MODEL` to the model directory before starting R. Read
 `REPRODUCE_ONE_RESULT.md` for a complete frozen training-image replay.
@@ -107,6 +121,7 @@ estimates. Evidence and source hashes are under
 
 | Route | Check and acceptance result |
 | --- | --- |
+| Model download helper | Offline Hub simulations verify commit and file hashes, existing-path rejection, missing-file isolation and gated-access guidance. Licensed weights were not downloaded. |
 | Installation | R 0.1.6 source package built, installed in a clean local library, and `R CMD check --no-manual --no-vignettes` ended `Status: OK`. |
 | R and Python contracts | R package tests passed, including invalid scales, class mappings, resource limits, duplicate spots and coordinates. The 24 focused Python R-API tests passed, including source-bound cache rejection and GPU admission/cleanup gates. |
 | Real Virchow2 preparation | On a frozen 448 x 448 synthetic H&E fixture, a tissue mask admitted 1 source tile and 6 finest-scale encoder windows; no mask admitted all 4 source tiles and 24 windows. All three arrays were SHA256- and row-hash verified as float16 with 1,280 channels. Both services ended with no owned process or GPU context. |
@@ -132,5 +147,5 @@ estimates. Evidence and source hashes are under
 - The joint KODAMA route is bounded by `max_joint_tiles` and has not been
   qualified as a full-cohort whole-slide accuracy estimator. Anonymous groups
   require separate expert mapping before semantic scores can be reported.
-- CAMELYON16 technical results remain local pending display-rights
-  clarification; the acceptance archive does not redistribute source slides.
+- Dataset results and previews follow their own source terms; the acceptance
+  archive does not redistribute original whole-slide images.

@@ -13,6 +13,15 @@ test_that("preparation requires existing images and a new output", {
                "missing path")
 })
 
+test_that("Virchow2 download validates output and revision before contacting Python", {
+  dir <- tempfile()
+  dir.create(dir)
+  on.exit(unlink(dir, recursive = TRUE))
+  expect_error(Bora.download_virchow2(dir), "already exists")
+  expect_error(Bora.download_virchow2(tempfile(),
+                                      revision = ""), "revision")
+})
+
 test_that("training rejects a tissue-only or unpaired reference", {
   image <- tempfile(fileext = ".tif")
   writeBin(as.raw(1:8), image)

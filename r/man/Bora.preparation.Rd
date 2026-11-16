@@ -22,7 +22,8 @@ Bora.preparation(
 
 \item{feature_dir}{New directory for reusable feature caches.}
 
-\item{model_dir}{Local licensed Virchow2 model directory.}
+\item{model_dir}{Local licensed Virchow2 model directory, such as the
+`$model_dir` returned by `Bora.download_virchow2()`.}
 
 \item{scales}{Integer scale factors; defaults to 1, 2 and 4. A factor of
 1 uses the finest Virchow2 token grid; 2 and 4 use coarser image scales.
