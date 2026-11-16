@@ -1,7 +1,8 @@
 #' Prepare Virchow2 features for calibrated H&E images
 #'
 #' For new extraction, a supplied tissue mask limits encoder windows to tissue.
-#' Without a mask, every image tile is encoded, including glass. A verified
+#' Without a mask, every image tile is encoded, including the empty glass
+#' slide background visible outside the specimen. A verified
 #' historical full-field cache can instead be adopted with a new support mask;
 #' its encoder coverage is recorded separately. Benchmark runs must provide
 #' precomputed tissue masks. The result references on-disk full-channel arrays
@@ -11,8 +12,11 @@
 #' @param tissue_masks Optional aligned raster or GeoJSON path per image.
 #' @param feature_dir New directory for reusable feature caches.
 #' @param model_dir Local licensed Virchow2 model directory.
-#' @param scales Integer scale factors; defaults to 1, 2 and 4.
+#' @param scales Integer scale factors; defaults to 1, 2 and 4. A factor of
+#'   1 uses the finest Virchow2 token grid; 2 and 4 use coarser image scales.
+#'   In R, the suffix `L` in `c(1L, 2L, 4L)` marks integer values.
 #' @param max_seconds Finite maximum GPU seconds for each image-scale worker.
+#'   The default `3600L` is 3,600 seconds (one hour); `L` marks an R integer.
 #' @param minimum_free_gib Minimum free-space reserve after projected features.
 #' @param precomputed_manifest Optional JSON manifest of SHA256-verified,
 #'   source-registered full-1280 Virchow2 arrays. This reuses existing arrays
@@ -61,9 +65,11 @@ Bora.preparation <- function(images, tissue_masks = NULL, feature_dir,
 
 #' Train a supervised Bora class predictor
 #'
-#' Each annotation must encode class IDs, or class_labels must map its labels
-#' to class IDs. A binary tissue-support mask alone cannot train a semantic
-#' predictor. The returned model is stored on disk with a checksum receipt.
+#' Each annotation must encode class IDs, or `class_labels` must map its labels
+#' to class IDs. Zero means unscored. A binary tissue-support mask alone cannot
+#' train a semantic predictor. Only labelled classes present in the training
+#' images can be learned. The returned model is stored on disk with a checksum
+#' receipt. Keep model selection separate from held-out evaluation images.
 #'
 #' @param images Calibrated H&E image paths.
 #' @param annotations Aligned class-mask raster or GeoJSON path per image.
@@ -134,9 +140,13 @@ Bora.training <- function(images, annotations, feature_dir,
 
 #' Predict tissue masks from prepared Virchow2 features
 #'
-#' Without a predictor, tiles from all prepared images are jointly analyzed
-#' by the frozen KODAMA route, then returned to their original image grids.
-#' Multiple clustering resolutions produce separate output subdirectories.
+#' With a predictor, Bora returns supervised class masks. Without one, tiles
+#' from all prepared images are jointly analyzed by pinned KODAMA 0.99.7, then
+#' returned to their original image grids as anonymous groups. Multiple
+#' clustering resolutions produce separate output subdirectories. Each result
+#' includes binary class images, a multiclass TIFF, source-pixel GeoJSON,
+#' previews and SHA256-bound receipts. The binary images and vectors describe
+#' the final multiclass mask; they are not independent predictions.
 #'
 #' @param preparation Bora.preparation result or its cache directory.
 #' @param predictor Optional Bora.training result or model directory.

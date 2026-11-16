@@ -37,7 +37,9 @@ across the training images, allocated evenly by image.}
 A predictor manifest object.
 }
 \description{
-Each annotation must encode class IDs, or class_labels must map its labels
-to class IDs. A binary tissue-support mask alone cannot train a semantic
-predictor. The returned model is stored on disk with a checksum receipt.
+Each annotation must encode class IDs, or `class_labels` must map its labels
+to class IDs. Zero means unscored. A binary tissue-support mask alone cannot
+train a semantic predictor. Only labelled classes present in the training
+images can be learned. The returned model is stored on disk with a checksum
+receipt. Keep model selection separate from held-out evaluation images.
 }

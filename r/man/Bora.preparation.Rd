@@ -24,9 +24,12 @@ Bora.preparation(
 
 \item{model_dir}{Local licensed Virchow2 model directory.}
 
-\item{scales}{Integer scale factors; defaults to 1, 2 and 4.}
+\item{scales}{Integer scale factors; defaults to 1, 2 and 4. A factor of
+1 uses the finest Virchow2 token grid; 2 and 4 use coarser image scales.
+In R, the suffix `L` in `c(1L, 2L, 4L)` marks integer values.}
 
-\item{max_seconds}{Finite maximum GPU seconds for each image-scale worker.}
+\item{max_seconds}{Finite maximum GPU seconds for each image-scale worker.
+The default `3600L` is 3,600 seconds (one hour); `L` marks an R integer.}
 
 \item{minimum_free_gib}{Minimum free-space reserve after projected features.}
 
@@ -39,7 +42,8 @@ A manifest object with feature paths and provenance.
 }
 \description{
 For new extraction, a supplied tissue mask limits encoder windows to tissue.
-Without a mask, every image tile is encoded, including glass. A verified
+Without a mask, every image tile is encoded, including the empty glass
+slide background visible outside the specimen. A verified
 historical full-field cache can instead be adopted with a new support mask;
 its encoder coverage is recorded separately. Benchmark runs must provide
 precomputed tissue masks. The result references on-disk full-channel arrays

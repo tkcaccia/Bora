@@ -1,4 +1,9 @@
-# Bora for R 0.1.5
+# Bora for R 0.1.6
+
+The [reference and acceptance manual](REFERENCE_MANUAL.md) explains all four
+functions, their inputs and outputs, the completed software checks, and the
+limits of those checks. A [PDF edition](../docs/reference/Bora_R_0.1.6_reference_and_acceptance_manual.pdf)
+is included in the repository.
 
 This MIT R package is released alongside the Bora Python backend.
 `Bora.preparation`, `Bora.training`, and the
@@ -30,7 +35,7 @@ feature extraction and broad biological validation remain pending.
 The [R installation and one-result guide](REPRODUCE_ONE_RESULT.md) records
 the exact real training-image input schema, commands and output hashes.
 
-The R 0.1.5 package calls Bora Python backend 0.3.5 through
+The R 0.1.6 package calls Bora Python backend 0.3.5 through
 `reticulate`. Virchow2 weights are separately licensed and are never bundled
 with Bora. A user-managed Python environment with Bora, PyTorch, timm and the
 licensed Virchow2 checkpoint is required for feature extraction. Set
@@ -38,7 +43,7 @@ licensed Virchow2 checkpoint is required for feature extraction. Set
 directory. Install the pinned source release and its matching Python backend:
 
 ```bash
-git clone --branch bora-r-v0.1.5 https://github.com/tkcaccia/Bora.git
+git clone --branch bora-r-v0.1.6 https://github.com/tkcaccia/Bora.git
 cd Bora
 python3 -m venv .venv
 .venv/bin/python -m pip install '.[wsi]'
@@ -68,7 +73,7 @@ accuracy or generalization result.
 
 For benchmark runs, supply an independently prepared tissue mask for every
 image. Without a mask, preparation intentionally encodes the full H&E field,
-including glass. Class annotations used by training are separate from these
+including empty glass slide background outside the specimen. Class annotations used by training are separate from these
 tissue-support masks.
 
 ### Reuse verified full-channel features
@@ -100,7 +105,7 @@ the source image hash, model hashes, factor, array hash, `shape_yxc`,
 registration, encoder selection, and encoder tissue hash (or JSON `null`).
 Adoption checks all array and receipt bytes and shapes before creating the
 output directory. A `full-field` cache may be paired with a new tissue mask:
-the manifest records that the encoder once covered glass, while the supplied
+the manifest records that the encoder once covered empty slide background, while the supplied
 mask now controls Bora tile admission and final support. A `supplied-tissue`
 cache requires the exact same mask hash. Subsequent `Bora.training` and
 `Bora.prediction` consume the standard preparation manifest.
@@ -131,7 +136,7 @@ With `predictor = NULL`, prediction pools every strictly admitted 224-pixel
 tile from the prepared images into one source-bound KODAMA 0.99.7 fit. A
 supplied tissue mask admits a tile only when more than 90% of its pixels are
 supported; artificial padding is background. Without a mask, the entire
-source image, including glass, remains eligible under the same padding rule.
+source image, including empty slide background, remains eligible under the same padding rule.
 The route retains each row's image and tile identity, creates one graph
 solution for each requested `resolutions` value, selects channels from the
 resulting anonymous groups, and projects them to token and pixel masks.

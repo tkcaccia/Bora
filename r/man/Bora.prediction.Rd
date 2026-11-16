@@ -55,7 +55,11 @@ IDs to names in the output GeoJSON. Requires a supervised predictor.}
 A prediction manifest object.
 }
 \description{
-Without a predictor, tiles from all prepared images are jointly analyzed
-by the frozen KODAMA route, then returned to their original image grids.
-Multiple clustering resolutions produce separate output subdirectories.
+With a predictor, Bora returns supervised class masks. Without one, tiles
+from all prepared images are jointly analyzed by pinned KODAMA 0.99.7, then
+returned to their original image grids as anonymous groups. Multiple
+clustering resolutions produce separate output subdirectories. Each result
+includes binary class images, a multiclass TIFF, source-pixel GeoJSON,
+previews and SHA256-bound receipts. The binary images and vectors describe
+the final multiclass mask; they are not independent predictions.
 }

@@ -1,3 +1,19 @@
+# Bora for R 0.1.6
+
+- Reject duplicate spot IDs with an explicit registration error before R
+  attempts to set row names.
+- Expand function help and the reference manual with verified real extraction,
+  equivalent raster/GeoJSON training, vector round-trip, coordinate scaling,
+  joint-image regression, failure checks and current scientific limits.
+
+# Bora for R 0.1.5
+
+- `Bora.spatial()` reads registered expression-group positions from Seurat,
+  Giotto, SpatialExperiment or a spot table, fits a sparse spot-guided Bora
+  head on full-channel Virchow2 features, and writes a cleaned TIFF mask and
+  source-pixel GeoJSON. This same-section exploratory fit is not an expert
+  tissue classifier and does not reproduce the frozen historical Visium masks.
+
 # Bora for R 0.1.4
 
 - Align the hash-checked one-result guide and install command with the
@@ -49,10 +65,3 @@
   been qualified.
 - The MIT license covers Bora code. It does not license Virchow2 weights,
   H&E images, expert masks or other third-party data.
-# Bora for R 0.1.5
-
-- `Bora.spatial()` reads registered expression-group positions from Seurat,
-  Giotto, SpatialExperiment or a spot table, fits a sparse spot-guided Bora
-  head on full-channel Virchow2 features, and writes a cleaned TIFF mask and
-  source-pixel GeoJSON. This same-section exploratory fit is not an expert
-  tissue classifier and does not reproduce the frozen historical Visium masks.

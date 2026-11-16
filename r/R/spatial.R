@@ -11,7 +11,10 @@
 #' Coordinates must be full-resolution pixel positions in the supplied image,
 #' with the origin at its upper left. Use `coordinate_scale_xy` only when the
 #' object stores coordinates at a known different image scale. A registered
-#' tissue mask is recommended; without one, preparation encodes full glass.
+#' tissue mask is recommended; without one, preparation also encodes empty
+#' glass slide background outside the specimen. The function checks unique
+#' spot IDs, finite coordinates, image bounds and conflicting group labels
+#' within a Virchow2 token before fitting.
 #'
 #' @param image Path to one calibrated RGB H&E image.
 #' @param object Seurat, Giotto, SpatialExperiment, or a data frame with spot
@@ -210,6 +213,9 @@ Bora.spatial <- function(image, object, output_dir, cluster_column = NULL,
     coords <- meta <- object
     ids <- if ("spot_id" %in% names(object)) as.character(object$spot_id) else
       rownames(object)
+    if (is.null(ids) || anyNA(ids) || any(!nzchar(ids)) || anyDuplicated(ids)) {
+      stop("Spot IDs must be present and unique", call. = FALSE)
+    }
     rownames(meta) <- ids
   } else {
     stop("object must be Seurat, Giotto, SpatialExperiment, or a spot data frame",

@@ -88,5 +88,8 @@ spots are image-guided extrapolations.
 Coordinates must be full-resolution pixel positions in the supplied image,
 with the origin at its upper left. Use `coordinate_scale_xy` only when the
 object stores coordinates at a known different image scale. A registered
-tissue mask is recommended; without one, preparation encodes full glass.
+tissue mask is recommended; without one, preparation also encodes empty
+glass slide background outside the specimen. The function checks unique
+spot IDs, finite coordinates, image bounds and conflicting group labels
+within a Virchow2 token before fitting.
 }
