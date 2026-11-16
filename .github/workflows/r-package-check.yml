@@ -28,13 +28,10 @@ jobs:
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: 'release'
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          working-directory: r
-          # Giotto is an optional, non-CRAN adapter; install only the hard
-          # runtime and test dependencies for the portable package check.
-          packages: any::Rcpp any::jsonlite any::reticulate any::testthat any::sessioninfo
-          dependencies: '"hard"'
+      - name: Install portable check dependencies
+        shell: bash
+        run: |
+          Rscript -e 'install.packages(c("Rcpp", "jsonlite", "reticulate", "testthat"), repos = "https://cloud.r-project.org")'
       - name: Build source package
         shell: bash
         run: R CMD build r
