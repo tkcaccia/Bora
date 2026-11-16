@@ -109,3 +109,14 @@ worker source was unchanged across these releases. The installed-wheel replay
 audits are retained in `migration/bora-r-current-reproduction-2026-11-14-v1/`.
 The separate [Python reproduction guide](../docs/reproduce-one-result.md)
 covers the frozen eight-class development-case model.
+
+## Bora R 0.1.6 compatibility replay (16 November 2026)
+
+The installed R 0.1.6 package with Python backend 0.3.5 reused the exact
+verified feature cache above, then reran `Bora.training()` and
+`Bora.prediction()` on this **training** region in new directories. The full
+predictor arrays and model SHA256, final TIFF, preview PNG and source-pixel
+GeoJSON matched the frozen outputs exactly. Independent GeoJSON rasterization
+and all four binary-class TIFFs matched the 224 x 224 class mask. The source
+image and annotation were not redistributed. This CPU replay did not repeat
+the GPU extraction step, and it is not a held-out accuracy measurement.
