@@ -1,3 +1,12 @@
+# Bora for R 0.2.1
+
+- Select a binary class-score margin threshold from the fitting images by
+  maximizing sampled-token balanced accuracy. This is in-sample calibration,
+  not a held-out accuracy estimate; multiclass decisions are unchanged.
+- Apply the selected cutoff in supervised prediction. Publish guarded fitted
+  GeoJSON contours after the existing 2,000 µm² and 6 µm raster cleanup,
+  while retaining exact scored masks and vectors for audit.
+
 # Bora for R 0.2.0
 
 - Require explicit measured source X/Y pixel spacing for `Bora.prediction()`

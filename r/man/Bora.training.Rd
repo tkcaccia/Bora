@@ -12,7 +12,8 @@ Bora.training(
   output_dir,
   max_tokens_per_class = 8000L,
   channels_per_class = 32L,
-  alpha = 10
+  alpha = 10,
+  optimize_binary_threshold = TRUE
 )
 }
 \arguments{
@@ -32,6 +33,12 @@ across the training images, allocated evenly by image.}
 \item{channels_per_class}{Standardized contrast channels selected per class.}
 
 \item{alpha}{Positive ridge penalty.}
+
+\item{optimize_binary_threshold}{For a two-class predictor, maximize
+balanced accuracy on sampled labelled token centres from the supplied
+training images and store the resulting class-score margin threshold.
+This is training-set calibration, not held-out validation. For multiclass
+training the option is ignored and the existing class decision is used.}
 }
 \value{
 A predictor manifest object.

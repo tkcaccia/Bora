@@ -281,12 +281,14 @@ def prepare(images, tissue_masks, feature_dir, model_dir, scales,
 
 def train(images, annotations, feature_dir, class_labels, output_dir,
           *, max_tokens_per_class: int = 8000,
-          channels_per_class: int = 32, alpha: float = 10.0) -> dict:
+          channels_per_class: int = 32, alpha: float = 10.0,
+          optimize_binary_threshold: bool = True) -> dict:
     """Fit one source-bound classwise ridge head from prepared full channels."""
     from .r_training import train as fit_class_head
     return fit_class_head(images, annotations, feature_dir, class_labels,
                           output_dir, max_tokens_per_class=max_tokens_per_class,
-                          channels_per_class=channels_per_class, alpha=alpha)
+                          channels_per_class=channels_per_class, alpha=alpha,
+                          optimize_binary_threshold=optimize_binary_threshold)
 
 
 def predict(preparation, predictor, output_dir, resolutions,

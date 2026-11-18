@@ -42,6 +42,8 @@ def load_model(predictor_dir: Path) -> dict:
                  ("selected", "mean", "std", "coef", "intercept", "classes", "factors")}
         model["preparation_sha256"] = str(data["preparation_sha256"].item())
         model["training_inputs_sha256"] = str(data["training_inputs_sha256"].item())
+        model["binary_margin_threshold"] = (float(data["binary_margin_threshold"].item())
+            if "binary_margin_threshold" in data.files else 0.0)
     selected, classes = model["selected"], model["classes"]
     nclass = len(classes)
     if (selected.ndim != 1 or len(selected) < 1 or len(selected) > CHANNELS or
@@ -59,6 +61,13 @@ def load_model(predictor_dir: Path) -> dict:
                     ("mean", "std", "coef", "intercept")) or
             np.any(model["std"] <= 0)):
         raise ValueError("Bora R predictor arrays differ from their contract")
+    if not math.isfinite(model["binary_margin_threshold"]) or \
+       (nclass != 2 and model["binary_margin_threshold"] != 0):
+        raise ValueError("Binary margin threshold differs from predictor contract")
+    if "binary_threshold_calibration" in receipt and nclass == 2 and \
+       receipt["binary_threshold_calibration"] is not None and \
+       receipt["binary_threshold_calibration"]["threshold"] != model["binary_margin_threshold"]:
+        raise ValueError("Predictor threshold differs from training receipt")
     if model["training_inputs_sha256"] != sha256(root / "TRAINING_INPUTS.json"):
         raise ValueError("Predictor training inputs changed")
     if model["preparation_sha256"] != receipt["preparation_sha256"]:
@@ -197,7 +206,8 @@ def output_support(source: dict, shape_yx: tuple[int, int],
 def project_mask(scores: np.ndarray, classes: np.ndarray,
                  shape_yx: tuple[int, int], ratio_xy: tuple[float, float],
                  output: Path, *, support: np.ndarray | None = None,
-                 block: int = 512) -> dict:
+                 block: int = 512,
+                 binary_margin_threshold: float | None = None) -> dict:
     """Bicubic class decision in bounded output blocks, with optional support."""
     if output.exists():
         raise FileExistsError(output)
@@ -206,7 +216,9 @@ def project_mask(scores: np.ndarray, classes: np.ndarray,
             not np.all(np.diff(classes) > 0) or classes.min() < 1 or
             classes.max() > 254 or len(shape_yx) != 2 or min(shape_yx) < 1 or
             len(ratio_xy) != 2 or not all(math.isfinite(v) and v > 0 for v in ratio_xy) or
-            block < 64):
+            block < 64 or
+            (binary_margin_threshold is not None and
+             (len(classes) != 2 or not math.isfinite(binary_margin_threshold)))):
         raise ValueError("Invalid registered score projection")
     if not np.isfinite(scores).all():
         raise ValueError("Projected class scores contain nonfinite values")
@@ -227,14 +239,22 @@ def project_mask(scores: np.ndarray, classes: np.ndarray,
                 continue
             xx = (np.arange(x, x1, dtype=np.float32) + .5) * ratio_xy[0] / 14 - .5
             map_x, map_y = np.meshgrid(xx, yy)
-            best = np.full((y1-y, x1-x), -np.inf, np.float32)
-            chosen = np.zeros(best.shape, np.uint8)
-            for cls, source in zip(classes, mapped_classes):
-                response = cv2.remap(source, map_x, map_y, cv2.INTER_CUBIC,
-                                     borderMode=cv2.BORDER_REPLICATE)
-                take = response > best
-                chosen[take] = cls
-                best[take] = response[take]
+            if binary_margin_threshold is not None:
+                first = cv2.remap(mapped_classes[0], map_x, map_y, cv2.INTER_CUBIC,
+                                  borderMode=cv2.BORDER_REPLICATE)
+                second = cv2.remap(mapped_classes[1], map_x, map_y, cv2.INTER_CUBIC,
+                                   borderMode=cv2.BORDER_REPLICATE)
+                chosen = np.where(second - first > binary_margin_threshold,
+                                  classes[1], classes[0]).astype(np.uint8)
+            else:
+                best = np.full((y1-y, x1-x), -np.inf, np.float32)
+                chosen = np.zeros(best.shape, np.uint8)
+                for cls, source in zip(classes, mapped_classes):
+                    response = cv2.remap(source, map_x, map_y, cv2.INTER_CUBIC,
+                                         borderMode=cv2.BORDER_REPLICATE)
+                    take = response > best
+                    chosen[take] = cls
+                    best[take] = response[take]
             if target_support is not None:
                 chosen[~target_support] = 0
                 total_supported += int(target_support.sum())
@@ -246,7 +266,8 @@ def project_mask(scores: np.ndarray, classes: np.ndarray,
             "shape_yx": [h, w], "positive_pixels": total_supported,
             "support_applied": support is not None,
             "score_interpolation": "OpenCV INTER_CUBIC with replicated border",
-            "source_to_output_ratio_xy": list(ratio_xy)}
+            "source_to_output_ratio_xy": list(ratio_xy),
+            "binary_margin_threshold": binary_margin_threshold}
 
 
 def finalize_projected_mask(shared_mask_path: Path, support_path: Path,
@@ -335,7 +356,7 @@ def finalize_projected_mask(shared_mask_path: Path, support_path: Path,
             # every cleaned raster pixel, including source-support holes.
             minimum_area_um2=min(minimum_area_um2,
                                  .5 * mpp_xy[0] * mpp_xy[1]),
-            smoothing_tolerance_um=0.0)
+            smoothing_tolerance_um=3.0)
         exact_vector_mask = output / "vectors-output-grid/exact/mask.uint8.dat"
         if sha256(exact_vector_mask) != sha256(final_path):
             raise ValueError("Final vector raster differs from the cleaned tissue mask")
@@ -667,10 +688,12 @@ def predict_supervised(preparation_dir: Path, predictor_dir: Path, output_dir: P
                                 dtype=np.uint8, shape=shape_yx)
             smooth = np.load(score["smoothed_scores_path"], mmap_mode="r")
             native = project_mask(smooth, model["classes"], shape_yx, ratio,
-                                  folder / "native-mask.uint8.dat")
+                                  folder / "native-mask.uint8.dat",
+                                  binary_margin_threshold=model["binary_margin_threshold"])
             clipped = project_mask(smooth, model["classes"], shape_yx, ratio,
                                    folder / "support-clipped-mask.uint8.dat",
-                                   support=support)
+                                   support=support,
+                                   binary_margin_threshold=model["binary_margin_threshold"])
             final = finalize_projected_mask(
                 Path(clipped["mask_path"]), Path(support_receipt["support_path"]),
                 shape_yx, output_mpp_xy, list(map(int, model["classes"])),
@@ -678,9 +701,11 @@ def predict_supervised(preparation_dir: Path, predictor_dir: Path, output_dir: P
                 minimum_area_um2=minimum_area_um2,
                 contour_sigma_um=contour_sigma_um,
                 class_names=class_names)
-            exact_geojson = folder / "cleanup/vectors-output-grid/exact/mask.geojson"
+            # Benchmark 2's guarded fitted contours are the downloadable
+            # vector view. The exact vector remains beside the scored raster.
+            review_geojson = folder / "cleanup/vectors-output-grid/review/mask.geojson"
             source_vector = source_coordinate_geojson(
-                exact_geojson, folder / "class-mask.geojson",
+                review_geojson, folder / "class-mask.geojson",
                 tuple(source["image_shape_yx"]), source_mpp_xy, output_mpp_xy)
             final_mask = np.memmap(final["final_mask_path"], mode="r",
                                    dtype=np.uint8, shape=shape_yx)

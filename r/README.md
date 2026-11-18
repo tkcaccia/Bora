@@ -1,4 +1,4 @@
-# Bora for R 0.2.0
+# Bora for R 0.2.1
 
 The [reference and acceptance manual](REFERENCE_MANUAL.md) explains the five
 user-facing functions, their inputs and outputs, the completed software checks,
@@ -36,7 +36,7 @@ feature extraction and broad biological validation remain pending.
 The [R installation and one-result guide](REPRODUCE_ONE_RESULT.md) records
 the exact real training-image input schema, commands and output hashes.
 
-The R 0.2.0 package calls the matching Bora Python backend through
+The R 0.2.1 package calls the matching Bora Python backend through
 `reticulate`. Virchow2 weights are separately licensed and are never bundled
 with Bora. A user-managed Python environment with Bora, PyTorch, timm and the
 licensed Virchow2 checkpoint is required for feature extraction. Set
@@ -86,6 +86,17 @@ unscored. It samples the prepared full 1,280-channel factor-1 array
 at token centres, selects classwise contrast channels and fits a
 linear ridge head. This general R route is separate from the frozen historical
 eight-class checkpoint until full regression is complete.
+
+For two classes, `Bora.training` selects the class-score margin threshold that
+maximizes balanced accuracy on sampled labelled token centres from the supplied
+training images. The threshold is stored with the predictor and used by
+`Bora.prediction`; `optimize_binary_threshold = FALSE` retains the historical
+zero-margin decision. This is training-set calibration, not an independent
+accuracy estimate. For multiclass training the option is ignored.
+The output raster uses the Benchmark 2 physical cleanup: 2,000 µm² minimum
+regions and a 6 µm contour pass. The downloadable GeoJSON uses its globally
+fitted review contours, bounded by raster-agreement checks; exact vectors and
+the exact scored raster remain in the output for audit.
 
 The real training-image pilot used four expert-derived broad classes from one
 BCSS training case. Its 821 sampled finite tokens yielded 55 selected channels;

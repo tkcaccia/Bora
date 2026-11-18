@@ -1,4 +1,4 @@
-# Bora for R 0.2.0: reference and acceptance manual
+# Bora for R 0.2.1: reference and acceptance manual
 
 Bora provides four analysis functions and one optional model-download helper.
 `Bora.download_virchow2()` obtains the separately licensed model;
@@ -6,7 +6,7 @@ Bora provides four analysis functions and one optional model-download helper.
 Virchow2 features; `Bora.training()` fits a class predictor from registered
 expert masks; `Bora.prediction()` produces class or anonymous-group maps; and
 `Bora.spatial()` projects expression-derived spot groups onto an H&E image.
-The R package uses the matching Bora Python backend 0.3.6 through `reticulate`.
+The R package uses the matching Bora Python backend 0.3.7 through `reticulate`.
 Bora code is MIT licensed. Virchow2 weights and image datasets retain their
 own terms and are not included.
 
@@ -85,15 +85,28 @@ Optional `class_labels` maps source labels to positive IDs from 1 to 254.
 Zero is unscored. A binary tissue-support mask does not provide semantic
 class training. Bora samples finite factor-1 token centres from annotated
 training images, selects contrast channels and fits a ridge head. Select
-channels, hyperparameters and thresholds using training-only folds. Do not
+channels and hyperparameters using training-only data. Do not
 use evaluation masks in fitting or model selection. A class absent from all
 training annotations cannot be learned.
+
+For two classes, `Bora.training(..., optimize_binary_threshold = TRUE)`
+chooses the class-score margin cutoff that maximizes balanced accuracy on
+its sampled labelled training tokens. The cutoff is stored with the predictor
+and applied to both native and common-support masks. It is a ridge-score
+margin, not a calibrated probability. This built-in choice uses the same
+tokens as fitting, so its training accuracy is optimistic; report performance
+on separate slides. Use `FALSE` for the historical zero-margin decision.
+Multiclass predictors continue to use their existing class decision.
 
 With a predictor, `Bora.prediction()` projects the head to each prepared
 image. It writes native and common-support masks, cleaned multiclass TIFF,
 one 0/255 binary TIFF per predicted class, source-image-pixel GeoJSON and a
-preview. Binary images and vectors are derived from the same final multiclass
-mask. Record measured `source_mpp_xy`; the vector is in source pixel-edge
+preview. Binary images are exact derivatives of the final multiclass mask.
+The final raster receives the Benchmark 2 physical cleanup: a 2,000 µm²
+minimum class region, a 6 µm contour pass, and a second area cleanup. The
+downloadable GeoJSON uses a guarded 3 µm fitted contour view; the exact
+vector and scored raster remain available separately, with raster agreement
+checked during prediction. Record measured `source_mpp_xy`; the vector is in source pixel-edge
 coordinates, not output-grid pixels. A different preview backend may change
 the preview RGB but must leave mask and vector pixels unchanged.
 

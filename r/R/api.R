@@ -81,12 +81,18 @@ Bora.preparation <- function(images, tissue_masks = NULL, feature_dir,
 #'   across the training images, allocated evenly by image.
 #' @param channels_per_class Standardized contrast channels selected per class.
 #' @param alpha Positive ridge penalty.
+#' @param optimize_binary_threshold For a two-class predictor, maximize
+#'   balanced accuracy on sampled labelled token centres from the supplied
+#'   training images and store the resulting class-score margin threshold.
+#'   This is training-set calibration, not held-out validation. For multiclass
+#'   training the option is ignored and the existing class decision is used.
 #' @return A predictor manifest object.
 #' @export
 Bora.training <- function(images, annotations, feature_dir,
                           class_labels = NULL, output_dir,
                           max_tokens_per_class = 8000L,
-                          channels_per_class = 32L, alpha = 10) {
+                          channels_per_class = 32L, alpha = 10,
+                          optimize_binary_threshold = TRUE) {
   images <- .bora_paths(images, "images")
   annotations <- .bora_paired_paths(annotations, images, "annotations")
   if (is.null(annotations)) {
@@ -120,6 +126,10 @@ Bora.training <- function(images, annotations, feature_dir,
     stop("feature_dir must be one existing preparation directory", call. = FALSE)
   }
   output_dir <- .bora_output_dir(output_dir, "output_dir")
+  if (!is.logical(optimize_binary_threshold) ||
+      length(optimize_binary_threshold) != 1L || is.na(optimize_binary_threshold)) {
+    stop("optimize_binary_threshold must be TRUE or FALSE", call. = FALSE)
+  }
   if (!is.numeric(max_tokens_per_class) || length(max_tokens_per_class) != 1L ||
       is.na(max_tokens_per_class) || max_tokens_per_class != as.integer(max_tokens_per_class) ||
       max_tokens_per_class < 1L || max_tokens_per_class > 100000L ||
@@ -134,7 +144,8 @@ Bora.training <- function(images, annotations, feature_dir,
                         class_labels, output_dir,
                         max_tokens_per_class = as.integer(max_tokens_per_class),
                         channels_per_class = as.integer(channels_per_class),
-                        alpha = as.numeric(alpha))
+                        alpha = as.numeric(alpha),
+                        optimize_binary_threshold = optimize_binary_threshold)
   .bora_result(file.path(output_dir, "TRAINING_COMPLETE.json"),
                "bora-r-training-v1")
 }

@@ -3,7 +3,8 @@ import json
 import numpy as np
 import pytest
 
-from bora.r_training import _annotation_grid, _sample_case, train
+from bora.r_training import (_annotation_grid, _sample_case,
+                             _select_binary_margin_threshold, train)
 from bora.r_feature_preflight import sha256
 from bora.r_prediction import load_model, output_shape, project_mask, score_case
 
@@ -55,6 +56,23 @@ def test_sample_case_rejects_nonfinite_features():
     assert features.shape == (3, 1280)
     assert sorted(targets.tolist()) == [1, 2, 2]
     assert counts["1"]["sampled_nonfinite_tokens"] == 1
+
+
+def test_binary_threshold_uses_both_classes_and_changes_mask_decision(tmp_path):
+    margin = np.array([-1.0, -.8, -.2, .1, .3, .7], np.float32)
+    truth = np.array([1, 1, 2, 1, 2, 2], np.uint8)
+    fitted = _select_binary_margin_threshold(margin, truth, 2)
+    assert fitted["selected_balanced_accuracy"] > fitted["zero_threshold_balanced_accuracy"]
+    assert fitted["threshold"] == pytest.approx(.1)
+    scores = np.stack((-margin.reshape(1, -1) / 2,
+                        margin.reshape(1, -1) / 2)).astype(np.float32)
+    old = tmp_path / "old.dat"
+    new = tmp_path / "new.dat"
+    project_mask(scores, np.array([1, 2]), (14, 84), (1, 1), old)
+    project_mask(scores, np.array([1, 2]), (14, 84), (1, 1), new,
+                 binary_margin_threshold=fitted["threshold"])
+    assert not np.array_equal(np.memmap(old, dtype=np.uint8, shape=(14, 84)),
+                              np.memmap(new, dtype=np.uint8, shape=(14, 84)))
 
 
 def test_fit_uses_frozen_factor_one_head_with_multiscale_cache(tmp_path):

@@ -28,6 +28,47 @@ TOKEN = 14
 SEED = 20261114
 
 
+def _select_binary_margin_threshold(margin: np.ndarray, targets: np.ndarray,
+                                    positive_class: int) -> dict:
+    """Maximize class-balanced training accuracy with a deterministic tie break.
+
+    The margin is the class-2 score minus the class-1 score. A positive call
+    uses ``margin > threshold``; zero is the historical argmax decision.
+    """
+    margin = np.asarray(margin, dtype=np.float64).reshape(-1)
+    targets = np.asarray(targets).reshape(-1)
+    if len(margin) != len(targets) or not len(margin) or not np.isfinite(margin).all():
+        raise ValueError("Finite aligned training margins are required")
+    positive = targets == positive_class
+    if not positive.any() or positive.all():
+        raise ValueError("Threshold selection requires both observed classes")
+    order = np.argsort(margin, kind="stable")
+    values = margin[order]
+    truth = positive[order].astype(np.int64)
+    ends = np.r_[np.flatnonzero(np.diff(values)), len(values) - 1]
+    positives_below = np.cumsum(truth)[ends]
+    negatives_below = (ends + 1) - positives_below
+    positive_total = int(positive.sum())
+    negative_total = len(positive) - positive_total
+    accuracy = .5 * ((positive_total - positives_below) / positive_total +
+                     negatives_below / negative_total)
+    # Include the all-positive decision as a valid candidate.
+    thresholds = np.r_[np.nextafter(values[0], -np.inf), values[ends]]
+    accuracy = np.r_[.5, accuracy]
+    best = np.flatnonzero(np.isclose(accuracy, accuracy.max(), atol=1e-12, rtol=0))
+    chosen = min(best, key=lambda i: (abs(thresholds[i]), thresholds[i]))
+    threshold = float(thresholds[chosen])
+    baseline = .5 * (np.mean(margin[positive] > 0) +
+                     np.mean(margin[~positive] <= 0))
+    return {"threshold": threshold, "objective": "sampled_training_token_balanced_accuracy",
+            "selected_balanced_accuracy": float(accuracy[chosen]),
+            "zero_threshold_balanced_accuracy": float(baseline),
+            "positive_class": int(positive_class),
+            "positive_tokens": positive_total, "negative_tokens": negative_total,
+            "decision": "class_2_if_projected_score_margin_gt_threshold",
+            "selection_scope": "same fitting images; resubstitution, no held-out calibration"}
+
+
 def _atomic_json(path: Path, value: dict) -> None:
     temporary = path.with_name(path.name + ".partial")
     with temporary.open("x") as stream:
@@ -169,7 +210,7 @@ def _sample_case(grids: dict[int, np.ndarray], labels: np.ndarray,
 
 def train(images, annotations, feature_dir, class_labels, output_dir,
           *, max_tokens_per_class: int = 8000, channels_per_class: int = 32,
-          alpha: float = 10.0) -> dict:
+          alpha: float = 10.0, optimize_binary_threshold: bool = True) -> dict:
     """Fit a classwise-selected linear head to verified full-channel caches."""
     if isinstance(images, (str, Path)):
         images = [images]
@@ -185,7 +226,8 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
         raise ValueError("Class mappings need one entry per image")
     if not isinstance(max_tokens_per_class, int) or not 1 <= max_tokens_per_class <= 100000 or \
        not isinstance(channels_per_class, int) or not 1 <= channels_per_class <= CHANNELS or \
-       not math.isfinite(alpha) or alpha <= 0:
+       not math.isfinite(alpha) or alpha <= 0 or \
+       not isinstance(optimize_binary_threshold, bool):
         raise ValueError("Training resource and ridge limits must be finite and positive")
     root = Path(feature_dir).resolve()
     manifest_path = root / "PREPARATION_COMPLETE.json"
@@ -208,7 +250,8 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
                                 zip(images, annotations, class_labels)],
                      "max_tokens_per_class": max_tokens_per_class,
                      "channels_per_class": channels_per_class, "alpha": float(alpha),
-                     "seed": SEED}
+                     "seed": SEED,
+                     "optimize_binary_threshold": optimize_binary_threshold}
     _atomic_json(output / "TRAINING_INPUTS.json", input_receipt)
     rng = np.random.default_rng(SEED)
     per_case_quota = max(1, math.ceil(max_tokens_per_class / len(images)))
@@ -259,6 +302,19 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
                   sample_weight=weights)
         if not np.array_equal(model.classes_, classes):
             raise ValueError("Ridge class order differs from training targets")
+        calibration = None
+        if len(classes) == 2:
+            decision = model.decision_function(
+                np.ascontiguousarray(standardized[:, selected]))
+            # _scores writes [-decision, decision] for a binary ridge model.
+            margin = 2 * np.asarray(decision, dtype=np.float64)
+            calibration = _select_binary_margin_threshold(margin, target,
+                                                          int(classes[1]))
+            if not optimize_binary_threshold:
+                calibration["threshold"] = 0.0
+                calibration["selected_balanced_accuracy"] = calibration[
+                    "zero_threshold_balanced_accuracy"]
+                calibration["selection_scope"] = "disabled; historical zero margin"
         model_path = output / "predictor.npz"
         with tempfile.NamedTemporaryFile(dir=output, prefix=".predictor-", suffix=".npz",
                                          delete=False) as stream:
@@ -270,7 +326,10 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
                                 selected=selected, mean=mean[selected], std=std[selected],
                                 coef=np.atleast_2d(model.coef_),
                                 intercept=np.atleast_1d(model.intercept_),
-                                classes=classes)
+                                classes=classes,
+                                binary_margin_threshold=np.asarray(
+                                    calibration["threshold"] if calibration else 0.0,
+                                    dtype=np.float64))
             stream.flush()
             os.fsync(stream.fileno())
         os.replace(temp, model_path)
@@ -283,6 +342,7 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
                    "class_token_counts": dict(zip(map(str, classes), map(int, class_counts))),
                    "selected_concatenated_channels": selected.tolist(),
                    "sampled_tokens": int(len(target)), "per_image_class_quota": per_case_quota,
+                   "binary_threshold_calibration": calibration,
                    "annotations": rows,
                    "peak_host_rss_kb": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
                    "gpu_used": False}
