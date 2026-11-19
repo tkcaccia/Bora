@@ -42,6 +42,10 @@
 #' @param minimum_free_gib Required free-space reserve.
 #' @param max_new_gib Optional prediction peak storage cap.
 #' @param preview_backend Preview implementation; see `Bora.prediction`.
+#' @param backend `"cuda"` (default) or `"cpu"`. The same backend is used
+#'   for new Virchow2 extraction, fitting and score projection.
+#' @param n.cores Positive CPU thread limit for all three stages.
+#' @param max_seconds Maximum runtime of each CUDA child or feature scale.
 #' @return A list of paths to the final TIFF mask, source-pixel GeoJSON,
 #'   preview, binary images, spot-to-group mapping and prediction manifest.
 #' @export
@@ -54,7 +58,12 @@ Bora.spatial <- function(image, object, output_dir, cluster_column = NULL,
                          channels_per_group = 32L, alpha = 10,
                          minimum_area_um2 = 2000, contour_sigma_um = 6,
                          minimum_free_gib = 1, max_new_gib = NULL,
-                         preview_backend = "vips-lanczos3") {
+                         preview_backend = "vips-lanczos3",
+                         backend = "cuda", n.cores = 2L,
+                         max_seconds = 3600L) {
+  execution <- .bora_execution(backend, n.cores)
+  max_seconds <- .bora_max_seconds(max_seconds)
+  if (execution$backend == "cuda") .bora_check_cuda()
   image <- .bora_paths(image, "image")
   if (length(image) != 1L) stop("image must be one H&E path", call. = FALSE)
   source_mpp_xy <- .bora_measured_spacing(source_mpp_xy)
@@ -124,7 +133,10 @@ Bora.spatial <- function(image, object, output_dir, cluster_column = NULL,
                                       feature_dir = file.path(output_dir, "features"),
                                       model_dir = model_dir,
                                       scales = c(1L, 2L, 4L),
-                                      minimum_free_gib = minimum_free_gib)
+                                      minimum_free_gib = minimum_free_gib,
+                                      backend = execution$backend,
+                                      n.cores = execution$n.cores,
+                                      max_seconds = max_seconds)
     } else {
       root <- if (inherits(preparation, "bora-r-preparation-v1"))
         dirname(preparation$manifest) else .bora_paths(preparation, "preparation")
@@ -138,7 +150,10 @@ Bora.spatial <- function(image, object, output_dir, cluster_column = NULL,
     }
     fitted <- Bora.training(image, annotation, preparation,
                             output_dir = file.path(output_dir, "spot-head"),
-                            channels_per_class = channels_per_group, alpha = alpha)
+                            channels_per_class = channels_per_group, alpha = alpha,
+                            backend = execution$backend,
+                            n.cores = execution$n.cores,
+                            max_seconds = max_seconds)
     predicted <- Bora.prediction(preparation, predictor = fitted,
                                  output_dir = file.path(output_dir, "prediction"),
                                  source_mpp_xy = source_mpp_xy,
@@ -148,6 +163,9 @@ Bora.spatial <- function(image, object, output_dir, cluster_column = NULL,
                                  minimum_free_gib = minimum_free_gib,
                                  max_new_gib = max_new_gib,
                                  preview_backend = preview_backend,
+                                 backend = execution$backend,
+                                 n.cores = execution$n.cores,
+                                 max_seconds = max_seconds,
                                  class_names = stats::setNames(classes,
                                                                seq_along(classes)))
     case_path <- predicted$data$cases[[1L]]$receipt_path

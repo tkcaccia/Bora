@@ -5,7 +5,8 @@
 #' separate solution while sharing the same KODAMA embedding and neighbor graph.
 #' @keywords internal
 .bora_kodama_cluster <- function(stage_dir, cluster_dir, resolutions, seed = 1234L,
-                                 neighbors = 20L, M = 100L) {
+                                 neighbors = 20L, M = 100L, n.cores = 1L) {
+  n.cores <- .bora_execution("cpu", n.cores)$n.cores
   if (!dir.exists(stage_dir) || file.exists(cluster_dir) ||
       !dir.exists(dirname(cluster_dir))) {
     stop("A completed stage and fresh cluster directory are required", call. = FALSE)
@@ -41,7 +42,7 @@
   }
   # The stage is capped before this call; its rows are never downsampled.
   set.seed(seed)
-  fit <- KODAMA::KODAMA.matrix(x, spatial = NULL, M = M, n.cores = 1L,
+  fit <- KODAMA::KODAMA.matrix(x, spatial = NULL, M = M, n.cores = n.cores,
                                seed = seed, return.graph = TRUE)
   set.seed(seed)
   embedding <- as.matrix(KODAMA::KODAMA.visualization(fit, method = "UMAP"))
@@ -90,6 +91,7 @@
                   tile_count = nrow(x), image_count = stage$image_count,
                   spatial_coordinates_used = FALSE, expert_annotation_used = FALSE,
                   seed = seed, M = M, neighbors = neighbors,
+                  n.cores = n.cores,
                   embedding_csv = file.path(cluster_dir, "embedding.csv"),
                   solutions = solutions)
   jsonlite::write_json(receipt, file.path(cluster_dir, "CLUSTERS_COMPLETE.json"),

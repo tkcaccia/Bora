@@ -13,7 +13,10 @@ Bora.training(
   max_tokens_per_class = 8000L,
   channels_per_class = 32L,
   alpha = 10,
-  optimize_binary_threshold = TRUE
+  optimize_binary_threshold = TRUE,
+  backend = "cpu",
+  n.cores = 1L,
+  max_seconds = 3600L
 )
 }
 \arguments{
@@ -39,6 +42,13 @@ balanced accuracy on sampled labelled token centres from the supplied
 training images and store the resulting class-score margin threshold.
 This is training-set calibration, not held-out validation. For multiclass
 training the option is ignored and the existing class decision is used.}
+
+\item{backend}{`"cpu"` (default) or `"cuda"` for the ridge fit. CUDA uses
+one visible GPU and a bounded child process; sampling remains on CPU.}
+
+\item{n.cores}{Positive integer limit for CPU sampling and BLAS threads.}
+
+\item{max_seconds}{Maximum CUDA child runtime in seconds.}
 }
 \value{
 A predictor manifest object.

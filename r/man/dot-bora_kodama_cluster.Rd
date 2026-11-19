@@ -10,7 +10,8 @@
   resolutions,
   seed = 1234L,
   neighbors = 20L,
-  M = 100L
+  M = 100L,
+  n.cores = 1L
 )
 }
 \description{

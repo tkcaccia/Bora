@@ -45,6 +45,38 @@
   reticulate::import("bora.r_api", convert = TRUE)
 }
 
+.bora_execution <- function(backend, n.cores) {
+  if (!is.character(backend) || length(backend) != 1L || is.na(backend) ||
+      !(backend %in% c("cpu", "cuda"))) {
+    stop("backend must be 'cpu' or 'cuda'", call. = FALSE)
+  }
+  if (!is.numeric(n.cores) || length(n.cores) != 1L || is.na(n.cores) ||
+      !is.finite(n.cores) || n.cores > .Machine$integer.max ||
+      n.cores != as.integer(n.cores) ||
+      n.cores < 1L) {
+    stop("n.cores must be one positive integer", call. = FALSE)
+  }
+  list(backend = backend, n.cores = as.integer(n.cores))
+}
+
+.bora_check_cuda <- function() {
+  if (requireNamespace("gpuinfo", quietly = TRUE) &&
+      !isTRUE(gpuinfo::has_cuda())) {
+    stop("backend='cuda' requires a process-visible NVIDIA GPU; gpuinfo reports none",
+         call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
+.bora_max_seconds <- function(value) {
+  if (!is.numeric(value) || length(value) != 1L || is.na(value) ||
+      !is.finite(value) || value < 60 || value > .Machine$integer.max ||
+      value != as.integer(value)) {
+    stop("max_seconds must be one integer of at least 60", call. = FALSE)
+  }
+  as.integer(value)
+}
+
 .bora_result <- function(path, expected_format) {
   if (!file.exists(path)) {
     stop("The backend did not create its result manifest: ", path, call. = FALSE)

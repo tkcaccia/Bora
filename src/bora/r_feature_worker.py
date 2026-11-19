@@ -1,4 +1,4 @@
-"""One isolated Virchow2 GPU process for one image and one spatial scale.
+"""One isolated Virchow2 process for one image and one spatial scale.
 
 This module is launched by the R interface's CPU orchestrator. It never loads
 expert class annotations. The input eligibility grid controls which 224-pixel
@@ -8,6 +8,7 @@ image tile being eligible, including glass.
 from __future__ import annotations
 
 import argparse
+from contextlib import nullcontext
 import hashlib
 import json
 import math
@@ -35,7 +36,7 @@ def _atomic_json(path: Path, value: dict) -> None:
     os.replace(temporary, path)
 
 
-def _model(model_dir: Path, expected_sha256: str):
+def _model(model_dir: Path, expected_sha256: str, device: str = "cuda"):
     import timm
     import torch
     from timm.layers import SwiGLUPacked
@@ -50,7 +51,7 @@ def _model(model_dir: Path, expected_sha256: str):
                                   **cfg["model_args"], mlp_layer=SwiGLUPacked,
                                   act_layer=torch.nn.SiLU)
     model.load_state_dict(load_file(str(checkpoint)), strict=True, assign=True)
-    return model.to("cuda").eval().requires_grad_(False)
+    return model.to(device).eval().requires_grad_(False)
 
 
 def _starts(length: int) -> list[int]:
@@ -70,7 +71,7 @@ def _scale_eligibility(base: np.ndarray, factor: int) -> np.ndarray:
 
 
 def _encode_row(image, row: int, eligible: np.ndarray, model, mean, std,
-                deadline: float) -> tuple[np.ndarray, int]:
+                deadline: float, backend: str = "cuda") -> tuple[np.ndarray, int]:
     import torch
 
     height, width = image.height, image.width
@@ -99,18 +100,21 @@ def _encode_row(image, row: int, eligible: np.ndarray, model, mean, std,
                                   eligible.shape[1] - 1)
             if eligible[r0:r1 + 1, c0:c1 + 1].any():
                 coords.append((y, x))
-    for first in range(0, len(coords), 4):
+    batch_size = 4 if backend == "cuda" else 1
+    for first in range(0, len(coords), batch_size):
         if time.monotonic() >= deadline:
             raise TimeoutError("Virchow2 row deadline reached")
         batch = np.stack([padded[y:y + TILE, x:x + TILE].transpose(2, 0, 1)
-                          for y, x in coords[first:first + 4]])
-        tensor = torch.from_numpy(batch.copy()).to("cuda").float() / 255
-        with torch.inference_mode(), torch.autocast("cuda", dtype=torch.float16):
+                          for y, x in coords[first:first + batch_size]])
+        tensor = torch.from_numpy(batch.copy()).to(backend).float() / 255
+        mixed_precision = (torch.autocast("cuda", dtype=torch.float16)
+                           if backend == "cuda" else nullcontext())
+        with torch.inference_mode(), mixed_precision:
             encoded = model((tensor - mean) / std)
         if encoded.ndim != 3 or encoded.shape[1:] != (261, CHANNELS):
             raise ValueError("Virchow2 spatial output differs from 261×1280")
         values = encoded[:, 5:, :].float().cpu().numpy().reshape(-1, 16, 16, CHANNELS)
-        for (y, x), value in zip(coords[first:first + 4], values):
+        for (y, x), value in zip(coords[first:first + batch_size], values):
             ys, xs = y // PATCH, x // PATCH
             accum[ys:ys + 16, xs:xs + 16] += value * blend[..., None]
             mass[ys:ys + 16, xs:xs + 16] += blend
@@ -135,6 +139,10 @@ def run(spec_path: Path) -> dict:
     eligible_path = Path(spec["eligible_path"])
     model_dir = Path(spec["model_dir"])
     output_dir = Path(spec["output_dir"])
+    backend = spec.get("backend", "cuda")
+    n_cores = spec.get("n_cores", 2)
+    if backend not in ("cpu", "cuda") or not isinstance(n_cores, int) or n_cores < 1:
+        raise ValueError("Invalid feature backend or CPU core limit")
     factor = int(spec["factor"])
     if factor not in (1, 2, 4) or output_dir.exists():
         raise ValueError("Scale or output path differs")
@@ -166,15 +174,16 @@ def run(spec_path: Path) -> dict:
     rows, cols = image.height // TILE, image.width // TILE
     if grid.shape != (rows, cols):
         raise ValueError("Scaled tissue grid differs")
-    if not torch.cuda.is_available():
+    if backend == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA is unavailable for Virchow2 extraction")
-    torch.set_num_threads(2)
-    torch.cuda.set_per_process_memory_fraction(.65)
+    torch.set_num_threads(n_cores)
+    if backend == "cuda":
+        torch.cuda.set_per_process_memory_fraction(.65)
     started = time.monotonic()
     deadline = started + float(spec["max_seconds"])
-    model = _model(model_dir, spec["model_checkpoint_sha256"])
-    mean = torch.tensor([.485, .456, .406], device="cuda")[None, :, None, None]
-    std = torch.tensor([.229, .224, .225], device="cuda")[None, :, None, None]
+    model = _model(model_dir, spec["model_checkpoint_sha256"], backend)
+    mean = torch.tensor([.485, .456, .406], device=backend)[None, :, None, None]
+    std = torch.tensor([.229, .224, .225], device=backend)[None, :, None, None]
     output_dir.mkdir(parents=True)
     shape = (image.height // PATCH, image.width // PATCH, CHANNELS)
     partial = output_dir / "features.partial.npy"
@@ -183,7 +192,8 @@ def run(spec_path: Path) -> dict:
     _atomic_json(output_dir / "INPUTS.json", spec)
     row_receipts = []
     for row in range(rows):
-        values, windows = _encode_row(image, row, grid, model, mean, std, deadline)
+        values, windows = _encode_row(image, row, grid, model, mean, std, deadline,
+                                      backend=backend)
         if values.shape != (16, shape[1], CHANNELS):
             raise ValueError("Encoded token row geometry differs")
         features[row * 16:(row + 1) * 16] = values
@@ -195,18 +205,21 @@ def run(spec_path: Path) -> dict:
         _atomic_json(output_dir / f"row-{row:04d}.json", receipt)
         row_receipts.append(receipt)
     del features
-    torch.cuda.synchronize()
+    if backend == "cuda":
+        torch.cuda.synchronize()
     final = output_dir / "features.npy"
     os.replace(partial, final)
     result = {"format": "bora-r-feature-scale-v1", "status": "COMPLETE",
               "source_spec_sha256": sha256(spec_path), "features_path": str(final),
               "features_sha256": sha256(final), "shape_yxc": list(shape),
               "dtype": "float16", "channels": CHANNELS, "factor": factor,
+              "backend": backend, "n_cores": n_cores,
               "eligible_tiles": int(grid.sum()), "rows": rows,
               "row_receipts": row_receipts,
               "wall_seconds": round(time.monotonic() - started, 3),
               "peak_host_rss_kb": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
-              "peak_cuda_reserved_bytes": torch.cuda.max_memory_reserved()}
+              "peak_cuda_reserved_bytes": (torch.cuda.max_memory_reserved()
+                                           if backend == "cuda" else None)}
     _atomic_json(output_dir / "FEATURES_COMPLETE.json", result)
     return result
 

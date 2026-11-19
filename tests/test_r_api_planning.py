@@ -35,3 +35,16 @@ def test_case_plan_preserves_mask_and_full_glass_modes(tmp_path):
     spec = json.loads((tmp_path / "masked" / "factor-4-WORKER_FROZEN.json").read_text())
     assert spec["padded_shape_yx"] == [896, 896]
     assert spec["base_grid_shape_yx"] == [4, 4]
+
+
+def test_case_plan_freezes_cpu_backend_and_core_limit(tmp_path):
+    pytest.importorskip("pyvips")
+    from PIL import Image
+
+    image = tmp_path / "he.tif"
+    Image.new("RGB", (224, 224), "white").save(image)
+    model = {"checkpoint_sha256": "model-hash", "config_sha256": "config-hash"}
+    _case_plan(image, None, tmp_path / "cpu", tmp_path, model, [1], 3600,
+               backend="cpu", n_cores=3)
+    spec = json.loads((tmp_path / "cpu" / "factor-1-WORKER_FROZEN.json").read_text())
+    assert (spec["backend"], spec["n_cores"]) == ("cpu", 3)

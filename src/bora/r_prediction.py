@@ -82,7 +82,8 @@ def load_model(predictor_dir: Path) -> dict:
     return model
 
 
-def score_case(preparation: dict, case: dict, model: dict, output: Path) -> dict:
+def score_case(preparation: dict, case: dict, model: dict, output: Path,
+               *, backend: str = "cpu") -> dict:
     """Project verified factor-1 tokens, preserving the historical math."""
     output = Path(output)
     if output.exists():
@@ -91,7 +92,13 @@ def score_case(preparation: dict, case: dict, model: dict, output: Path) -> dict
     grids = _verified_scales(preparation, case)
     grid = grids[1]
     path = output / "raw-scores.npy"
-    counts = _scores(grid, model, path, roi_order=False)
+    if backend == "cuda":
+        from .r_compute import scores_cuda
+        counts = scores_cuda(grid, model, path)
+    elif backend == "cpu":
+        counts = _scores(grid, model, path, roi_order=False)
+    else:
+        raise ValueError("backend must be 'cpu' or 'cuda'")
     raw = np.load(path, mmap_mode="r", allow_pickle=False)
     if raw.dtype != np.float32 or raw.shape[0] != len(model["classes"]):
         raise ValueError("Projected score grid differs from trained classes")
@@ -640,8 +647,11 @@ def predict_supervised(preparation_dir: Path, predictor_dir: Path, output_dir: P
                        minimum_free_gib: float = 1.0,
                        max_new_gib: float | None = None,
                        preview_backend: str = "vips-lanczos3",
-                       class_names: dict[str, str] | None = None) -> dict:
+                       class_names: dict[str, str] | None = None,
+                       backend: str = "cpu", n_cores: int = 1) -> dict:
     """Complete the supervised route with native and common-support outputs."""
+    from .r_compute import validate_execution
+    backend, n_cores = validate_execution(backend, n_cores)
     root = Path(preparation_dir).resolve()
     manifest_path = root / "PREPARATION_COMPLETE.json"
     preparation = json.loads(manifest_path.read_text())
@@ -677,7 +687,8 @@ def predict_supervised(preparation_dir: Path, predictor_dir: Path, output_dir: P
                 raise ValueError("Prepared H&E image SHA256 differs")
             folder = output / f"image-{index:03d}"
             folder.mkdir()
-            score = score_case(preparation, case, model, folder / "scores")
+            score = score_case(preparation, case, model, folder / "scores",
+                               backend=backend)
             shape_yx = output_shape(tuple(source["image_shape_yx"]),
                                     source_mpp_xy, output_mpp_xy)
             ratio = (output_mpp_xy[0] / source_mpp_xy[0],
@@ -726,6 +737,7 @@ def predict_supervised(preparation_dir: Path, predictor_dir: Path, output_dir: P
                       "image_sha256": source["image_sha256"],
                       "preparation_manifest_sha256": sha256(manifest_path),
                       "predictor_sha256": model["model_sha256"],
+                      "backend": backend, "n_cores": n_cores,
                       "source_mpp_xy": list(source_mpp_xy),
                       "output_mpp_xy": list(output_mpp_xy),
                       "classes": list(map(int, model["classes"])),
@@ -747,9 +759,10 @@ def predict_supervised(preparation_dir: Path, predictor_dir: Path, output_dir: P
                   "preparation_manifest_sha256": sha256(manifest_path),
                   "predictor_sha256": model["model_sha256"],
                   "resource_admission_sha256": sha256(output / "RESOURCE_ADMISSION.json"),
+                  "backend": backend, "n_cores": n_cores,
                   "cases": cases,
                   "peak_host_rss_kb": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
-                  "gpu_used": False}
+                  "gpu_used": backend == "cuda"}
         _atomic_json(output / "PREDICTION_COMPLETE.json", result)
         return result
     except BaseException as error:

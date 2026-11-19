@@ -16,9 +16,12 @@
 #' @param scales Integer scale factors; defaults to 1, 2 and 4. A factor of
 #'   1 uses the finest Virchow2 token grid; 2 and 4 use coarser image scales.
 #'   In R, the suffix `L` in `c(1L, 2L, 4L)` marks integer values.
-#' @param max_seconds Finite maximum GPU seconds for each image-scale worker.
+#' @param max_seconds Finite maximum seconds for each image-scale worker.
 #'   The default `3600L` is 3,600 seconds (one hour); `L` marks an R integer.
 #' @param minimum_free_gib Minimum free-space reserve after projected features.
+#' @param backend `"cuda"` (default) or `"cpu"` for new Virchow2 extraction.
+#'   A precomputed cache does not start either encoder.
+#' @param n.cores Positive integer limit for CPU threads in each worker.
 #' @param precomputed_manifest Optional JSON manifest of SHA256-verified,
 #'   source-registered full-1280 Virchow2 arrays. This reuses existing arrays
 #'   without launching an encoder worker; see the package README for schema.
@@ -28,7 +31,9 @@ Bora.preparation <- function(images, tissue_masks = NULL, feature_dir,
                              model_dir = Sys.getenv("BORA_VIRCHOW2_MODEL"),
                              scales = c(1L, 2L, 4L),
                              max_seconds = 3600L, minimum_free_gib = 1,
-                             precomputed_manifest = NULL) {
+                             precomputed_manifest = NULL,
+                             backend = "cuda", n.cores = 2L) {
+  execution <- .bora_execution(backend, n.cores)
   images <- .bora_paths(images, "images")
   tissue_masks <- .bora_paired_paths(tissue_masks, images, "tissue_masks")
   feature_dir <- .bora_output_dir(feature_dir, "feature_dir")
@@ -54,12 +59,17 @@ Bora.preparation <- function(images, tissue_masks = NULL, feature_dir,
       stop("precomputed_manifest must be one existing JSON file", call. = FALSE)
     }
   }
+  if (execution$backend == "cuda" && is.null(precomputed_manifest)) {
+    .bora_check_cuda()
+  }
   .bora_backend()$prepare(as.list(images),
                           if (is.null(tissue_masks)) NULL else as.list(tissue_masks),
                           feature_dir, model_dir, as.list(as.integer(scales)),
                           max_seconds = as.integer(max_seconds),
                           minimum_free_gib = as.numeric(minimum_free_gib),
-                          precomputed_manifest = precomputed_manifest)
+                          precomputed_manifest = precomputed_manifest,
+                          backend = execution$backend,
+                          n_cores = execution$n.cores)
   .bora_result(file.path(feature_dir, "PREPARATION_COMPLETE.json"),
                "bora-r-preparation-v1")
 }
@@ -86,13 +96,22 @@ Bora.preparation <- function(images, tissue_masks = NULL, feature_dir,
 #'   training images and store the resulting class-score margin threshold.
 #'   This is training-set calibration, not held-out validation. For multiclass
 #'   training the option is ignored and the existing class decision is used.
+#' @param backend `"cpu"` (default) or `"cuda"` for the ridge fit. CUDA uses
+#'   one visible GPU and a bounded child process; sampling remains on CPU.
+#' @param n.cores Positive integer limit for CPU sampling and BLAS threads.
+#' @param max_seconds Maximum CUDA child runtime in seconds.
 #' @return A predictor manifest object.
 #' @export
 Bora.training <- function(images, annotations, feature_dir,
                           class_labels = NULL, output_dir,
                           max_tokens_per_class = 8000L,
                           channels_per_class = 32L, alpha = 10,
-                          optimize_binary_threshold = TRUE) {
+                          optimize_binary_threshold = TRUE,
+                          backend = "cpu", n.cores = 1L,
+                          max_seconds = 3600L) {
+  execution <- .bora_execution(backend, n.cores)
+  max_seconds <- .bora_max_seconds(max_seconds)
+  if (execution$backend == "cuda") .bora_check_cuda()
   images <- .bora_paths(images, "images")
   annotations <- .bora_paired_paths(annotations, images, "annotations")
   if (is.null(annotations)) {
@@ -145,7 +164,10 @@ Bora.training <- function(images, annotations, feature_dir,
                         max_tokens_per_class = as.integer(max_tokens_per_class),
                         channels_per_class = as.integer(channels_per_class),
                         alpha = as.numeric(alpha),
-                        optimize_binary_threshold = optimize_binary_threshold)
+                        optimize_binary_threshold = optimize_binary_threshold,
+                        backend = execution$backend,
+                        n_cores = execution$n.cores,
+                        max_seconds = max_seconds)
   .bora_result(file.path(output_dir, "TRAINING_COMPLETE.json"),
                "bora-r-training-v1")
 }
@@ -178,6 +200,11 @@ Bora.training <- function(images, annotations, feature_dir,
 #'   RGB values slightly. Neither changes the class mask or GeoJSON.
 #' @param class_names Optional named character vector mapping predicted class
 #'   IDs to names in the output GeoJSON. Requires a supervised predictor.
+#' @param backend `"cpu"` (default) or `"cuda"`. CUDA accelerates supervised
+#'   score projection in a bounded child process; support, smoothing and
+#'   vector export remain CPU operations. Joint KODAMA prediction is CPU only.
+#' @param n.cores Positive integer CPU thread limit, also passed to KODAMA.
+#' @param max_seconds Maximum CUDA child runtime in seconds.
 #' @return A prediction manifest object.
 #' @export
 Bora.prediction <- function(preparation, predictor = NULL, output_dir,
@@ -190,7 +217,11 @@ Bora.prediction <- function(preparation, predictor = NULL, output_dir,
                             max_new_gib = NULL,
                             max_joint_tiles = 10000L,
                             preview_backend = "vips-lanczos3",
-                            class_names = NULL) {
+                            class_names = NULL,
+                            backend = "cpu", n.cores = 1L,
+                            max_seconds = 7200L) {
+  execution <- .bora_execution(backend, n.cores)
+  max_seconds <- .bora_max_seconds(max_seconds)
   if (inherits(preparation, "bora-r-preparation-v1")) {
     preparation <- dirname(preparation$manifest)
   }
@@ -202,6 +233,7 @@ Bora.prediction <- function(preparation, predictor = NULL, output_dir,
     predictor <- dirname(predictor$manifest)
   }
   if (!is.null(predictor)) {
+    if (execution$backend == "cuda") .bora_check_cuda()
     predictor <- .bora_paths(predictor, "predictor")
     if (length(predictor) != 1L || !dir.exists(predictor)) {
       stop("predictor must be one existing model directory", call. = FALSE)
@@ -262,9 +294,15 @@ Bora.prediction <- function(preparation, predictor = NULL, output_dir,
                     minimum_free_gib = as.numeric(minimum_free_gib),
                     max_new_gib = if (is.null(max_new_gib)) NULL else as.numeric(max_new_gib),
                     preview_backend = preview_backend,
-                    class_names = if (is.null(class_names)) NULL else as.list(class_names))
+                    class_names = if (is.null(class_names)) NULL else as.list(class_names),
+                    backend = execution$backend, n_cores = execution$n.cores,
+                    max_seconds = max_seconds)
     return(.bora_result(file.path(output_dir, "PREDICTION_COMPLETE.json"),
                         "bora-r-prediction-v1"))
+  }
+  if (execution$backend == "cuda") {
+    stop("The joint KODAMA route currently supports backend='cpu' only",
+         call. = FALSE)
   }
   if (is.null(resolutions)) resolutions <- 1.0
   dir.create(output_dir)
@@ -274,8 +312,10 @@ Bora.prediction <- function(preparation, predictor = NULL, output_dir,
   tryCatch({
     backend$joint_stage(preparation, stage,
                         max_joint_tiles = as.integer(max_joint_tiles),
-                        minimum_free_gib = as.numeric(minimum_free_gib))
-    .bora_kodama_cluster(stage, clusters, resolutions)
+                        minimum_free_gib = as.numeric(minimum_free_gib),
+                        n_cores = execution$n.cores)
+    .bora_kodama_cluster(stage, clusters, resolutions,
+                         n.cores = execution$n.cores)
     backend$joint_complete(preparation, stage, clusters, predictions,
                            source_mpp_xy = as.list(as.numeric(source_mpp_xy)),
                            output_mpp_xy = as.list(as.numeric(output_mpp_xy)),
@@ -283,7 +323,8 @@ Bora.prediction <- function(preparation, predictor = NULL, output_dir,
                            contour_sigma_um = as.numeric(contour_sigma_um),
                            minimum_free_gib = as.numeric(minimum_free_gib),
                            max_new_gib = if (is.null(max_new_gib)) NULL else as.numeric(max_new_gib),
-                           preview_backend = preview_backend)
+                           preview_backend = preview_backend,
+                           n_cores = execution$n.cores)
   }, error = function(e) {
     jsonlite::write_json(list(format = "bora-r-joint-prediction-failure-v1",
                               status = "FAILED_PRESERVE_PARTIAL",

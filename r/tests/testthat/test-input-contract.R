@@ -40,3 +40,19 @@ test_that("prediction requires an existing preparation directory", {
                                source_mpp_xy = c(.5, .5),
                                preview_backend = "unknown"), "preview_backend")
 })
+
+test_that("backend and CPU core arguments fail before Python import", {
+  image <- tempfile(fileext = ".tif")
+  writeBin(as.raw(1:8), image)
+  on.exit(unlink(image))
+  expect_error(Bora.preparation(image, feature_dir = tempfile(),
+                                backend = "gpu"), "backend")
+  expect_error(Bora.preparation(image, feature_dir = tempfile(),
+                                n.cores = 0L), "n.cores")
+  expect_error(Bora.training(image, image, dirname(image),
+                             output_dir = tempfile(), n.cores = 1.5), "n.cores")
+  expect_error(Bora.prediction(tempdir(), output_dir = tempfile(),
+                               backend = "auto"), "backend")
+  expect_error(Bora.spatial(image, data.frame(), tempfile(),
+                            backend = "gpu"), "backend")
+})

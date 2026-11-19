@@ -12,7 +12,9 @@ Bora.preparation(
   scales = c(1L, 2L, 4L),
   max_seconds = 3600L,
   minimum_free_gib = 1,
-  precomputed_manifest = NULL
+  precomputed_manifest = NULL,
+  backend = "cuda",
+  n.cores = 2L
 )
 }
 \arguments{
@@ -29,7 +31,7 @@ Bora.preparation(
 1 uses the finest Virchow2 token grid; 2 and 4 use coarser image scales.
 In R, the suffix `L` in `c(1L, 2L, 4L)` marks integer values.}
 
-\item{max_seconds}{Finite maximum GPU seconds for each image-scale worker.
+\item{max_seconds}{Finite maximum seconds for each image-scale worker.
 The default `3600L` is 3,600 seconds (one hour); `L` marks an R integer.}
 
 \item{minimum_free_gib}{Minimum free-space reserve after projected features.}
@@ -37,6 +39,11 @@ The default `3600L` is 3,600 seconds (one hour); `L` marks an R integer.}
 \item{precomputed_manifest}{Optional JSON manifest of SHA256-verified,
 source-registered full-1280 Virchow2 arrays. This reuses existing arrays
 without launching an encoder worker; see the package README for schema.}
+
+\item{backend}{`"cuda"` (default) or `"cpu"` for new Virchow2 extraction.
+A precomputed cache does not start either encoder.}
+
+\item{n.cores}{Positive integer limit for CPU threads in each worker.}
 }
 \value{
 A manifest object with feature paths and provenance.

@@ -1,4 +1,4 @@
-# Bora for R 0.2.1: reference and acceptance manual
+# Bora for R 0.2.2: reference and acceptance manual
 
 Bora provides four analysis functions and one optional model-download helper.
 `Bora.download_virchow2()` obtains the separately licensed model;
@@ -6,7 +6,7 @@ Bora provides four analysis functions and one optional model-download helper.
 Virchow2 features; `Bora.training()` fits a class predictor from registered
 expert masks; `Bora.prediction()` produces class or anonymous-group maps; and
 `Bora.spatial()` projects expression-derived spot groups onto an H&E image.
-The R package uses the matching Bora Python backend 0.3.7 through `reticulate`.
+The R package uses the matching Bora Python backend 0.3.8 through `reticulate`.
 Bora code is MIT licensed. Virchow2 weights and image datasets retain their
 own terms and are not included.
 
@@ -43,22 +43,51 @@ Masks and GeoJSON must be registered to the exact source image. Keep distinct
 directories for inputs, features, predictors and predictions. Use a new output
 directory for each run; retain the JSON SHA256 receipts.
 
+### Execution backend and CPU cores
+
+All four analysis functions accept `backend = "cpu"` or `"cuda"` and a
+positive integer `n.cores`. `n.cores` limits the CPU threads used by the
+Python worker, including PyTorch, BLAS and OpenCV; the joint KODAMA route
+also passes it to `KODAMA.matrix`. It does not select multiple GPUs.
+
+| Function | Default | CUDA work | CPU work |
+| --- | --- | --- | --- |
+| `Bora.preparation` | `"cuda"`, 2 cores | Virchow2 tile encoding | Source/tissue checks and output writing; CPU backend also encodes Virchow2 |
+| `Bora.training` | `"cpu"`, 1 core | Selected-channel ridge fit | Token sampling, channel selection and threshold calibration |
+| `Bora.prediction` with predictor | `"cpu"`, 1 core | Class-score projection | Spatial support, smoothing, geometry cleanup, GeoJSON and previews |
+| `Bora.prediction` without predictor | `"cpu"`, 1 core | Unsupported | Joint KODAMA clustering and mask production |
+| `Bora.spatial` | `"cuda"`, 2 cores | New extraction, fit and score projection | Spot registration and final geometry; `"cpu"` runs the whole route on CPU |
+
+The CUDA choice needs a process-visible NVIDIA GPU and a CUDA-enabled
+PyTorch install in the configured Python environment. If the optional CRAN
+`gpuinfo` package is installed, `gpuinfo::has_cuda()` checks hardware before
+launch; the Python worker checks PyTorch itself. A CUDA failure is reported,
+never silently retried on CPU. CPU Virchow2 extraction may be slow on a whole
+slide. The `precomputed_manifest` adoption route does no encoding, so it can
+reuse an audited cache even on a CPU-only computer. These controls do not
+change the model, the 1,280-channel cache contract, the class threshold,
+the 2,000 µm² region minimum or the 6 µm contour pass. CPU and CUDA floating
+point results should be compared within a numerical tolerance; do not assume
+byte-identical feature arrays or masks across devices.
+
 ```r
 library(Bora)
 prepared <- Bora.preparation(
   images = c("roi-a.tif", "roi-b.tif"),
   tissue_masks = c("roi-a-tissue.tif", "roi-b-tissue.geojson"),
   feature_dir = "features-v1", model_dir = Sys.getenv("BORA_VIRCHOW2_MODEL"),
-  scales = c(1L, 2L, 4L), max_seconds = 3600L,
+  scales = c(1L, 2L, 4L), backend = "cuda", n.cores = 2L,
+  max_seconds = 3600L,
   minimum_free_gib = 100)
 head <- Bora.training(
   images = c("roi-a.tif", "roi-b.tif"),
   annotations = c("roi-a-classes.tif", "roi-b-classes.geojson"),
-  feature_dir = prepared, output_dir = "predictor-v1")
+  feature_dir = prepared, output_dir = "predictor-v1",
+  backend = "cpu", n.cores = 4L)
 result <- Bora.prediction(
   preparation = prepared, predictor = head, output_dir = "prediction-v1",
   source_mpp_xy = c(0.5, 0.5), output_mpp_xy = c(4, 4),
-  minimum_free_gib = 100)
+  minimum_free_gib = 100, backend = "cpu", n.cores = 4L)
 ```
 
 Here `L` means an R integer. `3600L` is 3,600 seconds, the default maximum
@@ -135,6 +164,15 @@ is not a cell segmentation, independent tissue annotation or estimate of
 individual-cell expression.
 
 ## Historical verification performed on Chiamaka, 16 November 2026
+
+For R 0.2.2, the source package built and `R CMD check --no-manual` ended
+`Status: OK` on Chiamaka with `_R_CHECK_FORCE_SUGGESTS_=false` because the
+optional `gpuinfo` package was not installed locally. All 37 focused Python
+R-interface tests passed, including CPU thread restoration, CPU lifecycle
+checks, argument validation and CUDA admission failure. The CUDA numerical
+paths were not run in this check environment because PyTorch was unavailable;
+these checks do not establish CUDA/CPU numerical equivalence or a speedup.
+No Benchmark 3 computation was restarted for this release.
 
 The R 0.2.0 source package was built and checked on Chiamaka with all tests and
 the source vignette: `R CMD check --no-manual` returned `Status: OK`.

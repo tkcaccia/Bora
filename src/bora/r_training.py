@@ -210,8 +210,11 @@ def _sample_case(grids: dict[int, np.ndarray], labels: np.ndarray,
 
 def train(images, annotations, feature_dir, class_labels, output_dir,
           *, max_tokens_per_class: int = 8000, channels_per_class: int = 32,
-          alpha: float = 10.0, optimize_binary_threshold: bool = True) -> dict:
+          alpha: float = 10.0, optimize_binary_threshold: bool = True,
+          backend: str = "cpu", n_cores: int = 1) -> dict:
     """Fit a classwise-selected linear head to verified full-channel caches."""
+    from .r_compute import validate_execution
+    backend, n_cores = validate_execution(backend, n_cores)
     if isinstance(images, (str, Path)):
         images = [images]
     if isinstance(annotations, (str, Path)):
@@ -251,6 +254,7 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
                      "max_tokens_per_class": max_tokens_per_class,
                      "channels_per_class": channels_per_class, "alpha": float(alpha),
                      "seed": SEED,
+                     "backend": backend, "n_cores": n_cores,
                      "optimize_binary_threshold": optimize_binary_threshold}
     _atomic_json(output / "TRAINING_INPUTS.json", input_receipt)
     rng = np.random.default_rng(SEED)
@@ -297,9 +301,14 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
         selected = np.asarray(sorted(picked), np.int32)
         weights = class_counts[np.searchsorted(classes, target)].astype(np.float64) ** -.5
         weights /= weights.mean()
-        model = RidgeClassifier(alpha=alpha, solver="cholesky")
-        model.fit(np.ascontiguousarray(standardized[:, selected]), target,
-                  sample_weight=weights)
+        if backend == "cuda":
+            from .r_compute import ridge_cuda
+            model = ridge_cuda(np.ascontiguousarray(standardized[:, selected]),
+                               target, weights, classes, alpha)
+        else:
+            model = RidgeClassifier(alpha=alpha, solver="cholesky")
+            model.fit(np.ascontiguousarray(standardized[:, selected]), target,
+                      sample_weight=weights)
         if not np.array_equal(model.classes_, classes):
             raise ValueError("Ridge class order differs from training targets")
         calibration = None
@@ -343,9 +352,10 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
                    "selected_concatenated_channels": selected.tolist(),
                    "sampled_tokens": int(len(target)), "per_image_class_quota": per_case_quota,
                    "binary_threshold_calibration": calibration,
+                   "backend": backend, "n_cores": n_cores,
                    "annotations": rows,
                    "peak_host_rss_kb": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
-                   "gpu_used": False}
+                   "gpu_used": backend == "cuda"}
         _atomic_json(output / "TRAINING_COMPLETE.json", receipt)
         return receipt
     except BaseException as error:

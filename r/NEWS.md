@@ -1,3 +1,13 @@
+# Bora for R 0.2.2
+
+- Add `backend = "cpu"` or `"cuda"` and `n.cores` to preparation, training,
+  prediction and the spatial route. CPU Virchow2 extraction now works without
+  a CUDA device; supervised CUDA fitting and score projection use bounded
+  GPU children. KODAMA clustering remains CPU only.
+- Record execution settings in new receipts and reject unavailable CUDA
+  rather than silently changing backends. Optional `gpuinfo::has_cuda()`
+  provides a hardware preflight when the package is installed.
+
 # Bora for R 0.2.1
 
 - Select a binary class-score margin threshold from the fitting images by

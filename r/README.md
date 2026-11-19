@@ -1,4 +1,4 @@
-# Bora for R 0.2.1
+# Bora for R 0.2.2
 
 The [reference and acceptance manual](REFERENCE_MANUAL.md) explains the five
 user-facing functions, their inputs and outputs, the completed software checks,
@@ -36,7 +36,16 @@ feature extraction and broad biological validation remain pending.
 The [R installation and one-result guide](REPRODUCE_ONE_RESULT.md) records
 the exact real training-image input schema, commands and output hashes.
 
-The R 0.2.1 package calls the matching Bora Python backend through
+All four analysis functions accept `backend = "cpu"` or `"cuda"` and a
+positive `n.cores` CPU thread limit. Preparation defaults to CUDA extraction;
+training and prediction default to CPU, and the joint KODAMA route is CPU
+only. `Bora.spatial()` defaults to CUDA for new extraction and supervised
+fit/projection. A CPU-only run can set `backend = "cpu"` on every call. CUDA
+requires a CUDA-enabled PyTorch environment; optional CRAN `gpuinfo` gives
+an additional hardware preflight. See the [execution table](REFERENCE_MANUAL.md#execution-backend-and-cpu-cores)
+for the exact stage behavior.
+
+The R 0.2.2 package calls the matching Bora Python backend 0.3.8 through
 `reticulate`. Virchow2 weights are separately licensed and are never bundled
 with Bora. A user-managed Python environment with Bora, PyTorch, timm and the
 licensed Virchow2 checkpoint is required for feature extraction. Set

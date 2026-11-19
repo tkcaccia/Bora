@@ -17,7 +17,10 @@ Bora.prediction(
   max_new_gib = NULL,
   max_joint_tiles = 10000L,
   preview_backend = "vips-lanczos3",
-  class_names = NULL
+  class_names = NULL,
+  backend = "cpu",
+  n.cores = 1L,
+  max_seconds = 7200L
 )
 }
 \arguments{
@@ -51,6 +54,14 @@ RGB values slightly. Neither changes the class mask or GeoJSON.}
 
 \item{class_names}{Optional named character vector mapping predicted class
 IDs to names in the output GeoJSON. Requires a supervised predictor.}
+
+\item{backend}{`"cpu"` (default) or `"cuda"`. CUDA accelerates supervised
+score projection in a bounded child process; support, smoothing and
+vector export remain CPU operations. Joint KODAMA prediction is CPU only.}
+
+\item{n.cores}{Positive integer CPU thread limit, also passed to KODAMA.}
+
+\item{max_seconds}{Maximum CUDA child runtime in seconds.}
 }
 \value{
 A prediction manifest object.

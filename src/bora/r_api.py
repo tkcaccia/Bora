@@ -1,8 +1,8 @@
 """Disk-backed Python bridge called by the Bora R package through reticulate.
 
-GPU work runs in a bounded child process. A child failure latches the whole
-preparation bundle; no subsequent scale or image is admitted. The parent does
-not import torch and therefore does not retain a CUDA context in the R session.
+CUDA work runs in a bounded child process. A child failure latches the whole
+bundle; no subsequent scale or image is admitted. The parent does not import
+torch and therefore does not retain a CUDA context in the R session.
 """
 from __future__ import annotations
 
@@ -65,18 +65,20 @@ def _gpu_pids() -> set[int]:
             if line.strip() and line.strip().isdigit()}
 
 
-def _cleanup(pgid: int, *, window_seconds: float = 30) -> dict:
+def _cleanup(pgid: int, *, backend: str = "cuda",
+             window_seconds: float = 30) -> dict:
     observations = []
     known_pids = {pgid}
     deadline = time.monotonic() + window_seconds
     while True:
         owned = _owned_pids(pgid)
         known_pids.update(owned)
-        try:
-            active = sorted(_gpu_pids().intersection(known_pids))
-            inspection_error = None
-        except (OSError, subprocess.SubprocessError, ValueError) as error:
-            active, inspection_error = [], repr(error)
+        active, inspection_error = [], None
+        if backend == "cuda":
+            try:
+                active = sorted(_gpu_pids().intersection(known_pids))
+            except (OSError, subprocess.SubprocessError, ValueError) as error:
+                inspection_error = repr(error)
         observations.append({"time_utc": _now(), "owned_pids": owned,
                              "owned_gpu_pids": active,
                              "inspection_error": inspection_error})
@@ -87,13 +89,16 @@ def _cleanup(pgid: int, *, window_seconds: float = 30) -> dict:
         time.sleep(3)
 
 
-def _run_worker(spec_path: Path, max_seconds: int, log_path: Path) -> dict:
-    if _gpu_pids():
-        raise RuntimeError("GPU compute context exists before Virchow2 admission")
+def _run_isolated(module: str, spec_path: Path, max_seconds: int,
+                  log_path: Path, *, backend: str, n_cores: int) -> dict:
+    if backend == "cuda" and _gpu_pids():
+        raise RuntimeError("GPU compute context exists before CUDA admission")
     env = dict(os.environ)
-    env.setdefault("OPENBLAS_NUM_THREADS", "2")
+    for name in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS",
+                 "NUMEXPR_NUM_THREADS", "VECLIB_MAXIMUM_THREADS"):
+        env[name] = str(n_cores)
     with log_path.open("x") as log:
-        child = subprocess.Popen([sys.executable, "-m", "bora.r_feature_worker",
+        child = subprocess.Popen([sys.executable, "-m", module,
                                   str(spec_path)], stdout=log,
                                  stderr=subprocess.STDOUT,
                                  start_new_session=True, env=env)
@@ -112,8 +117,9 @@ def _run_worker(spec_path: Path, max_seconds: int, log_path: Path) -> dict:
                     exit_code = child.wait(timeout=15)
                 except subprocess.TimeoutExpired:
                     exit_code = None
-        cleanup = _cleanup(pgid)
+        cleanup = _cleanup(pgid, backend=backend)
     result = {"child_pid": child.pid, "child_pgid": pgid,
+              "backend": backend, "n_cores": n_cores,
               "exit_code": exit_code, "timed_out": timed_out,
               "cleanup": cleanup, "log": str(log_path),
               "log_sha256": sha256(log_path)}
@@ -122,10 +128,55 @@ def _run_worker(spec_path: Path, max_seconds: int, log_path: Path) -> dict:
     return result
 
 
+def _run_worker(spec_path: Path, max_seconds: int, log_path: Path,
+                *, backend: str = "cuda", n_cores: int = 2) -> dict:
+    return _run_isolated("bora.r_feature_worker", spec_path, max_seconds,
+                         log_path, backend=backend, n_cores=n_cores)
+
+
 class FeatureWorkerFailure(RuntimeError):
     def __init__(self, evidence: dict):
-        super().__init__("Virchow2 worker failed or cleanup is uncertain")
+        super().__init__("Bora worker failed or cleanup is uncertain")
         self.evidence = evidence
+
+
+def _run_cuda_method(method: str, args: list, kwargs: dict,
+                     output_dir: str, *, n_cores: int,
+                     max_seconds: int) -> dict:
+    output = Path(output_dir).resolve()
+    if output.exists():
+        raise FileExistsError(output)
+    spec_path = output.with_name(output.name + "-METHOD_FROZEN.json")
+    log_path = output.with_name(output.name + "-METHOD.log")
+    if spec_path.exists() or log_path.exists():
+        raise FileExistsError(spec_path if spec_path.exists() else log_path)
+    _atomic_json(spec_path, {"format": "bora-r-method-worker-v1",
+                             "method": method, "backend": "cuda",
+                             "n_cores": n_cores, "args": args, "kwargs": kwargs})
+    try:
+        lifecycle = _run_isolated("bora.r_method_worker", spec_path,
+                                  max_seconds, log_path,
+                                  backend="cuda", n_cores=n_cores)
+        receipt_name = ("TRAINING_COMPLETE.json" if method == "train" else
+                        "PREDICTION_COMPLETE.json")
+        receipt_path = output / receipt_name
+        if not receipt_path.is_file():
+            raise RuntimeError("CUDA worker did not create a complete result receipt")
+        result = json.loads(receipt_path.read_text())
+        if result.get("status") != "COMPLETE" or result.get("backend") != "cuda":
+            raise RuntimeError("CUDA worker result does not match the requested backend")
+        _atomic_json(output / "METHOD_LIFECYCLE_COMPLETE.json",
+                     {"status": "VERIFIED", "spec_sha256": sha256(spec_path),
+                      "result_sha256": sha256(receipt_path),
+                      "lifecycle": lifecycle})
+        return result
+    except BaseException as error:
+        evidence = error.evidence if isinstance(error, FeatureWorkerFailure) else None
+        _atomic_json(output.with_name(output.name + "-METHOD_FAILED.json"),
+                     {"status": "FAILED_PRESERVE_PARTIAL", "error": repr(error),
+                      "spec_sha256": sha256(spec_path),
+                      "worker_evidence": evidence})
+        raise
 
 
 def _model_identity(model_dir: Path) -> dict:
@@ -140,7 +191,7 @@ def _model_identity(model_dir: Path) -> dict:
 
 def _case_plan(image: Path, support: Path | None, case_dir: Path,
                model_dir: Path, model: dict, scales: list[int],
-               max_seconds: int) -> dict:
+               max_seconds: int, backend: str = "cuda", n_cores: int = 2) -> dict:
     checked = inspect_input(image, support)
     case_dir.mkdir()
     counts = checked.pop("counts")
@@ -175,6 +226,7 @@ def _case_plan(image: Path, support: Path | None, case_dir: Path,
                   "model_checkpoint_sha256": model["checkpoint_sha256"],
                   "model_config_sha256": model["config_sha256"],
                   "factor": factor,
+                  "backend": backend, "n_cores": n_cores,
                   "output_dir": str(case_dir / f"factor-{factor}"),
                   "max_seconds": max_seconds}
         spec_path = case_dir / f"factor-{factor}-WORKER_FROZEN.json"
@@ -186,8 +238,11 @@ def _case_plan(image: Path, support: Path | None, case_dir: Path,
 
 def prepare(images, tissue_masks, feature_dir, model_dir, scales,
             *, max_seconds: int = 3600, minimum_free_gib: float = 1.0,
-            precomputed_manifest: str | None = None) -> dict:
+            precomputed_manifest: str | None = None,
+            backend: str = "cuda", n_cores: int = 2) -> dict:
     """Prepare full-1280 feature arrays, one fresh output tree per call."""
+    from .r_compute import validate_execution
+    backend, n_cores = validate_execution(backend, n_cores)
     if precomputed_manifest is not None:
         from .r_cache_adoption import adopt
         return adopt(images, tissue_masks, feature_dir, model_dir, scales,
@@ -222,6 +277,7 @@ def prepare(images, tissue_masks, feature_dir, model_dir, scales,
             "created_utc": _now(), "images": [str(p) for p in images],
             "tissue_masks": [str(p) if p else None for p in masks],
             "model": model, "scales": factors,
+            "backend": backend, "n_cores": n_cores,
             "max_seconds_per_scale": max_seconds,
             "minimum_free_gib": minimum_free_gib}
     _atomic_json(output / "PREPARATION_INPUTS.json", plan)
@@ -229,7 +285,8 @@ def prepare(images, tissue_masks, feature_dir, model_dir, scales,
     try:
         for index, (image, support) in enumerate(zip(images, masks)):
             cases.append(_case_plan(image, support, output / f"image-{index:03d}",
-                                    model_dir, model, factors, max_seconds))
+                                    model_dir, model, factors, max_seconds,
+                                    backend, n_cores))
         # The persistent arrays are float16 H×W×1280 at each scale. A partial
         # array is renamed in place, so there is no second full-size copy.
         expected_bytes = sum(
@@ -251,7 +308,8 @@ def prepare(images, tissue_masks, feature_dir, model_dir, scales,
                 spec_path = Path(raw)
                 spec = json.loads(spec_path.read_text())
                 log_path = spec_path.with_suffix(".log")
-                lifecycle = _run_worker(spec_path, max_seconds, log_path)
+                lifecycle = _run_worker(spec_path, max_seconds, log_path,
+                                        backend=backend, n_cores=n_cores)
                 receipt_path = Path(spec["output_dir"]) / "FEATURES_COMPLETE.json"
                 receipt = json.loads(receipt_path.read_text())
                 if receipt["status"] != "COMPLETE" or receipt["channels"] != 1280 or \
@@ -265,6 +323,7 @@ def prepare(images, tissue_masks, feature_dir, model_dir, scales,
         result = {"format": "bora-r-preparation-v1", "status": "COMPLETE",
                   "created_utc": plan["created_utc"],
                   "completed_utc": _now(), "model": model,
+                  "backend": backend, "n_cores": n_cores,
                   "cases": cases, "scales": scale_results,
                   "preparation_inputs_sha256": sha256(output / "PREPARATION_INPUTS.json"),
                   "resource_admission_sha256": sha256(output / "RESOURCE_ADMISSION.json")}
@@ -282,27 +341,46 @@ def prepare(images, tissue_masks, feature_dir, model_dir, scales,
 def train(images, annotations, feature_dir, class_labels, output_dir,
           *, max_tokens_per_class: int = 8000,
           channels_per_class: int = 32, alpha: float = 10.0,
-          optimize_binary_threshold: bool = True) -> dict:
+          optimize_binary_threshold: bool = True,
+          backend: str = "cpu", n_cores: int = 1,
+          max_seconds: int = 3600) -> dict:
     """Fit one source-bound classwise ridge head from prepared full channels."""
+    from .r_compute import cpu_threads, validate_execution
+    backend, n_cores = validate_execution(backend, n_cores)
+    if not isinstance(max_seconds, int) or max_seconds < 60:
+        raise ValueError("max_seconds must be at least 60")
+    kwargs = dict(max_tokens_per_class=max_tokens_per_class,
+                  channels_per_class=channels_per_class, alpha=alpha,
+                  optimize_binary_threshold=optimize_binary_threshold)
+    if backend == "cuda":
+        return _run_cuda_method("train", [images, annotations, feature_dir,
+                                          class_labels, output_dir], kwargs,
+                                output_dir, n_cores=n_cores,
+                                max_seconds=max_seconds)
     from .r_training import train as fit_class_head
-    return fit_class_head(images, annotations, feature_dir, class_labels,
-                          output_dir, max_tokens_per_class=max_tokens_per_class,
-                          channels_per_class=channels_per_class, alpha=alpha,
-                          optimize_binary_threshold=optimize_binary_threshold)
+    with cpu_threads(n_cores):
+        return fit_class_head(images, annotations, feature_dir, class_labels,
+                              output_dir, **kwargs, backend=backend,
+                              n_cores=n_cores)
 
 
 def predict(preparation, predictor, output_dir, resolutions,
             *, source_mpp_xy=(.5, .5), output_mpp_xy=(4.0, 4.0),
             minimum_area_um2=2000.0, contour_sigma_um=6.0,
             minimum_free_gib=1.0, max_new_gib=None,
-            preview_backend="vips-lanczos3", class_names=None) -> dict:
+            preview_backend="vips-lanczos3", class_names=None,
+            backend: str = "cpu", n_cores: int = 1,
+            max_seconds: int = 7200) -> dict:
     """Dispatch the R prediction route without changing frozen Python CLIs."""
     if predictor is None:
         raise NotImplementedError("Joint-image KODAMA route is not yet released in the R interface")
     if resolutions is not None:
         raise ValueError("Supervised prediction does not accept cluster resolutions")
-    from .r_prediction import predict_supervised
-    return predict_supervised(preparation, predictor, output_dir,
+    from .r_compute import cpu_threads, validate_execution
+    backend, n_cores = validate_execution(backend, n_cores)
+    if not isinstance(max_seconds, int) or max_seconds < 60:
+        raise ValueError("max_seconds must be at least 60")
+    kwargs = dict(
         source_mpp_xy=tuple(map(float, source_mpp_xy)),
         output_mpp_xy=tuple(map(float, output_mpp_xy)),
         minimum_area_um2=float(minimum_area_um2),
@@ -310,29 +388,43 @@ def predict(preparation, predictor, output_dir, resolutions,
         minimum_free_gib=float(minimum_free_gib),
         max_new_gib=None if max_new_gib is None else float(max_new_gib),
         preview_backend=preview_backend, class_names=class_names)
+    if backend == "cuda":
+        return _run_cuda_method("predict", [preparation, predictor, output_dir],
+                                kwargs, output_dir, n_cores=n_cores,
+                                max_seconds=max_seconds)
+    from .r_prediction import predict_supervised
+    with cpu_threads(n_cores):
+        return predict_supervised(preparation, predictor, output_dir, **kwargs,
+                                  backend=backend, n_cores=n_cores)
 
 
 def joint_stage(preparation, output_dir, *, max_joint_tiles: int = 10000,
-                minimum_free_gib: float = 1.0) -> dict:
+                minimum_free_gib: float = 1.0,
+                n_cores: int = 1) -> dict:
     """Freeze every admitted tile from all prepared images in one joint input."""
     from .r_kodama import stage_joint
-    return stage_joint(preparation, output_dir,
-                       max_joint_tiles=int(max_joint_tiles),
-                       minimum_free_gib=float(minimum_free_gib))
+    from .r_compute import cpu_threads
+    with cpu_threads(n_cores):
+        return stage_joint(preparation, output_dir,
+                           max_joint_tiles=int(max_joint_tiles),
+                           minimum_free_gib=float(minimum_free_gib))
 
 
 def joint_complete(preparation, stage_dir, cluster_dir, output_dir,
                    *, source_mpp_xy=(.5, .5), output_mpp_xy=(4.0, 4.0),
                    minimum_area_um2=2000.0, contour_sigma_um=6.0,
                    minimum_free_gib=1.0, max_new_gib=None,
-                   preview_backend="vips-lanczos3") -> dict:
+                   preview_backend="vips-lanczos3",
+                   n_cores: int = 1) -> dict:
     """Return joint KODAMA groups to each source H&E image."""
     from .r_kodama import complete_joint
-    return complete_joint(preparation, stage_dir, cluster_dir, output_dir,
-                          source_mpp_xy=tuple(map(float, source_mpp_xy)),
-                          output_mpp_xy=tuple(map(float, output_mpp_xy)),
-                          minimum_area_um2=float(minimum_area_um2),
-                          contour_sigma_um=float(contour_sigma_um),
-                          minimum_free_gib=float(minimum_free_gib),
-                          max_new_gib=None if max_new_gib is None else float(max_new_gib),
-                          preview_backend=preview_backend)
+    from .r_compute import cpu_threads
+    with cpu_threads(n_cores):
+        return complete_joint(preparation, stage_dir, cluster_dir, output_dir,
+                              source_mpp_xy=tuple(map(float, source_mpp_xy)),
+                              output_mpp_xy=tuple(map(float, output_mpp_xy)),
+                              minimum_area_um2=float(minimum_area_um2),
+                              contour_sigma_um=float(contour_sigma_um),
+                              minimum_free_gib=float(minimum_free_gib),
+                              max_new_gib=None if max_new_gib is None else float(max_new_gib),
+                              preview_backend=preview_backend)

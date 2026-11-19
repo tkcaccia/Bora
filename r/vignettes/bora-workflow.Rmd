@@ -40,12 +40,14 @@ model <- "/models/Virchow2-v1"
 prepared <- Bora.preparation(
   images = image, tissue_masks = tissue,
   feature_dir = "/results/roi-a-features-v1", model_dir = model,
-  scales = c(1L, 2L, 4L), minimum_free_gib = 100
+  scales = c(1L, 2L, 4L), minimum_free_gib = 100,
+  backend = "cuda", n.cores = 2L
 )
 ```
 
 The factor 1, 2 and 4 caches retain all 1,280 channels. The encoder needs
-the separately licensed model and an admitted GPU. Verify the preparation
+the separately licensed model. Use `backend = "cpu"` for CPU-only extraction;
+CUDA requires an admitted GPU and CUDA-enabled PyTorch. Verify the preparation
 receipt before fitting or reusing a cache.
 
 ## Fit from registered class annotations and predict
@@ -57,14 +59,16 @@ folds before evaluating another image.
 ```{r supervised, eval=FALSE}
 head <- Bora.training(
   images = image, annotations = "/data/roi-a-classes.tif",
-  feature_dir = prepared, output_dir = "/results/head-v1"
+  feature_dir = prepared, output_dir = "/results/head-v1",
+  backend = "cpu", n.cores = 4L
 )
 result <- Bora.prediction(
   preparation = prepared, predictor = head,
   output_dir = "/results/roi-a-prediction-v1",
   source_mpp_xy = c(0.50, 0.50), # replace with measured X and Y values
   output_mpp_xy = c(4, 4), minimum_area_um2 = 2000,
-  contour_sigma_um = 6, minimum_free_gib = 100
+  contour_sigma_um = 6, minimum_free_gib = 100,
+  backend = "cpu", n.cores = 4L
 )
 ```
 
@@ -82,7 +86,7 @@ anonymous <- Bora.prediction(
   preparation = prepared, predictor = NULL,
   resolutions = c(0.5, 1, 2), output_dir = "/results/joint-v1",
   source_mpp_xy = c(0.50, 0.50), # all inputs must have this measured spacing
-  minimum_free_gib = 100
+  minimum_free_gib = 100, backend = "cpu", n.cores = 4L
 )
 ```
 
@@ -98,7 +102,7 @@ spatial <- Bora.spatial(
   image = image, object = clustered_object,
   tissue_mask = tissue, output_dir = "/results/spatial-v1",
   source_mpp_xy = c(0.50, 0.50), # measured H&E pixel spacing
-  coordinate_scale_xy = c(1, 1)
+  coordinate_scale_xy = c(1, 1), backend = "cuda", n.cores = 2L
 )
 stopifnot(file.exists(spatial$mask), file.exists(spatial$geojson))
 ```

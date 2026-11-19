@@ -23,7 +23,10 @@ Bora.spatial(
   contour_sigma_um = 6,
   minimum_free_gib = 1,
   max_new_gib = NULL,
-  preview_backend = "vips-lanczos3"
+  preview_backend = "vips-lanczos3",
+  backend = "cuda",
+  n.cores = 2L,
+  max_seconds = 3600L
 )
 }
 \arguments{
@@ -71,6 +74,13 @@ micrometres; never inferred from a nominal scan magnification.}
 \item{max_new_gib}{Optional prediction peak storage cap.}
 
 \item{preview_backend}{Preview implementation; see `Bora.prediction`.}
+
+\item{backend}{`"cuda"` (default) or `"cpu"`. The same backend is used
+for new Virchow2 extraction, fitting and score projection.}
+
+\item{n.cores}{Positive CPU thread limit for all three stages.}
+
+\item{max_seconds}{Maximum runtime of each CUDA child or feature scale.}
 }
 \value{
 A list of paths to the final TIFF mask, source-pixel GeoJSON,
