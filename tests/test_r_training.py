@@ -61,8 +61,11 @@ def test_sample_case_rejects_nonfinite_features():
 def test_binary_threshold_uses_both_classes_and_changes_mask_decision(tmp_path):
     margin = np.array([-1.0, -.8, -.2, .1, .3, .7], np.float32)
     truth = np.array([1, 1, 2, 1, 2, 2], np.uint8)
-    fitted = _select_binary_margin_threshold(margin, truth, 2)
-    assert fitted["selected_balanced_accuracy"] > fitted["zero_threshold_balanced_accuracy"]
+    fitted = _select_binary_margin_threshold(margin, truth, 2,
+                                             {1: 30, 2: 3}, minimum_sensitivity=2/3)
+    assert fitted["selected_training_sensitivity"] >= 2/3
+    assert fitted["objective"] == "maximum_training_specificity_at_minimum_positive_class_sensitivity"
+    assert fitted["negative_sampling_weight"] == 10
     assert fitted["threshold"] == pytest.approx(.1)
     scores = np.stack((-margin.reshape(1, -1) / 2,
                         margin.reshape(1, -1) / 2)).astype(np.float32)

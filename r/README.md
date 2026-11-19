@@ -1,4 +1,4 @@
-# Bora for R 0.2.2
+# Bora for R 0.2.3
 
 The [reference and acceptance manual](REFERENCE_MANUAL.md) explains the five
 user-facing functions, their inputs and outputs, the completed software checks,
@@ -45,7 +45,7 @@ requires a CUDA-enabled PyTorch environment; optional CRAN `gpuinfo` gives
 an additional hardware preflight. See the [execution table](REFERENCE_MANUAL.md#execution-backend-and-cpu-cores)
 for the exact stage behavior.
 
-The R 0.2.2 package calls the matching Bora Python backend 0.3.8 through
+The R 0.2.3 package calls the matching Bora Python backend 0.3.9 through
 `reticulate`. Virchow2 weights are separately licensed and are never bundled
 with Bora. A user-managed Python environment with Bora, PyTorch, timm and the
 licensed Virchow2 checkpoint is required for feature extraction. Set

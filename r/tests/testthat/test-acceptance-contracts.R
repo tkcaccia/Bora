@@ -24,6 +24,12 @@ test_that("training rejects class mappings and limits before fitting", {
   expect_error(do.call(Bora.training, c(args, list(channels_per_class = 1281L))),
                "Finite positive")
   expect_error(do.call(Bora.training, c(args, list(alpha = 0))), "Finite positive")
+  expect_error(do.call(Bora.training,
+                       c(args, list(minimum_binary_sensitivity = 0))),
+               "minimum_binary_sensitivity")
+  expect_error(do.call(Bora.training,
+                       c(args, list(minimum_binary_sensitivity = 1.1))),
+               "minimum_binary_sensitivity")
 })
 
 test_that("prediction distinguishes supervised and joint KODAMA arguments", {

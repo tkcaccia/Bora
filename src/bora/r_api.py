@@ -342,6 +342,7 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
           *, max_tokens_per_class: int = 8000,
           channels_per_class: int = 32, alpha: float = 10.0,
           optimize_binary_threshold: bool = True,
+          minimum_binary_sensitivity: float = .95,
           backend: str = "cpu", n_cores: int = 1,
           max_seconds: int = 3600) -> dict:
     """Fit one source-bound classwise ridge head from prepared full channels."""
@@ -352,6 +353,7 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
     kwargs = dict(max_tokens_per_class=max_tokens_per_class,
                   channels_per_class=channels_per_class, alpha=alpha,
                   optimize_binary_threshold=optimize_binary_threshold)
+    kwargs["minimum_binary_sensitivity"] = minimum_binary_sensitivity
     if backend == "cuda":
         return _run_cuda_method("train", [images, annotations, feature_dir,
                                           class_labels, output_dir], kwargs,

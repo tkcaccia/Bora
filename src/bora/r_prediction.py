@@ -327,7 +327,8 @@ def finalize_projected_mask(shared_mask_path: Path, support_path: Path,
         smoothed = np.load(smooth_path, mmap_mode="r", allow_pickle=False)
         final_path = output / "final-mask.uint8.dat"
         final, second_report = area_repair(smoothed, support, final_path,
-                                           mpp_xy, minimum_area_um2)
+                                           mpp_xy, minimum_area_um2,
+                                           connectivity=4)
         if np.any((final > 0) & (support == 0)):
             raise ValueError("Final cleanup expanded beyond supplied tissue")
         assembly = output / "vector-input"
@@ -363,7 +364,8 @@ def finalize_projected_mask(shared_mask_path: Path, support_path: Path,
             # every cleaned raster pixel, including source-support holes.
             minimum_area_um2=min(minimum_area_um2,
                                  .5 * mpp_xy[0] * mpp_xy[1]),
-            smoothing_tolerance_um=3.0)
+            smoothing_tolerance_um=3.0,
+            minimum_review_part_area_um2=minimum_area_um2)
         exact_vector_mask = output / "vectors-output-grid/exact/mask.uint8.dat"
         if sha256(exact_vector_mask) != sha256(final_path):
             raise ValueError("Final vector raster differs from the cleaned tissue mask")

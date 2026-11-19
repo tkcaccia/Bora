@@ -174,11 +174,12 @@ def project_mask(scores: np.ndarray, support: np.memmap,
 
 
 def area_repair(source: np.memmap, support: np.memmap, out: Path, mpp_xy: tuple[float, float],
-                minimum_um2: float, *, max_passes: int = 8) -> tuple[np.memmap, dict]:
-    """Repair whole-slide 8-connected positive islands and enclosed empty holes."""
+                minimum_um2: float, *, max_passes: int = 8,
+                connectivity: int = 8) -> tuple[np.memmap, dict]:
+    """Repair whole-slide positive islands and enclosed holes at chosen connectivity."""
     if out.exists():
         raise FileExistsError(out)
-    if min(mpp_xy) <= 0 or minimum_um2 <= 0:
+    if min(mpp_xy) <= 0 or minimum_um2 <= 0 or connectivity not in (4, 8):
         raise ValueError("Positive physical area required")
     height, width = source.shape
     if support.shape != source.shape:
@@ -196,7 +197,7 @@ def area_repair(source: np.memmap, support: np.memmap, out: Path, mpp_xy: tuple[
         changed = 0
         for value in active + [0]:
             binary = np.asarray(result == value, np.uint8)
-            n, components, stats, _ = cv2.connectedComponentsWithStats(binary, connectivity=8)
+            n, components, stats, _ = cv2.connectedComponentsWithStats(binary, connectivity=connectivity)
             del binary
             small = np.flatnonzero((stats[:, cv2.CC_STAT_AREA] < threshold) &
                                    (np.arange(n) > 0))
@@ -240,7 +241,7 @@ def area_repair(source: np.memmap, support: np.memmap, out: Path, mpp_xy: tuple[
     else:
         raise ValueError("Global small-region repair did not converge")
     counts.update(minimum_area_um2=minimum_um2, minimum_pixels=threshold,
-                  passes=iteration+1, connectivity=8, strictly_less_than=True)
+                  passes=iteration+1, connectivity=connectivity, strictly_less_than=True)
     return result, counts
 
 

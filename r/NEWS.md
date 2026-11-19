@@ -1,3 +1,14 @@
+# Bora for R 0.2.3
+
+- Choose the two-class score margin using training-slide positive-class
+  sensitivity as a floor (95% by default) and maximize negative-class
+  specificity within that constraint. Record the sampled class prevalence,
+  selected threshold and achieved training sensitivity. This is in-sample
+  calibration and does not guarantee transfer sensitivity.
+- Match final 2,000 µm² raster cleanup to four-connected vector geometry,
+  retain the 6 µm contour pass and guard fitted review polygons against
+  subthreshold areas. Exact scored raster and review GeoJSON remain distinct.
+
 # Bora for R 0.2.2
 
 - Add `backend = "cpu"` or `"cuda"` and `n.cores` to preparation, training,

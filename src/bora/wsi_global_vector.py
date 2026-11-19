@@ -309,6 +309,7 @@ def publish_global_wsi_vectors(assembly_folder, output_folder, class_names, *,
                                identity_status="exploratory_transfer",
                                minimum_area_um2=100.0,
                                smoothing_tolerance_um=3.0,
+                               minimum_review_part_area_um2=None,
                                minimum_class_iou=.97,
                                maximum_tissue_area_change=.015,
                                maximum_one_way_support_fraction=.0005,
@@ -363,6 +364,9 @@ def publish_global_wsi_vectors(assembly_folder, output_folder, class_names, *,
     if (not all(math.isfinite(v) and v > 0 for v in mpp_xy) or
             not math.isfinite(minimum_area_um2) or minimum_area_um2 <= 0 or
             not math.isfinite(smoothing_tolerance_um) or smoothing_tolerance_um < 0 or
+            (minimum_review_part_area_um2 is not None and
+             (not math.isfinite(minimum_review_part_area_um2) or
+              minimum_review_part_area_um2 <= 0)) or
             not 0 < minimum_class_iou <= 1 or
             not 0 <= maximum_tissue_area_change <= 1 or
             not 0 <= maximum_one_way_support_fraction <= 1 or
@@ -463,6 +467,12 @@ def publish_global_wsi_vectors(assembly_folder, output_folder, class_names, *,
                 if any(not _require_large_parts(geometry, minimum_pixels)
                        for geometry in candidate.values()):
                     raise ValueError("Smoothing creates a subthreshold part or hole")
+                if minimum_review_part_area_um2 is not None:
+                    review_floor_pixels = minimum_review_part_area_um2 / (mpp_xy[0] * mpp_xy[1])
+                    if any(polygon.area + 1e-8 < review_floor_pixels
+                           for geometry in candidate.values()
+                           for polygon in _parts(geometry)):
+                        raise ValueError("Smoothing creates a subthreshold review polygon")
                 review_records = _review_component_records(exact_records, candidate)
                 candidate_index = (exact_index if candidate is exact else _RasterIndex(candidate))
                 confusion, _ = _stream_raster_agreement(exact_index, candidate_index, (h, w))

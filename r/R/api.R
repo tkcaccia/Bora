@@ -91,11 +91,15 @@ Bora.preparation <- function(images, tissue_masks = NULL, feature_dir,
 #'   across the training images, allocated evenly by image.
 #' @param channels_per_class Standardized contrast channels selected per class.
 #' @param alpha Positive ridge penalty.
-#' @param optimize_binary_threshold For a two-class predictor, maximize
-#'   balanced accuracy on sampled labelled token centres from the supplied
-#'   training images and store the resulting class-score margin threshold.
-#'   This is training-set calibration, not held-out validation. For multiclass
-#'   training the option is ignored and the existing class decision is used.
+#' @param optimize_binary_threshold For a two-class predictor, choose the
+#'   highest score-margin threshold that retains the requested sensitivity on
+#'   labelled positive-class tokens from the training images. This maximizes sampled
+#'   benign-token specificity subject to the sensitivity constraint. It is
+#'   training-set calibration, not held-out validation; transfer sensitivity
+#'   may be lower. Multiclass training retains the existing class decision.
+#' @param minimum_binary_sensitivity Training positive-class sensitivity floor
+#'   when optimizing a two-class threshold. Defaults to 0.95. The chosen
+#'   threshold and achieved training sensitivity are stored with the model.
 #' @param backend `"cpu"` (default) or `"cuda"` for the ridge fit. CUDA uses
 #'   one visible GPU and a bounded child process; sampling remains on CPU.
 #' @param n.cores Positive integer limit for CPU sampling and BLAS threads.
@@ -107,6 +111,7 @@ Bora.training <- function(images, annotations, feature_dir,
                           max_tokens_per_class = 8000L,
                           channels_per_class = 32L, alpha = 10,
                           optimize_binary_threshold = TRUE,
+                          minimum_binary_sensitivity = 0.95,
                           backend = "cpu", n.cores = 1L,
                           max_seconds = 3600L) {
   execution <- .bora_execution(backend, n.cores)
@@ -149,6 +154,13 @@ Bora.training <- function(images, annotations, feature_dir,
       length(optimize_binary_threshold) != 1L || is.na(optimize_binary_threshold)) {
     stop("optimize_binary_threshold must be TRUE or FALSE", call. = FALSE)
   }
+  if (!is.numeric(minimum_binary_sensitivity) ||
+      length(minimum_binary_sensitivity) != 1L ||
+      is.na(minimum_binary_sensitivity) ||
+      !is.finite(minimum_binary_sensitivity) ||
+      minimum_binary_sensitivity <= 0 || minimum_binary_sensitivity > 1) {
+    stop("minimum_binary_sensitivity must be in (0, 1]", call. = FALSE)
+  }
   if (!is.numeric(max_tokens_per_class) || length(max_tokens_per_class) != 1L ||
       is.na(max_tokens_per_class) || max_tokens_per_class != as.integer(max_tokens_per_class) ||
       max_tokens_per_class < 1L || max_tokens_per_class > 100000L ||
@@ -165,6 +177,7 @@ Bora.training <- function(images, annotations, feature_dir,
                         channels_per_class = as.integer(channels_per_class),
                         alpha = as.numeric(alpha),
                         optimize_binary_threshold = optimize_binary_threshold,
+                        minimum_binary_sensitivity = as.numeric(minimum_binary_sensitivity),
                         backend = execution$backend,
                         n_cores = execution$n.cores,
                         max_seconds = max_seconds)

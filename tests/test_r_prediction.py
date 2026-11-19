@@ -96,3 +96,19 @@ def test_vector_export_preserves_a_small_zero_support_hole(tmp_path):
     assert final[16, 16] == exact[16, 16] == drawn[16, 16] == 0
     assert np.array_equal(final, exact)
     assert np.array_equal(final, drawn)
+
+
+def test_final_geometry_removes_diagonal_only_subthreshold_islands(tmp_path):
+    from bora.supervised_wsi import area_repair
+
+    support = np.ones((32, 32), np.uint8)
+    projected = np.ones((32, 32), np.uint8)
+    projected[2:10, 2:10] = 2
+    projected[10:18, 10:18] = 2
+    first, first_report = area_repair(projected, support, tmp_path / "eight.dat",
+                                      (4., 4.), 2000., connectivity=8)
+    final, final_report = area_repair(first, support, tmp_path / "four.dat",
+                                      (4., 4.), 2000., connectivity=4)
+    assert first_report["positive_parts"] == 0
+    assert final_report["positive_parts"] == 2
+    assert not np.any(final == 2)

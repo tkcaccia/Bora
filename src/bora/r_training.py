@@ -29,8 +29,10 @@ SEED = 20261114
 
 
 def _select_binary_margin_threshold(margin: np.ndarray, targets: np.ndarray,
-                                    positive_class: int) -> dict:
-    """Maximize class-balanced training accuracy with a deterministic tie break.
+                                    positive_class: int,
+                                    population_counts: dict[int, int],
+                                    minimum_sensitivity: float = .95) -> dict:
+    """Maximize specificity subject to a minimum training positive-class sensitivity.
 
     The margin is the class-2 score minus the class-1 score. A positive call
     uses ``margin > threshold``; zero is the historical argmax decision.
@@ -39,6 +41,8 @@ def _select_binary_margin_threshold(margin: np.ndarray, targets: np.ndarray,
     targets = np.asarray(targets).reshape(-1)
     if len(margin) != len(targets) or not len(margin) or not np.isfinite(margin).all():
         raise ValueError("Finite aligned training margins are required")
+    if not math.isfinite(minimum_sensitivity) or not 0 < minimum_sensitivity <= 1:
+        raise ValueError("Minimum binary positive-class sensitivity must be in (0, 1]")
     positive = targets == positive_class
     if not positive.any() or positive.all():
         raise ValueError("Threshold selection requires both observed classes")
@@ -50,23 +54,55 @@ def _select_binary_margin_threshold(margin: np.ndarray, targets: np.ndarray,
     negatives_below = (ends + 1) - positives_below
     positive_total = int(positive.sum())
     negative_total = len(positive) - positive_total
+    population_positive = int(population_counts[positive_class])
+    population_negative = sum(int(count) for cls, count in population_counts.items()
+                              if cls != positive_class)
+    if population_positive < positive_total or population_negative < negative_total:
+        raise ValueError("Population counts must cover finite sampled tokens")
+    positive_weight = population_positive / positive_total
+    negative_weight = population_negative / negative_total
     accuracy = .5 * ((positive_total - positives_below) / positive_total +
                      negatives_below / negative_total)
-    # Include the all-positive decision as a valid candidate.
+    # The sample is deliberately quota balanced. Reweight it to the original
+    # labelled-token prevalence before selecting a metastasis threshold.
+    true_positive = (positive_total - positives_below) * positive_weight
+    false_positive = (negative_total - negatives_below) * negative_weight
+    false_negative = positives_below * positive_weight
+    dice = 2 * true_positive / (2 * true_positive + false_positive + false_negative)
+    # Include all-positive and all-negative decisions as valid candidates.
     thresholds = np.r_[np.nextafter(values[0], -np.inf), values[ends]]
     accuracy = np.r_[.5, accuracy]
-    best = np.flatnonzero(np.isclose(accuracy, accuracy.max(), atol=1e-12, rtol=0))
-    chosen = min(best, key=lambda i: (abs(thresholds[i]), thresholds[i]))
+    all_positive_dice = 2 * population_positive / (
+        2 * population_positive + population_negative)
+    dice = np.r_[all_positive_dice, dice]
+    sensitivity = np.r_[1., (positive_total - positives_below) / positive_total]
+    specificity = np.r_[0., negatives_below / negative_total]
+    feasible = np.flatnonzero(sensitivity + 1e-12 >= minimum_sensitivity)
+    chosen = max(feasible, key=lambda i: thresholds[i])
     threshold = float(thresholds[chosen])
     baseline = .5 * (np.mean(margin[positive] > 0) +
                      np.mean(margin[~positive] <= 0))
-    return {"threshold": threshold, "objective": "sampled_training_token_balanced_accuracy",
+    baseline_tp = positive_weight * np.count_nonzero(positive & (margin > 0))
+    baseline_fp = negative_weight * np.count_nonzero(~positive & (margin > 0))
+    baseline_fn = population_positive - baseline_tp
+    baseline_dice = 2 * baseline_tp / (2 * baseline_tp + baseline_fp + baseline_fn)
+    return {"threshold": threshold,
+            "objective": "maximum_training_specificity_at_minimum_positive_class_sensitivity",
+            "minimum_training_sensitivity": minimum_sensitivity,
+            "selected_training_sensitivity": float(sensitivity[chosen]),
+            "selected_training_specificity": float(specificity[chosen]),
+            "selected_dice": float(dice[chosen]), "zero_threshold_dice": float(baseline_dice),
             "selected_balanced_accuracy": float(accuracy[chosen]),
             "zero_threshold_balanced_accuracy": float(baseline),
             "positive_class": int(positive_class),
             "positive_tokens": positive_total, "negative_tokens": negative_total,
+            "population_positive_tokens": population_positive,
+            "population_negative_tokens": population_negative,
+            "positive_sampling_weight": positive_weight,
+            "negative_sampling_weight": negative_weight,
             "decision": "class_2_if_projected_score_margin_gt_threshold",
-            "selection_scope": "same fitting images; resubstitution, no held-out calibration"}
+            "selection_scope": "same fitting images; resubstitution, no held-out calibration",
+            "limitation": "training-token sensitivity and specificity are resubstitution surrogates for finished-mask transfer"}
 
 
 def _atomic_json(path: Path, value: dict) -> None:
@@ -211,6 +247,7 @@ def _sample_case(grids: dict[int, np.ndarray], labels: np.ndarray,
 def train(images, annotations, feature_dir, class_labels, output_dir,
           *, max_tokens_per_class: int = 8000, channels_per_class: int = 32,
           alpha: float = 10.0, optimize_binary_threshold: bool = True,
+          minimum_binary_sensitivity: float = .95,
           backend: str = "cpu", n_cores: int = 1) -> dict:
     """Fit a classwise-selected linear head to verified full-channel caches."""
     from .r_compute import validate_execution
@@ -230,7 +267,9 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
     if not isinstance(max_tokens_per_class, int) or not 1 <= max_tokens_per_class <= 100000 or \
        not isinstance(channels_per_class, int) or not 1 <= channels_per_class <= CHANNELS or \
        not math.isfinite(alpha) or alpha <= 0 or \
-       not isinstance(optimize_binary_threshold, bool):
+       not isinstance(optimize_binary_threshold, bool) or \
+       not math.isfinite(minimum_binary_sensitivity) or \
+       not 0 < minimum_binary_sensitivity <= 1:
         raise ValueError("Training resource and ridge limits must be finite and positive")
     root = Path(feature_dir).resolve()
     manifest_path = root / "PREPARATION_COMPLETE.json"
@@ -256,6 +295,7 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
                      "seed": SEED,
                      "backend": backend, "n_cores": n_cores,
                      "optimize_binary_threshold": optimize_binary_threshold}
+    input_receipt["minimum_binary_sensitivity"] = minimum_binary_sensitivity
     _atomic_json(output / "TRAINING_INPUTS.json", input_receipt)
     rng = np.random.default_rng(SEED)
     per_case_quota = max(1, math.ceil(max_tokens_per_class / len(images)))
@@ -317,12 +357,17 @@ def train(images, annotations, feature_dir, class_labels, output_dir,
                 np.ascontiguousarray(standardized[:, selected]))
             # _scores writes [-decision, decision] for a binary ridge model.
             margin = 2 * np.asarray(decision, dtype=np.float64)
+            populations = {int(cls): sum(int(row["counts"].get(str(cls), {}).get(
+                "labelled_token_centres", 0)) for row in rows) for cls in classes}
             calibration = _select_binary_margin_threshold(margin, target,
-                                                          int(classes[1]))
+                                                          int(classes[1]), populations,
+                                                          minimum_binary_sensitivity)
             if not optimize_binary_threshold:
                 calibration["threshold"] = 0.0
+                calibration["selected_dice"] = calibration["zero_threshold_dice"]
                 calibration["selected_balanced_accuracy"] = calibration[
                     "zero_threshold_balanced_accuracy"]
+                calibration["objective"] = "disabled_historical_zero_margin"
                 calibration["selection_scope"] = "disabled; historical zero margin"
         model_path = output / "predictor.npz"
         with tempfile.NamedTemporaryFile(dir=output, prefix=".predictor-", suffix=".npz",

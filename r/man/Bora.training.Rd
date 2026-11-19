@@ -14,6 +14,7 @@ Bora.training(
   channels_per_class = 32L,
   alpha = 10,
   optimize_binary_threshold = TRUE,
+  minimum_binary_sensitivity = 0.95,
   backend = "cpu",
   n.cores = 1L,
   max_seconds = 3600L
@@ -37,11 +38,16 @@ across the training images, allocated evenly by image.}
 
 \item{alpha}{Positive ridge penalty.}
 
-\item{optimize_binary_threshold}{For a two-class predictor, maximize
-balanced accuracy on sampled labelled token centres from the supplied
-training images and store the resulting class-score margin threshold.
-This is training-set calibration, not held-out validation. For multiclass
-training the option is ignored and the existing class decision is used.}
+\item{optimize_binary_threshold}{For a two-class predictor, choose the
+highest score-margin threshold that retains the requested sensitivity on
+labelled positive-class tokens from the training images. This maximizes sampled
+benign-token specificity subject to the sensitivity constraint. It is
+training-set calibration, not held-out validation; transfer sensitivity
+may be lower. Multiclass training retains the existing class decision.}
+
+\item{minimum_binary_sensitivity}{Training positive-class sensitivity floor
+when optimizing a two-class threshold. Defaults to 0.95. The chosen
+threshold and achieved training sensitivity are stored with the model.}
 
 \item{backend}{`"cpu"` (default) or `"cuda"` for the ridge fit. CUDA uses
 one visible GPU and a bounded child process; sampling remains on CPU.}
