@@ -46,9 +46,10 @@ directory for each run; retain the JSON SHA256 receipts.
 ### Execution backend and CPU cores
 
 All four analysis functions accept `backend = "cpu"` or `"cuda"` and a
-positive integer `n.cores`. `n.cores` limits the CPU threads used by the
-Python worker, including PyTorch, BLAS and OpenCV; the joint KODAMA route
-also passes it to `KODAMA.matrix`. It does not select multiple GPUs.
+positive integer `n.cores`. Bora passes `n.cores` to PyTorch, loaded BLAS
+thread pools and OpenCV; whether OpenCV honours the requested count depends
+on its platform build. The joint KODAMA route also passes it to
+`KODAMA.matrix`. It does not select multiple GPUs.
 
 | Function | Default | CUDA work | CPU work |
 | --- | --- | --- | --- |

@@ -23,11 +23,20 @@ def test_cpu_cleanup_never_queries_gpu(monkeypatch):
     assert r_api._cleanup(999999, backend="cpu", window_seconds=0)["status"] == "VERIFIED"
 
 
-def test_cpu_thread_limit_restores_opencv():
+def test_cpu_thread_limit_requests_and_restores_opencv(monkeypatch):
     cv2 = pytest.importorskip("cv2")
     original = cv2.getNumThreads()
+    requested = []
+    setter = cv2.setNumThreads
+
+    def recorded(value):
+        requested.append(value)
+        setter(value)
+
+    monkeypatch.setattr(cv2, "setNumThreads", recorded)
     with cpu_threads(1):
-        assert cv2.getNumThreads() == 1
+        assert requested[0] == 1
+    assert requested[-1] == original
     assert cv2.getNumThreads() == original
 
 
